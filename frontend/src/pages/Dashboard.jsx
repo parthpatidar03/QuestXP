@@ -1,8 +1,25 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import useAuthStore from '../store/useAuthStore';
+import api from '../services/api';
+import CourseCard from '../components/Course/CourseCard';
+import CourseCreationForm from '../components/Course/CourseCreationForm';
 
 const Dashboard = () => {
     const { user, logout } = useAuthStore();
+    const [courses, setCourses] = useState([]);
+    const [showCreate, setShowCreate] = useState(false);
+
+    useEffect(() => {
+        const fetchCourses = async () => {
+            try {
+                const { data } = await api.get('/courses');
+                setCourses(data.courses);
+            } catch (err) {
+                console.error('Failed to fetch courses', err);
+            }
+        };
+        fetchCourses();
+    }, []);
 
     if (!user) return null;
 
@@ -50,19 +67,37 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            <main className="mt-8 bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-md min-h-[400px]">
-                <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl font-bold">Your Courses</h2>
-                    <button className="bg-yellow-400 text-gray-900 px-4 py-2 font-semibold rounded hover:bg-yellow-300 transition-colors text-sm">
-                        + New Course
-                    </button>
-                </div>
-                
-                <div className="text-gray-500 text-center py-20 flex flex-col items-center justify-center border-2 border-dashed border-gray-700 rounded-lg">
-                    <svg className="w-12 h-12 mb-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
-                    <p className="text-lg">No courses yet.</p>
-                    <p className="text-sm">Add a YouTube playlist to begin your quest!</p>
-                </div>
+            <main className="mt-8">
+                {showCreate ? (
+                    <div>
+                        <button onClick={() => setShowCreate(false)} className="text-sm text-gray-500 hover:text-white mb-4">&larr; Back to Courses</button>
+                        <CourseCreationForm />
+                    </div>
+                ) : (
+                    <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-md min-h-[400px]">
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-2xl font-bold">Your Courses</h2>
+                            <button 
+                                onClick={() => setShowCreate(true)}
+                                className="bg-yellow-400 text-gray-900 px-4 py-2 font-semibold rounded hover:bg-yellow-300 transition-colors text-sm"
+                            >
+                                + New Course
+                            </button>
+                        </div>
+                        
+                        {courses.length === 0 ? (
+                            <div className="text-gray-500 text-center py-20 flex flex-col items-center justify-center border-2 border-dashed border-gray-700 rounded-lg">
+                                <svg className="w-12 h-12 mb-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+                                <p className="text-lg">No courses yet.</p>
+                                <p className="text-sm">Add a YouTube playlist to begin your quest!</p>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {courses.map(course => <CourseCard key={course._id} course={course} />)}
+                            </div>
+                        )}
+                    </div>
+                )}
             </main>
         </div>
     );

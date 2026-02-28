@@ -1,0 +1,93 @@
+const { Worker } = require('bullmq');
+const IORedis = require('ioredis');
+const ytpl = require('ytpl');
+const Course = require('../models/Course');
+
+const connection = new IORedis(process.env.REDIS_URL || 'redis://localhost:6379', {
+    maxRetriesPerRequest: null,
+});
+
+const courseProcessor = new Worker('course-processing', async job => {
+    const { courseId, sections } = job.data;
+
+    try {
+        let totalLectures = 0;
+        let totalDuration = 0;
+        const processedSections = [];
+
+        for (const section of sections) {
+            let playlist;
+            try {
+                // ytpl requires just the ID or full URL
+                playlist = await ytpl(section.playlistUrl, { limit: Infinity });
+            } catch (err) {
+                console.error(`Failed to fetch playlist ${section.playlistUrl}`, err);
+                throw new Error(`Invalid or private playlist: ${section.playlistUrl}`);
+            }
+
+            const lectures = playlist.items.map((item, index) => {
+                // Duration is usually a string like "4:20" or "1:04:20".
+                // We'll parse it to total seconds.
+                let durationSecs = 0;
+                if (item.durationSec) {
+                    durationSecs = item.durationSec;
+                } else if (item.duration) {
+                    const parts = item.duration.split(':').map(Number);
+                    if (parts.length === 3) durationSecs = parts[0] * 3600 + parts[1] * 60 + parts[2];
+                    else if (parts.length === 2) durationSecs = parts[0] * 60 + parts[1];
+                }
+
+                totalLectures += 1;
+                totalDuration += durationSecs;
+
+                return {
+                    youtubeId: item.id,
+                    title: item.title,
+                    duration: durationSecs,
+                    order: index,
+                    thumbnailUrl: item.bestThumbnail?.url,
+                    aiStatus: {
+                        transcription: 'pending',
+                        notes: 'pending',
+                        quiz: 'pending',
+                        topics: 'pending',
+                        embedding: 'pending' // From spec 004
+                    }
+                };
+            });
+
+            processedSections.push({
+                title: section.title,
+                playlistUrl: section.playlistUrl,
+                order: section.order,
+                lectures
+            });
+        }
+
+        const course = await Course.findByIdAndUpdate(courseId, {
+            sections: processedSections,
+            status: 'ready',
+            totalLectures,
+            totalDuration
+        }, { new: true });
+
+        // TODO: spec-003 — transcriptionQueue.add() calls go here
+
+        return { success: true, courseId };
+
+    } catch (error) {
+        console.error(`Course processing failed for ${courseId}:`, error);
+        await Course.findByIdAndUpdate(courseId, { status: 'error' });
+        throw error;
+    }
+}, { connection });
+
+courseProcessor.on('completed', job => {
+    console.log(`Course job ${job.id} completed!`);
+});
+
+courseProcessor.on('failed', (job, err) => {
+    console.error(`Course job ${job.id} failed with error:`, err.message);
+});
+
+module.exports = courseProcessor;
