@@ -6,6 +6,7 @@ require('dotenv').config();
 const authRoutes = require('./routes/auth');
 const courseRoutes = require('./routes/courses');
 const progressRoutes = require('./routes/progress');
+const planRoutes = require('./routes/plan');
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 app.use('/api/auth', authRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/progress', progressRoutes);
+app.use('/api/plan', planRoutes);
 
 // Central error handler
 app.use((err, req, res, next) => {

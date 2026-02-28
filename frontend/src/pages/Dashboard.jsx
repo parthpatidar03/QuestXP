@@ -5,6 +5,7 @@ import CourseCard from '../components/Course/CourseCard';
 import CourseCreationForm from '../components/Course/CourseCreationForm';
 import ProgressCard from '../components/Dashboard/ProgressCard';
 import StreakWidget from '../components/Dashboard/StreakWidget';
+import StudyPlan from '../components/Dashboard/StudyPlan';
 
 const Dashboard = () => {
     const { user, logout } = useAuthStore();
@@ -64,13 +65,7 @@ const Dashboard = () => {
 
                 <StreakWidget streak={user.streak} />
 
-                <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-md">
-                    <h2 className="text-lg font-medium mb-2 text-gray-400">Today's Goal</h2>
-                    <div className="flex items-center justify-between">
-                        <span className="text-gray-300">Study Plan</span>
-                        <span className="text-sm font-medium bg-gray-700 px-2 py-1 rounded">0 / 45 mins</span>
-                    </div>
-                </div>
+                <StudyPlan />
             </div>
 
             <div className="mt-8">
