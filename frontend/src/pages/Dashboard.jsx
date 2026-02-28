@@ -4,6 +4,7 @@ import api from '../services/api';
 import CourseCard from '../components/Course/CourseCard';
 import CourseCreationForm from '../components/Course/CourseCreationForm';
 import ProgressCard from '../components/Dashboard/ProgressCard';
+import StreakWidget from '../components/Dashboard/StreakWidget';
 
 const Dashboard = () => {
     const { user, logout } = useAuthStore();
@@ -61,13 +62,7 @@ const Dashboard = () => {
                     <p className="text-xs text-gray-500 mt-2 text-right">450 / 1000 to next level</p>
                 </div>
 
-                <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-md flex flex-col justify-center items-center">
-                    <h2 className="text-lg font-medium mb-1 text-gray-400">Current Streak</h2>
-                    <p className="text-4xl font-bold text-orange-400">
-                        {user.streak?.current || 0} 
-                        <span className="text-base font-normal text-gray-500 ml-1">days</span>
-                    </p>
-                </div>
+                <StreakWidget streak={user.streak} />
 
                 <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-md">
                     <h2 className="text-lg font-medium mb-2 text-gray-400">Today's Goal</h2>
