@@ -4,6 +4,7 @@ import useAuthStore from './store/useAuthStore';
 import Auth from './pages/Auth';
 import Dashboard from './pages/Dashboard';
 import CourseDetail from './pages/CourseDetail';
+import Player from './pages/Player';
 
 const ProtectedRoute = ({ children }) => {
     const { isAuthenticated, isLoading } = useAuthStore();
@@ -41,6 +42,11 @@ const App = () => {
                 <Route path="/courses/:courseId" element={
                     <ProtectedRoute>
                         <CourseDetail />
+                    </ProtectedRoute>
+                } />
+                <Route path="/courses/:courseId/lectures/:lectureId" element={
+                    <ProtectedRoute>
+                        <Player />
                     </ProtectedRoute>
                 } />
             </Routes>
