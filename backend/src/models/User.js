@@ -4,7 +4,8 @@ const { Schema } = mongoose;
 const userSchema = new Schema({
     name: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true, lowercase: true },
-    passwordHash: { type: String, required: true },
+    passwordHash: { type: String, required: function () { return !this.googleId; } },
+    googleId: { type: String, sparse: true, unique: true },
     totalXP: { type: Number, default: 0 },
     level: { type: Number, default: 1 },
     streak: {

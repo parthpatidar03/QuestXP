@@ -21,6 +21,12 @@ const useAuthStore = create((set) => ({
         return data;
     },
 
+    googleLogin: async (credential) => {
+        const { data } = await api.post('/auth/google', { credential });
+        set({ user: data.user, isAuthenticated: true });
+        return data;
+    },
+
     register: async (name, email, password) => {
         const { data } = await api.post('/auth/register', { name, email, password });
         set({ user: data.user, isAuthenticated: true });

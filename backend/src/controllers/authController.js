@@ -2,6 +2,10 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { validationResult } = require('express-validator');
+const { OAuth2Client } = require('google-auth-library');
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
 
 const generateToken = (userId, email) => {
     return jwt.sign({ userId, email }, process.env.JWT_SECRET || 'dev_secret', { expiresIn: '7d' });
@@ -89,4 +93,37 @@ const logout = (req, res) => {
     res.json({ success: true });
 };
 
-module.exports = { register, login, getMe, logout };
+const googleLogin = async (req, res, next) => {
+    try {
+        const { credential } = req.body;
+        const ticket = await googleClient.verifyIdToken({
+            idToken: credential,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+        const payload = ticket.getPayload();
+        const { email, name, sub: googleId } = payload;
+
+        let user = await User.findOne({ email: email.toLowerCase() });
+        if (!user) {
+            user = new User({
+                name,
+                email: email.toLowerCase(),
+                googleId,
+            });
+            await user.save();
+        } else if (!user.googleId) {
+            user.googleId = googleId;
+            await user.save();
+        }
+
+        const token = generateToken(user._id, user.email);
+        setTokenCookie(res, token);
+
+        const userResponse = { _id: user._id, name: user.name, email: user.email, totalXP: user.totalXP, level: user.level };
+        res.json({ user: userResponse });
+    } catch (error) {
+        next(error);
+    }
+};
+
+module.exports = { register, login, googleLogin, getMe, logout };
