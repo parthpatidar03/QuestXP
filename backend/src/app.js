@@ -4,6 +4,8 @@ const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
 const authRoutes = require('./routes/auth');
+const courseRoutes = require('./routes/courses');
+const progressRoutes = require('./routes/progress');
 
 const app = express();
 
@@ -17,6 +19,8 @@ app.use(cors({
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
 app.use('/api/auth', authRoutes);
+app.use('/api/courses', courseRoutes);
+app.use('/api/progress', progressRoutes);
 
 // Central error handler
 app.use((err, req, res, next) => {

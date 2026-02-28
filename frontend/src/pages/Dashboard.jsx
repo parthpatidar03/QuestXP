@@ -3,10 +3,12 @@ import useAuthStore from '../store/useAuthStore';
 import api from '../services/api';
 import CourseCard from '../components/Course/CourseCard';
 import CourseCreationForm from '../components/Course/CourseCreationForm';
+import ProgressCard from '../components/Dashboard/ProgressCard';
 
 const Dashboard = () => {
     const { user, logout } = useAuthStore();
     const [courses, setCourses] = useState([]);
+    const [progressMap, setProgressMap] = useState({});
     const [showCreate, setShowCreate] = useState(false);
 
     useEffect(() => {
@@ -14,6 +16,15 @@ const Dashboard = () => {
             try {
                 const { data } = await api.get('/courses');
                 setCourses(data.courses);
+
+                const pMap = {};
+                await Promise.all(data.courses.map(async (c) => {
+                    try {
+                        const pRes = await api.get(`/progress/${c._id}`);
+                        if (pRes.data.progress) pMap[c._id] = pRes.data.progress;
+                    } catch(e) {}
+                }));
+                setProgressMap(pMap);
             } catch (err) {
                 console.error('Failed to fetch courses', err);
             }
@@ -65,6 +76,19 @@ const Dashboard = () => {
                         <span className="text-sm font-medium bg-gray-700 px-2 py-1 rounded">0 / 45 mins</span>
                     </div>
                 </div>
+            </div>
+
+            <div className="mt-8">
+                {courses.length > 0 && (
+                    <div className="mb-6">
+                        <h2 className="text-xl font-bold mb-4 text-gray-200">Continue Learning</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {courses.map(course => (
+                                <ProgressCard key={course._id} course={course} progress={progressMap[course._id]} />
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
 
             <main className="mt-8">
