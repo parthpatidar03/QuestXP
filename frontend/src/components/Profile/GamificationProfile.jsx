@@ -3,6 +3,8 @@ import useAuthStore from '../../../store/useAuthStore';
 import useGamificationStore from '../../../store/useGamificationStore';
 import { motion } from 'framer-motion';
 import { Award, Zap, Lock, Unlock, Flame } from 'lucide-react';
+import BadgeGrid from './BadgeGrid';
+import XPHeatmap from './XPHeatmap';
 
 const GamificationProfile = () => {
     const { token } = useAuthStore();
@@ -118,7 +120,7 @@ const GamificationProfile = () => {
             )}
             
             {/* Features (Sample integration) */}
-            <div>
+            <div className="mb-6">
                 <h3 className="text-sm font-bold text-text-secondary mb-3 uppercase tracking-wider">Unlocked Features</h3>
                 <div className="flex flex-wrap gap-2">
                     {profileData.unlockedFeatures.length === 0 ? (
@@ -133,6 +135,9 @@ const GamificationProfile = () => {
                     )}
                 </div>
             </div>
+
+            <XPHeatmap />
+            <BadgeGrid badges={profileData.badges} />
         </div>
     );
 };
