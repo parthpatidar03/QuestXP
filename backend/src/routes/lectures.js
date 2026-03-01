@@ -90,4 +90,37 @@ router.patch('/:lectureId/notes/edit', [
     }
 });
 
+// T025: GET /api/lectures/:lectureId/topics
+router.get('/:lectureId/topics', async (req, res, next) => {
+    try {
+        const lectureId = req.params.lectureId;
+        
+        const course = await Course.findOne(
+            { "sections.lectures._id": lectureId },
+            { "sections.$": 1 }
+        );
+
+        if (!course) return res.status(404).json({ error: 'Lecture not found' });
+
+        const lecture = course.sections[0].lectures.id(lectureId);
+        
+        // Return 404 if still pending/in_progress
+        if (lecture.aiStatus.topics === 'pending' || lecture.aiStatus.topics === 'in_progress') {
+            return res.status(404).json({ error: 'Topics not ready yet' });
+        }
+
+        // Return empty array if failed/skipped
+        if (lecture.aiStatus.topics === 'failed') {
+            return res.json({ success: true, topics: [] });
+        }
+
+        // Sort ascending
+        const topics = [...(lecture.topics || [])].sort((a, b) => a.startTime - b.startTime);
+        
+        res.json({ topics });
+    } catch (error) {
+        next(error);
+    }
+});
+
 module.exports = router;

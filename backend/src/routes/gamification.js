@@ -8,9 +8,45 @@ const auth = require('../middleware/auth');
 router.use(auth);
 
 // GET /api/gamification/profile
-router.get('/profile', (req, res) => {
-    // Stub
-    res.status(200).json({ message: "Profile stub" });
+router.get('/profile', async (req, res) => {
+    try {
+        const { LEVELS, STREAK_MULTIPLIERS } = require('../constants/levels');
+        const { BADGES } = require('../constants/badges');
+        const user = req.user;
+        
+        const currentLevelObj = LEVELS.find(l => l.level === user.level) || LEVELS[0];
+        const nextLevelObj = LEVELS.find(l => l.level === user.level + 1);
+        
+        const currentStreak = user.streak?.current || 0;
+        const multiplierTier = STREAK_MULTIPLIERS.find(r => currentStreak >= r.minDays) || { multiplier: 1.0 };
+        
+        const badgesResponse = BADGES.map(badgeDef => {
+            const earnedBadge = user.badges?.find(b => b.badgeId === badgeDef.id);
+            return {
+                id: badgeDef.id,
+                name: badgeDef.name,
+                earned: !!earnedBadge,
+                earnedAt: earnedBadge ? earnedBadge.earnedAt : null,
+                seen: earnedBadge ? earnedBadge.seen : false
+            };
+        });
+        
+        res.status(200).json({
+            totalXP: user.totalXP,
+            level: user.level,
+            levelTitle: currentLevelObj.title,
+            xpToNextLevel: nextLevelObj ? Math.max(0, nextLevelObj.threshold - user.totalXP) : 0,
+            nextLevelTitle: nextLevelObj ? nextLevelObj.title : null,
+            streak: {
+                current: currentStreak,
+                multiplier: multiplierTier.multiplier
+            },
+            unlockedFeatures: user.unlockedFeatures,
+            badges: badgesResponse
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 // GET /api/gamification/xp-history

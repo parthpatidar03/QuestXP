@@ -1,8 +1,8 @@
 const User = require('../models/User');
 const XPAward = require('../models/XPAward');
 const { XP_REWARDS } = require('../constants/xp');
-const { STREAK_MULTIPLIERS } = require('../constants/levels');
-// badgeService and level checks will be implemented in later tasks
+const { STREAK_MULTIPLIERS, LEVELS } = require('../constants/levels');
+// badgeService will be implemented in later tasks
 
 class XPService {
     /**
@@ -47,8 +47,8 @@ class XPService {
         }
 
         const currentStreak = user.streak?.current || 0;
-        const multiplierTier = STREAK_MULTIPLIERS.find(r => currentStreak >= r.minDays);
-        const multiplier = multiplierTier ? multiplierTier.multiplier : 1.0;
+        const multiplierTier = STREAK_MULTIPLIERS.find(r => currentStreak >= r.minDays) || { multiplier: 1.0 };
+        const multiplier = multiplierTier.multiplier;
 
         const finalXP = Math.round(baseXP * multiplier);
 
@@ -68,19 +68,45 @@ class XPService {
         });
         await awardRecord.save();
 
+        const prevLevel = user.level;
+        const newTotalXP = updatedUser.totalXP;
+        const currentLevelObj = [...LEVELS].reverse().find(l => newTotalXP >= l.threshold) || LEVELS[0];
+        const newLevel = currentLevelObj.level;
+
+        let leveledUp = false;
+        let newLevelTitle = null;
+        let levelUps = [];
+        let newlyUnlocked = [];
+
+        if (newLevel > prevLevel) {
+            leveledUp = true;
+            newLevelTitle = currentLevelObj.title;
+            levelUps = LEVELS.filter(l => l.level > prevLevel && l.level <= newLevel);
+            
+            const cumulativeFeatures = LEVELS
+                .filter(l => l.level <= newLevel)
+                .flatMap(l => l.unlockedFeatures);
+            const uniqueFeatures = [...new Set(cumulativeFeatures)];
+            newlyUnlocked = levelUps.flatMap(l => l.unlockedFeatures);
+            
+            updatedUser.level = newLevel;
+            updatedUser.unlockedFeatures = uniqueFeatures;
+            await updatedUser.save();
+        }
+
         return {
             duplicate: false,
             xpEarned: finalXP,
             baseXP,
             multiplier,
             totalXP: updatedUser.totalXP,
-            prevLevel: user.level,
-            newLevel: user.level, // Stub
-            leveledUp: false,     // Stub
-            newLevelTitle: null,  // Stub
-            levelUps: [],         // Stub
-            newlyUnlocked: [],    // Stub
-            badgesEarned: []      // Stub
+            prevLevel: prevLevel,
+            newLevel: newLevel,
+            leveledUp,
+            newLevelTitle,
+            levelUps,
+            newlyUnlocked,
+            badgesEarned: [] // checking badges will be wired in T021
         };
     }
 }
