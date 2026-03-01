@@ -10,10 +10,17 @@ const featureGate = (featureKey) => (req, res, next) => {
         return next();
     }
 
+    const requiredLevelObj = levels.LEVELS.find(l => l.level === required) || levels.LEVELS[0];
+    const xpToUnlock = Math.max(0, requiredLevelObj.threshold - req.user.totalXP);
+
     res.status(403).json({
+        success: false,
         locked: true,
+        featureKey: featureKey,
         requiredLevel: required,
-        currentLevel: req.user.level
+        currentLevel: req.user.level,
+        xpToUnlock: xpToUnlock,
+        message: `This feature unlocks at Level ${required}`
     });
 };
 

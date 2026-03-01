@@ -1,66 +1,39 @@
 import React from 'react';
 import { Lock } from 'lucide-react';
+import { useFeatureGate } from '../hooks/useFeatureGate';
 
-/**
- * LockedFeature
- * Drop-in wrapper for any feature behind a level gate.
- * Shows the locked UI with unlock instructions instead of the feature.
- *
- * Props:
- *   requiredLevel  – number, required level to unlock
- *   currentLevel   – number, user's current level
- *   xpAway         – number, XP remaining to reach unlock level (optional)
- *   featureName    – string, human-readable feature name
- *   locked         – bool shorthand (if true, render locked UI, skip children)
- *   children       – the actual feature UI
- */
-const LockedFeature = ({
-    requiredLevel,
-    currentLevel = 1,
-    xpAway = null,
-    featureName = 'This feature',
-    locked = false,
-    children
-}) => {
-    const isLocked = locked || currentLevel < requiredLevel;
+const LockedFeature = ({ featureKey, children, featureName = '' }) => {
+    const { locked, requiredLevel, xpToUnlock } = useFeatureGate(featureKey);
 
-    if (!isLocked) return children;
+    const displayName = featureName || featureKey.replace(/_/g, ' ');
 
-    const pct = Math.min(((currentLevel - 1) / (requiredLevel - 1)) * 100, 100);
+    if (!locked) {
+        return <>{children}</>;
+    }
 
     return (
-        <div className="card relative overflow-hidden select-none">
-            {/* Blurred preview of children */}
-            <div className="pointer-events-none blur-[6px] opacity-30 absolute inset-0">
+        <div className="relative group rounded-xl overflow-hidden pointer-events-auto">
+            {/* The actual children are rendered behind the lock, blurred and disabled */}
+            <div className="opacity-30 blur-[2px] pointer-events-none select-none transition-all duration-300">
                 {children}
             </div>
-
-            {/* Lock overlay */}
-            <div className="relative z-10 flex flex-col items-center justify-center py-12 px-6 text-center gap-4">
-                <div className="w-14 h-14 rounded-full bg-surface-2 border border-border flex items-center justify-center">
-                    <Lock className="w-6 h-6 text-text-muted" />
+            
+            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-bg/60 backdrop-blur-sm p-6 text-center border items-center justify-center border-border rounded-xl">
+                <div className="w-12 h-12 rounded-full bg-surface-3 border border-border flex items-center justify-center mb-3">
+                    <Lock className="w-5 h-5 text-text-muted" />
                 </div>
-                <div>
-                    <p className="text-base font-semibold font-display text-text-primary mb-1">
-                        {featureName}
-                    </p>
-                    <p className="text-sm text-text-secondary">
-                        Unlocks at Level {requiredLevel}
-                        {xpAway !== null && ` · ${xpAway} XP away`}
-                    </p>
-                </div>
-
-                {/* Proximity progress bar */}
+                <h3 className="text-lg font-bold text-text-primary mb-1">Feature Locked</h3>
+                <p className="text-sm text-text-muted mb-4 max-w-xs">
+                    <span className="font-semibold text-text-secondary">{displayName}</span> unlocks at <span className="font-bold text-primary">Level {requiredLevel}</span>.
+                </p>
                 <div className="w-full max-w-[200px]">
-                    <div className="progress-bar w-full">
-                        <div
-                            className="progress-bar__fill h-full"
-                            style={{ width: `${pct}%` }}
-                        />
+                    <div className="flex justify-between text-xs mb-1.5">
+                        <span className="text-text-muted">XP Required</span>
+                        <span className="font-bold text-primary">{xpToUnlock.toLocaleString()} XP</span>
                     </div>
-                    <p className="text-xs text-text-muted mt-1.5 text-right font-mono">
-                        Lvl {currentLevel} / {requiredLevel}
-                    </p>
+                    <div className="h-2 w-full bg-surface-3 rounded-full overflow-hidden">
+                        <div className="h-full bg-surface-4 w-1/4 rounded-full"></div>
+                    </div>
                 </div>
             </div>
         </div>
