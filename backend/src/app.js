@@ -7,6 +7,7 @@ const authRoutes = require('./routes/auth');
 const courseRoutes = require('./routes/courses');
 const progressRoutes = require('./routes/progress');
 const planRoutes = require('./routes/plan');
+const doubtRoutes = require('./routes/doubtRoutes');
 const gamificationRoutes = require('./routes/gamification');
 
 const app = express();
@@ -32,6 +33,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/progress', progressRoutes);
 app.use('/api/plan', planRoutes);
+app.use('/api/internal', require('./routes/internal'));
+app.use('/api/doubts', doubtRoutes);
 app.use('/api/gamification', gamificationRoutes);
 
 // T063 — 404 handler for unknown routes

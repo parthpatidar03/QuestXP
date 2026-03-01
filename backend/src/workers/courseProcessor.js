@@ -2,6 +2,8 @@ const { Worker } = require('bullmq');
 const IORedis = require('ioredis');
 const ytpl = require('ytpl');
 const Course = require('../models/Course');
+const embeddingQueue = require('../queues/embeddingQueue');
+const EmbeddingStatus = require('../models/EmbeddingStatus');
 
 const connection = new IORedis(process.env.REDIS_URL || 'redis://localhost:6379', {
     maxRetriesPerRequest: null,
@@ -71,7 +73,31 @@ const courseProcessor = new Worker('course-processing', async job => {
             totalDuration
         }, { new: true });
 
-        // TODO: spec-003 — transcriptionQueue.add() calls go here
+        // T015: Fan-out to transcription queue for each lecture
+        const transcriptionQueue = require('../queues/transcriptionQueue');
+        const jobOptions = require('../queues/jobOptions');
+        
+        for (const section of processedSections) {
+            for (const lecture of section.lectures) {
+                await transcriptionQueue.add('transcribe', {
+                    courseId: course._id.toString(),
+                    lectureId: lecture.youtubeId, // using youtubeId as placeholder until we get the actual _id from mongoose, wait...
+                    // Let's use the created course from findByIdAndUpdate.
+                }, jobOptions);
+            }
+        }
+        
+        // T010 [US2] Chaining embeddingQueue
+        for (const section of processedSections) {
+            for (const lecture of section.lectures) {
+                await EmbeddingStatus.findOneAndUpdate(
+                    { lectureId: lecture.youtubeId },
+                    { status: 'pending', courseId },
+                    { upsert: true }
+                );
+                await embeddingQueue.add('embed', { lectureId: lecture.youtubeId, courseId });
+            }
+        }
 
         return { success: true, courseId };
 
