@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import api from '../services/api';
 import VideoPlayer from '../components/Player/VideoPlayer';
 import TopicSidebar from '../components/Player/TopicSidebar';
+import NotesTab from '../components/Lecture/NotesTab';
 import { ArrowLeft, CheckCircle, ChevronRight, ChevronLeft } from 'lucide-react';
 
 const Player = () => {
@@ -15,6 +16,7 @@ const Player = () => {
     const [currentTime, setCurrentTime] = useState(0);
     const [isVideoPlaying, setIsVideoPlaying] = useState(true); // default to true when page loads
     const [showCompletionCard, setShowCompletionCard] = useState(false);
+    const [activeTab, setActiveTab] = useState('topics'); // 'topics', 'notes', 'quiz'
 
     useEffect(() => {
         const fetchCourse = async () => {
@@ -70,7 +72,7 @@ const Player = () => {
     );
 
     const handleTopicClick = (startTime) => {
-        console.log(`Seek to ${startTime}`);
+        setCurrentTime(startTime);
     };
 
     const handleVideoEnd = () => {
@@ -129,13 +131,55 @@ const Player = () => {
                     </div>
                 </div>
                 
-                {/* Sidebar */}
-                <div className="w-full lg:w-[340px] flex-shrink-0 h-80 lg:h-auto bg-surface overflow-hidden relative z-10">
-                    <TopicSidebar 
-                        topics={currentLecture.topics || []}
-                        currentTime={currentTime}
-                        onTopicClick={handleTopicClick}
-                    />
+                {/* Sidebar / Tabs Area */}
+                <div className="w-full lg:w-[400px] flex-shrink-0 h-[500px] lg:h-auto bg-surface border-l border-border flex flex-col relative z-10">
+                    
+                    {/* Tab Navigation */}
+                    <div className="flex border-b border-border bg-surface-2 shrink-0">
+                        <button 
+                            onClick={() => setActiveTab('topics')}
+                            className={`flex-1 py-3 text-sm font-semibold transition-colors border-b-2 ${activeTab === 'topics' ? 'border-primary text-primary bg-surface/50' : 'border-transparent text-text-muted hover:text-white'}`}
+                        >
+                            Topics
+                        </button>
+                        <button 
+                            onClick={() => setActiveTab('notes')}
+                            className={`flex-1 py-3 text-sm font-semibold transition-colors border-b-2 ${activeTab === 'notes' ? 'border-primary text-primary bg-surface/50' : 'border-transparent text-text-muted hover:text-white'}`}
+                        >
+                            Notes
+                        </button>
+                        <button 
+                            onClick={() => setActiveTab('quiz')}
+                            className={`flex-1 py-3 text-sm font-semibold transition-colors border-b-2 ${activeTab === 'quiz' ? 'border-primary text-primary bg-surface/50' : 'border-transparent text-text-muted hover:text-white'}`}
+                        >
+                            Quiz
+                        </button>
+                    </div>
+
+                    {/* Tab Content */}
+                    <div className="flex-grow overflow-y-auto w-full custom-scrollbar relative">
+                        {activeTab === 'topics' && (
+                            <TopicSidebar 
+                                topics={currentLecture.topics || []}
+                                currentTime={currentTime}
+                                onTopicClick={handleTopicClick}
+                            />
+                        )}
+                        {activeTab === 'notes' && (
+                            <NotesTab 
+                                lectureId={currentLecture._id}
+                                courseId={courseId}
+                                onSeek={handleTopicClick}
+                                notesStatus={currentLecture.aiStatus?.notes || 'pending'}
+                                errorReason={currentLecture.aiStatus?.errorReason}
+                            />
+                        )}
+                        {activeTab === 'quiz' && (
+                            <div className="p-8 text-center text-text-muted">
+                                Quiz coming soon...
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 

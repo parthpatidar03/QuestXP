@@ -25,7 +25,31 @@ const useGamificationStore = create((set, get) => ({
     }),
 
     applyAward: (award) => {
-        // T011 / T014 implementation will go here
+        if (award.duplicate) return;
+
+        const { addXPToast, triggerLevelUp } = get();
+
+        // Update core XP
+        if (award.xpEarned > 0) {
+            set((state) => ({ totalXP: award.totalXP ?? Math.max(0, state.totalXP + award.xpEarned) }));
+            // Add Toast
+            addXPToast(award.xpEarned, award.actionLabel || award.actionType || 'Bonus XP', award.multiplier || 1);
+        }
+
+        // T014: Handle level up
+        if (award.leveledUp) {
+            set({ 
+                level: award.newLevel,
+                levelTitle: award.newLevelTitle,
+                unlockedFeatures: award.unlockedFeatures || get().unlockedFeatures
+            });
+            // Trigger sequence modal if there are multiple levelups
+            if (award.levelUps && award.levelUps.length > 0) {
+                triggerLevelUp(award.levelUps[0].level, award.levelUps[0].unlockedFeatures);
+            } else if (award.newlyUnlocked && award.newlyUnlocked.length > 0) {
+                triggerLevelUp(award.newLevel, award.newlyUnlocked);
+            }
+        }
     },
 
     // Store state from VideoPlayer to suppress toasts
