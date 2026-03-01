@@ -77,3 +77,55 @@ exports.query = async (req, res) => {
         res.status(500).json({ error: 'INTERNAL_ERROR', message: 'Doubt chatbot temporarily unavailable — please try again.' });
     }
 };
+
+exports.history = async (req, res) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        const { lectureId } = req.params;
+        const limit = parseInt(req.query.limit) || 50;
+        const queryOptions = { userId: req.user.id, lectureId };
+
+        if (req.query.before) {
+            queryOptions.createdAt = { $lt: new Date(req.query.before) };
+        }
+
+        const queries = await DoubtQuery.find(queryOptions)
+            .sort({ createdAt: -1 })
+            .limit(limit);
+
+        const queryIds = queries.map(q => q._id);
+        const answers = await DoubtAnswer.find({ queryId: { $in: queryIds } });
+
+        // Map them together (and reverse to chronological order for the client)
+        const exchanges = queries.reverse().map(q => {
+            const answer = answers.find(a => a.queryId.toString() === q._id.toString());
+            return {
+                _id: q._id,
+                questionText: q.questionText,
+                createdAt: q.createdAt,
+                answer: answer ? {
+                    answerText: answer.answerText,
+                    citations: answer.citations,
+                    notFound: answer.notFound,
+                    generatedAt: answer.generatedAt
+                } : null
+            };
+        });
+
+        res.json({
+            data: {
+                exchanges,
+                total: exchanges.length,
+                hasMore: exchanges.length === limit
+            }
+        });
+
+    } catch (error) {
+        console.error('Error in doubtController.history:', error);
+        res.status(500).json({ error: 'INTERNAL_ERROR', message: 'Failed to retrieve doubt history' });
+    }
+};

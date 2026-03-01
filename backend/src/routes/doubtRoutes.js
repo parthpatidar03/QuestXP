@@ -20,4 +20,13 @@ router.post(
     doubtController.query
 );
 
+// T025 [US4] GET history route
+router.get(
+    '/:lectureId/history',
+    authenticate,
+    query('limit').optional().isInt({ min: 1, max: 100 }),
+    query('before').optional().isISO8601(),
+    doubtController.history
+);
+
 module.exports = router;
