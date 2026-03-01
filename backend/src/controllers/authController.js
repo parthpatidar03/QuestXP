@@ -3,8 +3,23 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { validationResult } = require('express-validator');
 const { OAuth2Client } = require('google-auth-library');
+const Progress = require('../models/Progress');
+const studyPlanService = require('../services/studyPlanService');
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+const triggerPlanRecalculation = async (userId) => {
+    try {
+        const progresses = await Progress.find({ user: userId }).populate('course');
+        for (const prog of progresses) {
+            if (prog.course && prog.course.status === 'ready' && prog.studyPlan) {
+                await studyPlanService.recalculateIfNeeded(userId, prog.course._id, { reason: 'login' });
+            }
+        }
+    } catch (err) {
+        console.error('[StudyPlan] Recalculation error during login:', err);
+    }
+};
 
 
 const generateToken = (userId, email) => {
@@ -63,6 +78,9 @@ const login = async (req, res, next) => {
         const token = generateToken(user._id, user.email);
         setTokenCookie(res, token);
 
+        // T040: Recalculate study plans on login
+        await triggerPlanRecalculation(user._id);
+
         const userResponse = { _id: user._id, name: user.name, email: user.email, totalXP: user.totalXP, level: user.level };
         res.json({ user: userResponse });
     } catch (error) {
@@ -82,6 +100,10 @@ const getMe = async (req, res, next) => {
             badges: req.user.badges,
             unlockedFeatures: req.user.unlockedFeatures
         };
+
+        // T040: Recalculate study plans on app load
+        await triggerPlanRecalculation(req.user._id);
+
         res.json({ user: userResponse });
     } catch (error) {
         next(error);
@@ -118,6 +140,9 @@ const googleLogin = async (req, res, next) => {
 
         const token = generateToken(user._id, user.email);
         setTokenCookie(res, token);
+
+        // T040: Recalculate study plans on login
+        await triggerPlanRecalculation(user._id);
 
         const userResponse = { _id: user._id, name: user.name, email: user.email, totalXP: user.totalXP, level: user.level };
         res.json({ user: userResponse });

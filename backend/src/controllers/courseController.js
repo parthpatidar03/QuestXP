@@ -2,6 +2,7 @@ const { validationResult } = require('express-validator');
 const courseService = require('../services/courseService');
 const Course = require('../models/Course');
 const Progress = require('../models/Progress');
+const studyPlanService = require('../services/studyPlanService');
 
 const createCourse = async (req, res, next) => {
     try {
@@ -115,9 +116,21 @@ const addCourseSection = async (req, res, next) => {
         // TODO: spec-003 — trigger courseProcessor to process new section
         // await courseProcessor.enqueueLectures(course._id);
 
+        // T052b: Wire section-added recalculation
+        let newEndDateMessage = null;
+        try {
+            const planRes = await studyPlanService.recalculateIfNeeded(req.user._id, course._id, { reason: 'section_added' });
+            if (planRes && planRes.newEndDateMessage) {
+                newEndDateMessage = planRes.newEndDateMessage;
+            }
+        } catch (err) {
+            console.error('[StudyPlan] section added recalc error:', err);
+        }
+
         res.status(201).json({
             message: 'Section added',
-            section: course.sections[course.sections.length - 1]
+            section: course.sections[course.sections.length - 1],
+            newEndDateMessage
         });
     } catch (error) {
         next(error);

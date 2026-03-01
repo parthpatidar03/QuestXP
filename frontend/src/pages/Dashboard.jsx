@@ -5,7 +5,9 @@ import CourseCard from '../components/Course/CourseCard';
 import CourseCreationForm from '../components/Course/CourseCreationForm';
 import ProgressCard from '../components/Dashboard/ProgressCard';
 import StreakWidget from '../components/Dashboard/StreakWidget';
+import TodayTarget from '../components/Dashboard/TodayTarget';
 import StudyPlan from '../components/Dashboard/StudyPlan';
+import WeeklyGoal from '../components/Dashboard/WeeklyGoal';
 import { Flame, Zap, CheckCircle, AlertTriangle, UserPlus, LogOut, BookOpen, LayoutDashboard, Settings } from 'lucide-react';
 
 const Dashboard = () => {
@@ -124,26 +126,20 @@ const Dashboard = () => {
                         </div>
 
                         {/* Weekly Goal */}
-                        <div className="card flex flex-col items-center justify-center text-center p-4">
-                            <div className="flex items-center gap-2 mb-2">
-                                <span className="text-sm font-medium text-text-secondary uppercase tracking-wider">Weekly Goal</span>
-                            </div>
-                            <div className="w-full">
-                                <div className="flex justify-between text-xs text-text-muted mb-1.5 font-mono">
-                                    <span>2</span>
-                                    <span>5 lectures</span>
-                                </div>
-                                <div className="progress-bar w-full">
-                                    <div className="progress-bar__fill h-full" style={{ width: '40%' }}></div>
-                                </div>
-                            </div>
-                        </div>
+                        <WeeklyGoal courseId={courses[0]?._id} />
                     </section>
 
-                    {/* Today's Target (Study Plan) */}
+                    {/* Today's Target */}
                     <section>
-                        <StudyPlan />
+                        <TodayTarget />
                     </section>
+                    
+                    {/* 4-Week Study Plan */}
+                    {(courses.length > 0 || progressMap) && (
+                        <section>
+                            <StudyPlan courseId={courses[0]?._id} />
+                        </section>
+                    )}
                     
                     {/* Active Courses (Continue Learning progress cards) */}
                     {courses.length > 0 && (
