@@ -8,6 +8,7 @@ import StreakWidget from '../components/Dashboard/StreakWidget';
 import TodayTarget from '../components/Dashboard/TodayTarget';
 import StudyPlan from '../components/Dashboard/StudyPlan';
 import WeeklyGoal from '../components/Dashboard/WeeklyGoal';
+import LockedFeature from '../components/LockedFeature';
 import { Flame, Zap, CheckCircle, AlertTriangle, UserPlus, LogOut, BookOpen, LayoutDashboard, Settings } from 'lucide-react';
 
 const Dashboard = () => {
@@ -137,7 +138,9 @@ const Dashboard = () => {
                     {/* 4-Week Study Plan */}
                     {(courses.length > 0 || progressMap) && (
                         <section>
-                            <StudyPlan courseId={courses[0]?._id} />
+                            <LockedFeature featureKey="STUDY_PLAN">
+                                <StudyPlan courseId={courses[0]?._id} />
+                            </LockedFeature>
                         </section>
                     )}
                     
