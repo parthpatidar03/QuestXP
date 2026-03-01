@@ -7,10 +7,13 @@ const Course = require('../models/Course');
 const Quiz = require('../models/Quiz');
 const QuizAttempt = require('../models/QuizAttempt');
 const xpService = require('../services/xpService');
+const { aiRouteLogger, attachUserIdToLog } = require('../middleware/aiLogger');
 
 const router = express.Router();
 
 router.use(auth); // Protect all routes in this file
+router.use(attachUserIdToLog);
+router.use(aiRouteLogger);
 
 // Feature Gate configs (aligns with levels.js or defaults)
 const LEVEL_NOTES_READ = 2;

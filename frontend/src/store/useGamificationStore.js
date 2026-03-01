@@ -50,6 +50,32 @@ const useGamificationStore = create((set, get) => ({
                 triggerLevelUp(award.newLevel, award.newlyUnlocked);
             }
         }
+
+        // T023: Handle badge earned notifications
+        if (award.badgesEarned && award.badgesEarned.length > 0) {
+            const { addBadgeToast } = get();
+            award.badgesEarned.forEach(badge => {
+                addBadgeToast(badge.name, 'Achievement Unlocked!', 'star');
+                
+                // Add to stored badges
+                set(state => {
+                    const existingBadges = state.badges || [];
+                    // Avoid inserting duplicates
+                    if (!existingBadges.find(b => b.id === badge.badgeId)) {
+                        return { 
+                            badges: [...existingBadges, { 
+                                id: badge.badgeId, 
+                                name: badge.name, 
+                                earned: true, 
+                                earnedAt: new Date().toISOString(), 
+                                seen: false 
+                            }] 
+                        };
+                    }
+                    return state;
+                });
+            });
+        }
     },
 
     // Store state from VideoPlayer to suppress toasts

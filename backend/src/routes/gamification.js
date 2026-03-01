@@ -50,15 +50,74 @@ router.get('/profile', async (req, res) => {
 });
 
 // GET /api/gamification/xp-history
-router.get('/xp-history', (req, res) => {
-    // Stub
-    res.status(200).json({ message: "XP history stub" });
+router.get('/xp-history', async (req, res) => {
+    try {
+        const XPAward = require('../models/XPAward');
+        const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+        
+        const history = await XPAward.aggregate([
+            { $match: { user: req.user._id, createdAt: { $gte: thirtyDaysAgo } } },
+            { 
+                $group: {
+                    _id: { 
+                        date: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+                        actionType: "$actionType"
+                    },
+                    xpEarned: { $sum: "$finalXP" },
+                    count: { $sum: 1 }
+                }
+            },
+            {
+                $group: {
+                    _id: "$_id.date",
+                    totalXP: { $sum: "$xpEarned" },
+                    actions: {
+                        $push: {
+                            actionType: "$_id.actionType",
+                            xpEarned: "$xpEarned",
+                            count: "$count"
+                        }
+                    }
+                }
+            },
+            { $sort: { _id: 1 } }
+        ]);
+        
+        const formattedHistory = history.map(day => ({
+            date: day._id,
+            totalXP: day.totalXP,
+            actions: day.actions
+        }));
+        
+        res.status(200).json(formattedHistory);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 // PATCH /api/gamification/badges/seen
-router.patch('/badges/seen', (req, res) => {
-    // Stub
-    res.status(200).json({ message: "Badges seen stub" });
+router.patch('/badges/seen', async (req, res) => {
+    try {
+        const user = req.user;
+        let markedCount = 0;
+        
+        if (user.badges && user.badges.length > 0) {
+            user.badges.forEach(badge => {
+                if (!badge.seen) {
+                    badge.seen = true;
+                    markedCount++;
+                }
+            });
+            
+            if (markedCount > 0) {
+                await user.save();
+            }
+        }
+        
+        res.status(200).json({ success: true, markedSeen: markedCount });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 const { body, validationResult } = require('express-validator');
