@@ -34,6 +34,7 @@ app.use('/api/courses', courseRoutes);
 app.use('/api/progress', progressRoutes);
 app.use('/api/plan', planRoutes);
 app.use('/api/internal', require('./routes/internal'));
+app.use('/api/lectures', require('./routes/lectures'));
 app.use('/api/doubts', doubtRoutes);
 app.use('/api/gamification', gamificationRoutes);
 
