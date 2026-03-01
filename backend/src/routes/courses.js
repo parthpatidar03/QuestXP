@@ -29,4 +29,41 @@ router.patch('/:courseId/sections', [
         .matches(youtubePlaylistRegex).withMessage('Valid YouTube playlist URL is required'),
 ], addCourseSection);
 
+// T033: GET /api/courses/:courseId/progress
+router.get('/:courseId/progress', auth, async (req, res, next) => {
+    try {
+        const courseId = req.params.courseId;
+        const course = await Course.findById(courseId);
+        if (!course) return res.status(404).json({ error: 'Course not found' });
+
+        let totalExpected = 0;
+        let totalComplete = 0;
+
+        course.sections.forEach(section => {
+            section.lectures.forEach(lecture => {
+                const status = lecture.aiStatus;
+                // We expect 4 AI tasks per lecture: transcription, notes, quiz, topics
+                totalExpected += 4;
+                
+                ['transcription', 'notes', 'quiz', 'topics'].forEach(task => {
+                    // Count 'complete', 'failed', 'skipped' (if added) as done to advance progress bar
+                    if (status[task] === 'complete' || status[task] === 'failed') {
+                        totalComplete += 1;
+                    }
+                });
+            });
+        });
+
+        const percentage = totalExpected === 0 ? 0 : (totalComplete / totalExpected) * 100;
+
+        res.json({ 
+            totalExpected, 
+            totalComplete, 
+            percentage 
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
 module.exports = router;

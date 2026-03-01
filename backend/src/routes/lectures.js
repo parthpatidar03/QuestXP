@@ -243,4 +243,22 @@ router.post('/:lectureId/quiz/submit', [
     }
 });
 
+// T032: GET /api/lectures/:lectureId/ai-status
+router.get('/:lectureId/ai-status', async (req, res, next) => {
+    try {
+        const lectureId = req.params.lectureId;
+        const course = await Course.findOne(
+            { "sections.lectures._id": lectureId },
+            { "sections.$": 1 }
+        );
+
+        if (!course) return res.status(404).json({ error: 'Lecture not found' });
+        
+        const lecture = course.sections[0].lectures.id(lectureId);
+        res.json({ aiStatus: lecture.aiStatus });
+    } catch (error) {
+        next(error);
+    }
+});
+
 module.exports = router;
