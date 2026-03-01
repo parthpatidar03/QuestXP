@@ -4,6 +4,9 @@ const auth = require('../middleware/auth');
 const featureGate = require('../middleware/featureGate');
 const Notes = require('../models/Notes');
 const Course = require('../models/Course');
+const Quiz = require('../models/Quiz');
+const QuizAttempt = require('../models/QuizAttempt');
+const xpService = require('../services/xpService');
 
 const router = express.Router();
 
@@ -12,6 +15,7 @@ router.use(auth); // Protect all routes in this file
 // Feature Gate configs (aligns with levels.js or defaults)
 const LEVEL_NOTES_READ = 2;
 const LEVEL_NOTES_EDIT = 3;
+const LEVEL_QUIZ = 3;
 
 // T020: GET /api/lectures/:lectureId/notes
 router.get('/:lectureId/notes', async (req, res, next) => {
@@ -118,6 +122,122 @@ router.get('/:lectureId/topics', async (req, res, next) => {
         const topics = [...(lecture.topics || [])].sort((a, b) => a.startTime - b.startTime);
         
         res.json({ topics });
+    } catch (error) {
+        next(error);
+    }
+});
+
+// T029: GET /api/lectures/:lectureId/quiz
+router.get('/:lectureId/quiz', async (req, res, next) => {
+    try {
+        if (req.user.level < LEVEL_QUIZ) {
+            return res.status(403).json({
+                locked: true,
+                requiredLevel: LEVEL_QUIZ,
+                currentLevel: req.user.level
+            });
+        }
+
+        const lectureId = req.params.lectureId;
+        
+        const course = await Course.findOne(
+            { "sections.lectures._id": lectureId },
+            { "sections.$": 1 }
+        );
+
+        if (!course) return res.status(404).json({ error: 'Lecture not found' });
+
+        const lecture = course.sections[0].lectures.id(lectureId);
+        
+        if (lecture.aiStatus.quiz !== 'complete') {
+            return res.status(404).json({ error: 'Quiz not ready yet' });
+        }
+
+        const quiz = await Quiz.findOne({ lecture: lectureId }).lean();
+        if (!quiz) return res.status(404).json({ error: 'Quiz missing' });
+
+        // Strip correctIndex
+        const questionsWithoutAnswers = quiz.questions.map(q => {
+            const { correctIndex, ...rest } = q;
+            return rest;
+        });
+
+        res.json({ quiz: { ...quiz, questions: questionsWithoutAnswers } });
+    } catch (error) {
+        next(error);
+    }
+});
+
+// T030: POST /api/lectures/:lectureId/quiz/submit
+router.post('/:lectureId/quiz/submit', [
+    body('answers').isArray().withMessage('Answers must be an array'),
+    body('timeTakenSecs').isNumeric({ min: 0 }).withMessage('Valid time taken is required')
+], async (req, res, next) => {
+    try {
+        if (req.user.level < LEVEL_QUIZ) {
+            return res.status(403).json({
+                locked: true,
+                requiredLevel: LEVEL_QUIZ,
+                currentLevel: req.user.level
+            });
+        }
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+
+        const lectureId = req.params.lectureId;
+        const { answers, timeTakenSecs } = req.body;
+
+        const quiz = await Quiz.findOne({ lecture: lectureId }).lean();
+        if (!quiz) return res.status(404).json({ error: 'Quiz not found' });
+
+        if (answers.length !== quiz.questionCount) {
+            return res.status(400).json({ error: `Expected ${quiz.questionCount} answers` });
+        }
+
+        let correctCount = 0;
+        const evaluatedQuestions = quiz.questions.map((q, idx) => {
+            const isCorrect = answers[idx] === q.correctIndex;
+            if (isCorrect) correctCount++;
+            return {
+                ...q,
+                userAnswer: answers[idx],
+                isCorrect
+            };
+        });
+
+        const score = Math.round((correctCount / quiz.questionCount) * 100);
+
+        const priorAttempts = await QuizAttempt.find({ user: req.user._id, lecture: lectureId })
+                                               .sort({ score: -1 }).lean();
+        
+        const personalBest = priorAttempts.length > 0 ? priorAttempts[0].score : 0;
+        const isNewPersonalBest = priorAttempts.length > 0 && score > personalBest;
+        const attemptNumber = priorAttempts.length + 1;
+
+        const attempt = await QuizAttempt.create({
+            user: req.user._id,
+            lecture: lectureId,
+            answers,
+            score,
+            timeTakenSecs,
+            attemptNumber
+        });
+
+        // Award XP
+        await xpService.award(req.user._id, 'QUIZ_ATTEMPTED', attempt._id.toString());
+        if (score >= 60) await xpService.award(req.user._id, 'QUIZ_PASSED', attempt._id.toString());
+        if (score === 100) await xpService.award(req.user._id, 'QUIZ_ACED', attempt._id.toString());
+
+        res.json({
+            score,
+            correctCount,
+            totalCount: quiz.questionCount,
+            isNewPersonalBest,
+            attemptNumber,
+            evaluatedQuestions
+        });
+
     } catch (error) {
         next(error);
     }

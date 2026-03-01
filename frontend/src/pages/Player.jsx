@@ -5,6 +5,7 @@ import api from '../services/api';
 import VideoPlayer from '../components/Player/VideoPlayer';
 import TopicSidebar from '../components/Player/TopicSidebar';
 import NotesTab from '../components/Lecture/NotesTab';
+import QuizTab from '../components/Lecture/QuizTab';
 import { ArrowLeft, CheckCircle, ChevronRight, ChevronLeft } from 'lucide-react';
 
 const Player = () => {
@@ -175,9 +176,11 @@ const Player = () => {
                             />
                         )}
                         {activeTab === 'quiz' && (
-                            <div className="p-8 text-center text-text-muted">
-                                Quiz coming soon...
-                            </div>
+                            <QuizTab 
+                                lectureId={currentLecture._id}
+                                quizStatus={currentLecture.aiStatus?.quiz || 'pending'}
+                                errorReason={currentLecture.aiStatus?.errorReason}
+                            />
                         )}
                     </div>
                 </div>

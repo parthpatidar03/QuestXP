@@ -94,6 +94,21 @@ class XPService {
             await updatedUser.save();
         }
 
+        // Build stats for badge checks
+        const badgeStats = {
+            level: updatedUser.level,
+            longestStreak: updatedUser.streak?.longest || 0,
+            lecturesCompleted: actionType === 'LECTURE_COMPLETED' ? 
+                await XPAward.countDocuments({ user: userId, actionType: 'LECTURE_COMPLETED' }) : 0,
+            coursesCompleted: actionType === 'COURSE_COMPLETED' ? 
+                await XPAward.countDocuments({ user: userId, actionType: 'COURSE_COMPLETED' }) : 0,
+            quizAces: actionType === 'QUIZ_ACED' ? 
+                await XPAward.countDocuments({ user: userId, actionType: 'QUIZ_ACED' }) : 0
+        };
+
+        const badgeService = require('./badgeService');
+        const badgesEarned = await badgeService.checkAndAward(updatedUser, actionType, badgeStats);
+
         return {
             duplicate: false,
             xpEarned: finalXP,
@@ -106,7 +121,7 @@ class XPService {
             newLevelTitle,
             levelUps,
             newlyUnlocked,
-            badgesEarned: [] // checking badges will be wired in T021
+            badgesEarned
         };
     }
 }
