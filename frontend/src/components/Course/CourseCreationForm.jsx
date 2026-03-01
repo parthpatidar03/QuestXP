@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../../../services/api';
+import api from '../../services/api';
+import { Plus, X, Link as LinkIcon, AlertCircle } from 'lucide-react';
 
 const CourseCreationForm = () => {
     const [title, setTitle] = useState('');
@@ -40,63 +41,80 @@ const CourseCreationForm = () => {
     };
 
     return (
-        <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-lg mb-8">
-            <h2 className="text-2xl font-bold mb-4 text-yellow-400">Create New Course</h2>
-            {error && <div className="bg-red-500/10 text-red-500 border border-red-500 p-3 rounded mb-4 text-sm">{error}</div>}
+        <div className="card mb-8">
+            <h2 className="text-2xl font-display font-bold mb-6 text-text-primary">Create Your Quest</h2>
             
-            <form onSubmit={handleSubmit} className="space-y-6">
+            {error && (
+                <div className="bg-danger/10 text-danger border border-danger/20 p-4 rounded-lg mb-6 text-sm flex items-start gap-3">
+                    <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                    <span>{error}</span>
+                </div>
+            )}
+            
+            <form onSubmit={handleSubmit} className="space-y-8">
                 <div>
-                    <label className="block text-sm font-medium mb-1 text-gray-300">Course Title</label>
+                    <label className="block text-sm font-semibold mb-2 text-text-secondary uppercase tracking-wider">Course Name</label>
                     <input 
                         type="text" value={title} onChange={e => setTitle(e.target.value)} required
-                        className="w-full p-2.5 bg-gray-900 rounded border border-gray-600 focus:border-yellow-400 outline-none text-white"
-                        placeholder="e.g. Master React JS"
+                        className="w-full p-3.5 bg-surface-2 rounded-lg border border-border focus:border-primary outline-none transition-colors text-text-primary placeholder:text-text-muted text-lg"
+                        placeholder="e.g. Fullstack Web Development Mastery"
                     />
                 </div>
 
                 <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                        <label className="block text-sm font-medium text-gray-300">Playlist Sections</label>
-                        <button type="button" onClick={addSection} className="text-xs bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded text-gray-300 transition-colors">
-                            + Add Section
-                        </button>
+                    <div className="flex justify-between items-center mb-2">
+                        <label className="block text-sm font-semibold text-text-secondary uppercase tracking-wider">Curriculum Sections</label>
                     </div>
 
-                    {sections.map((section, index) => (
-                        <div key={index} className="p-4 bg-gray-900 rounded border border-gray-700 relative group">
-                            {sections.length > 1 && (
-                                <button type="button" onClick={() => removeSection(index)} className="absolute top-2 right-2 text-gray-500 hover:text-red-400">
-                                    &times;
-                                </button>
-                            )}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-xs text-gray-400 mb-1">Section Title</label>
-                                    <input 
-                                        type="text" value={section.title} onChange={e => updateSection(index, 'title', e.target.value)} required
-                                        className="w-full p-2 bg-gray-800 rounded border border-gray-600 focus:border-yellow-400 outline-none text-sm text-white"
-                                        placeholder="e.g. Basics"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-xs text-gray-400 mb-1">YouTube Playlist URL</label>
-                                    <input 
-                                        type="url" value={section.playlistUrl} onChange={e => updateSection(index, 'playlistUrl', e.target.value)} required
-                                        className="w-full p-2 bg-gray-800 rounded border border-gray-600 focus:border-yellow-400 outline-none text-sm text-white"
-                                        placeholder="https://youtube.com/playlist?list=..."
-                                    />
+                    <div className="space-y-4">
+                        {sections.map((section, index) => (
+                            <div key={index} className="p-5 bg-surface-2/50 rounded-xl border border-border relative group">
+                                {sections.length > 1 && (
+                                    <button type="button" onClick={() => removeSection(index)} className="absolute top-3 right-3 text-text-muted hover:text-danger hover:bg-danger/10 p-1 rounded-md transition-colors" title="Remove Section">
+                                        <X className="w-5 h-5" />
+                                    </button>
+                                )}
+                                
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pr-8">
+                                    <div>
+                                        <label className="block text-xs font-semibold text-text-muted mb-1.5 uppercase tracking-wide">Section Title</label>
+                                        <input 
+                                            type="text" value={section.title} onChange={e => updateSection(index, 'title', e.target.value)} required
+                                            className="w-full p-2.5 bg-surface border border-border focus:border-primary rounded-md outline-none text-sm text-text-primary placeholder:text-text-muted"
+                                            placeholder="e.g. Module 1: The Basics"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-semibold text-text-muted mb-1.5 uppercase tracking-wide flex items-center gap-1.5">
+                                            <LinkIcon className="w-3.5 h-3.5" />
+                                            YouTube Playlist URL
+                                        </label>
+                                        <input 
+                                            type="url" value={section.playlistUrl} onChange={e => updateSection(index, 'playlistUrl', e.target.value)} required
+                                            className="w-full p-2.5 bg-surface border border-border focus:border-primary rounded-md outline-none text-sm text-text-primary placeholder:text-text-muted"
+                                            placeholder="https://youtube.com/playlist?list=..."
+                                        />
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
+
+                    <button type="button" onClick={addSection} className="w-full py-3 mt-2 border-2 border-dashed border-border rounded-xl text-text-secondary hover:text-primary hover:border-primary/50 hover:bg-primary/5 transition-all text-sm font-semibold flex items-center justify-center gap-2">
+                        <Plus className="w-4 h-4" />
+                        Add Another Section
+                    </button>
                 </div>
 
-                <button 
-                    type="submit" disabled={isSubmitting}
-                    className="w-full py-3 bg-yellow-400 text-gray-900 font-bold rounded hover:bg-yellow-300 disabled:opacity-50 transition-colors"
-                >
-                    {isSubmitting ? 'Creating...' : 'Create Course'}
-                </button>
+                <div className="pt-4 border-t border-border">
+                    <button 
+                        type="submit" disabled={isSubmitting}
+                        className="btn-primary w-full py-4 text-base relative overflow-hidden group"
+                    >
+                        <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
+                        <span className="relative z-10">{isSubmitting ? 'Summoning Content...' : 'Generate New Course'}</span>
+                    </button>
+                </div>
             </form>
         </div>
     );

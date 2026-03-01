@@ -1,6 +1,6 @@
 module.exports = {
     XP_REWARDS: {
-        LECTURE_COMPLETED: 30, // spec 002 will set final value
+        LECTURE_COMPLETED: 30,
         LECTURE_STARTED: 5,
         LECTURE_REWATCHED: 10,
         STREAK_DAY: 20,
@@ -9,10 +9,19 @@ module.exports = {
         QUIZ_ATTEMPTED: 20,
         QUIZ_PASSED: 40,
         QUIZ_ACED: 75,
-        WEEKLY_GOAL_MET: 100,
-        MONTHLY_GOAL_MET: 300,
+        QUIZ_IMPROVED: 15,
+        WEEKLY_GOAL_MET: 200,
+        MONTHLY_GOAL_MET: 750,
         NOTES_SAVED: 10,
-        DOUBT_ASKED: 5,
+        NOTES_VIEWED: 5,
+        NOTES_EDITED: 15,
+        DOUBT_ASKED: 10,
         DAILY_LOGIN: 10,
+        SECTION_COMPLETED: 100,
+        COURSE_COMPLETED: 500,
+        COURSE_SHARED: 25,
+        STREAK_7: 50,
+        STREAK_30: 200,
+        STREAK_100: 500,
     }
 };

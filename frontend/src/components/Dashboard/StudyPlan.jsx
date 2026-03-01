@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../services/api';
+import { Target, Lock, PlayCircle, Clock, CheckCircle } from 'lucide-react';
 
 const StudyPlan = () => {
     const [plan, setPlan] = useState(null);
@@ -26,57 +27,72 @@ const StudyPlan = () => {
     }, []);
 
     if (loading) return (
-        <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-md animate-pulse">
-            <div className="h-6 bg-gray-700 w-1/3 rounded mb-4"></div>
-            <div className="h-10 bg-gray-700 rounded mb-2"></div>
-            <div className="h-10 bg-gray-700 rounded"></div>
-        </div>
+        <div className="card border-primary/30 shadow-[0_0_20px_rgba(56,189,248,0.1)] skeleton min-h-[150px]"></div>
     );
 
     if (error) return (
-        <div className="bg-gray-800/50 p-6 rounded-xl border border-dashed border-gray-600 shadow-md flex items-center justify-center text-center h-full">
-            <p className="text-gray-400">
-                <span className="block text-2xl mb-2">🔒</span>
+        <div className="card border-dashed border-border flex flex-col items-center justify-center text-center py-8 relative overflow-hidden group">
+            <div className="w-12 h-12 rounded-full bg-surface-2 flex items-center justify-center mb-3">
+                <Lock className="w-5 h-5 text-text-muted group-hover:text-primary transition-colors" />
+            </div>
+            <p className="text-text-secondary text-sm max-w-[250px] leading-relaxed">
                 {error}
             </p>
+            {/* Locked feature visual indicator */}
+            <div className="mt-4 w-32 h-1 bg-surface-2 rounded-full overflow-hidden">
+                <div className="h-full bg-primary/20 w-1/3"></div>
+            </div>
+            <span className="text-[10px] text-text-muted font-bold tracking-wider mt-2 uppercase">Level 3 Required</span>
         </div>
     );
 
     if (!plan || !plan.courses || plan.courses.length === 0) return (
-        <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-md">
-            <h2 className="text-xl font-bold mb-4 text-white">Today's Study Plan</h2>
-            <p className="text-gray-400">Your schedule is clear! Create a new course to get started.</p>
+        <div className="card flex flex-col items-center justify-center text-center py-8">
+            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3 text-primary">
+                <CheckCircle className="w-6 h-6" />
+            </div>
+            <h3 className="text-lg font-display font-semibold text-text-primary mb-1">All Caught Up!</h3>
+            <p className="text-text-secondary text-sm">You have no scheduled lectures for today.</p>
         </div>
     );
 
     return (
-        <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-md relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-500/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
+        <div className="card relative overflow-hidden border-primary/50 shadow-[0_0_20px_rgba(56,189,248,0.15)] ring-1 ring-primary/20">
+            {/* Background Accent Glow */}
+            <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/20 rounded-full blur-[60px] pointer-events-none"></div>
             
-            <div className="flex justify-between items-center mb-6">
-                <div>
-                    <h2 className="text-xl font-bold text-white">Today's Study Plan</h2>
-                    <p className="text-sm text-gray-400 mt-1">{plan.totalPlannedMinutes} mins targeted today</p>
-                </div>
-                <div className="bg-gray-900 border border-gray-700 px-3 py-1 rounded text-sm text-yellow-400 font-mono font-bold">
-                    Daily Goal
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 gap-4 relative z-10">
+                <div className="flex items-center gap-3">
+                    <div className="p-2.5 bg-primary/10 rounded-lg text-primary">
+                        <Target className="w-5 h-5" />
+                    </div>
+                    <div>
+                        <h2 className="text-xl font-display font-bold text-text-primary leading-tight">Today's Target</h2>
+                        <p className="text-sm text-text-secondary">{plan.totalPlannedMinutes} mins targeted</p>
+                    </div>
                 </div>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-3 relative z-10">
                 {plan.courses.map((item, idx) => (
                     <Link 
                         key={idx}
                         to={`/courses/${item.courseId}/lectures/${item.lectureId}`}
-                        className="flex justify-between items-center p-3 rounded-lg bg-gray-900 border border-gray-700 hover:border-yellow-400/50 hover:bg-gray-750 transition-colors group"
+                        className="group flex flex-col sm:flex-row justify-between items-start sm:items-center p-3.5 rounded-lg bg-surface-2 border border-border hover:border-primary/50 transition-colors gap-4"
                     >
-                        <div className="flex-1 min-w-0 pr-4">
-                            <h4 className="text-gray-300 font-semibold text-sm truncate group-hover:text-yellow-400 transition-colors">{item.courseTitle}</h4>
-                            <p className="text-xs text-gray-500 truncate mt-0.5">{item.lectureTitle}</p>
+                        <div className="flex-1 min-w-0 flex items-start gap-3">
+                            <div className="mt-0.5 text-text-muted group-hover:text-primary transition-colors">
+                                <PlayCircle className="w-5 h-5" />
+                            </div>
+                            <div className="max-w-full overflow-hidden">
+                                <h4 className="text-text-primary font-semibold text-sm truncate group-hover:text-primary transition-colors pr-4">{item.courseTitle}</h4>
+                                <p className="text-xs text-text-secondary truncate mt-0.5 max-w-[90%]">{item.lectureTitle}</p>
+                            </div>
                         </div>
-                        <div className="text-right flex-shrink-0">
-                            <span className="text-yellow-400 font-bold text-sm block">~{item.plannedMinutes}m</span>
-                            <span className="text-xs text-gray-600 font-medium tracking-wider">ESTIMATE</span>
+                        <div className="flex items-center gap-2 sm:flex-col sm:items-end sm:gap-0 flex-shrink-0 bg-surface sm:bg-transparent px-3 py-1.5 sm:p-0 rounded-md border border-border sm:border-transparent">
+                            <Clock className="w-3.5 h-3.5 text-warning sm:hidden" />
+                            <span className="text-warning font-display font-bold text-sm">~{item.plannedMinutes}m</span>
+                            <span className="text-[10px] text-text-muted font-bold tracking-wider uppercase hidden sm:block mt-0.5">EST</span>
                         </div>
                     </Link>
                 ))}

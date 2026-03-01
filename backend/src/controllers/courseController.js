@@ -94,9 +94,40 @@ const getCourseStatus = async (req, res, next) => {
     }
 };
 
+const addCourseSection = async (req, res, next) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+
+        const course = await Course.findOne({
+            _id: req.params.courseId,
+            owner: req.user._id
+        });
+        if (!course) return res.status(404).json({ error: 'Course not found' });
+        if (course.status !== 'ready') {
+            return res.status(409).json({ error: 'Cannot modify course while it is still processing' });
+        }
+
+        const { title, playlistUrl } = req.body;
+        course.sections.push({ title, playlistUrl, lectures: [] });
+        await course.save();
+
+        // TODO: spec-003 — trigger courseProcessor to process new section
+        // await courseProcessor.enqueueLectures(course._id);
+
+        res.status(201).json({
+            message: 'Section added',
+            section: course.sections[course.sections.length - 1]
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     createCourse,
     getCourses,
     getCourseById,
-    getCourseStatus
+    getCourseStatus,
+    addCourseSection
 };

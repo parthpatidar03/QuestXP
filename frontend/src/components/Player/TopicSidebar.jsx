@@ -1,27 +1,39 @@
 import React from 'react';
+import { Bot, List } from 'lucide-react';
 
 const TopicSidebar = ({ topics, currentTime, onTopicClick }) => {
     // If no topics yet, show placeholder
     if (!topics || topics.length === 0) {
         return (
-            <div className="bg-gray-800 border border-gray-700 rounded-xl p-4 h-full flex flex-col">
-                <h3 className="text-lg font-bold text-gray-200 mb-4">Topics</h3>
-                <div className="flex-grow flex flex-col items-center justify-center text-gray-500 text-center space-y-3">
-                    <svg className="w-10 h-10 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                    <p className="text-sm">AI is analyzing this video.<br/>Topics will appear here shortly.</p>
+            <div className="bg-surface border-l border-border h-full flex flex-col">
+                <div className="p-5 border-b border-border bg-surface flex items-center gap-3">
+                    <List className="w-5 h-5 text-primary" />
+                    <div>
+                        <h3 className="text-base font-display font-bold text-text-primary leading-tight">Lecture Topics</h3>
+                        <p className="text-xs text-text-muted mt-0.5">Jump to key moments</p>
+                    </div>
+                </div>
+                <div className="flex-grow flex flex-col items-center justify-center text-center p-8">
+                    <div className="w-12 h-12 rounded-full bg-surface-2 flex items-center justify-center mb-4">
+                        <Bot className="w-6 h-6 text-text-muted animate-pulse" />
+                    </div>
+                    <p className="text-sm text-text-secondary">AI is analyzing this video.<br/>Topics will appear here shortly.</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="bg-gray-800 border border-gray-700 rounded-xl flex flex-col h-full overflow-hidden">
-            <div className="p-4 border-b border-gray-700 bg-gray-900/50">
-                <h3 className="text-lg font-bold text-white">Topics</h3>
-                <p className="text-xs text-gray-400 mt-1">Jump to key moments</p>
+        <div className="bg-surface border-l border-border h-full flex flex-col overflow-hidden">
+            <div className="p-5 border-b border-border bg-surface flex items-center gap-3 shrink-0">
+                <List className="w-5 h-5 text-primary" />
+                <div>
+                    <h3 className="text-base font-display font-bold text-text-primary leading-tight">Lecture Topics</h3>
+                    <p className="text-xs text-text-muted mt-0.5">Jump to key moments</p>
+                </div>
             </div>
             
-            <div className="overflow-y-auto flex-grow divide-y divide-gray-700/50">
+            <div className="overflow-y-auto flex-grow divide-y divide-border/50 custom-scrollbar">
                 {topics.map((topic, idx) => {
                     const isActive = currentTime >= topic.startTime && (idx === topics.length - 1 || currentTime < topics[idx+1].startTime);
                     
@@ -29,12 +41,12 @@ const TopicSidebar = ({ topics, currentTime, onTopicClick }) => {
                         <button
                             key={idx}
                             onClick={() => onTopicClick(topic.startTime)}
-                            className={`w-full text-left p-4 hover:bg-gray-750 transition-colors flex gap-3 ${isActive ? 'bg-gray-700/50 border-l-4 border-yellow-400' : 'border-l-4 border-transparent'}`}
+                            className={`w-full text-left p-4 hover:bg-surface-2 transition-colors flex gap-4 ${isActive ? 'bg-primary/5 border-l-2 border-l-primary' : 'border-l-2 border-l-transparent'}`}
                         >
-                            <span className={`font-mono text-sm mt-0.5 ${isActive ? 'text-yellow-400' : 'text-gray-500'}`}>
+                            <span className={`font-mono text-xs font-semibold mt-0.5 ${isActive ? 'text-primary' : 'text-text-muted'}`}>
                                 {Math.floor(topic.startTime / 60)}:{String(topic.startTime % 60).padStart(2, '0')}
                             </span>
-                            <span className={`text-sm font-medium ${isActive ? 'text-white' : 'text-gray-300'}`}>
+                            <span className={`text-sm ${isActive ? 'text-text-primary font-medium' : 'text-text-secondary'}`}>
                                 {topic.title}
                             </span>
                         </button>

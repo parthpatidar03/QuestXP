@@ -39,10 +39,21 @@ const Auth = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white p-4">
-            <div className="bg-gray-800 p-8 rounded-xl shadow-lg w-full max-w-md border border-gray-700">
-                <h2 className="text-2xl font-bold mb-6 text-center text-yellow-400">
-                    {isLogin ? 'Welcome Back to QuestXP' : 'Join QuestXP'}
+        <div className="min-h-screen flex items-center justify-center bg-bg flex-col text-text-primary p-4 rounded-lg">
+            {/* Logo/Brand Area */}
+            <div className="mb-8 flex flex-col items-center">
+                <div className="w-16 h-16 bg-primary/10 rounded-2xl border border-primary/20 flex items-center justify-center mb-4 shadow-[0_0_30px_rgba(56,189,248,0.15)]">
+                    <svg className="w-8 h-8 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                </div>
+                <h1 className="text-display text-text-primary font-bold text-3xl tracking-tight">QuestXP</h1>
+                <p className="text-text-secondary mt-2">Level up your learning journey.</p>
+            </div>
+
+            <div className="bg-surface p-8 rounded-[16px] shadow-[0_25px_50px_rgba(0,0,0,0.6)] w-full max-w-md border border-border">
+                <h2 className="text-h2 font-display font-semibold mb-6 text-center text-text-primary">
+                    {isLogin ? 'Welcome Back' : 'Create Account'}
                 </h2>
                 
                 {error && (
@@ -54,40 +65,43 @@ const Auth = () => {
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {!isLogin && (
                         <div>
-                            <label className="block text-sm font-medium mb-1 text-gray-300">Name</label>
+                            <label className="block text-sm font-medium mb-1.5 text-text-secondary">Name</label>
                             <input 
                                 type="text" value={name} onChange={(e) => setName(e.target.value)}
-                                className="w-full p-2.5 bg-gray-900 rounded border border-gray-600 focus:border-yellow-400 outline-none transition-colors"
+                                className="w-full p-3 bg-surface-2 rounded-md border border-border focus:border-primary outline-none transition-colors text-text-primary placeholder:text-text-muted"
+                                placeholder="Enter your name"
                                 required
                             />
                         </div>
                     )}
                     <div>
-                        <label className="block text-sm font-medium mb-1 text-gray-300">Email</label>
+                        <label className="block text-sm font-medium mb-1.5 text-text-secondary">Email</label>
                         <input 
                             type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-                            className="w-full p-2.5 bg-gray-900 rounded border border-gray-600 focus:border-yellow-400 outline-none transition-colors"
+                            className="w-full p-3 bg-surface-2 rounded-md border border-border focus:border-primary outline-none transition-colors text-text-primary placeholder:text-text-muted"
+                            placeholder="you@example.com"
                             required
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium mb-1 text-gray-300">Password</label>
+                        <label className="block text-sm font-medium mb-1.5 text-text-secondary">Password</label>
                         <input 
                             type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-                            className="w-full p-2.5 bg-gray-900 rounded border border-gray-600 focus:border-yellow-400 outline-none transition-colors"
+                            className="w-full p-3 bg-surface-2 rounded-md border border-border focus:border-primary outline-none transition-colors text-text-primary placeholder:text-text-muted"
+                            placeholder="••••••••"
                             required
                         />
                     </div>
                     
-                    <button type="submit" className="w-full py-2.5 mt-2 bg-yellow-400 text-gray-900 font-bold rounded hover:bg-yellow-300 transition-colors">
-                        {isLogin ? 'Login' : 'Sign Up'}
+                    <button type="submit" className="btn-primary w-full py-3 mt-4 text-[15px]">
+                        {isLogin ? 'Sign In' : 'Create Account'}
                     </button>
                 </form>
 
-                <div className="mt-6 flex flex-col items-center gap-4">
+                <div className="mt-8 flex flex-col items-center gap-6">
                     <div className="relative w-full flex items-center justify-center">
-                        <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-700"></div></div>
-                        <span className="relative bg-gray-800 px-4 text-sm text-gray-400">or</span>
+                        <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border"></div></div>
+                        <span className="relative bg-surface px-4 text-xs font-semibold uppercase tracking-wider text-text-muted">or continue with</span>
                     </div>
 
                     <div className="w-full flex justify-center">
@@ -102,10 +116,10 @@ const Auth = () => {
                     </div>
                 </div>
 
-                <p className="mt-6 text-center text-sm text-gray-400">
+                <p className="mt-8 text-center text-sm text-text-secondary">
                     {isLogin ? "Don't have an account? " : "Already have an account? "}
-                    <button onClick={() => setIsLogin(!isLogin)} className="text-yellow-400 hover:text-yellow-300 hover:underline transition-colors font-medium">
-                        {isLogin ? 'Sign up' : 'Login'}
+                    <button type="button" onClick={() => setIsLogin(!isLogin)} className="text-primary hover:text-primary-hover transition-colors font-medium ml-1">
+                        {isLogin ? 'Sign up' : 'Sign in'}
                     </button>
                 </p>
             </div>

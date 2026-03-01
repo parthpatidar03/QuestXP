@@ -1,44 +1,63 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Play, CheckCircle, Clock, AlertTriangle, Image as ImageIcon } from 'lucide-react';
 
 const CourseCard = ({ course }) => {
     const isProcessing = course.status === 'processing';
     const isError = course.status === 'error';
     
+    // Fallbacks
+    const completionPct = course.completionPct || 0;
+    const totalLectures = course.totalLectures || 0;
+
     return (
-        <div className="bg-gray-800 border border-gray-700 rounded-xl p-5 shadow-sm hover:border-gray-600 transition-colors flex flex-col items-start h-full">
-            <div className="flex justify-between w-full mb-3">
-                <h3 className="text-lg font-bold text-white line-clamp-1 truncate mr-2" title={course.title}>
+        <div className="card group flex flex-col items-start h-full p-0 overflow-hidden relative transition-all duration-150 hover:shadow-lg hover:shadow-primary/5">
+            {/* Thumbnail Placeholder */}
+            <div className="w-full h-32 bg-surface-2 flex items-center justify-center relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-t from-surface to-transparent z-10"></div>
+                {course.thumbnailUrl ? (
+                    <img src={course.thumbnailUrl} alt={course.title} className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity" />
+                ) : (
+                    <ImageIcon className="w-8 h-8 text-border z-0" />
+                )}
+                {/* Status Badges */}
+                <div className="absolute top-3 left-3 z-20 flex gap-2">
+                    {isProcessing && <span className="text-[10px] font-bold uppercase tracking-wider bg-primary/20 text-primary border border-primary/30 px-2 py-0.5 rounded-sm backdrop-blur-md">Processing</span>}
+                    {isError && <span className="text-[10px] font-bold uppercase tracking-wider bg-danger/20 text-danger border border-danger/30 px-2 py-0.5 rounded-sm backdrop-blur-md">Error</span>}
+                </div>
+            </div>
+
+            <div className="p-5 flex-1 w-full flex flex-col">
+                <h3 className="text-base font-display font-semibold text-text-primary line-clamp-2 mb-4 leading-snug group-hover:text-primary transition-colors" title={course.title}>
                     {course.title}
                 </h3>
-                {isProcessing && <span className="text-xs bg-blue-500/20 text-blue-400 border border-blue-500/50 px-2 py-1 rounded whitespace-nowrap">Processing</span>}
-                {!isProcessing && !isError && <span className="text-xs bg-green-500/20 text-green-400 border border-green-500/50 px-2 py-1 rounded whitespace-nowrap">Ready</span>}
-                {isError && <span className="text-xs bg-red-500/20 text-red-400 border border-red-500/50 px-2 py-1 rounded whitespace-nowrap">Error</span>}
-            </div>
-            
-            <div className="text-sm text-gray-400 mb-4 flex-grow w-full">
-                <div className="flex justify-between items-center mb-1">
-                    <span>{course.totalLectures} Lectures</span>
-                    <span>{course.completionPct || 0}%</span>
+                
+                <div className="mt-auto">
+                    {/* Section Progress */}
+                    <div className="flex justify-between items-center mb-2 text-xs text-text-muted">
+                        <span className="font-medium text-text-secondary">{totalLectures} Lectures</span>
+                        <span>{completionPct}%</span>
+                    </div>
+                    <div className="progress-bar w-full mb-5">
+                        <div className={`progress-bar__fill h-full ${completionPct === 100 ? 'progress-bar__fill--complete' : ''}`} style={{ width: `${completionPct}%` }}></div>
+                    </div>
+
+                    {isProcessing ? (
+                        <button disabled className="w-full py-2 bg-surface-2 text-text-muted text-sm font-semibold rounded-md border border-border cursor-not-allowed">
+                            Preparing Course...
+                        </button>
+                    ) : isError ? (
+                        <button disabled className="w-full py-2 bg-danger/10 text-danger text-sm font-semibold rounded-md border border-danger/20 cursor-not-allowed">
+                            Failed to Load
+                        </button>
+                    ) : (
+                        <Link to={`/courses/${course._id}`} className="w-full flex justify-center items-center gap-2 py-2.5 bg-surface-2 group-hover:bg-primary text-text-primary group-hover:text-white text-sm font-semibold rounded-md border border-border group-hover:border-primary transition-all">
+                            <Play className="w-4 h-4 fill-current" />
+                            Start Learning
+                        </Link>
+                    )}
                 </div>
-                <div className="w-full bg-gray-900 rounded-full h-1.5 overflow-hidden">
-                    <div className="bg-yellow-400 h-1.5 rounded-full" style={{ width: `${course.completionPct || 0}%` }}></div>
-                </div>
             </div>
-            
-            {isProcessing ? (
-                <button disabled className="w-full py-2 bg-gray-700 text-gray-500 font-medium rounded cursor-not-allowed">
-                    Processing Metadata...
-                </button>
-            ) : isError ? (
-                <button disabled className="w-full py-2 bg-red-500/20 text-red-400 font-medium rounded cursor-not-allowed">
-                    Failed to Load
-                </button>
-            ) : (
-                <Link to={`/courses/${course._id}`} className="w-full py-2 bg-yellow-400 text-gray-900 font-bold rounded hover:bg-yellow-300 text-center transition-colors">
-                    Start Learning
-                </Link>
-            )}
         </div>
     );
 };
