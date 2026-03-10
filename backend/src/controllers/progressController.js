@@ -101,11 +101,11 @@ const getTodayTarget = async (req, res, next) => {
     try {
         const { courseId } = req.params;
         const target = await studyPlanService.getTodayAllocation(req.user._id, courseId);
-        
+
         if (!target) {
             return res.status(404).json({ error: 'PLAN_NOT_FOUND', message: 'No study plan exists for this course' });
         }
-        
+
         res.json({ todayAllocation: target });
     } catch (error) {
         next(error);
@@ -116,12 +116,31 @@ const getWeeklyTargets = async (req, res, next) => {
     try {
         const { courseId } = req.params;
         const weeklyTargets = await studyPlanService.getWeeklyView(req.user._id, courseId);
-        
+
         if (!weeklyTargets) {
             return res.status(404).json({ error: 'PLAN_NOT_FOUND', message: 'No study plan exists for this course' });
         }
-        
+
         res.json({ weeklyTargets });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const deletePlan = async (req, res, next) => {
+    try {
+        const { courseId } = req.params;
+        const progress = await Progress.findOne({ user: req.user._id, course: courseId });
+
+        if (!progress || !progress.studyPlan) {
+            return res.status(404).json({ error: 'PLAN_NOT_FOUND', message: 'No study plan exists to delete.' });
+        }
+
+        // Unset the studyPlan entirely
+        progress.studyPlan = undefined;
+        await progress.save();
+
+        res.json({ success: true, message: 'Study plan deleted successfully.' });
     } catch (error) {
         next(error);
     }
@@ -134,4 +153,5 @@ module.exports = {
     getPlan,
     getTodayTarget,
     getWeeklyTargets,
+    deletePlan,
 };

@@ -7,6 +7,7 @@ import CourseDetail from './pages/CourseDetail';
 import Player from './pages/Player';
 import LandingPage from './pages/LandingPage';
 import Profile from './pages/Profile';
+import Roadmap from './pages/Roadmap';
 import GamificationOverlay from './components/Gamification/GamificationOverlay';
 import ErrorBoundary from './components/ErrorBoundary';
 
@@ -48,6 +49,9 @@ const App = () => {
                 } />
                 <Route path="/courses/:courseId" element={
                     <ProtectedRoute><CourseDetail /></ProtectedRoute>
+                } />
+                <Route path="/courses/:courseId/roadmap" element={
+                    <ProtectedRoute><Roadmap /></ProtectedRoute>
                 } />
                 <Route path="/courses/:courseId/lectures/:lectureId" element={
                     <ProtectedRoute><Player /></ProtectedRoute>

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import NavBar from '../components/NavBar';
+import StudyPlan from '../components/Dashboard/StudyPlan';
+import SetupPlanModal from '../components/Dashboard/SetupPlanModal';
 import {
     ArrowLeft, PlayCircle, Loader2, AlertOctagon, Clock,
     BookOpen, Layers, Zap, Lock, CheckCircle2, ChevronRight,
@@ -81,6 +83,7 @@ const CourseDetail = () => {
     const [progress, setProgress] = useState(null);
     const [statusData, setStatusData] = useState(null);
     const [error, setError] = useState(null);
+    const [showSetupModal, setShowSetupModal] = useState(false);
 
     useEffect(() => {
         const fetchAll = async () => {
@@ -232,15 +235,29 @@ const CourseDetail = () => {
                                     <div className="text-xs font-semibold" style={{ color: '#10B981' }}>{pct}% Complete</div>
                                 </div>
                                 {startLec && (
-                                    <Link
-                                        to={`/courses/${courseId}/lectures/${startLec._id}`}
-                                        className="btn-esports inline-flex items-center gap-2"
-                                    >
-                                        <PlayCircle className="w-4 h-4" />
-                                        {completedCount > 0 ? 'Resume Mission' : 'Start Quest'}
-                                    </Link>
+                                    <div className="flex gap-3 mt-4">
+                                        <Link
+                                            to={`/courses/${courseId}/lectures/${startLec._id}`}
+                                            className="btn-esports inline-flex items-center gap-2"
+                                        >
+                                            <PlayCircle className="w-4 h-4" />
+                                            {completedCount > 0 ? 'Resume Mission' : 'Start Quest'}
+                                        </Link>
+                                        <Link 
+                                            to={`/courses/${courseId}/roadmap`} 
+                                            className="btn-glass inline-flex items-center gap-2 px-5 py-2.5 bg-surface-2 hover:bg-surface-3 transition-colors rounded-lg text-sm font-bold text-white border border-border"
+                                        >
+                                            <Layers className="w-4 h-4 text-primary" />
+                                            View Roadmap
+                                        </Link>
+                                    </div>
                                 )}
                             </div>
+                        </div>
+
+                        {/* 4-Week Study Plan */}
+                        <div className="mb-6">
+                            <StudyPlan courseId={courseId} onOpenSetup={() => setShowSetupModal(true)} />
                         </div>
 
                         {/* Mission List */}
@@ -348,6 +365,17 @@ const CourseDetail = () => {
                     </aside>
                 </div>
             </div>
+
+            {showSetupModal && (
+                <SetupPlanModal
+                    courseId={courseId}
+                    isOpen={showSetupModal}
+                    onClose={() => setShowSetupModal(false)}
+                    onPlanGenerated={() => {
+                        window.dispatchEvent(new CustomEvent('refresh-plan', { detail: { courseId } }));
+                    }}
+                />
+            )}
         </div>
     );
 };

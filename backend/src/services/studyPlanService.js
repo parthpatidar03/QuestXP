@@ -27,8 +27,8 @@ const { XP_REWARDS } = require('../constants/xp');
 const BUFFER_DAY_RULES = [
     { minDays: 30, buffer: 3 },
     { minDays: 10, buffer: 2 },
-    { minDays: 3,  buffer: 1 },
-    { minDays: 0,  buffer: 0 },
+    { minDays: 3, buffer: 1 },
+    { minDays: 0, buffer: 0 },
 ];
 
 // If totalAllocMins > capacityMins * (1 + HEAVY_DAY_TOLERANCE) → isHeavyDay
@@ -80,11 +80,9 @@ function _collectLecturesInOrder(course) {
  * T011: Applies BUFFER_DAY_RULES and returns integer buffer day count.
  */
 function _computeBufferDayCount(daysUntilDeadline) {
-    // Explicit branches for all 4 thresholds (unit-testable)
-    if (daysUntilDeadline >= 30) return 3;   // ≥30 days → 3 buffer
-    if (daysUntilDeadline >= 10) return 2;   // 10–29 days → 2 buffer
-    if (daysUntilDeadline >= 3)  return 1;   // 3–9 days → 1 buffer
-    return 0;                                 // <3 days → 0 buffer
+    // Forced to 0. User explicitly requested perfectly hitting the target deadline.
+    // Previously, this reserved empty days before the deadline, causing the plan to end early.
+    return 0;
 }
 
 /**
@@ -96,7 +94,9 @@ function _computeBufferDayCount(daysUntilDeadline) {
 function _enumerateStudyDays(startDate, deadline, bufferDayCount, restDays = []) {
     const restDaySet = new Set((restDays || []).map(d => format(parseISO(d), 'yyyy-MM-dd')));
     const days = [];
-    const totalDays = differenceInCalendarDays(deadline, startDate);
+
+    // Explicitly add +1 so the actual deadline date itself is included as an active study day
+    const totalDays = differenceInCalendarDays(deadline, startDate) + 1;
     const studyDays = totalDays - bufferDayCount;
 
     for (let i = 0; i < studyDays; i++) {
@@ -143,54 +143,90 @@ function _enumerateStudyDays(startDate, deadline, bufferDayCount, restDays = [])
  */
 function _greedyAllocate(lectures, studyDays, weekdayCapacityMins, weekendCapacityMins) {
     const allocations = [];
-    let lectureIndex = 0;
+
+    // Calculate total course workload
+    const totalMins = lectures.reduce((sum, l) => sum + Math.ceil(l.duration / 60), 0);
+
+    // 1. Assign base capacity mapping
+    let totalCapacity = 0;
+    const dayMappings = [];
 
     for (const day of studyDays) {
-        // Assign capacity based on day type
-        let capacityMins = 0;
-        if (day.dayType === 'weekday') capacityMins = weekdayCapacityMins;
-        else if (day.dayType === 'weekend') capacityMins = weekendCapacityMins;
-        // rest and buffer days have capacityMins = 0
+        let cap = 0;
+        if (day.dayType === 'weekday') cap = weekdayCapacityMins;
+        else if (day.dayType === 'weekend') cap = weekendCapacityMins;
 
-        const dayAlloc = {
-            date: day.date,
-            dateStr: day.dateStr,
-            dayType: day.dayType,
-            capacityMins,
+        dayMappings.push({
+            day,
+            cap,
+            startCap: totalCapacity,
+            endCap: totalCapacity + cap,
             lectureIds: [],
             lectures: [],
             totalAllocMins: 0,
-            isHeavyDay: false,
-        };
+        });
 
-        if (capacityMins > 0 && lectureIndex < lectures.length) {
-            // Fill the day up to capacity
-            let usedMins = 0;
-            while (lectureIndex < lectures.length) {
-                const lec = lectures[lectureIndex];
-                const lecMins = Math.ceil(lec.duration / 60);
+        totalCapacity += cap;
+    }
 
-                if (usedMins === 0) {
-                    // Always assign at least one lecture (even if it exceeds capacity)
-                    dayAlloc.lectureIds.push(lec._id);
-                    dayAlloc.lectures.push(lec);
-                    usedMins += lecMins;
-                    lectureIndex++;
-                } else if (usedMins + lecMins <= capacityMins) {
-                    dayAlloc.lectureIds.push(lec._id);
-                    dayAlloc.lectures.push(lec);
-                    usedMins += lecMins;
-                    lectureIndex++;
-                } else {
+    // 2. Distribute lectures
+    if (totalCapacity > 0 && lectures.length > 0) {
+        let currentCumMins = 0;
+
+        for (let i = 0; i < lectures.length; i++) {
+            const lec = lectures[i];
+            const lecMins = Math.ceil(lec.duration / 60);
+
+            // Where does this lecture land proportionally in the capacity timeline?
+            const midpointPct = totalMins > 0 ? (currentCumMins + (lecMins / 2)) / totalMins : 0;
+            const targetCapPoint = midpointPct * totalCapacity;
+
+            // Find the day that covers this capacity point
+            let bucketIndex = -1;
+            for (let j = 0; j < dayMappings.length; j++) {
+                const d = dayMappings[j];
+                if (d.cap > 0 && targetCapPoint >= d.startCap && targetCapPoint <= d.endCap) {
+                    bucketIndex = j;
                     break;
                 }
             }
 
-            dayAlloc.totalAllocMins = usedMins;
-            // T024: Heavy day detection
-            if (usedMins > capacityMins * (1 + HEAVY_DAY_TOLERANCE)) {
-                dayAlloc.isHeavyDay = true;
+            // Fallbacks: if precision fails or it's the absolute last lecture, 
+            // force it to the final productive day to exactly meet the deadline.
+            if (bucketIndex === -1 || i === lectures.length - 1) {
+                for (let j = dayMappings.length - 1; j >= 0; j--) {
+                    if (dayMappings[j].cap > 0) {
+                        bucketIndex = j;
+                        break;
+                    }
+                }
             }
+
+            if (bucketIndex !== -1) {
+                dayMappings[bucketIndex].lectureIds.push(lec._id);
+                dayMappings[bucketIndex].lectures.push(lec);
+                dayMappings[bucketIndex].totalAllocMins += lecMins;
+            }
+
+            currentCumMins += lecMins;
+        }
+    }
+
+    // 3. Reconstruct the daily allocations
+    for (const mapping of dayMappings) {
+        const dayAlloc = {
+            date: mapping.day.date,
+            dateStr: mapping.day.dateStr,
+            dayType: mapping.day.dayType,
+            capacityMins: mapping.cap,
+            lectureIds: mapping.lectureIds,
+            lectures: mapping.lectures,
+            totalAllocMins: mapping.totalAllocMins,
+            isHeavyDay: false,
+        };
+
+        if (mapping.cap > 0 && dayAlloc.totalAllocMins > mapping.cap * (1 + HEAVY_DAY_TOLERANCE)) {
+            dayAlloc.isHeavyDay = true;
         }
 
         allocations.push(dayAlloc);

@@ -11,7 +11,6 @@ class BadgeService {
     async checkAndAward(user, actionType, stats) {
         const newlyEarned = [];
         let updated = false;
-
         // Ensure user.badges exists
         if (!user.badges) {
             user.badges = [];

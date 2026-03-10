@@ -1,12 +1,13 @@
 const express = require('express');
 const { body, param } = require('express-validator');
-const { 
-    savePosition, 
-    getProgress, 
-    generateOrRegenPlan, 
-    getPlan, 
-    getTodayTarget, 
-    getWeeklyTargets 
+const {
+    savePosition,
+    getProgress,
+    generateOrRegenPlan,
+    getPlan,
+    getTodayTarget,
+    getWeeklyTargets,
+    deletePlan
 } = require('../controllers/progressController');
 const auth = require('../middleware/auth');
 const featureGate = require('../middleware/featureGate');
@@ -64,6 +65,10 @@ router.post('/:courseId/plan', [
 router.get('/:courseId/plan', [
     param('courseId').isMongoId().withMessage('Invalid courseId')
 ], getPlan);
+
+router.delete('/:courseId/plan', [
+    param('courseId').isMongoId().withMessage('Invalid courseId')
+], deletePlan);
 
 router.get('/:courseId/plan/today', [
     param('courseId').isMongoId().withMessage('Invalid courseId')

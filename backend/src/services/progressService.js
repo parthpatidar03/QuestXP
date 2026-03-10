@@ -81,8 +81,13 @@ const savePosition = async (userId, courseId, lectureId, { position, watchedSeco
 
     // Side-effects
     let xpAwarded = 0;
+    let awardResult = null;
+    
     if (newlyCompleted) {
-        xpAwarded += await xpService.award(userId, 'LECTURE_COMPLETED');
+        awardResult = await xpService.award(userId, 'LECTURE_COMPLETED');
+        if (awardResult && awardResult.xpEarned) {
+            xpAwarded += awardResult.xpEarned;
+        }
         await streakService.recordActivity(userId);
 
         // Recalculate course completion %
@@ -96,7 +101,10 @@ const savePosition = async (userId, courseId, lectureId, { position, watchedSeco
 
     if (session.minutes >= progress.studyPlan.dailyGoalMins) {
         // Assuming xpService handles dedup logic per day per user based on resourceId/date
-        await xpService.award(userId, 'GOAL_MET', todayStr);
+        const streakResult = await xpService.award(userId, 'GOAL_MET', todayStr);
+        if (streakResult && streakResult.xpEarned && !awardResult) {
+            // Only purely add if we returned numeric xpEarned above too, or maybe just ignore returning this back to Player directly since Player only cares about lecture xp
+        }
     }
 
     return {

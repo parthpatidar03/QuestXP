@@ -107,7 +107,7 @@ sequenceDiagram
     
     Worker->>Database: Update Course Status to "ready"
     
-    User->>API: Pints /status Endpoint
+    User->>API: Polls /status Endpoint
     API-->>User: Status: "ready" (UI updates)
 ```
 
