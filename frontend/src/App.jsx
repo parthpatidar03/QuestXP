@@ -6,12 +6,17 @@ import Dashboard from './pages/Dashboard';
 import CourseDetail from './pages/CourseDetail';
 import Player from './pages/Player';
 import LandingPage from './pages/LandingPage';
+import Profile from './pages/Profile';
 import GamificationOverlay from './components/Gamification/GamificationOverlay';
 import ErrorBoundary from './components/ErrorBoundary';
 
 const ProtectedRoute = ({ children }) => {
     const { isAuthenticated, isLoading } = useAuthStore();
-    if (isLoading) return <div className="min-h-screen bg-bg flex items-center justify-center"><div className="w-8 h-8 rounded-full border-2 border-border border-t-primary animate-spin" /></div>;
+    if (isLoading) return (
+        <div className="min-h-screen flex items-center justify-center" style={{ background: '#0d0f1a' }}>
+            <div className="w-10 h-10 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: '#00b4ff', borderTopColor: 'transparent' }} />
+        </div>
+    );
     return isAuthenticated ? children : <Navigate to="/login" replace />;
 };
 
@@ -24,9 +29,9 @@ const App = () => {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-bg flex items-center justify-center flex-col gap-4">
-                <div className="w-12 h-12 rounded-full border-4 border-border border-t-primary animate-spin"></div>
-                <div className="text-text-muted text-xs font-mono tracking-widest uppercase">INITIALIZING</div>
+            <div className="min-h-screen flex flex-col items-center justify-center gap-4" style={{ background: '#0d0f1a' }}>
+                <div className="w-12 h-12 rounded-full border-4 border-t-transparent animate-spin" style={{ borderColor: '#00b4ff', borderTopColor: 'transparent' }} />
+                <div className="text-xs font-mono tracking-widest uppercase" style={{ color: '#4a5480' }}>INITIALIZING</div>
             </div>
         );
     }
@@ -39,19 +44,16 @@ const App = () => {
                 <Route path="/login" element={<Auth />} />
                 <Route path="/register" element={<Auth />} />
                 <Route path="/dashboard" element={
-                    <ProtectedRoute>
-                        <Dashboard />
-                    </ProtectedRoute>
+                    <ProtectedRoute><Dashboard /></ProtectedRoute>
                 } />
                 <Route path="/courses/:courseId" element={
-                    <ProtectedRoute>
-                        <CourseDetail />
-                    </ProtectedRoute>
+                    <ProtectedRoute><CourseDetail /></ProtectedRoute>
                 } />
                 <Route path="/courses/:courseId/lectures/:lectureId" element={
-                    <ProtectedRoute>
-                        <Player />
-                    </ProtectedRoute>
+                    <ProtectedRoute><Player /></ProtectedRoute>
+                } />
+                <Route path="/profile" element={
+                    <ProtectedRoute><Profile /></ProtectedRoute>
                 } />
             </Routes>
         </BrowserRouter>

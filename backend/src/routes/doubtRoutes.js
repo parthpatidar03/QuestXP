@@ -1,32 +1,40 @@
 const express = require('express');
-const { body, query } = require('express-validator');
-const doubtController = require('../controllers/doubtController');
-const { authenticate } = require('../middleware/auth');
-const featureGate = require('../middleware/featureGate');
-const checkEmbeddingReady = require('../middleware/checkEmbeddingReady');
-
 const router = express.Router();
+const { body, param, query } = require('express-validator');
+const authenticate = require('../middleware/auth');
+const doubtController = require('../controllers/doubtController');
+const simpleChatController = require('../controllers/simpleChatController');
 
-// T011 [US2] GET status route
-router.get('/:lectureId/status', authenticate, doubtController.status);
-
-// T017 [US1] POST query route
-router.post(
-    '/:lectureId/query',
+// RAG routes (kept for backward compat)
+router.get('/:lectureId/status',
     authenticate,
-    featureGate('DOUBT_CHATBOT_LIMITED'),
-    body('questionText').notEmpty().withMessage('Question text is required').isLength({ max: 1000 }).withMessage('Max 1000 characters allowed'),
-    checkEmbeddingReady,
+    param('lectureId').isMongoId(),
+    doubtController.status
+);
+
+router.post('/:lectureId/query',
+    authenticate,
+    param('lectureId').isMongoId(),
+    body('questionText').isString().notEmpty().isLength({ max: 500 }),
     doubtController.query
 );
 
-// T025 [US4] GET history route
-router.get(
-    '/:lectureId/history',
+router.get('/:lectureId/history',
     authenticate,
+    param('lectureId').isMongoId(),
     query('limit').optional().isInt({ min: 1, max: 100 }),
-    query('before').optional().isISO8601(),
     doubtController.history
+);
+
+// ─── Simple LLM Chat (no RAG / Pinecone) ─────────────────────────────
+router.post('/:lectureId/simple',
+    authenticate,
+    param('lectureId').isMongoId(),
+    body('questionText').isString().notEmpty().isLength({ max: 500 }),
+    body('courseTitle').optional().isString().isLength({ max: 200 }),
+    body('lectureTitle').optional().isString().isLength({ max: 200 }),
+    body('history').optional().isArray({ max: 20 }),
+    simpleChatController.query
 );
 
 module.exports = router;

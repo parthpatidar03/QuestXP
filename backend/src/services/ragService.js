@@ -2,8 +2,10 @@ const { OpenAI } = require('openai');
 const { Pinecone } = require('@pinecone-database/pinecone');
 const { validate, SchemaValidationError } = require('../schemas/ragAnswerSchema');
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-const pc = new Pinecone({ apiKey: process.env.PINECONE_API_KEY });
+// Lazy-initialize so env vars are loaded before use
+let _openai, _pc;
+const getOpenAI = () => _openai || (_openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY }));
+const getPinecone = () => _pc || (_pc = new Pinecone({ apiKey: process.env.PINECONE_API_KEY }));
 
 // T015 & T020 Grounding System Prompt
 const GROUNDING_SYSTEM_PROMPT = `You are a helpful teaching assistant answering a student's question based strictly on the provided lecture context.
@@ -17,6 +19,8 @@ Return your response as a JSON object with "answerText" (the prose answer), "cit
 `;
 
 exports.queryLecture = async (lectureId, questionText) => {
+    const openai = getOpenAI();
+    const pc = getPinecone();
     const startTime = Date.now();
     const indexName = process.env.PINECONE_INDEX_NAME || 'questxp';
     const index = pc.Index(indexName);
@@ -31,7 +35,7 @@ exports.queryLecture = async (lectureId, questionText) => {
     // 2. Query Pinecone
     const topK = parseInt(process.env.RAG_TOP_K) || 5;
     const minScore = parseFloat(process.env.MIN_RELEVANCE_SCORE) || 0.75;
-    
+
     const pineconeStart = Date.now();
     const queryRes = await index.namespace(lectureId.toString()).query({
         topK,

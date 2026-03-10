@@ -8,8 +8,9 @@ const LEVEL_QUIZ = 3;
 
 const QuizTab = ({ lectureId, quizStatus, errorReason }) => {
     const { user } = useAuthStore();
+    const [triggered, setTriggered] = useState(false);
     const [quiz, setQuiz] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     
     const [answers, setAnswers] = useState([]);
@@ -17,32 +18,38 @@ const QuizTab = ({ lectureId, quizStatus, errorReason }) => {
     const [result, setResult] = useState(null);
     const [startTime, setStartTime] = useState(null);
 
-    useEffect(() => {
-        if (quizStatus !== 'complete') {
-            setLoading(false);
-            return;
-        }
-
-        const fetchQuiz = async () => {
-            try {
-                setLoading(true);
-                const { data } = await api.get(`/lectures/${lectureId}/quiz`);
-                setQuiz(data.quiz);
-                setAnswers(new Array(data.quiz.questionCount).fill(null));
-                setStartTime(Date.now());
-            } catch (err) {
-                if (err.response?.status === 403) {
-                    setError('Level too low to access quiz.');
-                } else {
-                    setError('Failed to load quiz.');
-                }
-            } finally {
-                setLoading(false);
+    const fetchQuiz = async () => {
+        if (quizStatus !== 'complete') return;
+        try {
+            setLoading(true);
+            const { data } = await api.get(`/lectures/${lectureId}/quiz`);
+            setQuiz(data.quiz);
+            setAnswers(new Array(data.quiz.questionCount).fill(null));
+            setStartTime(Date.now());
+        } catch (err) {
+            if (err.response?.status === 403) {
+                setError('Level too low to access quiz.');
+            } else {
+                setError('Failed to load quiz.');
             }
-        };
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    const handleTrigger = () => {
+        setTriggered(true);
         fetchQuiz();
-    }, [lectureId, quizStatus]);
+    };
+
+    // Reset when lecture changes
+    useEffect(() => {
+        setTriggered(false);
+        setQuiz(null);
+        setResult(null);
+        setError(null);
+        setLoading(false);
+    }, [lectureId]);
 
     const handleOptionSelect = (questionIndex, optionIndex) => {
         if (result) return; // Prevent changing answers after submission
@@ -87,13 +94,40 @@ const QuizTab = ({ lectureId, quizStatus, errorReason }) => {
         );
     }
 
-    if (quizStatus === 'pending' || quizStatus === 'in_progress' || loading) {
+    // Trigger card
+    if (!triggered) {
+        const isReady = quizStatus === 'complete';
         return (
-            <div className="p-8 flex flex-col items-center justify-center min-h-[300px] text-text-muted">
-                <div className="w-8 h-8 rounded-full border-2 border-border border-t-primary animate-spin mb-4"></div>
-                <p className="font-semibold uppercase tracking-wider text-xs">
-                    {quizStatus === 'in_progress' ? 'AI is crafting your quiz...' : 'Loading...'}
+            <div className="flex flex-col items-center justify-center min-h-[300px] p-8 text-center">
+                <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4" style={{ background: 'rgba(245,165,36,0.10)', border: '1px solid rgba(245,165,36,0.3)' }}>
+                    <Trophy className="w-6 h-6 text-[#f5a524]" />
+                </div>
+                <p className="text-base font-bold text-white mb-2">🎯 AI Practice Quiz</p>
+                <p className="text-sm mb-6" style={{ color: '#8b9cc8' }}>
+                    {isReady
+                        ? 'Test your knowledge with AI-generated questions from this lesson.'
+                        : quizStatus === 'in_progress' ? 'AI is crafting your quiz…' : 'Quiz not ready yet — watch more of the lecture first.'}
                 </p>
+                {isReady && (
+                    <button onClick={handleTrigger} className="btn-esports text-sm">
+                        Start Quiz 🎮
+                    </button>
+                )}
+                {!isReady && (
+                    <div className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold" style={{ background: 'rgba(245,165,36,0.1)', border: '1px solid rgba(245,165,36,0.3)', color: '#f5a524' }}>
+                        <span className="w-2 h-2 rounded-full bg-[#f5a524] animate-pulse" />
+                        {quizStatus === 'in_progress' ? 'Generating quiz…' : 'Coming soon'}
+                    </div>
+                )}
+            </div>
+        );
+    }
+
+    if (loading) {
+        return (
+            <div className="p-8 flex flex-col items-center justify-center min-h-[300px]">
+                <div className="w-8 h-8 rounded-full border-2 border-[#2a2f52] border-t-[#f5a524] animate-spin mb-4" />
+                <p className="text-xs font-bold uppercase tracking-widest" style={{ color: '#4a5480' }}>Loading Quiz…</p>
             </div>
         );
     }

@@ -30,7 +30,7 @@ const createCourse = async (req, res, next) => {
 const getCourses = async (req, res, next) => {
     try {
         const courses = await Course.find({ owner: req.user._id })
-            .select('title status totalLectures createdAt')
+            .select('title status totalLectures createdAt sections.lectures.thumbnailUrl')
             .sort({ createdAt: -1 })
             .lean();
 
@@ -48,6 +48,8 @@ const getCourses = async (req, res, next) => {
 
         const result = courses.map(c => ({
             ...c,
+            // Hoist the first lecture thumbnail to the top level for easy access
+            thumbnailUrl: c.sections?.[0]?.lectures?.[0]?.thumbnailUrl || null,
             completionPct: progressMap[c._id.toString()] || 0
         }));
 

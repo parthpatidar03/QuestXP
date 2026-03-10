@@ -15,55 +15,43 @@ const LEVEL_NOTES_EDIT = 3;
  */
 const NotesTab = ({ lectureId, courseId, onSeek, notesStatus, errorReason }) => {
     const { user } = useAuthStore();
+    const [triggered, setTriggered] = useState(false);
     const [notes, setNotes] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [editContent, setEditContent] = useState('');
     const [saving, setSaving] = useState(false);
 
-    useEffect(() => {
-        if (notesStatus !== 'complete') {
-            setLoading(false);
-            return;
-        }
-
-        const fetchNotes = async () => {
-            try {
-                setLoading(true);
-                const { data } = await api.get(`/lectures/${lectureId}/notes`);
-                setNotes(data.notes);
-            } catch (err) {
-                if (err.response?.status === 403) {
-                    setError('Level too low to access notes.');
-                } else {
-                    setError('Failed to load notes.');
-                }
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchNotes();
-    }, [lectureId, notesStatus]);
-
-    const handleSaveEdit = async () => {
-        if (!editContent.trim()) return;
+    const fetchNotes = async () => {
+        if (notesStatus !== 'complete') return;
         try {
-            setSaving(true);
-            const { data } = await api.patch(`/lectures/${lectureId}/notes/edit`, {
-                content: editContent
-            });
+            setLoading(true);
+            const { data } = await api.get(`/lectures/${lectureId}/notes`);
             setNotes(data.notes);
-            setIsEditing(false);
-            setEditContent('');
         } catch (err) {
-            console.error('Failed to save edit', err);
-            // Could add toast here
+            if (err.response?.status === 403) {
+                setError('Level too low to access notes.');
+            } else {
+                setError('Failed to load notes.');
+            }
         } finally {
-            setSaving(false);
+            setLoading(false);
         }
     };
+
+    const handleGenerate = () => {
+        setTriggered(true);
+        fetchNotes();
+    };
+
+    // Reset when lecture changes
+    useEffect(() => {
+        setTriggered(false);
+        setNotes(null);
+        setError(null);
+        setLoading(false);
+    }, [lectureId]);
 
     if (notesStatus === 'failed') {
         return (
@@ -75,13 +63,38 @@ const NotesTab = ({ lectureId, courseId, onSeek, notesStatus, errorReason }) => 
         );
     }
 
-    if (notesStatus === 'pending' || notesStatus === 'in_progress' || loading) {
+    // Not yet triggered — show a generate button
+    if (!triggered) {
+        const isReady = notesStatus === 'complete';
         return (
-            <div className="p-8 flex flex-col items-center justify-center min-h-[300px] text-text-muted">
-                <div className="w-8 h-8 rounded-full border-2 border-border border-t-primary animate-spin mb-4"></div>
-                <p className="font-semibold uppercase tracking-wider text-xs">
-                    {notesStatus === 'in_progress' ? 'AI is generating notes...' : 'Loading...'}
+            <div className="flex flex-col items-center justify-center min-h-[300px] p-8 text-center">
+                <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4" style={{ background: 'rgba(0,180,255,0.10)', border: '1px solid rgba(0,180,255,0.3)' }}>
+                    <Play className="w-6 h-6 text-[#00b4ff]" />
+                </div>
+                <p className="text-base font-bold text-white mb-2">⚡ AI Smart Notes</p>
+                <p className="text-sm mb-6" style={{ color: '#8b9cc8' }}>
+                    {isReady ? 'AI has generated structured notes for this lesson.' : 'Notes are being generated in the background. Come back after watching more of this lecture.'}
                 </p>
+                {isReady && (
+                    <button onClick={handleGenerate} className="btn-esports text-sm">
+                        Load Notes
+                    </button>
+                )}
+                {!isReady && (
+                    <div className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold" style={{ background: 'rgba(245,165,36,0.1)', border: '1px solid rgba(245,165,36,0.3)', color: '#f5a524' }}>
+                        <span className="w-2 h-2 rounded-full bg-[#f5a524] animate-pulse" />
+                        {notesStatus === 'in_progress' ? 'AI is generating notes…' : 'Notes not ready yet'}
+                    </div>
+                )}
+            </div>
+        );
+    }
+
+    if (loading) {
+        return (
+            <div className="p-8 flex flex-col items-center justify-center min-h-[300px]">
+                <div className="w-8 h-8 rounded-full border-2 border-[#2a2f52] border-t-[#00b4ff] animate-spin mb-4" />
+                <p className="text-xs font-bold uppercase tracking-widest" style={{ color: '#4a5480' }}>Loading Notes…</p>
             </div>
         );
     }

@@ -48,3 +48,6 @@ design-system/
 .claude/
 QuestXP.pdf
 .specify/
+
+# Local MongoDB data directory
+backend/data/
