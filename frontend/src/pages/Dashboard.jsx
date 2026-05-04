@@ -8,6 +8,7 @@ import { getGamificationProfile } from '../services/gamificationApi';
 import NavBar from '../components/NavBar';
 import XPLeaderboardSidebar from '../components/Dashboard/XPLeaderboardSidebar';
 import CourseCreationForm from '../components/Course/CourseCreationForm';
+import { BGPattern } from '../components/ui/bg-pattern';
 
 /* ── Helpers ─────────────────────────────────────────────────────────── */
 const XP_PER_LECTURE = 50;
@@ -21,14 +22,14 @@ function calcCourseProgress(course, progress) {
 /* ── Stat Card ──────────────────────────────────────────────────────── */
 function StatCard({ icon, label, value, color, glow }) {
     return (
-        <div className="glass-card p-4 flex flex-col gap-2" style={{ borderColor: `${color}30` }}>
+        <div className="glass-card p-4 flex flex-col gap-2">
             <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: `${color}18` }}>
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-surface-2" style={{ color }}>
                     {icon}
                 </div>
-                <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: '#8b9cc8' }}>{label}</span>
+                <span className="text-xs font-semibold uppercase tracking-wide text-text-muted">{label}</span>
             </div>
-            <span className="text-3xl font-black" style={{ color, fontFamily: "'Barlow Condensed', sans-serif", textShadow: glow ? `0 0 16px ${color}80` : 'none' }}>
+            <span className="text-2xl font-semibold text-text-primary">
                 {value}
             </span>
         </div>
@@ -53,19 +54,19 @@ function CourseCard({ course, progress }) {
     const resumeId = nextLecture?._id || course?.sections?.[0]?.lectures?.[0]?._id;
 
     return (
-        <Link to={`/courses/${course._id}`} className="glass-card group block hover:border-[#00b4ff]/50 transition-all" style={{ padding: 0, overflow: 'hidden' }}>
+        <Link to={`/courses/${course._id}`} className="glass-card group block transition-all" style={{ padding: 0, overflow: 'hidden' }}>
             {/* Thumbnail as background-image */}
             <div
                 className="relative w-full aspect-video overflow-hidden"
                 style={{
                     background: thumb
-                        ? `linear-gradient(to bottom, rgba(13,15,26,0) 40%, rgba(13,15,26,1) 100%), url(${thumb}) center / cover no-repeat`
-                        : 'linear-gradient(135deg, #12152a, #1a1e35)',
+                        ? `linear-gradient(to bottom, oklch(0.23 0.018 88 / 0) 40%, oklch(0.23 0.018 88 / 0.62) 100%), url(${thumb}) center / cover no-repeat`
+                        : 'var(--color-surface-2)',
                 }}
             >
                 {!thumb && (
                     <div className="w-full h-full flex items-center justify-center">
-                        <BookOpen className="w-10 h-10" style={{ color: '#2a2f52' }} />
+                        <BookOpen className="w-10 h-10 text-text-muted" />
                     </div>
                 )}
                 {/* XP chip */}
@@ -73,23 +74,23 @@ function CourseCard({ course, progress }) {
                     <Zap className="w-3 h-3" /> +{xpPool} XP
                 </div>
                 {/* Progress badge */}
-                <div className="absolute bottom-2 left-2 bg-[#0d0f1a]/80 rounded-full px-2 py-0.5 text-xs font-bold" style={{ color: pct === 100 ? '#10B981' : '#00b4ff' }}>
+                <div className="absolute bottom-2 left-2 bg-surface/90 rounded-full px-2 py-0.5 text-xs font-semibold" style={{ color: pct === 100 ? 'var(--color-success)' : 'var(--color-primary)' }}>
                     {pct}%
                 </div>
             </div>
 
             {/* Body */}
             <div className="p-4">
-                <h3 className="font-bold text-white text-sm leading-snug mb-2 group-hover:text-[#00b4ff] transition-colors line-clamp-2">{course.title}</h3>
+                <h3 className="font-semibold text-text-primary text-sm leading-snug mb-2 group-hover:text-primary transition-colors line-clamp-2">{course.title}</h3>
                 <div className="progress-bar mb-2">
                     <div className="progress-bar__fill" style={{ width: `${pct}%` }} />
                 </div>
-                <div className="flex items-center justify-between text-xs" style={{ color: '#4a5480' }}>
+                <div className="flex items-center justify-between text-xs text-text-muted">
                     <span>{course.totalLectures} missions</span>
                     <span>{pct}% complete</span>
                 </div>
                 {resumeId && (
-                    <div className="mt-2 text-xs font-semibold" style={{ color: '#00b4ff' }}>
+                    <div className="mt-2 text-xs font-semibold text-primary">
                         <Link
                             to={`/courses/${course._id}/lectures/${resumeId}`}
                             onClick={e => e.stopPropagation()}
@@ -147,7 +148,8 @@ const Dashboard = () => {
     const firstLecId = activeCourse?.sections?.[0]?.lectures?.[0]?._id;
 
     return (
-        <div className="min-h-screen" style={{ background: '#0d0f1a' }}>
+        <div className="min-h-screen bg-bg text-text-primary relative overflow-hidden">
+            <BGPattern variant="grid" mask="fade-edges" fill="var(--color-text-muted)" className="opacity-15 z-0" />
             <NavBar />
 
             {/* Layout */}
@@ -159,35 +161,29 @@ const Dashboard = () => {
                     {/* ── Hero Banner ── */}
                     {activeCourse && (
                         <section
-                            className="relative rounded-2xl overflow-hidden p-7 flex flex-col sm:flex-row gap-6 items-start"
+                            className="relative rounded-xl overflow-hidden p-7 flex flex-col sm:flex-row gap-6 items-start bg-surface border border-border"
                             style={{
-                                background: 'linear-gradient(135deg, rgba(0,180,255,0.12) 0%, rgba(0,85,255,0.08) 100%)',
-                                border: '1px solid rgba(0,180,255,0.25)',
-                                boxShadow: '0 0 40px rgba(0,180,255,0.10) inset'
+                                boxShadow: 'var(--shadow-card)'
                             }}
                         >
-                            {/* Ambient glow */}
-                            <div className="absolute -top-16 -left-16 w-48 h-48 rounded-full pointer-events-none" style={{ background: 'rgba(0,180,255,0.15)', filter: 'blur(60px)' }} />
-
-                            {/* Thumbnail */}
                             {activeCourse.sections?.[0]?.lectures?.[0]?.thumbnailUrl && (
                                 <img
                                     src={activeCourse.sections[0].lectures[0].thumbnailUrl}
                                     alt="course"
-                                    className="w-32 h-20 sm:w-44 sm:h-28 object-cover rounded-xl shrink-0 border border-[#2a2f52]"
+                                    className="w-32 h-20 sm:w-44 sm:h-28 object-cover rounded-lg shrink-0 border border-border"
                                 />
                             )}
 
                             <div className="relative flex-1 min-w-0">
-                                <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: '#00b4ff' }}>⚡ Continue Your Quest</p>
-                                <h1 className="text-2xl sm:text-3xl font-black text-white mb-1 leading-tight" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
+                                <p className="text-xs font-semibold uppercase tracking-wide mb-1 text-primary">Continue studying</p>
+                                <h1 className="text-2xl sm:text-3xl font-semibold text-text-primary mb-1 leading-tight">
                                     {activeCourse.title}
                                 </h1>
 
                                 {/* XP earned */}
                                 <div className="flex items-center gap-2 mb-3">
                                     <span className="xp-chip"><Zap className="w-3 h-3" /> {activePct * (activeCourse.totalLectures * XP_PER_LECTURE) / 100 | 0} / {activeCourse.totalLectures * XP_PER_LECTURE} XP</span>
-                                    <span className="text-xs" style={{ color: '#4a5480' }}>{activePct}% complete</span>
+                                    <span className="text-xs text-text-muted">{activePct}% complete</span>
                                 </div>
 
                                 {/* Progress */}
@@ -212,30 +208,30 @@ const Dashboard = () => {
                     {/* ── Stats Row ── */}
                     <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <StatCard
-                            icon={<Zap className="w-4 h-4 text-[#f5a524]" />}
+                            icon={<Zap className="w-4 h-4" />}
                             label="Total XP"
                             value={(totalXP || user?.totalXP || 0).toLocaleString()}
-                            color="#f5a524"
+                            color="var(--color-gold)"
                             glow
                         />
                         <StatCard
-                            icon={<Flame className="w-4 h-4 text-[#f97316] streak-flame" />}
+                            icon={<Flame className="w-4 h-4" />}
                             label="Streak"
                             value={`${streak?.current ?? user?.streak?.current ?? 0}d`}
-                            color="#f97316"
+                            color="var(--color-warning)"
                             glow
                         />
                         <StatCard
-                            icon={<Trophy className="w-4 h-4 text-[#10B981]" />}
+                            icon={<Trophy className="w-4 h-4" />}
                             label="Completed"
                             value={courses.filter(c => calcCourseProgress(c, progressMap[c._id]) === 100).length}
-                            color="#10B981"
+                            color="var(--color-success)"
                         />
                         <StatCard
-                            icon={<Shield className="w-4 h-4 text-[#00b4ff]" />}
+                            icon={<Shield className="w-4 h-4" />}
                             label={`Level`}
                             value={`Lv ${level || user?.level || 1}`}
-                            color="#00b4ff"
+                            color="var(--color-primary)"
                             glow
                         />
                     </section>
@@ -243,8 +239,8 @@ const Dashboard = () => {
                     {/* ── My Active Courses ── */}
                     <section>
                         <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-xl font-black tracking-wide text-white" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
-                                ⚔️ MY ACTIVE QUESTS
+                            <h2 className="text-xl font-semibold tracking-tight text-text-primary">
+                                Active courses
                             </h2>
                             <button
                                 onClick={() => setShowCreate(v => !v)}
@@ -263,13 +259,13 @@ const Dashboard = () => {
 
                         {courses.length === 0 && !showCreate ? (
                             <div className="glass-card flex flex-col items-center justify-center py-20 text-center" style={{ borderStyle: 'dashed' }}>
-                                <BookOpen className="w-12 h-12 mb-4" style={{ color: '#2a2f52' }} />
-                                <h3 className="text-lg font-bold text-white mb-2">No Quests Yet</h3>
-                                <p className="text-sm mb-6" style={{ color: '#8b9cc8' }}>
+                                <BookOpen className="w-12 h-12 mb-4 text-text-muted" />
+                                <h3 className="text-lg font-semibold text-text-primary mb-2">No courses yet</h3>
+                                <p className="text-sm mb-6 text-text-secondary">
                                     Paste a YouTube playlist to generate your first structured, gamified course.
                                 </p>
                                 <button onClick={() => setShowCreate(true)} className="btn-esports">
-                                    Start Your First Quest
+                                    Create your first course
                                 </button>
                             </div>
                         ) : (
@@ -284,8 +280,8 @@ const Dashboard = () => {
                     {/* ── Featured Quests ── */}
                     {courses.length > 0 && (
                         <section>
-                            <h2 className="text-xl font-black tracking-wide text-white mb-4" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
-                                🏆 FEATURED QUESTS
+                            <h2 className="text-xl font-semibold tracking-tight text-text-primary mb-4">
+                                Featured courses
                             </h2>
                             <div className="flex gap-4 overflow-x-auto pb-2">
                                 {courses.map((c, i) => {
@@ -298,15 +294,15 @@ const Dashboard = () => {
                                             className="shrink-0 w-56 glass-card-gold group hover:scale-105 transition-transform overflow-hidden"
                                             style={{ padding: 0, borderRadius: 12 }}
                                         >
-                                            <div className="relative w-full aspect-video bg-[#12152a] overflow-hidden">
-                                                {thumb ? <img src={thumb} alt="" className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity" /> : <Star className="w-8 h-8 m-auto mt-6" style={{ color: '#2a2f52' }} />}
-                                                <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f1a] via-transparent to-transparent" />
+                                            <div className="relative w-full aspect-video bg-surface-2 overflow-hidden">
+                                                {thumb ? <img src={thumb} alt="" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" /> : <Star className="w-8 h-8 m-auto mt-6 text-text-muted" />}
+                                                <div className="absolute inset-0 bg-gradient-to-t from-[oklch(0.23_0.018_88_/_0.55)] via-transparent to-transparent" />
                                                 <span className={`absolute top-2 left-2 ${i % 2 === 0 ? 'badge-epic' : 'badge-rare'}`}>
                                                     {i % 2 === 0 ? 'EPIC' : 'RARE'}
                                                 </span>
                                             </div>
                                             <div className="p-3">
-                                                <p className="text-xs font-bold text-white line-clamp-2 mb-1">{c.title}</p>
+                                                <p className="text-xs font-semibold text-text-primary line-clamp-2 mb-1">{c.title}</p>
                                                 <div className="xp-chip"><Zap className="w-3 h-3" /> +{xpPool} XP</div>
                                             </div>
                                         </Link>
@@ -322,20 +318,20 @@ const Dashboard = () => {
                     <XPLeaderboardSidebar players={user ? [{ name: user.name, totalXP: totalXP || user.totalXP || 0, level: level || user.level || 1 }] : []} />
 
                     {/* User Profile Quick-card */}
-                    <Link to="/profile" className="glass-card block hover:border-[#00b4ff]/50 transition-all p-4">
+                    <Link to="/profile" className="glass-card block transition-all p-4">
                         <div className="flex items-center gap-3 mb-3">
-                            <div className="w-10 h-10 rounded-full border-2 border-[#00b4ff] flex items-center justify-center font-bold text-sm" style={{ background: 'linear-gradient(135deg,#00b4ff,#0055ff)', color: '#fff' }}>
+                            <div className="w-10 h-10 rounded-full border border-border flex items-center justify-center font-semibold text-sm bg-primary text-white">
                                 {user.name?.charAt(0)?.toUpperCase()}
                             </div>
                             <div>
-                                <p className="text-sm font-bold text-white">{user.name}</p>
-                                <p className="text-xs" style={{ color: '#8b9cc8' }}>{levelTitle || 'Explorer'} · Lv {level || user?.level}</p>
+                                <p className="text-sm font-semibold text-text-primary">{user.name}</p>
+                                <p className="text-xs text-text-secondary">{levelTitle || 'Explorer'} · Lv {level || user?.level}</p>
                             </div>
                         </div>
                         <div className="progress-bar mb-1">
                             <div className="progress-bar__fill" style={{ width: '62%' }} />
                         </div>
-                        <p className="text-xs text-right" style={{ color: '#4a5480' }}>View Full Profile →</p>
+                        <p className="text-xs text-right text-text-muted">View full profile</p>
                     </Link>
                 </aside>
             </div>

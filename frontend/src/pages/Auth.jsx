@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import useAuthStore from '../store/useAuthStore';
 import { useNavigate } from 'react-router-dom';
+import { BGPattern } from '../components/ui/bg-pattern';
 
 const Auth = () => {
     const [isLogin, setIsLogin] = useState(true);
@@ -39,25 +40,28 @@ const Auth = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-bg flex-col text-text-primary p-4 rounded-lg">
-            {/* Logo/Brand Area */}
-            <div className="mb-8 flex flex-col items-center">
-                <div className="w-16 h-16 bg-primary/10 rounded-2xl border border-primary/20 flex items-center justify-center mb-4 shadow-[0_0_30px_rgba(56,189,248,0.15)]">
-                    <svg className="w-8 h-8 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <div className="min-h-screen flex items-center justify-center bg-bg flex-col text-text-primary p-4 relative overflow-hidden">
+            <BGPattern variant="grid" mask="fade-edges" fill="var(--color-text-muted)" className="opacity-20 z-0" />
+            <div className="relative z-10 mb-8 flex flex-col items-center">
+                <div className="w-14 h-14 bg-primary rounded-xl flex items-center justify-center mb-4 shadow-card">
+                    <svg className="w-8 h-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
                     </svg>
                 </div>
-                <h1 className="text-display text-text-primary font-bold text-3xl tracking-tight">QuestXP</h1>
-                <p className="text-text-secondary mt-2">Level up your learning journey.</p>
+                <h1 className="text-text-primary font-semibold text-3xl tracking-tight">QuestXP</h1>
+                <p className="text-text-secondary mt-2">Structured learning from YouTube playlists.</p>
             </div>
 
-            <div className="bg-surface p-8 rounded-[16px] shadow-[0_25px_50px_rgba(0,0,0,0.6)] w-full max-w-md border border-border">
-                <h2 className="text-h2 font-display font-semibold mb-6 text-center text-text-primary">
-                    {isLogin ? 'Welcome Back' : 'Create Account'}
+            <div className="bg-surface p-8 rounded-xl shadow-card w-full max-w-md border border-border">
+                <h2 className="text-2xl font-semibold mb-2 text-center text-text-primary">
+                    {isLogin ? 'Welcome back' : 'Create account'}
                 </h2>
+                <p className="text-sm text-text-secondary text-center mb-6">
+                    {isLogin ? 'Sign in to continue studying.' : 'Start tracking progress across your courses.'}
+                </p>
                 
                 {error && (
-                    <div className="bg-red-500/10 border border-red-500 text-red-500 p-3 rounded mb-4 text-sm text-center">
+                    <div className="bg-danger/10 border border-danger/30 text-danger p-3 rounded-lg mb-4 text-sm text-center">
                         {error}
                     </div>
                 )}
@@ -66,7 +70,7 @@ const Auth = () => {
                     {!isLogin && (
                         <div>
                             <label className="block text-sm font-medium mb-1.5 text-text-secondary">Name</label>
-                            <input 
+                            <input
                                 type="text" value={name} onChange={(e) => setName(e.target.value)}
                                 className="w-full p-3 bg-surface-2 rounded-md border border-border focus:border-primary outline-none transition-colors text-text-primary placeholder:text-text-muted"
                                 placeholder="Enter your name"
@@ -76,7 +80,7 @@ const Auth = () => {
                     )}
                     <div>
                         <label className="block text-sm font-medium mb-1.5 text-text-secondary">Email</label>
-                        <input 
+                        <input
                             type="email" value={email} onChange={(e) => setEmail(e.target.value)}
                             className="w-full p-3 bg-surface-2 rounded-md border border-border focus:border-primary outline-none transition-colors text-text-primary placeholder:text-text-muted"
                             placeholder="you@example.com"
@@ -85,7 +89,7 @@ const Auth = () => {
                     </div>
                     <div>
                         <label className="block text-sm font-medium mb-1.5 text-text-secondary">Password</label>
-                        <input 
+                        <input
                             type="password" value={password} onChange={(e) => setPassword(e.target.value)}
                             className="w-full p-3 bg-surface-2 rounded-md border border-border focus:border-primary outline-none transition-colors text-text-primary placeholder:text-text-muted"
                             placeholder="••••••••"
@@ -108,7 +112,7 @@ const Auth = () => {
                         <GoogleLogin
                             onSuccess={handleGoogleSuccess}
                             onError={() => setError('Google Authentication Failed')}
-                            theme="filled_black"
+                            theme="outline"
                             shape="rectangular"
                             size="large"
                             text={isLogin ? "signin_with" : "signup_with"}

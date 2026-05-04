@@ -9,6 +9,7 @@ import QuizTab from '../components/Lecture/QuizTab';
 import DoubtChatbot from '../components/Lecture/DoubtChatbot';
 import useGamificationStore from '../store/useGamificationStore';
 import { ArrowLeft, CheckCircle2, ChevronRight, ChevronLeft, Zap, Bot } from 'lucide-react';
+import { BGPattern } from '../components/ui/bg-pattern';
 
 const TABS = [
     { key: 'topics', label: '🗺 Topics' },
@@ -124,7 +125,8 @@ const Player = () => {
         : navigate(`/courses/${courseId}`);
 
     return (
-        <div className="h-screen flex flex-col overflow-hidden" style={{ background: '#08090f' }}>
+        <div className="h-screen flex flex-col overflow-hidden relative" style={{ background: '#08090f' }}>
+            <BGPattern variant="grid" mask="fade-edges" fill="rgba(255,255,255,0.05)" className="opacity-5 z-0" />
 
             {/* Top progress bar */}
             <div className="fixed top-0 left-0 w-full h-[2px] z-50" style={{ background: '#1a1e35' }}>

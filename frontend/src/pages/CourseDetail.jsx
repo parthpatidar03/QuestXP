@@ -9,6 +9,7 @@ import {
     BookOpen, Layers, Zap, Lock, CheckCircle2, ChevronRight,
     MessageSquareText, StickyNote, BarChart3
 } from 'lucide-react';
+import { BGPattern } from '../components/ui/bg-pattern';
 
 /* ── helpers ────────────────────────────────────────────────────────── */
 const XP_PER_LECTURE = 50;
@@ -195,7 +196,8 @@ const CourseDetail = () => {
     }
 
     return (
-        <div className="min-h-screen" style={{ background: '#0d0f1a' }}>
+        <div className="min-h-screen relative overflow-hidden" style={{ background: '#0d0f1a' }}>
+            <BGPattern variant="grid" mask="fade-edges" fill="rgba(255,255,255,0.07)" className="opacity-10 z-0" />
             <NavBar />
 
             <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-8">

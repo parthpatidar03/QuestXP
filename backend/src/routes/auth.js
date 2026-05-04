@@ -1,11 +1,17 @@
 const express = require('express');
 const { body } = require('express-validator');
-const { register, login, googleLogin, getMe, logout } = require('../controllers/authController');
+const { register, login, googleLogin, getMe, refresh, logout, logoutAll } = require('../controllers/authController');
 const auth = require('../middleware/auth');
 
 const router = express.Router();
 
 router.post('/register', [
+    body('name').trim().notEmpty().withMessage('Name is required').isLength({ max: 60 }),
+    body('email').isEmail().withMessage('Valid email is required').normalizeEmail(),
+    body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters')
+], register);
+
+router.post('/signup', [
     body('name').trim().notEmpty().withMessage('Name is required').isLength({ max: 60 }),
     body('email').isEmail().withMessage('Valid email is required').normalizeEmail(),
     body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters')
@@ -22,6 +28,9 @@ router.post('/google', [
 
 router.get('/me', auth, getMe);
 
+router.post('/refresh', refresh);
+
 router.post('/logout', logout);
+router.post('/logout-all', auth, logoutAll);
 
 module.exports = router;

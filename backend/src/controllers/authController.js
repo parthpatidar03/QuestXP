@@ -1,10 +1,21 @@
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const Session = require('../models/Session');
 const { validationResult } = require('express-validator');
 const { OAuth2Client } = require('google-auth-library');
 const Progress = require('../models/Progress');
 const studyPlanService = require('../services/studyPlanService');
+const {
+    ACCESS_TOKEN_COOKIE,
+    REFRESH_TOKEN_COOKIE,
+    REFRESH_TOKEN_MAX_AGE_MS,
+    hashToken,
+    createAccessToken,
+    createRefreshToken,
+    setAuthCookies,
+    clearAuthCookies,
+    verifyRefreshToken,
+} = require('../utils/authTokens');
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -22,17 +33,39 @@ const triggerPlanRecalculation = async (userId) => {
 };
 
 
-const generateToken = (userId, email) => {
-    return jwt.sign({ userId, email }, process.env.JWT_SECRET || 'dev_secret', { expiresIn: '7d' });
+const userResponse = (user) => ({
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    totalXP: user.totalXP,
+    level: user.level,
+    streak: user.streak,
+    badges: user.badges,
+    unlockedFeatures: user.unlockedFeatures,
+});
+
+const getRequestIp = (req) => {
+    const forwarded = req.headers['x-forwarded-for'];
+    if (typeof forwarded === 'string') return forwarded.split(',')[0].trim();
+    return req.ip || req.socket?.remoteAddress || null;
 };
 
-const setTokenCookie = (res, token) => {
-    res.cookie('token', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+const issueSession = async (req, res, user) => {
+    const session = await Session.create({
+        user: user._id,
+        refreshTokenHash: 'pending',
+        userAgent: req.get('user-agent') || null,
+        ip: getRequestIp(req),
+        expiresAt: new Date(Date.now() + REFRESH_TOKEN_MAX_AGE_MS),
     });
+
+    const accessToken = createAccessToken(user, session._id);
+    const refreshToken = createRefreshToken(user, session._id);
+    session.refreshTokenHash = hashToken(refreshToken);
+    await session.save();
+
+    setAuthCookies(res, accessToken, refreshToken);
+    return session;
 };
 
 const register = async (req, res, next) => {
@@ -55,11 +88,9 @@ const register = async (req, res, next) => {
 
         await user.save();
 
-        const token = generateToken(user._id, user.email);
-        setTokenCookie(res, token);
+        await issueSession(req, res, user);
 
-        const userResponse = { _id: user._id, name: user.name, email: user.email, totalXP: user.totalXP, level: user.level };
-        res.status(201).json({ user: userResponse });
+        res.status(201).json({ success: true, data: { user: userResponse(user) }, user: userResponse(user) });
     } catch (error) {
         next(error);
     }
@@ -67,22 +98,24 @@ const register = async (req, res, next) => {
 
 const login = async (req, res, next) => {
     try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+
         const { email, password } = req.body;
 
         const user = await User.findOne({ email: email.toLowerCase() });
         if (!user) return res.status(400).json({ error: 'Invalid credentials' });
+        if (!user.passwordHash) return res.status(400).json({ error: 'Use Google login for this account' });
 
         const isMatch = await bcrypt.compare(password, user.passwordHash);
         if (!isMatch) return res.status(400).json({ error: 'Invalid credentials' });
 
-        const token = generateToken(user._id, user.email);
-        setTokenCookie(res, token);
+        await issueSession(req, res, user);
 
         // T040: Recalculate study plans on login
         await triggerPlanRecalculation(user._id);
 
-        const userResponse = { _id: user._id, name: user.name, email: user.email, totalXP: user.totalXP, level: user.level };
-        res.json({ user: userResponse });
+        res.json({ success: true, data: { user: userResponse(user) }, user: userResponse(user) });
     } catch (error) {
         next(error);
     }
@@ -90,33 +123,127 @@ const login = async (req, res, next) => {
 
 const getMe = async (req, res, next) => {
     try {
-        const userResponse = {
-            _id: req.user._id,
-            name: req.user.name,
-            email: req.user.email,
-            totalXP: req.user.totalXP,
-            level: req.user.level,
-            streak: req.user.streak,
-            badges: req.user.badges,
-            unlockedFeatures: req.user.unlockedFeatures
-        };
-
         // T040: Recalculate study plans on app load
         await triggerPlanRecalculation(req.user._id);
 
-        res.json({ user: userResponse });
+        const sessions = await Session.countDocuments({
+            user: req.user._id,
+            revokedAt: null,
+            expiresAt: { $gt: new Date() },
+        });
+
+        res.json({
+            success: true,
+            data: { user: userResponse(req.user), activeSessions: sessions },
+            user: userResponse(req.user),
+            activeSessions: sessions,
+        });
     } catch (error) {
         next(error);
     }
 };
 
-const logout = (req, res) => {
-    res.clearCookie('token');
-    res.json({ success: true });
+const refresh = async (req, res, next) => {
+    try {
+        const token = req.cookies[REFRESH_TOKEN_COOKIE];
+        if (!token) return res.status(401).json({ error: 'Refresh token required' });
+
+        const decoded = verifyRefreshToken(token);
+        if (decoded.type !== 'refresh') return res.status(401).json({ error: 'Invalid refresh token' });
+
+        const session = await Session.findById(decoded.sessionId);
+        if (!session || session.revokedAt || session.expiresAt <= new Date()) {
+            await Session.updateMany(
+                { user: decoded.userId, revokedAt: null },
+                { revokedAt: new Date(), revokeReason: 'refresh_reuse_or_invalid_session' }
+            );
+            clearAuthCookies(res);
+            return res.status(401).json({ error: 'Invalid refresh token' });
+        }
+
+        if (session.refreshTokenHash !== hashToken(token)) {
+            await Session.updateMany(
+                { user: decoded.userId, revokedAt: null },
+                { revokedAt: new Date(), revokeReason: 'refresh_token_reuse_detected' }
+            );
+            clearAuthCookies(res);
+            return res.status(401).json({ error: 'Invalid refresh token' });
+        }
+
+        const user = await User.findById(decoded.userId).select('-passwordHash');
+        if (!user) {
+            session.revokedAt = new Date();
+            session.revokeReason = 'user_not_found';
+            await session.save();
+            clearAuthCookies(res);
+            return res.status(401).json({ error: 'User not found' });
+        }
+
+        const accessToken = createAccessToken(user, session._id);
+        const refreshToken = createRefreshToken(user, session._id);
+        session.refreshTokenHash = hashToken(refreshToken);
+        session.lastUsedAt = new Date();
+        session.expiresAt = new Date(Date.now() + REFRESH_TOKEN_MAX_AGE_MS);
+        await session.save();
+
+        setAuthCookies(res, accessToken, refreshToken);
+        res.json({ success: true, data: { user: userResponse(user) }, user: userResponse(user) });
+    } catch (error) {
+        clearAuthCookies(res);
+        res.status(401).json({ error: 'Invalid refresh token' });
+    }
+};
+
+const logout = async (req, res, next) => {
+    try {
+        const refreshToken = req.cookies[REFRESH_TOKEN_COOKIE];
+        const accessToken = req.cookies[ACCESS_TOKEN_COOKIE];
+        let sessionId = null;
+
+        if (refreshToken) {
+            try {
+                sessionId = verifyRefreshToken(refreshToken).sessionId;
+            } catch (err) {
+                sessionId = null;
+            }
+        }
+
+        if (!sessionId && accessToken && req.session?._id) {
+            sessionId = req.session._id;
+        }
+
+        if (sessionId) {
+            await Session.findByIdAndUpdate(sessionId, {
+                revokedAt: new Date(),
+                revokeReason: 'logout',
+            });
+        }
+
+        clearAuthCookies(res);
+        res.json({ success: true, message: 'Logged out' });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const logoutAll = async (req, res, next) => {
+    try {
+        await Session.updateMany(
+            { user: req.user._id, revokedAt: null },
+            { revokedAt: new Date(), revokeReason: 'logout_all' }
+        );
+        clearAuthCookies(res);
+        res.json({ success: true, message: 'Logged out from all devices' });
+    } catch (error) {
+        next(error);
+    }
 };
 
 const googleLogin = async (req, res, next) => {
     try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+
         const { credential } = req.body;
         const ticket = await googleClient.verifyIdToken({
             idToken: credential,
@@ -138,17 +265,15 @@ const googleLogin = async (req, res, next) => {
             await user.save();
         }
 
-        const token = generateToken(user._id, user.email);
-        setTokenCookie(res, token);
+        await issueSession(req, res, user);
 
         // T040: Recalculate study plans on login
         await triggerPlanRecalculation(user._id);
 
-        const userResponse = { _id: user._id, name: user.name, email: user.email, totalXP: user.totalXP, level: user.level };
-        res.json({ user: userResponse });
+        res.json({ success: true, data: { user: userResponse(user) }, user: userResponse(user) });
     } catch (error) {
         next(error);
     }
 };
 
-module.exports = { register, login, googleLogin, getMe, logout };
+module.exports = { register, login, googleLogin, getMe, refresh, logout, logoutAll };

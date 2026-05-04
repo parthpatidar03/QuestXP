@@ -7,37 +7,32 @@ export default {
   theme: {
     extend: {
       colors: {
-        // ── Esports Dark Theme ──────────────────
-        bg: '#0d0f1a',
-        surface: '#12152a',
-        'surface-2': '#1a1e35',
-        'surface-3': '#222748',
-        border: '#2a2f52',
+        bg: 'oklch(0.975 0.006 88)',
+        surface: 'oklch(0.995 0.004 88)',
+        'surface-2': 'oklch(0.955 0.006 88)',
+        'surface-3': 'oklch(0.925 0.007 88)',
+        border: 'oklch(0.86 0.008 88)',
 
-        // ── Accent Palette ──────────────────────
-        primary: { DEFAULT: '#00b4ff', hover: '#0099dd' },
-        cyan: '#00e5ff',
-        gold: '#f5a524',
-        success: '#10B981',
-        warning: '#F59E0B',
-        danger: '#EF4444',
-        'xp-gold': '#f5a524',
+        primary: { DEFAULT: 'oklch(0.47 0.095 155)', hover: 'oklch(0.41 0.095 155)' },
+        cyan: 'oklch(0.55 0.08 200)',
+        gold: 'oklch(0.68 0.13 78)',
+        success: 'oklch(0.54 0.11 155)',
+        warning: 'oklch(0.71 0.14 70)',
+        danger: 'oklch(0.56 0.18 28)',
+        'xp-gold': 'oklch(0.68 0.13 78)',
 
-        // ── Text ────────────────────────────────
-        'text-primary': '#eef2ff',
-        'text-secondary': '#8b9cc8',
-        'text-muted': '#4a5480',
+        'text-primary': 'oklch(0.23 0.018 88)',
+        'text-secondary': 'oklch(0.43 0.018 88)',
+        'text-muted': 'oklch(0.60 0.014 88)',
       },
       fontFamily: {
-        display: ["'Barlow Condensed'", "'Space Grotesk'", 'sans-serif'],
-        body: ["'Space Grotesk'", 'sans-serif'],
+        display: ["'Inter'", 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        body: ["'Inter'", 'ui-sans-serif', 'system-ui', 'sans-serif'],
         mono: ["'JetBrains Mono'", 'monospace'],
-        sans: ["'Space Grotesk'", 'sans-serif'],
+        sans: ["'Inter'", 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
-        'glow-blue': '0 0 24px rgba(0,180,255,0.35)',
-        'glow-cyan': '0 0 24px rgba(0,229,255,0.40)',
-        'glow-gold': '0 0 24px rgba(245,165,36,0.40)',
+        'card': '0 1px 2px oklch(0.23 0.018 88 / 0.08), 0 12px 28px oklch(0.23 0.018 88 / 0.08)',
       },
     },
   },

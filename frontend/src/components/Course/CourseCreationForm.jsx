@@ -42,7 +42,7 @@ const CourseCreationForm = () => {
 
     return (
         <div className="card mb-8">
-            <h2 className="text-2xl font-display font-bold mb-6 text-text-primary">Create Your Quest</h2>
+            <h2 className="text-2xl font-semibold mb-6 text-text-primary">Create course</h2>
             
             {error && (
                 <div className="bg-danger/10 text-danger border border-danger/20 p-4 rounded-lg mb-6 text-sm flex items-start gap-3">
@@ -53,7 +53,7 @@ const CourseCreationForm = () => {
             
             <form onSubmit={handleSubmit} className="space-y-8">
                 <div>
-                    <label className="block text-sm font-semibold mb-2 text-text-secondary uppercase tracking-wider">Course Name</label>
+                    <label className="block text-sm font-semibold mb-2 text-text-secondary">Course name</label>
                     <input 
                         type="text" value={title} onChange={e => setTitle(e.target.value)} required
                         className="w-full p-3.5 bg-surface-2 rounded-lg border border-border focus:border-primary outline-none transition-colors text-text-primary placeholder:text-text-muted text-lg"
@@ -63,12 +63,12 @@ const CourseCreationForm = () => {
 
                 <div className="space-y-4">
                     <div className="flex justify-between items-center mb-2">
-                        <label className="block text-sm font-semibold text-text-secondary uppercase tracking-wider">Curriculum Sections</label>
+                        <label className="block text-sm font-semibold text-text-secondary">Curriculum sections</label>
                     </div>
 
                     <div className="space-y-4">
                         {sections.map((section, index) => (
-                            <div key={index} className="p-5 bg-surface-2/50 rounded-xl border border-border relative group">
+                            <div key={index} className="p-5 bg-surface-2 rounded-xl border border-border relative group">
                                 {sections.length > 1 && (
                                     <button type="button" onClick={() => removeSection(index)} className="absolute top-3 right-3 text-text-muted hover:text-danger hover:bg-danger/10 p-1 rounded-md transition-colors" title="Remove Section">
                                         <X className="w-5 h-5" />
@@ -77,7 +77,7 @@ const CourseCreationForm = () => {
                                 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pr-8">
                                     <div>
-                                        <label className="block text-xs font-semibold text-text-muted mb-1.5 uppercase tracking-wide">Section Title</label>
+                                        <label className="block text-xs font-semibold text-text-muted mb-1.5">Section title</label>
                                         <input 
                                             type="text" value={section.title} onChange={e => updateSection(index, 'title', e.target.value)} required
                                             className="w-full p-2.5 bg-surface border border-border focus:border-primary rounded-md outline-none text-sm text-text-primary placeholder:text-text-muted"
@@ -85,7 +85,7 @@ const CourseCreationForm = () => {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-semibold text-text-muted mb-1.5 uppercase tracking-wide flex items-center gap-1.5">
+                                        <label className="block text-xs font-semibold text-text-muted mb-1.5 flex items-center gap-1.5">
                                             <LinkIcon className="w-3.5 h-3.5" />
                                             YouTube Playlist URL
                                         </label>
@@ -102,7 +102,7 @@ const CourseCreationForm = () => {
 
                     <button type="button" onClick={addSection} className="w-full py-3 mt-2 border-2 border-dashed border-border rounded-xl text-text-secondary hover:text-primary hover:border-primary/50 hover:bg-primary/5 transition-all text-sm font-semibold flex items-center justify-center gap-2">
                         <Plus className="w-4 h-4" />
-                        Add Another Section
+                        Add another section
                     </button>
                 </div>
 
@@ -112,7 +112,7 @@ const CourseCreationForm = () => {
                         className="btn-primary w-full py-4 text-base relative overflow-hidden group"
                     >
                         <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
-                        <span className="relative z-10">{isSubmitting ? 'Summoning Content...' : 'Generate New Course'}</span>
+                        <span className="relative z-10">{isSubmitting ? 'Creating course...' : 'Generate course'}</span>
                     </button>
                 </div>
             </form>

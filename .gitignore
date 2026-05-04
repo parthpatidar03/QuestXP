@@ -19,6 +19,8 @@ coverage/
 logs/
 npm-debug.log*
 yarn-debug.log*
+.local/
+.playwright-cli/
 
 # Runtime data
 pids/

@@ -5,6 +5,7 @@ import useAuthStore from '../store/useAuthStore';
 import useGamificationStore from '../store/useGamificationStore';
 import { getGamificationProfile, getXPHistory, markBadgesSeen } from '../services/gamificationApi';
 import NavBar from '../components/NavBar';
+import { BGPattern } from '../components/ui/bg-pattern';
 
 /* ── Streak Heatmap ─────────────────────────────────────────────────── */
 function StreakHeatmap({ history = [] }) {
@@ -24,11 +25,11 @@ function StreakHeatmap({ history = [] }) {
     const max = Math.max(...days.map(d => d.xp), 1);
 
     const cellColor = (xp) => {
-        if (xp === 0) return '#1a1e35';
+        if (xp === 0) return 'var(--color-surface-2)';
         const intensity = Math.min(xp / max, 1);
-        if (intensity < 0.33) return 'rgba(0,180,255,0.3)';
-        if (intensity < 0.66) return 'rgba(0,180,255,0.6)';
-        return '#00b4ff';
+        if (intensity < 0.33) return 'oklch(0.88 0.035 155)';
+        if (intensity < 0.66) return 'oklch(0.72 0.07 155)';
+        return 'var(--color-primary)';
     };
 
     return (
@@ -43,9 +44,9 @@ function StreakHeatmap({ history = [] }) {
                     />
                 ))}
             </div>
-            <div className="flex items-center gap-2 mt-3 text-xs" style={{ color: '#4a5480' }}>
+            <div className="flex items-center gap-2 mt-3 text-xs text-text-muted">
                 <span>Less</span>
-                {['#1a1e35', 'rgba(0,180,255,0.3)', 'rgba(0,180,255,0.6)', '#00b4ff'].map((c, i) => (
+                {['var(--color-surface-2)', 'oklch(0.88 0.035 155)', 'oklch(0.72 0.07 155)', 'var(--color-primary)'].map((c, i) => (
                     <div key={i} className="w-4 h-4 rounded-sm" style={{ background: c }} />
                 ))}
                 <span>More</span>
@@ -55,20 +56,19 @@ function StreakHeatmap({ history = [] }) {
 }
 
 /* ── Hex Badge ──────────────────────────────────────────────────────── */
-function HexBadge({ name, earned, iconColor = '#8b9cc8' }) {
+function HexBadge({ name, earned, iconColor = 'var(--color-text-muted)' }) {
     return (
         <div className="flex flex-col items-center gap-2 group">
             <div
                 className="hex-clip w-14 h-14 flex items-center justify-center transition-all"
                 style={{
-                    background: earned ? `rgba(${iconColor === '#f5a524' ? '245,165,36' : '0,180,255'},0.18)` : '#12152a',
+                    background: earned ? 'oklch(0.95 0.035 78)' : 'var(--color-surface-2)',
                     opacity: earned ? 1 : 0.4,
-                    boxShadow: earned ? `0 0 16px ${iconColor}50` : 'none'
                 }}
             >
-                <Star className="w-6 h-6" style={{ color: earned ? iconColor : '#2a2f52' }} />
+                <Star className="w-6 h-6" style={{ color: earned ? iconColor : 'var(--color-text-muted)' }} />
             </div>
-            <p className="text-[10px] font-semibold text-center leading-tight max-w-[60px]" style={{ color: earned ? '#eef2ff' : '#4a5480' }}>
+            <p className="text-[10px] font-semibold text-center leading-tight max-w-[60px]" style={{ color: earned ? 'var(--color-text-primary)' : 'var(--color-text-muted)' }}>
                 {name}
             </p>
         </div>
@@ -97,7 +97,8 @@ const Profile = () => {
         : 100;
 
     return (
-        <div className="min-h-screen" style={{ background: '#0d0f1a' }}>
+        <div className="min-h-screen bg-bg text-text-primary relative overflow-hidden">
+            <BGPattern variant="grid" mask="fade-edges" fill="var(--color-text-muted)" className="opacity-15 z-0" />
             <NavBar />
 
             <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-10 space-y-8">
@@ -107,11 +108,11 @@ const Profile = () => {
                     {/* Avatar + Level Ring */}
                     <div className="relative shrink-0">
                         <div
-                            className="w-24 h-24 rounded-full flex items-center justify-center text-3xl font-black text-white"
+                            className="w-24 h-24 rounded-full flex items-center justify-center text-3xl font-semibold text-white"
                             style={{
-                                background: 'linear-gradient(135deg, #00b4ff, #0055ff)',
-                                border: '3px solid transparent',
-                                boxShadow: '0 0 0 3px #f5a524, 0 0 30px rgba(245,165,36,0.4)'
+                                background: 'var(--color-primary)',
+                                border: '3px solid var(--color-surface)',
+                                boxShadow: '0 0 0 1px var(--color-border)'
                             }}
                         >
                             {user.name?.charAt(0)?.toUpperCase()}
@@ -119,24 +120,24 @@ const Profile = () => {
                         {/* Level badge */}
                         <div
                             className="absolute -bottom-2 -right-2 w-9 h-9 rounded-full flex items-center justify-center font-black text-sm border-2"
-                            style={{ background: '#f5a524', color: '#0d0f1a', borderColor: '#0d0f1a' }}
+                            style={{ background: 'var(--color-gold)', color: 'var(--color-text-primary)', borderColor: 'var(--color-surface)' }}
                         >
                             {level}
                         </div>
                     </div>
 
                     <div className="flex-1 min-w-0">
-                        <h1 className="text-3xl sm:text-4xl font-black text-white mb-1" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
+                        <h1 className="text-3xl sm:text-4xl font-semibold text-text-primary mb-1">
                             {user.name}
                         </h1>
-                        <p className="text-sm mb-4" style={{ color: '#8b9cc8' }}>
+                        <p className="text-sm mb-4 text-text-secondary">
                             {levelTitle || 'Explorer'} · Level {level}
                         </p>
 
                         {/* XP Progress bar */}
                         <div className="mb-1 flex items-center justify-between text-xs">
-                            <span style={{ color: '#8b9cc8' }}>XP to Level {(level || 1) + 1}</span>
-                            <span className="font-bold" style={{ color: '#f5a524' }}>
+                            <span className="text-text-secondary">XP to Level {(level || 1) + 1}</span>
+                            <span className="font-semibold text-text-primary">
                                 {totalXP?.toLocaleString()} / {xpToNextLevel ? (totalXP + xpToNextLevel).toLocaleString() : '—'} XP
                             </span>
                         </div>
@@ -148,16 +149,16 @@ const Profile = () => {
                     {/* Quick stats */}
                     <div className="flex gap-4 sm:gap-6 shrink-0">
                         {[
-                            { icon: <Zap className="w-4 h-4" />, val: (totalXP || 0).toLocaleString(), label: 'Total XP', color: '#f5a524' },
-                            { icon: <Flame className="w-4 h-4" />, val: `${streak?.current ?? 0}d`, label: 'Streak', color: '#f97316' },
-                            { icon: <Trophy className="w-4 h-4" />, val: badges.filter(b => b.earned).length, label: 'Badges', color: '#10B981' },
+                            { icon: <Zap className="w-4 h-4" />, val: (totalXP || 0).toLocaleString(), label: 'Total XP', color: 'var(--color-gold)' },
+                            { icon: <Flame className="w-4 h-4" />, val: `${streak?.current ?? 0}d`, label: 'Streak', color: 'var(--color-warning)' },
+                            { icon: <Trophy className="w-4 h-4" />, val: badges.filter(b => b.earned).length, label: 'Badges', color: 'var(--color-success)' },
                         ].map(s => (
                             <div key={s.label} className="flex flex-col items-center gap-1">
                                 <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: `${s.color}18`, color: s.color }}>
                                     {s.icon}
                                 </div>
-                                <span className="text-lg font-black" style={{ color: s.color, fontFamily: "'Barlow Condensed', sans-serif" }}>{s.val}</span>
-                                <span className="text-[10px] uppercase tracking-wider" style={{ color: '#4a5480' }}>{s.label}</span>
+                                <span className="text-lg font-semibold text-text-primary">{s.val}</span>
+                                <span className="text-[10px] uppercase tracking-wide text-text-muted">{s.label}</span>
                             </div>
                         ))}
                     </div>
@@ -166,9 +167,9 @@ const Profile = () => {
                 {/* ── Streak Heatmap ── */}
                 <section className="glass-card p-6">
                     <div className="flex items-center gap-2 mb-5">
-                        <Calendar className="w-4 h-4 text-[#00b4ff]" />
-                        <h2 className="text-xs font-bold uppercase tracking-widest" style={{ color: '#8b9cc8' }}>Study Streak — Last 30 Days</h2>
-                        <div className="ml-auto flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold" style={{ background: 'rgba(249,115,22,0.12)', border: '1px solid rgba(249,115,22,0.3)', color: '#f97316' }}>
+                        <Calendar className="w-4 h-4 text-primary" />
+                        <h2 className="text-xs font-semibold uppercase tracking-wide text-text-muted">Study streak, last 30 days</h2>
+                        <div className="ml-auto flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold" style={{ background: 'oklch(0.95 0.04 70)', border: '1px solid oklch(0.84 0.08 70)', color: 'var(--color-warning)' }}>
                             <Flame className="w-3.5 h-3.5 streak-flame" /> {streak?.current ?? 0} Day Streak
                         </div>
                     </div>
@@ -184,9 +185,9 @@ const Profile = () => {
                 {/* ── Badges / Achievements ── */}
                 <section className="glass-card p-6">
                     <div className="flex items-center gap-2 mb-6">
-                        <Shield className="w-4 h-4 text-[#f5a524]" />
-                        <h2 className="text-xs font-bold uppercase tracking-widest" style={{ color: '#8b9cc8' }}>Achievements</h2>
-                        <span className="ml-auto text-xs" style={{ color: '#4a5480' }}>{badges.filter(b => b.earned).length} / {badges.length} Unlocked</span>
+                        <Shield className="w-4 h-4 text-gold" />
+                        <h2 className="text-xs font-semibold uppercase tracking-wide text-text-muted">Achievements</h2>
+                        <span className="ml-auto text-xs text-text-muted">{badges.filter(b => b.earned).length} / {badges.length} unlocked</span>
                     </div>
 
                     {badges.length === 0 ? (
@@ -202,7 +203,7 @@ const Profile = () => {
                                     key={b.id}
                                     name={b.name}
                                     earned={b.earned}
-                                    iconColor={b.earned ? '#f5a524' : '#4a5480'}
+                                    iconColor={b.earned ? 'var(--color-gold)' : 'var(--color-text-muted)'}
                                 />
                             ))}
                         </div>
@@ -213,13 +214,13 @@ const Profile = () => {
                 {history.length > 0 && (
                     <section className="glass-card p-6">
                         <div className="flex items-center gap-2 mb-4">
-                            <BarChart3 className="w-4 h-4 text-[#00b4ff]" />
-                            <h2 className="text-xs font-bold uppercase tracking-widest" style={{ color: '#8b9cc8' }}>Recent XP Activity</h2>
+                            <BarChart3 className="w-4 h-4 text-primary" />
+                            <h2 className="text-xs font-semibold uppercase tracking-wide text-text-muted">Recent XP activity</h2>
                         </div>
                         <div className="space-y-2">
                             {history.slice(-10).reverse().map(day => (
-                                <div key={day.date} className="flex items-center justify-between py-2 border-b" style={{ borderColor: '#1a1e35' }}>
-                                    <span className="text-sm" style={{ color: '#8b9cc8' }}>{day.date}</span>
+                                <div key={day.date} className="flex items-center justify-between py-2 border-b border-border">
+                                    <span className="text-sm text-text-secondary">{day.date}</span>
                                     <div className="flex items-center gap-1.5 xp-chip">
                                         <Zap className="w-3 h-3" /> +{day.totalXP} XP
                                     </div>

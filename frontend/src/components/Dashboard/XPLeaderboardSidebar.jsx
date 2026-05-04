@@ -1,8 +1,8 @@
 import React from 'react';
 import { Crown, Zap } from 'lucide-react';
 
-const RANK_COLORS = ['#f5a524', '#94a3b8', '#cd7c3c', '#8b9cc8', '#8b9cc8'];
-const RANK_LABELS = ['🥇', '🥈', '🥉', '4th', '5th'];
+const RANK_COLORS = ['oklch(0.68 0.13 78)', 'oklch(0.62 0.01 88)', 'oklch(0.56 0.08 65)', 'oklch(0.60 0.014 88)', 'oklch(0.60 0.014 88)'];
+const RANK_LABELS = ['1', '2', '3', '4', '5'];
 
 /** 
  * XPLeaderboardSidebar — shows top learners ranked by XP.
@@ -13,8 +13,8 @@ const XPLeaderboardSidebar = ({ players = [] }) => {
     return (
         <section className="glass-card p-5">
             <div className="flex items-center gap-2 mb-5">
-                <Crown className="w-4 h-4 text-[#f5a524]" />
-                <h3 className="text-xs font-bold uppercase tracking-widest text-[#8b9cc8]">XP Leaderboard</h3>
+                <Crown className="w-4 h-4 text-gold" />
+                <h3 className="text-xs font-semibold uppercase tracking-wide text-text-muted">XP leaderboard</h3>
             </div>
 
             {players.length === 0 ? (
@@ -32,11 +32,11 @@ const XPLeaderboardSidebar = ({ players = [] }) => {
                     {players.slice(0, 5).map((p, i) => (
                         <div
                             key={i}
-                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors hover:bg-[#12152a]"
-                            style={i === 0 ? { background: 'rgba(245,165,36,0.08)', border: '1px solid rgba(245,165,36,0.2)' } : {}}
+                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors hover:bg-surface-2"
+                            style={i === 0 ? { background: 'oklch(0.95 0.035 78)', border: '1px solid oklch(0.84 0.065 78)' } : {}}
                         >
                             {/* Rank */}
-                            <span className="text-base w-5 text-center shrink-0">{RANK_LABELS[i]}</span>
+                            <span className="text-xs font-semibold w-5 text-center shrink-0 text-text-muted">{RANK_LABELS[i]}</span>
 
                             {/* Avatar */}
                             <div
@@ -48,14 +48,14 @@ const XPLeaderboardSidebar = ({ players = [] }) => {
 
                             {/* Name + Level */}
                             <div className="flex-1 min-w-0">
-                                <p className="text-sm font-semibold text-white truncate">{p.name}</p>
-                                <p className="text-xs" style={{ color: '#4a5480' }}>Lv {p.level}</p>
+                                <p className="text-sm font-semibold text-text-primary truncate">{p.name}</p>
+                                <p className="text-xs text-text-muted">Lv {p.level}</p>
                             </div>
 
                             {/* XP */}
                             <div className="flex items-center gap-1 shrink-0">
-                                <Zap className="w-3 h-3 text-[#f5a524]" />
-                                <span className="text-xs font-bold text-[#f5a524]">{(p.totalXP || 0).toLocaleString()}</span>
+                                <Zap className="w-3 h-3 text-gold" />
+                                <span className="text-xs font-semibold text-text-primary">{(p.totalXP || 0).toLocaleString()}</span>
                             </div>
                         </div>
                     ))}

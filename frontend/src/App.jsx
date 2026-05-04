@@ -14,8 +14,8 @@ import ErrorBoundary from './components/ErrorBoundary';
 const ProtectedRoute = ({ children }) => {
     const { isAuthenticated, isLoading } = useAuthStore();
     if (isLoading) return (
-        <div className="min-h-screen flex items-center justify-center" style={{ background: '#0d0f1a' }}>
-            <div className="w-10 h-10 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: '#00b4ff', borderTopColor: 'transparent' }} />
+        <div className="min-h-screen flex items-center justify-center bg-bg">
+            <div className="w-10 h-10 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: 'var(--color-primary)', borderTopColor: 'transparent' }} />
         </div>
     );
     return isAuthenticated ? children : <Navigate to="/login" replace />;
@@ -30,9 +30,9 @@ const App = () => {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen flex flex-col items-center justify-center gap-4" style={{ background: '#0d0f1a' }}>
-                <div className="w-12 h-12 rounded-full border-4 border-t-transparent animate-spin" style={{ borderColor: '#00b4ff', borderTopColor: 'transparent' }} />
-                <div className="text-xs font-mono tracking-widest uppercase" style={{ color: '#4a5480' }}>INITIALIZING</div>
+            <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-bg">
+                <div className="w-12 h-12 rounded-full border-4 border-t-transparent animate-spin" style={{ borderColor: 'var(--color-primary)', borderTopColor: 'transparent' }} />
+                <div className="text-xs font-mono tracking-wide uppercase text-text-muted">Loading</div>
             </div>
         );
     }

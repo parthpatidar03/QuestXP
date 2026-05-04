@@ -1,4 +1,4 @@
-# QuestXP 🎮
+# QuestXP
 
 > **Learning platform first, game second.** QuestXP turns any YouTube playlist into a structured, gamified course — with XP, streaks, AI-generated notes, interactive quizzes, and a contextual Doubt Chatbot.
 
@@ -30,6 +30,84 @@ QuestXP is built on a modern, robust, and scalable stack designed to handle heav
 | **Queue / Cache** | Redis, BullMQ |
 | **Authentication**| JWT (HttpOnly cookies), Google OAuth 2.0 |
 | **AI & APIs** | OpenAI (GPT-4o-mini, text-embeddings), `youtube-transcript` |
+
+---
+
+## Current Build Status
+
+QuestXP is being shipped in strict phases.
+
+### Phase 1 - Foundation MVP
+
+| Task | Status | Notes |
+|---|---:|---|
+| Task 1: Authentication System | Done | Access token, refresh token, session tracking, logout, refresh rotation, tests |
+| Task 2: Course Creation API | Next | Validate playlist URL, create course, enqueue job |
+| Task 3: Queue + Worker Setup | Pending | BullMQ course ingestion worker |
+| Task 4: Transcript Ingestion | Pending | Store transcripts per lecture |
+| Task 5: Basic XP System | Pending | Event-based XP and dedupe |
+
+### Task 1 Auth Summary
+
+The auth system now uses:
+
+- `accessToken` HttpOnly cookie, 15 minutes
+- `refreshToken` HttpOnly cookie, 7 days
+- database-backed `Session` records
+- refresh-token rotation
+- refresh-token reuse detection
+- logout and logout-all session revocation
+- frontend auto-refresh on expired access tokens
+
+Auth tests:
+
+```bash
+cd backend
+npm test
+```
+
+Latest result: `4 pass, 0 fail`.
+
+Frontend production build:
+
+```bash
+cd frontend
+npm run build
+```
+
+Latest result: build passes with Vite chunk-size warnings.
+
+Detailed implementation notes are in [Docs/TASK-001-AUTHENTICATION.md](./Docs/TASK-001-AUTHENTICATION.md).
+
+---
+
+## Engineering Docs
+
+Project documentation is maintained in [Docs](./Docs).
+
+Start here:
+
+- [Task 001 - Authentication System](./Docs/TASK-001-AUTHENTICATION.md)
+- [UI 001 - Professional Product Redesign](./Docs/UI-001-PROFESSIONAL-REDESIGN.md)
+- [File Structure Reference](./Docs/FILE-STRUCTURE.md)
+- [Deployment Readiness](./Docs/DEPLOYMENT-READINESS.md)
+
+---
+
+## Current UI Direction
+
+QuestXP now uses a restrained product UI instead of the earlier esports/neon look.
+
+Current design baseline:
+
+- warm neutral background
+- light cards with subtle borders
+- green primary actions
+- amber XP accents
+- Inter/system typography
+- reduced glow, gradients, and "quest" language on core app screens
+
+Design context lives in [PRODUCT.md](./PRODUCT.md) and [DESIGN.md](./DESIGN.md).
 
 ### System Diagram
 
@@ -134,22 +212,62 @@ The entire learning experience revolves around progression and rewards.
 
 ---
 
-## 💻 Local Development Setup
+## 🐳 Running the App (Docker Setup)
+
+QuestXP is fully containerized. The easiest way to get the entire stack (MongoDB, Redis, Backend API, and Frontend SPA) running is using **Docker Compose**.
 
 ### 1. Prerequisites
-- **Node.js** (v18+)
-- **MongoDB** (Local instance or MongoDB Atlas)
-- **Redis** (Local instance or Upstash)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop) installed and running.
 - **API Keys**: OpenAI API Key, Google OAuth Client ID & Secret.
 
-### 2. Installation
+### 2. Environment Variables Setup
+Create a `.env` file in the `backend/` directory:
 
-Clone the repository and install dependencies for both ends:
+```env
+# backend/.env
+PORT=5000
+NODE_ENV=production
+MONGODB_URI=mongodb://mongodb:27017/questxp
+REDIS_URL=redis://redis:6379
+JWT_SECRET=your_super_secret_jwt_key
 
+# External APIs
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+OPENAI_API_KEY=your_openai_api_key
+FRONTEND_URL=http://localhost:8080
+```
+
+Create a `.env` file in the `frontend/` directory to point to the dockerized backend:
+```env
+# frontend/.env
+VITE_API_URL=http://localhost:5002/api
+```
+
+### 3. Build and Start the Stack
+From the root of the project, run:
 ```bash
-git clone https://github.com/parthpatidar03/QuestXP.git
-cd QuestXP
+docker-compose up --build -d
+```
+Docker will automatically pull the required images, build the Node.js API, compile the React SPA into static Nginx files, and start all services in the correct order.
 
+### 4. Access the Platform
+- **Frontend App:** http://localhost:8080
+- **Backend API:** http://localhost:5002
+
+---
+
+## 💻 Alternative: Manual Setup (No Docker)
+
+<details>
+<summary>Click to expand manual setup instructions</summary>
+
+**1. Prerequisites**
+- **Node.js** (v18+)
+- Local or Cloud instances of **MongoDB** and **Redis**
+
+**2. Installation**
+```bash
 # Install Backend
 cd backend && npm install
 
@@ -157,41 +275,37 @@ cd backend && npm install
 cd ../frontend && npm install
 ```
 
-### 3. Environment Variables
-
+**3. Environment Variables**
 **Backend (`backend/.env`):**
 ```env
 PORT=5000
 MONGODB_URI=mongodb://localhost:27017/questxp
-JWT_SECRET=your_super_secret_jwt_key
 REDIS_URL=redis://localhost:6379
-
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-
-OPENAI_API_KEY=your_openai_api_key
+JWT_SECRET=your_super_secret_jwt_key
+GOOGLE_CLIENT_ID=your_client_id
+GOOGLE_CLIENT_SECRET=your_client_secret
+OPENAI_API_KEY=your_openai_key
 FRONTEND_URL=http://localhost:5173
 ```
-
 **Frontend (`frontend/.env`):**
 ```env
 VITE_API_URL=http://localhost:5000/api
 ```
 
-### 4. Running the App
-
-Start the backend server and workers:
+**4. Running the App**
+Open two terminal instances:
 ```bash
+# Terminal 1: Backend
 cd backend
 npm run dev
 ```
-
-Start the frontend Vite server:
 ```bash
+# Terminal 2: Frontend
 cd frontend
 npm run dev
 ```
 Open **http://localhost:5173** in your browser.
+</details>
 
 ---
 

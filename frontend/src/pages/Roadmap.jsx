@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { ChevronLeft, ChevronDown, ChevronRight, CheckCircle, Circle, Calendar, Download } from 'lucide-react';
 import api from '../services/api';
 import NavBar from '../components/NavBar';
+import { BGPattern } from '../components/ui/bg-pattern';
 import { format, parseISO } from 'date-fns';
 import html2pdf from 'html2pdf.js';
 
@@ -106,7 +107,8 @@ const Roadmap = () => {
     };
 
     return (
-        <div className="min-h-screen bg-bg text-text-primary font-sans selection:bg-primary/30">
+        <div className="min-h-screen bg-bg text-text-primary font-sans selection:bg-primary/30 relative overflow-hidden">
+            <BGPattern variant="grid" mask="fade-edges" fill="var(--color-text-muted)" className="opacity-15 z-0" />
             <NavBar />
             
             <main id="roadmap-container" className="max-w-4xl mx-auto px-4 py-8">

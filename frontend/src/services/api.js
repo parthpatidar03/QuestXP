@@ -9,15 +9,33 @@ const api = axios.create({
 
 api.interceptors.response.use(
     (response) => response,
-    (error) => {
-        // TEMPORARY BYPASS: DO NOT REDIRECT ON 401 SO USER CAN VIEW UI
-        /*
+    async (error) => {
+        const originalRequest = error.config;
+
+        if (
+            error.response &&
+            error.response.status === 401 &&
+            originalRequest &&
+            !originalRequest._retry &&
+            originalRequest.url !== '/auth/login' &&
+            originalRequest.url !== '/auth/register' &&
+            originalRequest.url !== '/auth/signup' &&
+            originalRequest.url !== '/auth/refresh'
+        ) {
+            originalRequest._retry = true;
+            try {
+                await api.post('/auth/refresh');
+                return api(originalRequest);
+            } catch (refreshError) {
+                return Promise.reject(refreshError);
+            }
+        }
+
         if (error.response && error.response.status === 401) {
             if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
                 window.location.href = '/login';
             }
         }
-        */
 
         // T061 — Emit a custom event on 403 so LockedFeature can react globally
         if (error.response && error.response.status === 403) {
