@@ -33,7 +33,7 @@ const NavBar = () => {
         <header className="sticky top-0 z-50 w-full border-b border-border bg-surface/95 backdrop-blur">
             <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 flex items-center h-16 gap-4">
 
-                <Link to="/dashboard" className="flex items-center gap-2.5 shrink-0 mr-4">
+                <Link to="/" className="flex items-center gap-2.5 shrink-0 mr-4">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center">
                         <BookOpenCheck className="w-4 h-4" />
                     </div>

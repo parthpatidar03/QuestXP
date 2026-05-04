@@ -5,7 +5,7 @@ const TopicSidebar = ({ topics, currentTime, onTopicClick }) => {
     // If no topics yet, show placeholder
     if (!topics || topics.length === 0) {
         return (
-            <div className="bg-surface border-l border-border h-full flex flex-col">
+            <div className="bg-surface h-full flex flex-col">
                 <div className="p-5 border-b border-border bg-surface flex items-center gap-3">
                     <List className="w-5 h-5 text-primary" />
                     <div>
@@ -13,7 +13,7 @@ const TopicSidebar = ({ topics, currentTime, onTopicClick }) => {
                         <p className="text-xs text-text-muted mt-0.5">Jump to key moments</p>
                     </div>
                 </div>
-                <div className="flex-grow flex flex-col items-center justify-center text-center p-8">
+                <div className="flex-grow flex flex-col items-center justify-start text-center p-8 pt-10 sm:pt-14">
                     <div className="w-12 h-12 rounded-full bg-surface-2 flex items-center justify-center mb-4">
                         <Bot className="w-6 h-6 text-text-muted animate-pulse" />
                     </div>
@@ -24,7 +24,7 @@ const TopicSidebar = ({ topics, currentTime, onTopicClick }) => {
     }
 
     return (
-        <div className="bg-surface border-l border-border h-full flex flex-col overflow-hidden">
+        <div className="bg-surface h-full flex flex-col overflow-hidden">
             <div className="p-5 border-b border-border bg-surface flex items-center gap-3 shrink-0">
                 <List className="w-5 h-5 text-primary" />
                 <div>

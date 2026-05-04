@@ -1,6 +1,6 @@
 const express = require('express');
 const { body } = require('express-validator');
-const { createCourse, getCourses, getCourseById, getCourseStatus, addCourseSection } = require('../controllers/courseController');
+const { createCourse, getCourses, getCourseById, getCourseStatus, addCourseSection, deleteCourse } = require('../controllers/courseController');
 const auth = require('../middleware/auth');
 
 const router = express.Router();
@@ -21,6 +21,7 @@ router.post('/', [
 router.get('/', getCourses);
 router.get('/:courseId', getCourseById);
 router.get('/:courseId/status', getCourseStatus);
+router.delete('/:courseId', deleteCourse);
 
 // T062 — Add a new section to an existing ready course
 router.patch('/:courseId/sections', [
@@ -44,7 +45,7 @@ router.get('/:courseId/progress', auth, async (req, res, next) => {
                 const status = lecture.aiStatus;
                 // We expect 4 AI tasks per lecture: transcription, notes, quiz, topics
                 totalExpected += 4;
-                
+
                 ['transcription', 'notes', 'quiz', 'topics'].forEach(task => {
                     // Count 'complete', 'failed', 'skipped' (if added) as done to advance progress bar
                     if (status[task] === 'complete' || status[task] === 'failed') {
@@ -56,10 +57,10 @@ router.get('/:courseId/progress', auth, async (req, res, next) => {
 
         const percentage = totalExpected === 0 ? 0 : (totalComplete / totalExpected) * 100;
 
-        res.json({ 
-            totalExpected, 
-            totalComplete, 
-            percentage 
+        res.json({
+            totalExpected,
+            totalComplete,
+            percentage
         });
     } catch (error) {
         next(error);

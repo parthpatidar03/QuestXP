@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Zap, Flame, Trophy, Shield, Star, BookOpen, BarChart3, Calendar } from 'lucide-react';
+import { Zap, Flame, Trophy, Shield, Star, BookOpen, BarChart3, Calendar, LogOut } from 'lucide-react';
 import useAuthStore from '../store/useAuthStore';
 import useGamificationStore from '../store/useGamificationStore';
 import { getGamificationProfile, getXPHistory, markBadgesSeen } from '../services/gamificationApi';
@@ -77,10 +76,12 @@ function HexBadge({ name, earned, iconColor = 'var(--color-text-muted)' }) {
 
 /* ── Profile ────────────────────────────────────────────────────────── */
 const Profile = () => {
-    const { user } = useAuthStore();
+    const { user, logout } = useAuthStore();
     const { totalXP, level, levelTitle, streak, badges, xpToNextLevel, setProfile } = useGamificationStore();
     const [history, setHistory] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
+    const [logoutError, setLogoutError] = useState('');
 
     useEffect(() => {
         Promise.allSettled([
@@ -95,6 +96,17 @@ const Profile = () => {
     const xpProgress = xpToNextLevel
         ? Math.round(((totalXP % 1000) / 1000) * 100)
         : 100;
+
+    const handleLogout = async () => {
+        setLogoutError('');
+        setIsLoggingOut(true);
+        try {
+            await logout();
+        } catch (_) {
+            setLogoutError('Logout failed. Please try again.');
+            setIsLoggingOut(false);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-bg text-text-primary relative overflow-hidden">
@@ -133,6 +145,9 @@ const Profile = () => {
                         <p className="text-sm mb-4 text-text-secondary">
                             {levelTitle || 'Explorer'} · Level {level}
                         </p>
+                        <p className="text-xs mb-4 text-text-muted break-all">
+                            {user.email || 'No email available'}
+                        </p>
 
                         {/* XP Progress bar */}
                         <div className="mb-1 flex items-center justify-between text-xs">
@@ -162,6 +177,24 @@ const Profile = () => {
                             </div>
                         ))}
                     </div>
+                </section>
+
+                <section className="glass-card p-4 sm:p-5">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between">
+                        <p className="text-sm text-text-secondary">Sign out from your account on this device.</p>
+                        <button
+                            type="button"
+                            onClick={handleLogout}
+                            disabled={isLoggingOut}
+                            className="inline-flex items-center justify-center gap-2 rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-300 transition-colors hover:bg-red-500/20 disabled:cursor-not-allowed disabled:opacity-70"
+                        >
+                            <LogOut className="w-4 h-4" />
+                            {isLoggingOut ? 'Logging out...' : 'Log out'}
+                        </button>
+                    </div>
+                    {logoutError && (
+                        <p className="mt-3 text-xs text-red-300">{logoutError}</p>
+                    )}
                 </section>
 
                 {/* ── Streak Heatmap ── */}

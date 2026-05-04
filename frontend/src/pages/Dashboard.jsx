@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Flame, Zap, Trophy, Shield, BookOpen, Plus, ChevronRight, Star } from 'lucide-react';
+import { Flame, Zap, Trophy, Shield, BookOpen, Plus, ChevronRight, Star, Trash2 } from 'lucide-react';
 import useAuthStore from '../store/useAuthStore';
 import useGamificationStore from '../store/useGamificationStore';
 import api from '../services/api';
@@ -37,7 +37,7 @@ function StatCard({ icon, label, value, color, glow }) {
 }
 
 /* ── Course Card ────────────────────────────────────────────────────── */
-function CourseCard({ course, progress }) {
+function CourseCard({ course, progress, onDelete, isDeleting }) {
     const pct = calcCourseProgress(course, progress);
     const xpPool = (course?.totalLectures || 0) * XP_PER_LECTURE;
     const thumb = course?.thumbnailUrl || course?.sections?.[0]?.lectures?.[0]?.thumbnailUrl;
@@ -69,6 +69,21 @@ function CourseCard({ course, progress }) {
                 <div className="absolute top-2 right-2 xp-chip">
                     <Zap className="w-3 h-3" /> +{xpPool} XP
                 </div>
+                <button
+                    type="button"
+                    className="absolute top-2 left-2 inline-flex items-center gap-1 rounded-full border border-red-500/40 bg-red-500/85 px-2.5 py-1 text-[11px] font-semibold text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-70"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        onDelete(course);
+                    }}
+                    disabled={isDeleting}
+                    aria-label={`Delete ${course.title}`}
+                    title="Delete course permanently"
+                >
+                    <Trash2 className="w-3 h-3" />
+                    {isDeleting ? 'Deleting...' : 'Delete'}
+                </button>
                 <div className="absolute bottom-2 left-2 bg-surface/90 rounded-full px-2 py-0.5 text-xs font-semibold" style={{ color: pct === 100 ? 'var(--color-success)' : 'var(--color-primary)' }}>
                     {pct}%
                 </div>
@@ -104,6 +119,8 @@ const Dashboard = () => {
     const [progressMap, setProgressMap] = useState({});
     const [showCreate, setShowCreate] = useState(false);
     const [gamifLoaded, setGamifLoaded] = useState(false);
+    const [deletingCourseId, setDeletingCourseId] = useState(null);
+    const [deleteError, setDeleteError] = useState('');
 
     useEffect(() => {
         getGamificationProfile()
@@ -128,6 +145,30 @@ const Dashboard = () => {
         };
         load();
     }, []);
+
+    const handleDeleteCourse = async (course) => {
+        const isSure = window.confirm(`Are you sure you want to permanently delete "${course.title}"? This action cannot be undone.`);
+        if (!isSure) return;
+
+        const verification = window.prompt('To confirm permanent deletion, type DELETE and click OK.');
+        if ((verification || '').trim().toUpperCase() !== 'DELETE') return;
+
+        setDeleteError('');
+        setDeletingCourseId(course._id);
+        try {
+            await api.delete(`/courses/${course._id}`);
+            setCourses(prev => prev.filter(c => c._id !== course._id));
+            setProgressMap(prev => {
+                const next = { ...prev };
+                delete next[course._id];
+                return next;
+            });
+        } catch (err) {
+            setDeleteError(err.response?.data?.error || 'Failed to delete course. Please try again.');
+        } finally {
+            setDeletingCourseId(null);
+        }
+    };
 
     if (!user) return null;
 
@@ -192,6 +233,11 @@ const Dashboard = () => {
                                 {showCreate ? 'Cancel' : 'New Course'}
                             </button>
                         </div>
+                        {deleteError && (
+                            <div className="mb-4 rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+                                {deleteError}
+                            </div>
+                        )}
                         {showCreate && (
                             <div className="mb-6">
                                 <CourseCreationForm onSuccess={() => setShowCreate(false)} />
@@ -206,7 +252,15 @@ const Dashboard = () => {
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                                {courses.map(c => <CourseCard key={c._id} course={c} progress={progressMap[c._id]} />)}
+                                {courses.map(c => (
+                                    <CourseCard
+                                        key={c._id}
+                                        course={c}
+                                        progress={progressMap[c._id]}
+                                        onDelete={handleDeleteCourse}
+                                        isDeleting={deletingCourseId === c._id}
+                                    />
+                                ))}
                             </div>
                         )}
                     </section>
