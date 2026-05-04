@@ -6,6 +6,10 @@
 
 ---
 
+### 🚀 [Try it out live on Vercel!](https://quest-xp-beta.vercel.app/)
+
+---
+
 ## 🌟 Core Features
 
 - **📺 YouTube to Course Conversion:** Paste any YouTube playlist link and QuestXP automatically extracts lecture metadata, thumbnails, and transcripts to build a structured curriculum.
@@ -173,9 +177,13 @@ docker-compose up --build -d
 ```
 Docker will automatically pull the required images, build the Node.js API, compile the React SPA into static Nginx files, and start all services in the correct order.
 
-### 4. Access the Platform
+### 4. Access the Platform (Local)
 - **Frontend App:** http://localhost:8080
 - **Backend API:** http://localhost:5002
+
+### 🌐 Production URLs
+- **Live Demo:** [https://quest-xp-beta.vercel.app/](https://quest-xp-beta.vercel.app/)
+- **Production Backend:** `https://questxp-production.up.railway.app/api`
 
 ---
 

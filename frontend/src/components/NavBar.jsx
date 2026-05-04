@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Zap, Bell, Search, BookOpenCheck } from 'lucide-react';
+import { Zap, Bell, Search, BookOpenCheck, Moon, Sun } from 'lucide-react';
 import useAuthStore from '../store/useAuthStore';
 import useGamificationStore from '../store/useGamificationStore';
 import { getGamificationProfile } from '../services/gamificationApi';
@@ -9,12 +9,25 @@ const NavBar = () => {
     const { user, logout } = useAuthStore();
     const { totalXP, level, setProfile } = useGamificationStore();
     const navigate = useNavigate();
+    const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
 
     useEffect(() => {
         getGamificationProfile()
             .then(data => setProfile(data))
             .catch(() => {});
     }, [setProfile]);
+
+    const toggleTheme = () => {
+        const newDark = !isDark;
+        setIsDark(newDark);
+        if (newDark) {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+        }
+    };
 
     return (
         <header className="sticky top-0 z-50 w-full border-b border-border bg-surface/95 backdrop-blur">
@@ -45,10 +58,20 @@ const NavBar = () => {
                     </Link>
                 </nav>
 
-                <button className="relative p-2 text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-lg transition-colors">
-                    <Bell className="w-5 h-5" />
-                    <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full ring-2 ring-surface" />
-                </button>
+                <div className="flex items-center gap-2">
+                    <button 
+                        onClick={toggleTheme}
+                        className="p-2 text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-lg transition-colors"
+                        title="Toggle theme"
+                    >
+                        {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                    </button>
+
+                    <button className="relative p-2 text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-lg transition-colors">
+                        <Bell className="w-5 h-5" />
+                        <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full ring-2 ring-surface" />
+                    </button>
+                </div>
 
                 <div className="hidden sm:flex items-center gap-1.5 bg-surface-2 border border-border rounded-lg px-3 py-1.5">
                     <Zap className="w-4 h-4 text-gold" />

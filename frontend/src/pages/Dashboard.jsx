@@ -40,10 +40,8 @@ function StatCard({ icon, label, value, color, glow }) {
 function CourseCard({ course, progress }) {
     const pct = calcCourseProgress(course, progress);
     const xpPool = (course?.totalLectures || 0) * XP_PER_LECTURE;
-    // Backend now hoists first lecture thumbnail to course.thumbnailUrl
     const thumb = course?.thumbnailUrl || course?.sections?.[0]?.lectures?.[0]?.thumbnailUrl;
 
-    // Find the first incomplete lecture for "Resume"
     const completed = new Set(progress?.completedLectures || []);
     let nextLecture = null;
     outer: for (const sec of course?.sections || []) {
@@ -55,12 +53,11 @@ function CourseCard({ course, progress }) {
 
     return (
         <Link to={`/courses/${course._id}`} className="glass-card group block transition-all" style={{ padding: 0, overflow: 'hidden' }}>
-            {/* Thumbnail as background-image */}
             <div
                 className="relative w-full aspect-video overflow-hidden"
                 style={{
                     background: thumb
-                        ? `linear-gradient(to bottom, oklch(0.23 0.018 88 / 0) 40%, oklch(0.23 0.018 88 / 0.62) 100%), url(${thumb}) center / cover no-repeat`
+                        ? `linear-gradient(to bottom, transparent 40%, var(--color-bg) 100%), url(${thumb}) center / cover no-repeat`
                         : 'var(--color-surface-2)',
                 }}
             >
@@ -69,17 +66,14 @@ function CourseCard({ course, progress }) {
                         <BookOpen className="w-10 h-10 text-text-muted" />
                     </div>
                 )}
-                {/* XP chip */}
                 <div className="absolute top-2 right-2 xp-chip">
                     <Zap className="w-3 h-3" /> +{xpPool} XP
                 </div>
-                {/* Progress badge */}
                 <div className="absolute bottom-2 left-2 bg-surface/90 rounded-full px-2 py-0.5 text-xs font-semibold" style={{ color: pct === 100 ? 'var(--color-success)' : 'var(--color-primary)' }}>
                     {pct}%
                 </div>
             </div>
 
-            {/* Body */}
             <div className="p-4">
                 <h3 className="font-semibold text-text-primary text-sm leading-snug mb-2 group-hover:text-primary transition-colors line-clamp-2">{course.title}</h3>
                 <div className="progress-bar mb-2">
@@ -91,13 +85,9 @@ function CourseCard({ course, progress }) {
                 </div>
                 {resumeId && (
                     <div className="mt-2 text-xs font-semibold text-primary">
-                        <Link
-                            to={`/courses/${course._id}/lectures/${resumeId}`}
-                            onClick={e => e.stopPropagation()}
-                            className="flex items-center gap-1 hover:underline"
-                        >
+                        <span className="flex items-center gap-1 hover:underline">
                             Resume Mission <ChevronRight className="w-3 h-3" />
-                        </Link>
+                        </span>
                     </div>
                 )}
             </div>
@@ -115,14 +105,12 @@ const Dashboard = () => {
     const [showCreate, setShowCreate] = useState(false);
     const [gamifLoaded, setGamifLoaded] = useState(false);
 
-    // Fetch gamification profile
     useEffect(() => {
         getGamificationProfile()
             .then(data => { setProfile(data); setGamifLoaded(true); })
             .catch(() => setGamifLoaded(true));
     }, [setProfile]);
 
-    // Fetch courses
     useEffect(() => {
         const load = async () => {
             try {
@@ -149,23 +137,13 @@ const Dashboard = () => {
 
     return (
         <div className="min-h-screen bg-bg text-text-primary relative overflow-hidden">
-            <BGPattern variant="grid" mask="fade-edges" fill="var(--color-text-muted)" className="opacity-15" />
+            <BGPattern variant="grid" mask="fade-edges" fill="var(--color-primary)" className="opacity-5" />
             <NavBar />
 
-            {/* Layout */}
-            <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 py-8 flex gap-6">
-
-                {/* ── Left / Main ── */}
+            <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 py-8 flex flex-col xl:flex-row gap-6">
                 <div className="flex-1 min-w-0 space-y-8">
-
-                    {/* ── Hero Banner ── */}
                     {activeCourse && (
-                        <section
-                            className="relative rounded-xl overflow-hidden p-7 flex flex-col sm:flex-row gap-6 items-start bg-surface border border-border"
-                            style={{
-                                boxShadow: 'var(--shadow-card)'
-                            }}
-                        >
+                        <section className="relative rounded-xl overflow-hidden p-7 flex flex-col sm:flex-row gap-6 items-start bg-surface border border-border shadow-card">
                             {activeCourse.sections?.[0]?.lectures?.[0]?.thumbnailUrl && (
                                 <img
                                     src={activeCourse.sections[0].lectures[0].thumbnailUrl}
@@ -179,19 +157,13 @@ const Dashboard = () => {
                                 <h1 className="text-2xl sm:text-3xl font-semibold text-text-primary mb-1 leading-tight">
                                     {activeCourse.title}
                                 </h1>
-
-                                {/* XP earned */}
                                 <div className="flex items-center gap-2 mb-3">
-                                    <span className="xp-chip"><Zap className="w-3 h-3" /> {activePct * (activeCourse.totalLectures * XP_PER_LECTURE) / 100 | 0} / {activeCourse.totalLectures * XP_PER_LECTURE} XP</span>
+                                    <span className="xp-chip"><Zap className="w-3 h-3" /> {Math.floor(activePct * (activeCourse.totalLectures * XP_PER_LECTURE) / 100)} / {activeCourse.totalLectures * XP_PER_LECTURE} XP</span>
                                     <span className="text-xs text-text-muted">{activePct}% complete</span>
                                 </div>
-
-                                {/* Progress */}
                                 <div className="progress-bar mb-4 max-w-xs">
                                     <div className="progress-bar__fill" style={{ width: `${activePct}%` }} />
                                 </div>
-
-                                {/* CTA */}
                                 {firstLecId && (
                                     <Link
                                         to={`/courses/${activeCourse._id}/lectures/${firstLecId}`}
@@ -205,119 +177,43 @@ const Dashboard = () => {
                         </section>
                     )}
 
-                    {/* ── Stats Row ── */}
                     <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <StatCard
-                            icon={<Zap className="w-4 h-4" />}
-                            label="Total XP"
-                            value={(totalXP || user?.totalXP || 0).toLocaleString()}
-                            color="var(--color-gold)"
-                            glow
-                        />
-                        <StatCard
-                            icon={<Flame className="w-4 h-4" />}
-                            label="Streak"
-                            value={`${streak?.current ?? user?.streak?.current ?? 0}d`}
-                            color="var(--color-warning)"
-                            glow
-                        />
-                        <StatCard
-                            icon={<Trophy className="w-4 h-4" />}
-                            label="Completed"
-                            value={courses.filter(c => calcCourseProgress(c, progressMap[c._id]) === 100).length}
-                            color="var(--color-success)"
-                        />
-                        <StatCard
-                            icon={<Shield className="w-4 h-4" />}
-                            label={`Level`}
-                            value={`Lv ${level || user?.level || 1}`}
-                            color="var(--color-primary)"
-                            glow
-                        />
+                        <StatCard icon={<Zap className="w-4 h-4" />} label="Total XP" value={(totalXP || user?.totalXP || 0).toLocaleString()} color="var(--color-gold)" />
+                        <StatCard icon={<Flame className="w-4 h-4" />} label="Streak" value={`${streak?.current ?? user?.streak?.current ?? 0}d`} color="var(--color-warning)" />
+                        <StatCard icon={<Trophy className="w-4 h-4" />} label="Completed" value={courses.filter(c => calcCourseProgress(c, progressMap[c._id]) === 100).length} color="var(--color-success)" />
+                        <StatCard icon={<Shield className="w-4 h-4" />} label="Level" value={`Lv ${level || user?.level || 1}`} color="var(--color-primary)" />
                     </section>
 
-                    {/* ── My Active Courses ── */}
                     <section>
                         <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-xl font-semibold tracking-tight text-text-primary">
-                                Active courses
-                            </h2>
-                            <button
-                                onClick={() => setShowCreate(v => !v)}
-                                className="btn-primary py-2 px-4 text-xs flex items-center gap-1"
-                            >
+                            <h2 className="text-xl font-semibold tracking-tight text-text-primary">Active courses</h2>
+                            <button onClick={() => setShowCreate(v => !v)} className="btn-primary py-2 px-4 text-xs flex items-center gap-1">
                                 <Plus className="w-3.5 h-3.5" />
                                 {showCreate ? 'Cancel' : 'New Course'}
                             </button>
                         </div>
-
                         {showCreate && (
                             <div className="mb-6">
                                 <CourseCreationForm onSuccess={() => setShowCreate(false)} />
                             </div>
                         )}
-
                         {courses.length === 0 && !showCreate ? (
-                            <div className="glass-card flex flex-col items-center justify-center py-20 text-center" style={{ borderStyle: 'dashed' }}>
+                            <div className="glass-card flex flex-col items-center justify-center py-20 text-center border-dashed">
                                 <BookOpen className="w-12 h-12 mb-4 text-text-muted" />
                                 <h3 className="text-lg font-semibold text-text-primary mb-2">No courses yet</h3>
-                                <p className="text-sm mb-6 text-text-secondary">
-                                    Paste a YouTube playlist to generate your first structured, gamified course.
-                                </p>
-                                <button onClick={() => setShowCreate(true)} className="btn-esports">
-                                    Create your first course
-                                </button>
+                                <p className="text-sm mb-6 text-text-secondary">Paste a YouTube playlist to generate your first course.</p>
+                                <button onClick={() => setShowCreate(true)} className="btn-esports">Create your first course</button>
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                                {courses.map(c => (
-                                    <CourseCard key={c._id} course={c} progress={progressMap[c._id]} />
-                                ))}
+                                {courses.map(c => <CourseCard key={c._id} course={c} progress={progressMap[c._id]} />)}
                             </div>
                         )}
                     </section>
-
-                    {/* ── Featured Quests ── */}
-                    {courses.length > 0 && (
-                        <section>
-                            <h2 className="text-xl font-semibold tracking-tight text-text-primary mb-4">
-                                Featured courses
-                            </h2>
-                            <div className="flex gap-4 overflow-x-auto pb-2">
-                                {courses.map((c, i) => {
-                                    const xpPool = (c?.totalLectures || 0) * XP_PER_LECTURE;
-                                    const thumb = c?.sections?.[0]?.lectures?.[0]?.thumbnailUrl;
-                                    return (
-                                        <Link
-                                            key={c._id}
-                                            to={`/courses/${c._id}`}
-                                            className="shrink-0 w-56 glass-card-gold group hover:scale-105 transition-transform overflow-hidden"
-                                            style={{ padding: 0, borderRadius: 12 }}
-                                        >
-                                            <div className="relative w-full aspect-video bg-surface-2 overflow-hidden">
-                                                {thumb ? <img src={thumb} alt="" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" /> : <Star className="w-8 h-8 m-auto mt-6 text-text-muted" />}
-                                                <div className="absolute inset-0 bg-gradient-to-t from-[oklch(0.23_0.018_88_/_0.55)] via-transparent to-transparent" />
-                                                <span className={`absolute top-2 left-2 ${i % 2 === 0 ? 'badge-epic' : 'badge-rare'}`}>
-                                                    {i % 2 === 0 ? 'EPIC' : 'RARE'}
-                                                </span>
-                                            </div>
-                                            <div className="p-3">
-                                                <p className="text-xs font-semibold text-text-primary line-clamp-2 mb-1">{c.title}</p>
-                                                <div className="xp-chip"><Zap className="w-3 h-3" /> +{xpPool} XP</div>
-                                            </div>
-                                        </Link>
-                                    );
-                                })}
-                            </div>
-                        </section>
-                    )}
                 </div>
 
-                {/* ── Right Sidebar ── */}
                 <aside className="hidden xl:flex flex-col w-72 shrink-0 space-y-4">
                     <XPLeaderboardSidebar players={user ? [{ name: user.name, totalXP: totalXP || user.totalXP || 0, level: level || user.level || 1 }] : []} />
-
-                    {/* User Profile Quick-card */}
                     <Link to="/profile" className="glass-card block transition-all p-4">
                         <div className="flex items-center gap-3 mb-3">
                             <div className="w-10 h-10 rounded-full border border-border flex items-center justify-center font-semibold text-sm bg-primary text-white">
