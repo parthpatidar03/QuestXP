@@ -1,7 +1,7 @@
 import React from 'react';
 import { Crown, Zap } from 'lucide-react';
 
-const RANK_COLORS = ['oklch(0.68 0.13 78)', 'oklch(0.62 0.01 88)', 'oklch(0.56 0.08 65)', 'oklch(0.60 0.014 88)', 'oklch(0.60 0.014 88)'];
+const RANK_COLORS = ['var(--color-gold)', 'var(--color-primary)', 'var(--color-secondary)', 'var(--color-text-muted)', 'var(--color-text-muted)'];
 const RANK_LABELS = ['1', '2', '3', '4', '5'];
 
 /** 
@@ -32,23 +32,22 @@ const XPLeaderboardSidebar = ({ players = [] }) => {
                     {players.slice(0, 5).map((p, i) => (
                         <div
                             key={i}
-                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors hover:bg-surface-2"
-                            style={i === 0 ? { background: 'oklch(0.95 0.035 78)', border: '1px solid oklch(0.84 0.065 78)' } : {}}
+                            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors hover:bg-surface-2 ${i === 0 ? 'bg-gold/10 border border-gold/30' : ''}`}
                         >
                             {/* Rank */}
-                            <span className="text-xs font-semibold w-5 text-center shrink-0 text-text-muted">{RANK_LABELS[i]}</span>
+                            <span className={`text-xs font-semibold w-5 text-center shrink-0 ${i === 0 ? 'text-gold' : 'text-text-muted'}`}>{RANK_LABELS[i]}</span>
 
                             {/* Avatar */}
                             <div
                                 className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
-                                style={{ background: `linear-gradient(135deg, ${RANK_COLORS[i]}, ${RANK_COLORS[i]}88)` }}
+                                style={{ background: RANK_COLORS[i] }}
                             >
                                 {p.name?.charAt(0)?.toUpperCase() ?? '?'}
                             </div>
 
                             {/* Name + Level */}
                             <div className="flex-1 min-w-0">
-                                <p className="text-sm font-semibold text-text-primary truncate">{p.name}</p>
+                                <p className={`text-sm font-semibold truncate ${i === 0 ? 'text-text-primary' : 'text-text-primary'}`}>{p.name}</p>
                                 <p className="text-xs text-text-muted">Lv {p.level}</p>
                             </div>
 

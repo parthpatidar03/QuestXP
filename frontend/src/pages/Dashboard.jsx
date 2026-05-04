@@ -227,7 +227,7 @@ const Dashboard = () => {
                         <div className="progress-bar mb-1">
                             <div className="progress-bar__fill" style={{ width: '62%' }} />
                         </div>
-                        <p className="text-xs text-right text-text-muted">View full profile</p>
+                        <p className="text-xs text-right text-text-secondary group-hover:text-primary transition-colors">View full profile</p>
                     </Link>
                 </aside>
             </div>
