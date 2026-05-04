@@ -149,7 +149,7 @@ const Dashboard = () => {
 
     return (
         <div className="min-h-screen bg-bg text-text-primary relative overflow-hidden">
-            <BGPattern variant="grid" mask="fade-edges" fill="var(--color-text-muted)" className="opacity-15 z-0" />
+            <BGPattern variant="grid" mask="fade-edges" fill="var(--color-text-muted)" className="opacity-15" />
             <NavBar />
 
             {/* Layout */}

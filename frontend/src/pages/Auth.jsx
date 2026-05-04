@@ -41,7 +41,7 @@ const Auth = () => {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-bg flex-col text-text-primary p-4 relative overflow-hidden">
-            <BGPattern variant="grid" mask="fade-edges" fill="var(--color-text-muted)" className="opacity-20 z-0" />
+            <BGPattern variant="grid" mask="fade-edges" fill="var(--color-text-muted)" className="opacity-20" />
             <div className="relative z-10 mb-8 flex flex-col items-center">
                 <div className="w-14 h-14 bg-primary rounded-xl flex items-center justify-center mb-4 shadow-card">
                     <svg className="w-8 h-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -52,7 +52,7 @@ const Auth = () => {
                 <p className="text-text-secondary mt-2">Structured learning from YouTube playlists.</p>
             </div>
 
-            <div className="bg-surface p-8 rounded-xl shadow-card w-full max-w-md border border-border">
+            <div className="relative z-10 bg-surface p-8 rounded-xl shadow-card w-full max-w-md border border-border">
                 <h2 className="text-2xl font-semibold mb-2 text-center text-text-primary">
                     {isLogin ? 'Welcome back' : 'Create account'}
                 </h2>
