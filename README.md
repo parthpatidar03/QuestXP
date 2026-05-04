@@ -24,90 +24,12 @@ QuestXP is built on a modern, robust, and scalable stack designed to handle heav
 
 | Layer | Technology |
 |-------|------------|
-| **Frontend** | React 18, Vite, Tailwind CSS (Esports Theme), Framer Motion, Zustand |
+| **Frontend** | React 18, Vite, Tailwind CSS (Minimalist Study Theme), Framer Motion, Zustand |
 | **Backend** | Node.js, Express.js |
 | **Database** | MongoDB (Mongoose ODM) |
 | **Queue / Cache** | Redis, BullMQ |
 | **Authentication**| JWT (HttpOnly cookies), Google OAuth 2.0 |
 | **AI & APIs** | OpenAI (GPT-4o-mini, text-embeddings), `youtube-transcript` |
-
----
-
-## Current Build Status
-
-QuestXP is being shipped in strict phases.
-
-### Phase 1 - Foundation MVP
-
-| Task | Status | Notes |
-|---|---:|---|
-| Task 1: Authentication System | Done | Access token, refresh token, session tracking, logout, refresh rotation, tests |
-| Task 2: Course Creation API | Next | Validate playlist URL, create course, enqueue job |
-| Task 3: Queue + Worker Setup | Pending | BullMQ course ingestion worker |
-| Task 4: Transcript Ingestion | Pending | Store transcripts per lecture |
-| Task 5: Basic XP System | Pending | Event-based XP and dedupe |
-
-### Task 1 Auth Summary
-
-The auth system now uses:
-
-- `accessToken` HttpOnly cookie, 15 minutes
-- `refreshToken` HttpOnly cookie, 7 days
-- database-backed `Session` records
-- refresh-token rotation
-- refresh-token reuse detection
-- logout and logout-all session revocation
-- frontend auto-refresh on expired access tokens
-
-Auth tests:
-
-```bash
-cd backend
-npm test
-```
-
-Latest result: `4 pass, 0 fail`.
-
-Frontend production build:
-
-```bash
-cd frontend
-npm run build
-```
-
-Latest result: build passes with Vite chunk-size warnings.
-
-Detailed implementation notes are in [Docs/TASK-001-AUTHENTICATION.md](./Docs/TASK-001-AUTHENTICATION.md).
-
----
-
-## Engineering Docs
-
-Project documentation is maintained in [Docs](./Docs).
-
-Start here:
-
-- [Task 001 - Authentication System](./Docs/TASK-001-AUTHENTICATION.md)
-- [UI 001 - Professional Product Redesign](./Docs/UI-001-PROFESSIONAL-REDESIGN.md)
-- [File Structure Reference](./Docs/FILE-STRUCTURE.md)
-- [Deployment Readiness](./Docs/DEPLOYMENT-READINESS.md)
-
----
-
-## Current UI Direction
-
-QuestXP now uses a restrained product UI instead of the earlier esports/neon look.
-
-Current design baseline:
-
-- warm neutral background
-- light cards with subtle borders
-- green primary actions
-- amber XP accents
-- Inter/system typography
-- reduced glow, gradients, and "quest" language on core app screens
-
-Design context lives in [PRODUCT.md](./PRODUCT.md) and [DESIGN.md](./DESIGN.md).
 
 ### System Diagram
 
