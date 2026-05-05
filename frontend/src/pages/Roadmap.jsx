@@ -200,10 +200,20 @@ const Roadmap = () => {
                         </Link>
                     </div>
                     
-                    {/* Single line of essential info */}
-                    {plan && (
+                    {/* Plan info or optional CTA */}
+                    {plan ? (
                         <p className="text-sm text-text-muted">
                             Target completion: <span className="text-primary font-medium">{format(new Date(plan.deadline), 'MMM dd, yyyy')}</span>
+                        </p>
+                    ) : (
+                        <p className="text-sm text-text-muted">
+                            <Link 
+                                to={`/courses/${courseId}`} 
+                                className="text-primary hover:underline transition-colors"
+                            >
+                                Create a study plan
+                            </Link>
+                            {' '}to get personalized milestones and goals
                         </p>
                     )}
                 </div>
