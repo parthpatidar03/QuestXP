@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 const transcriptSchema = new Schema({
     lecture: { type: Schema.Types.ObjectId, ref: 'Course.sections.lectures', required: true, unique: true },
     course: { type: Schema.Types.ObjectId, ref: 'Course', required: true },
-    source: { type: String, enum: ['platform_captions', 'local_stt'], required: true },
+    source: { type: String, enum: ['platform_captions', 'local_stt', 'metadata_fallback'], required: true },
     language: { type: String, default: 'en' },
     fullText: { type: String, required: true },
     segments: [{

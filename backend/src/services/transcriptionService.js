@@ -13,7 +13,7 @@ class TranscriptionService {
      * @param {string} youtubeId 
      * @returns {Promise<{source: string, fullText: string, segments: Array, durationSecs: number}>}
      */
-    async transcribe(youtubeId, durationSecs) {
+    async transcribe(youtubeId, durationSecs, metadata = {}) {
         try {
             // Attempt 1: Fetch platform captions
             const transcriptList = await YoutubeTranscript.fetchTranscript(youtubeId);
@@ -49,6 +49,22 @@ class TranscriptionService {
             };
         } catch (sttError) {
             console.error(`[TranscriptionService] STT failed for ${youtubeId}:`, sttError);
+            if (metadata.title) {
+                const fullText = [
+                    `Transcript unavailable for this YouTube video.`,
+                    `Lecture title: ${metadata.title}.`,
+                    metadata.courseTitle ? `Course title: ${metadata.courseTitle}.` : null,
+                    `Create study material from the available lecture metadata only.`
+                ].filter(Boolean).join(' ');
+
+                return {
+                    source: 'metadata_fallback',
+                    fullText,
+                    segments: [{ text: fullText, start: 0, end: durationSecs || 0 }],
+                    durationSecs
+                };
+            }
+
             throw new Error(ERROR_BOTH_FAILED);
         }
     }

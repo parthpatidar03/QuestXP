@@ -1,7 +1,7 @@
 const { Worker } = require('bullmq');
 const IORedis = require('ioredis');
 const { Pinecone } = require('@pinecone-database/pinecone');
-const { RecursiveCharacterTextSplitter } = require('langchain/text_splitter');
+const { RecursiveCharacterTextSplitter } = require('@langchain/textsplitters');
 const { OpenAI } = require('openai');
 // Optional: import mongoose model for Transcript if available, but spec says:
 // "fetch Transcript.content by lectureId" -> Assuming Transcript model is in ../models/Transcript
@@ -12,6 +12,7 @@ try {
     // If not found, we handle it later or ignore depending on setup
 }
 const EmbeddingStatus = require('../models/EmbeddingStatus');
+const Course = require('../models/Course');
 
 const connection = new IORedis(process.env.REDIS_URL || 'redis://localhost:6379', {
     maxRetriesPerRequest: null,
@@ -28,7 +29,14 @@ const embeddingWorker = new Worker('embedding', async job => {
         // T027 [P] Implement atomic index rebuild - delete namespace before processing
         const index = pc.Index(indexName);
         console.log(`Clearing existing vectors for lecture ${lectureId}`);
-        await index.namespace(lectureId.toString()).deleteAll();
+        try {
+            await index.namespace(lectureId.toString()).deleteAll();
+        } catch (deleteError) {
+            const isMissingNamespace = deleteError.status === 404
+                || deleteError.response?.status === 404
+                || String(deleteError.message || '').includes('status 404');
+            if (!isMissingNamespace) throw deleteError;
+        }
 
         // 1. Set status in progress
         await EmbeddingStatus.findOneAndUpdate(
@@ -36,20 +44,25 @@ const embeddingWorker = new Worker('embedding', async job => {
             { status: 'in_progress', courseId, startedAt: new Date() },
             { upsert: true, new: true }
         );
+        await Course.findOneAndUpdate(
+            { _id: courseId, 'sections.lectures._id': lectureId },
+            { $set: { 'sections.$[].lectures.$[lec].aiStatus.embedding': 'in_progress' } },
+            { arrayFilters: [{ 'lec._id': lectureId }] }
+        );
 
         if (!Transcript) {
             throw new Error('Transcript model not found. Cannot fetch lecture content.');
         }
 
         // 2. Fetch transcript
-        const transcript = await Transcript.findOne({ lectureId });
-        if (!transcript || !transcript.content) {
+        const transcript = await Transcript.findOne({ lecture: lectureId });
+        if (!transcript || !transcript.fullText) {
             throw new Error(`Transcript not found or empty for lectureId: ${lectureId}`);
         }
 
         // 3. Split with RecursiveCharacterTextSplitter
         const splitter = new RecursiveCharacterTextSplitter({ chunkSize: 500, chunkOverlap: 200 });
-        const chunks = await splitter.createDocuments([transcript.content]);
+        const chunks = await splitter.createDocuments([transcript.fullText]);
         const chunkTexts = chunks.map(c => c.pageContent);
 
         if (chunkTexts.length === 0) {
@@ -62,7 +75,7 @@ const embeddingWorker = new Worker('embedding', async job => {
         let upsertData = [];
 
         // Pre-calculate timestamps if needed
-        const totalDurationSecs = transcript.totalDurationSecs || 0; // Assuming transcript object optionally has this
+        const totalDurationSecs = transcript.durationSecs || 0;
 
         for (let i = 0; i < chunkTexts.length; i += batchSize) {
             const batch = chunkTexts.slice(i, i + batchSize);
@@ -118,6 +131,11 @@ const embeddingWorker = new Worker('embedding', async job => {
                 errorReason: null
             }
         );
+        await Course.findOneAndUpdate(
+            { _id: courseId, 'sections.lectures._id': lectureId },
+            { $set: { 'sections.$[].lectures.$[lec].aiStatus.embedding': 'complete' } },
+            { arrayFilters: [{ 'lec._id': lectureId }] }
+        );
 
         return { success: true, lectureId, totalChunks };
 
@@ -132,6 +150,16 @@ const embeddingWorker = new Worker('embedding', async job => {
                 courseId // Ensure courseId is set even on fail
             },
             { upsert: true }
+        );
+        await Course.findOneAndUpdate(
+            { _id: courseId, 'sections.lectures._id': lectureId },
+            { 
+                $set: { 
+                    'sections.$[].lectures.$[lec].aiStatus.embedding': 'failed',
+                    'sections.$[].lectures.$[lec].aiStatus.errorReason': error.message || 'Unknown embedding error'
+                }
+            },
+            { arrayFilters: [{ 'lec._id': lectureId }] }
         );
 
         throw error;

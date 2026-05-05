@@ -3,8 +3,6 @@ const IORedis = require('ioredis');
 const axios = require('axios');
 
 const Course = require('../models/Course');
-const embeddingQueue = require('../queues/embeddingQueue');
-const EmbeddingStatus = require('../models/EmbeddingStatus');
 
 const connection = new IORedis(process.env.REDIS_URL || 'redis://localhost:6379', {
     maxRetriesPerRequest: null,
@@ -111,29 +109,19 @@ const courseProcessor = new Worker('course-processing', async job => {
             totalDuration
         }, { new: true });
 
-        // T015: Fan-out to transcription queue for each lecture
+        // T015: Fan-out to transcription queue for each saved lecture.
+        // Use Mongo subdocument _id for pipeline records; youtubeId is only source video id.
         const transcriptionQueue = require('../queues/transcriptionQueue');
         const jobOptions = require('../queues/jobOptions');
         
-        for (const section of processedSections) {
+        for (const section of course.sections) {
             for (const lecture of section.lectures) {
                 await transcriptionQueue.add('transcribe', {
                     courseId: course._id.toString(),
-                    lectureId: lecture.youtubeId, // using youtubeId as placeholder until we get the actual _id from mongoose, wait...
-                    // Let's use the created course from findByIdAndUpdate.
+                    lectureId: lecture._id.toString(),
+                    youtubeId: lecture.youtubeId,
+                    durationSecs: lecture.duration
                 }, jobOptions);
-            }
-        }
-        
-        // T010 [US2] Chaining embeddingQueue
-        for (const section of processedSections) {
-            for (const lecture of section.lectures) {
-                await EmbeddingStatus.findOneAndUpdate(
-                    { lectureId: lecture.youtubeId },
-                    { status: 'pending', courseId },
-                    { upsert: true }
-                );
-                await embeddingQueue.add('embed', { lectureId: lecture.youtubeId, courseId });
             }
         }
 

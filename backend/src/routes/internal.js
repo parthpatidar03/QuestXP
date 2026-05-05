@@ -3,6 +3,10 @@ const auth = require('../middleware/auth');
 const Course = require('../models/Course');
 const transcriptionQueue = require('../queues/transcriptionQueue');
 const jobOptions = require('../queues/jobOptions');
+const Quiz = require('../models/Quiz');
+const Notes = require('../models/Notes');
+const Transcript = require('../models/Transcript');
+const EmbeddingStatus = require('../models/EmbeddingStatus');
 
 const router = express.Router();
 
@@ -33,15 +37,27 @@ router.post('/lectures/:id/process', auth, async (req, res, next) => {
             { _id: course._id, 'sections.lectures._id': lectureId },
             { $set: { 
                 'sections.$[].lectures.$[lec].aiStatus.transcription': 'pending',
+                'sections.$[].lectures.$[lec].aiStatus.notes': 'pending',
+                'sections.$[].lectures.$[lec].aiStatus.quiz': 'pending',
+                'sections.$[].lectures.$[lec].aiStatus.topics': 'pending',
+                'sections.$[].lectures.$[lec].aiStatus.embedding': 'pending',
                 'sections.$[].lectures.$[lec].aiStatus.errorReason': null
             } },
             { arrayFilters: [{ 'lec._id': lectureId }] }
         );
 
+        await Promise.all([
+            Quiz.deleteOne({ lecture: lectureId }),
+            Notes.deleteOne({ lecture: lectureId }),
+            Transcript.deleteOne({ lecture: lectureId }),
+            EmbeddingStatus.deleteOne({ lectureId })
+        ]);
+
         // Enqueue transcription job
         await transcriptionQueue.add('transcribe', {
             courseId: course._id.toString(),
-            lectureId: targetLecture.youtubeId,
+            lectureId,
+            youtubeId: targetLecture.youtubeId,
             durationSecs: targetLecture.duration
         }, jobOptions);
 

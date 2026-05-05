@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Play, CheckCircle2, XCircle, Trophy, RotateCcw, Award } from 'lucide-react';
 import useAuthStore from '../../store/useAuthStore';
 import api from '../../services/api';
@@ -6,8 +6,9 @@ import LockedFeature from '../LockedFeature';
 
 const LEVEL_QUIZ = 1;
 
-const QuizTab = ({ lectureId, quizStatus, errorReason }) => {
+const QuizTab = ({ lectureId, quizStatus, errorReason, autoStart = false }) => {
     const { user } = useAuthStore();
+    const processingRequestRef = useRef(null);
     const [triggered, setTriggered] = useState(false);
     const [quiz, setQuiz] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -52,7 +53,13 @@ const QuizTab = ({ lectureId, quizStatus, errorReason }) => {
 
         // Auto-trigger if explicitly requested or video ended
         const params = new URLSearchParams(window.location.search);
-        if ((params.get('startQuiz') === 'true' || autoStart) && quizStatus === 'complete') {
+        const shouldAutoStart = params.get('startQuiz') === 'true' || autoStart;
+        if (shouldAutoStart && quizStatus === 'pending' && processingRequestRef.current !== lectureId) {
+            processingRequestRef.current = lectureId;
+            api.post(`/internal/lectures/${lectureId}/process`).catch(() => {});
+        }
+
+        if (shouldAutoStart && quizStatus === 'complete') {
             setTriggered(true);
             fetchQuiz();
         }
@@ -104,7 +111,7 @@ const QuizTab = ({ lectureId, quizStatus, errorReason }) => {
         return (
             <div className="p-8 text-center text-text-muted">
                 <XCircle className="w-8 h-8 text-danger mx-auto mb-3" />
-                <h3 className="text-lg font-semibold text-white mb-2">Quiz Generation Failed</h3>
+                <h3 className="text-lg font-semibold text-text-primary mb-2">Quiz Generation Failed</h3>
                 <p className="text-sm">{errorReason || 'Lecture too short to generate a quiz.'}</p>
             </div>
         );
@@ -118,8 +125,8 @@ const QuizTab = ({ lectureId, quizStatus, errorReason }) => {
                 <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4" style={{ background: 'rgba(245,165,36,0.10)', border: '1px solid rgba(245,165,36,0.3)' }}>
                     <Trophy className="w-6 h-6 text-[#f5a524]" />
                 </div>
-                <p className="text-base font-bold text-white mb-2">🎯 AI Practice Quiz</p>
-                <p className="text-sm mb-6" style={{ color: '#8b9cc8' }}>
+                <p className="text-base font-bold text-text-primary mb-2">🎯 AI Practice Quiz</p>
+                <p className="text-sm mb-6 text-text-secondary">
                     {isReady
                         ? 'Test your knowledge with AI-generated questions from this lesson.'
                         : quizStatus === 'in_progress' ? 'AI is crafting your quiz…' : 'Quiz not ready yet — watch more of the lecture first.'}
@@ -166,7 +173,7 @@ const QuizTab = ({ lectureId, quizStatus, errorReason }) => {
                     {/* Dummy content for blur preview */}
                     <div className="space-y-6">
                         <div className="bg-surface-2 p-6 rounded-xl">
-                            <h4 className="text-white font-semibold mb-4 text-lg">Question 1</h4>
+                            <h4 className="text-text-primary font-semibold mb-4 text-lg">Question 1</h4>
                             <div className="space-y-3">
                                 {[1,2,3,4].map(i => <div key={i} className="h-12 bg-surface-3 rounded-lg border border-border"></div>)}
                             </div>
@@ -205,10 +212,10 @@ const QuizTab = ({ lectureId, quizStatus, errorReason }) => {
                                     strokeDasharray={`${(result.score / 100) * 276} 276`}
                                 />
                             </svg>
-                            <span className="text-3xl font-display font-bold text-white relative z-10">{result.score}%</span>
+                            <span className="text-3xl font-display font-bold text-text-primary relative z-10">{result.score}%</span>
                         </div>
                         
-                        <h2 className="text-2xl font-bold text-white mb-2">
+                        <h2 className="text-2xl font-bold text-text-primary mb-2">
                             {result.score >= 80 ? 'Excellent work!' : result.score >= 60 ? 'Good job!' : 'Keep practicing!'}
                         </h2>
                         <p className="text-text-secondary mb-6">
@@ -218,7 +225,7 @@ const QuizTab = ({ lectureId, quizStatus, errorReason }) => {
                         <div className="flex justify-center gap-4">
                             <button 
                                 onClick={handleRetake}
-                                className="flex items-center gap-2 px-6 py-3 rounded-xl bg-surface-3 hover:bg-surface border border-border text-white font-semibold transition-colors"
+                                className="flex items-center gap-2 px-6 py-3 rounded-xl bg-surface-3 hover:bg-surface border border-border text-text-primary font-semibold transition-colors"
                             >
                                 <RotateCcw className="w-4 h-4" /> Retake Quiz
                             </button>
@@ -226,14 +233,14 @@ const QuizTab = ({ lectureId, quizStatus, errorReason }) => {
                     </div>
 
                     <div className="space-y-6">
-                        <h3 className="text-xl font-bold text-white mb-4 border-b border-border pb-2">Review Answers</h3>
+                        <h3 className="text-xl font-bold text-text-primary mb-4 border-b border-border pb-2">Review Answers</h3>
                         {result.evaluatedQuestions.map((q, qIndex) => (
                             <div key={qIndex} className={`p-6 rounded-xl border ${q.isCorrect ? 'bg-success/5 border-success/20' : 'bg-danger/5 border-danger/20'}`}>
                                 <div className="flex items-start gap-4 mb-4">
                                     <div className="mt-1">
                                         {q.isCorrect ? <CheckCircle2 className="w-6 h-6 text-success" /> : <XCircle className="w-6 h-6 text-danger" />}
                                     </div>
-                                    <h4 className="text-lg font-medium text-white">{qIndex + 1}. {q.question}</h4>
+                                    <h4 className="text-lg font-medium text-text-primary">{qIndex + 1}. {q.question}</h4>
                                 </div>
                                 
                                 <div className="space-y-2 ml-10">
@@ -267,7 +274,7 @@ const QuizTab = ({ lectureId, quizStatus, errorReason }) => {
                 // Quiz Taking View
                 <div className="space-y-8 pb-20">
                     <div className="flex items-center justify-between mb-2">
-                        <h2 className="text-xl font-display font-bold text-white">Practice Quiz</h2>
+                        <h2 className="text-xl font-display font-bold text-text-primary">Practice Quiz</h2>
                         <div className="bg-surface-2 px-3 py-1 rounded text-xs font-semibold text-text-muted">
                             {answers.filter(a => a !== null).length} / {quiz.questionCount} Answered
                         </div>
@@ -275,8 +282,8 @@ const QuizTab = ({ lectureId, quizStatus, errorReason }) => {
 
                     {quiz.questions.map((q, qIndex) => (
                         <div key={qIndex} className="bg-surface-2 p-6 rounded-2xl border border-border">
-                            <h4 className="text-lg font-medium text-white mb-5 leading-relaxed">
-                                <span className="text-primary mr-2">{qIndex + 1}.</span> {q.question}
+                            <h4 className="text-lg font-medium text-primary mb-5 leading-relaxed">
+                                <span className="mr-2">{qIndex + 1}.</span> {q.question}
                             </h4>
                             <div className="space-y-3">
                                 {q.options.map((opt, oIndex) => {
@@ -287,8 +294,8 @@ const QuizTab = ({ lectureId, quizStatus, errorReason }) => {
                                             onClick={() => handleOptionSelect(qIndex, oIndex)}
                                             className={`w-full text-left p-4 rounded-xl border transition-all duration-200 flex items-center gap-3 ${
                                                 isSelected 
-                                                    ? 'bg-primary/10 border-primary text-white scale-[1.01]' 
-                                                    : 'bg-surface border-border text-text-secondary hover:border-text-muted hover:bg-surface-3'
+                                                    ? 'bg-primary/10 border-primary text-text-primary scale-[1.01]' 
+                                                    : 'bg-surface border-border text-text-secondary hover:border-text-muted hover:bg-surface-3 hover:text-text-primary'
                                             }`}
                                         >
                                             <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
@@ -308,14 +315,14 @@ const QuizTab = ({ lectureId, quizStatus, errorReason }) => {
                         <button
                             onClick={handleSubmit}
                             disabled={!isAllAnswered || submitting}
-                            className={`w-full py-4 rounded-xl font-bold text-white shadow-lg transition-all flex items-center justify-center gap-2 ${
+                            className={`w-full py-4 rounded-xl font-bold shadow-lg transition-all flex items-center justify-center gap-2 ${
                                 isAllAnswered && !submitting
-                                    ? 'bg-primary hover:bg-primary-hover hover:scale-105 cursor-pointer shadow-primary/30'
+                                    ? 'bg-primary hover:bg-primary-hover hover:scale-105 cursor-pointer shadow-primary/30 text-[oklch(0.16_0.025_155)]'
                                     : 'bg-surface-3 text-text-muted cursor-not-allowed border border-border'
                             }`}
                         >
                             {submitting ? (
-                                <><div className="w-5 h-5 rounded-full border-2 border-white/30 border-t-white animate-spin"/> Grading...</>
+                                <><div className="w-5 h-5 rounded-full border-2 border-current/30 border-t-current animate-spin"/> Grading...</>
                             ) : (
                                 'Submit Quiz & Earn XP'
                             )}

@@ -4,6 +4,11 @@ const app = require('./app');
 
 // Ensure BullMQ workers are loaded and running
 require('./workers/courseProcessor');
+require('./workers/transcriptionWorker');
+require('./workers/notesWorker');
+require('./workers/quizWorker');
+require('./workers/topicsWorker');
+require('./workers/embeddingWorker');
 require('./workers/streakWorker');
 
 const PORT = process.env.PORT || 5000;

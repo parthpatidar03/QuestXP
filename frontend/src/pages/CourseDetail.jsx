@@ -25,11 +25,33 @@ const fmtDuration = (secs) => {
 
 /* ── Lecture Mission Row ────────────────────────────────────────────── */
 function MissionRow({ lecture, index, isCompleted, isActive, isLocked, courseId }) {
+    const navigate = useNavigate();
+
+    const openLecture = () => {
+        if (!isLocked) {
+            navigate(`/courses/${courseId}/lectures/${lecture._id}`);
+        }
+    };
+
+    const openQuiz = (event) => {
+        event.stopPropagation();
+        if (!isLocked) {
+            navigate(`/courses/${courseId}/lectures/${lecture._id}?startQuiz=true`);
+        }
+    };
+
     return (
-        <Link
-            to={isLocked ? '#' : `/courses/${courseId}/lectures/${lecture._id}`}
+        <div
+            role="button"
+            tabIndex={isLocked ? -1 : 0}
             className={`flex items-center gap-6 px-6 py-5 border-b border-border transition-all group ${isLocked ? 'cursor-not-allowed opacity-50' : 'hover:bg-surface-2/60'}`}
-            onClick={e => isLocked && e.preventDefault()}
+            onClick={openLecture}
+            onKeyDown={(event) => {
+                if ((event.key === 'Enter' || event.key === ' ') && !isLocked) {
+                    event.preventDefault();
+                    openLecture();
+                }
+            }}
         >
             {/* Hex mission number */}
             <div
@@ -81,15 +103,15 @@ function MissionRow({ lecture, index, isCompleted, isActive, isLocked, courseId 
             {/* Quiz Fast-Track / Status */}
             <div className="flex items-center gap-3 shrink-0 ml-auto">
                 {!isCompleted && !isLocked && (
-                    <Link
-                        to={`/courses/${courseId}/lectures/${lecture._id}?startQuiz=true`}
+                    <button
+                        type="button"
                         className="p-2 rounded-lg bg-surface-3 hover:bg-primary/20 text-text-muted hover:text-primary transition-all group/quiz flex flex-col items-center gap-1 border border-border"
                         title="Take Quiz to Complete"
-                        onClick={e => e.stopPropagation()}
+                        onClick={openQuiz}
                     >
                         <MessageSquareText className="w-4 h-4" />
                         <span className="text-[8px] font-black uppercase tracking-widest hidden sm:block">Test</span>
-                    </Link>
+                    </button>
                 )}
 
                 {/* XP chip */}
@@ -97,7 +119,7 @@ function MissionRow({ lecture, index, isCompleted, isActive, isLocked, courseId 
                     <Zap className="w-3.5 h-3.5 fill-gold/20" /> +{XP_PER_LECTURE}
                 </div>
             </div>
-        </Link>
+        </div>
     );
 }
 

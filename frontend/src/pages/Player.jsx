@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../services/api';
 import VideoPlayer from '../components/Player/VideoPlayer';
@@ -20,18 +20,23 @@ const TABS = [
 const Player = () => {
     const { courseId, lectureId } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
     const { addXPToast, applyAward } = useGamificationStore();
+    const shouldStartQuiz = useMemo(() => new URLSearchParams(location.search).get('startQuiz') === 'true', [location.search]);
 
     const [course, setCourse] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [currentTime, setCurrentTime] = useState(0);
     const [showCompletionCard, setShowCompletionCard] = useState(false);
-    const [activeTab, setActiveTab] = useState('topics');
+    const [activeTab, setActiveTab] = useState(() => shouldStartQuiz ? 'quiz' : 'topics');
+    const [quizAutoStart, setQuizAutoStart] = useState(false);
+    const [lectureAiStatus, setLectureAiStatus] = useState(null);
     const [xpEarned, setXpEarned] = useState(null); // golden XP toast value
     const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 640 : false));
     const [isDark, setIsDark] = useState(() => (typeof window !== 'undefined' ? document.documentElement.classList.contains('dark') : true));
     const positionTimerRef = useRef(null);
+    const sidebarRef = useRef(null);
 
     useEffect(() => {
         const fetchCourse = async () => {
@@ -46,6 +51,8 @@ const Player = () => {
         };
         fetchCourse();
         setShowCompletionCard(false);
+        setQuizAutoStart(false);
+        setLectureAiStatus(null);
         setXpEarned(null);
         return () => { if (positionTimerRef.current) clearInterval(positionTimerRef.current); };
     }, [courseId, lectureId]);
@@ -92,15 +99,45 @@ const Player = () => {
     const currentLecture = allLectures[currentLectureIndex];
     const prevLecture = currentLectureIndex > 0 ? allLectures[currentLectureIndex - 1] : null;
     const nextLecture = currentLectureIndex < allLectures.length - 1 ? allLectures[currentLectureIndex + 1] : null;
+    const currentAiStatus = lectureAiStatus || currentLecture?.aiStatus || {};
 
     const handleTopicClick = (t) => setCurrentTime(t);
 
     useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-        if (params.get('startQuiz') === 'true') {
+        if (shouldStartQuiz) {
             setActiveTab('quiz');
         }
-    }, [lectureId]);
+    }, [lectureId, shouldStartQuiz]);
+
+    useEffect(() => {
+        if (!loading && shouldStartQuiz && sidebarRef.current) {
+            sidebarRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }, [loading, shouldStartQuiz]);
+
+    useEffect(() => {
+        const quizStatus = currentAiStatus.quiz || 'pending';
+        if (activeTab !== 'quiz' || !currentLecture?._id || !['pending', 'in_progress'].includes(quizStatus)) {
+            return undefined;
+        }
+
+        let cancelled = false;
+        const fetchAiStatus = async () => {
+            try {
+                const { data } = await api.get(`/lectures/${currentLecture._id}/ai-status`);
+                if (!cancelled) setLectureAiStatus(data.aiStatus);
+            } catch (err) {
+                // Keep existing status; normal auth/network handling happens in api interceptor.
+            }
+        };
+
+        fetchAiStatus();
+        const interval = setInterval(fetchAiStatus, 3000);
+        return () => {
+            cancelled = true;
+            clearInterval(interval);
+        };
+    }, [activeTab, currentLecture?._id, currentAiStatus.quiz]);
 
     useEffect(() => {
         const handleMissionComplete = (e) => {
@@ -125,6 +162,7 @@ const Player = () => {
     }, []);
 
     const handleVideoEnd = () => {
+        setQuizAutoStart(true);
         setActiveTab('quiz');
         // We no longer auto-complete via API here. 
         // Completion happens after Quiz submission.
@@ -233,74 +271,76 @@ const Player = () => {
             <div className="flex-1 flex flex-col lg:flex-row min-h-0">
 
                 {/* Video Area */}
-                <div className="shrink-0 lg:flex-1 flex flex-col items-center lg:justify-center p-2 sm:p-4 lg:p-6 min-h-0 relative" style={{ background: theme.pageBg }}>
-                    <div className="w-full max-w-5xl mx-auto aspect-video relative">
-                        <div className="w-full h-full rounded-xl overflow-hidden" style={{ border: '1px solid rgba(0,255,128,0.25)', boxShadow: theme.shadow }}>
-                            <VideoPlayer
-                                courseId={courseId}
-                                lectureId={lectureId}
-                                youtubeId={currentLecture.youtubeId}
-                                onEnded={handleVideoEnd}
-                                onTimeUpdate={setCurrentTime}
-                            />
+                {!shouldStartQuiz && (
+                    <div className="shrink-0 lg:flex-1 flex flex-col items-center lg:justify-center p-2 sm:p-4 lg:p-6 min-h-0 relative" style={{ background: theme.pageBg }}>
+                        <div className="w-full max-w-5xl mx-auto aspect-video relative">
+                            <div className="w-full h-full rounded-xl overflow-hidden" style={{ border: '1px solid rgba(0,255,128,0.25)', boxShadow: theme.shadow }}>
+                                <VideoPlayer
+                                    courseId={courseId}
+                                    lectureId={lectureId}
+                                    youtubeId={currentLecture.youtubeId}
+                                    onEnded={handleVideoEnd}
+                                    onTimeUpdate={setCurrentTime}
+                                />
+                            </div>
                         </div>
+
+                        {/* XP Earned floating toast */}
+                        <AnimatePresence>
+                            {xpEarned && (
+                                <motion.div
+                                    key="xp-toast"
+                                    initial={{ opacity: 0, y: 0, scale: 0.8 }}
+                                    animate={{ opacity: 1, y: -20, scale: 1 }}
+                                    exit={{ opacity: 0, y: -60, scale: 0.9 }}
+                                    transition={{ duration: 0.4 }}
+                                    className="absolute top-3 sm:top-8 right-3 sm:right-8 flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-black text-sm sm:text-lg pointer-events-none"
+                                    style={{ background: 'rgba(245,165,36,0.2)', border: '1px solid rgba(245,165,36,0.6)', color: '#f5a524', fontFamily: "'Barlow Condensed', sans-serif", boxShadow: '0 0 20px rgba(245,165,36,0.4)' }}
+                                >
+                                    <Zap className="w-4 h-4 sm:w-5 sm:h-5" /> +{xpEarned} XP
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+
+                        {/* Completion Card */}
+                        <AnimatePresence>
+                            {showCompletionCard && (
+                                <motion.div
+                                    initial={{ y: 80, opacity: 0 }}
+                                    animate={{ y: 0, opacity: 1 }}
+                                    exit={{ y: 80, opacity: 0 }}
+                                    transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+                                    className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 w-[94%] sm:w-[90%] max-w-md rounded-2xl p-4 sm:p-6 flex flex-col items-center text-center z-50 shadow-2xl"
+                                    style={{ background: theme.completionBg, border: theme.completionBorder, backdropFilter: 'blur(20px)' }}
+                                >
+                                    <div className="w-14 h-14 rounded-full flex items-center justify-center mb-4" style={{ background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)' }}>
+                                        <CheckCircle2 className="w-7 h-7 text-[#10B981]" />
+                                    </div>
+                                    <h3 className="text-2xl font-black mb-1" style={{ color: theme.text, fontFamily: "'Barlow Condensed', sans-serif" }}>Mission Complete!</h3>
+                                    <p className="text-sm font-bold mb-6" style={{ color: '#f5a524' }}>+{xpEarned || 50} XP Earned</p>
+                                    <div className="flex gap-3 w-full">
+                                        <button
+                                            onClick={() => navigate(`/courses/${courseId}`)}
+                                            className="flex-1 py-3 px-4 rounded-xl text-sm font-semibold transition-colors"
+                                            style={{ background: theme.completionBtnBg, border: `1px solid ${theme.completionBtnBorder}`, color: theme.completionBtnText }}
+                                        >
+                                            Overview
+                                        </button>
+                                        <button
+                                            onClick={handleNextLecture}
+                                            className="flex-[2] py-3 px-4 rounded-xl text-sm font-bold transition-all btn-esports"
+                                        >
+                                            {nextLecture ? '⚡ Continue' : '🏆 Finish Course'}
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
-
-                    {/* XP Earned floating toast */}
-                    <AnimatePresence>
-                        {xpEarned && (
-                            <motion.div
-                                key="xp-toast"
-                                initial={{ opacity: 0, y: 0, scale: 0.8 }}
-                                animate={{ opacity: 1, y: -20, scale: 1 }}
-                                exit={{ opacity: 0, y: -60, scale: 0.9 }}
-                                transition={{ duration: 0.4 }}
-                                className="absolute top-3 sm:top-8 right-3 sm:right-8 flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-black text-sm sm:text-lg pointer-events-none"
-                                style={{ background: 'rgba(245,165,36,0.2)', border: '1px solid rgba(245,165,36,0.6)', color: '#f5a524', fontFamily: "'Barlow Condensed', sans-serif", boxShadow: '0 0 20px rgba(245,165,36,0.4)' }}
-                            >
-                                <Zap className="w-4 h-4 sm:w-5 sm:h-5" /> +{xpEarned} XP
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-
-                    {/* Completion Card */}
-                    <AnimatePresence>
-                        {showCompletionCard && (
-                            <motion.div
-                                initial={{ y: 80, opacity: 0 }}
-                                animate={{ y: 0, opacity: 1 }}
-                                exit={{ y: 80, opacity: 0 }}
-                                transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-                                className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 w-[94%] sm:w-[90%] max-w-md rounded-2xl p-4 sm:p-6 flex flex-col items-center text-center z-50 shadow-2xl"
-                                style={{ background: theme.completionBg, border: theme.completionBorder, backdropFilter: 'blur(20px)' }}
-                            >
-                                <div className="w-14 h-14 rounded-full flex items-center justify-center mb-4" style={{ background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)' }}>
-                                    <CheckCircle2 className="w-7 h-7 text-[#10B981]" />
-                                </div>
-                                <h3 className="text-2xl font-black mb-1" style={{ color: theme.text, fontFamily: "'Barlow Condensed', sans-serif" }}>Mission Complete!</h3>
-                                <p className="text-sm font-bold mb-6" style={{ color: '#f5a524' }}>+{xpEarned || 50} XP Earned</p>
-                                <div className="flex gap-3 w-full">
-                                    <button
-                                        onClick={() => navigate(`/courses/${courseId}`)}
-                                        className="flex-1 py-3 px-4 rounded-xl text-sm font-semibold transition-colors"
-                                        style={{ background: theme.completionBtnBg, border: `1px solid ${theme.completionBtnBorder}`, color: theme.completionBtnText }}
-                                    >
-                                        Overview
-                                    </button>
-                                    <button
-                                        onClick={handleNextLecture}
-                                        className="flex-[2] py-3 px-4 rounded-xl text-sm font-bold transition-all btn-esports"
-                                    >
-                                        {nextLecture ? '⚡ Continue' : '🏆 Finish Course'}
-                                    </button>
-                                </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </div>
+                )}
 
                 {/* Right Sidebar */}
-                <div className="flex-1 lg:flex-none w-full lg:w-[380px] xl:w-[420px] shrink-0 flex flex-col border-t lg:border-t-0 lg:border-l min-h-0" style={{ borderColor: theme.border, background: theme.panelBg, height: '100%' }}>
+                <div ref={sidebarRef} className={`flex-1 w-full shrink-0 flex flex-col border-t lg:border-t-0 min-h-0 ${shouldStartQuiz ? '' : 'lg:flex-none lg:w-[380px] xl:w-[420px] lg:border-l'}`} style={{ borderColor: theme.border, background: theme.panelBg, height: '100%' }}>
 
                     {/* Tab Navigation */}
                     <div className="flex border-b shrink-0" style={{ borderColor: theme.border }}>
@@ -341,8 +381,9 @@ const Player = () => {
                         {activeTab === 'quiz' && (
                             <QuizTab
                                 lectureId={currentLecture._id}
-                                quizStatus={currentLecture.aiStatus?.quiz || 'pending'}
-                                errorReason={currentLecture.aiStatus?.errorReason}
+                                quizStatus={currentAiStatus.quiz || 'pending'}
+                                errorReason={currentAiStatus.errorReason}
+                                autoStart={quizAutoStart || shouldStartQuiz}
                             />
                         )}
                     </div>

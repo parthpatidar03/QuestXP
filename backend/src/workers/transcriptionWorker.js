@@ -6,6 +6,7 @@ const Transcript = require('../models/Transcript');
 const notesQueue = require('../queues/notesQueue');
 const quizQueue = require('../queues/quizQueue');
 const topicsQueue = require('../queues/topicsQueue');
+const embeddingQueue = require('../queues/embeddingQueue');
 const jobOptions = require('../queues/jobOptions');
 
 const transcriptionWorker = new Worker('transcription', async job => {
@@ -21,8 +22,15 @@ const transcriptionWorker = new Worker('transcription', async job => {
 
         if (!course) throw new Error('Course or lecture not found');
 
+        const targetLecture = course.sections
+            .flatMap(section => section.lectures)
+            .find(lecture => lecture._id.toString() === lectureId);
+
         // Transcribe
-        const result = await transcriptionService.transcribe(youtubeId, durationSecs);
+        const result = await transcriptionService.transcribe(youtubeId, durationSecs, {
+            title: targetLecture?.title,
+            courseTitle: course.title
+        });
 
         // Save Transcript Model
         await Transcript.findOneAndUpdate(
@@ -49,6 +57,7 @@ const transcriptionWorker = new Worker('transcription', async job => {
         await notesQueue.add('generate-notes', { lectureId, courseId }, jobOptions);
         await quizQueue.add('generate-quiz', { lectureId, courseId }, jobOptions);
         await topicsQueue.add('generate-topics', { lectureId, courseId }, jobOptions);
+        await embeddingQueue.add('embed', { lectureId, courseId }, jobOptions);
 
         return { success: true, source: result.source };
         
