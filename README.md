@@ -162,6 +162,14 @@ GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
 OPENAI_API_KEY=your_openai_api_key
 FRONTEND_URL=http://localhost:8080
+
+# Feedback Email (SMTP)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your_gmail_address@gmail.com
+SMTP_PASS=your_gmail_app_password
+SMTP_FROM=your_gmail_address@gmail.com
+FEEDBACK_TO_EMAIL=u1892911@gmail.com
 ```
 
 Create a `.env` file in the `frontend/` directory to point to the dockerized backend:
@@ -216,6 +224,14 @@ GOOGLE_CLIENT_ID=your_client_id
 GOOGLE_CLIENT_SECRET=your_client_secret
 OPENAI_API_KEY=your_openai_key
 FRONTEND_URL=http://localhost:5173
+
+# Feedback Email (SMTP)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your_gmail_address@gmail.com
+SMTP_PASS=your_gmail_app_password
+SMTP_FROM=your_gmail_address@gmail.com
+FEEDBACK_TO_EMAIL=u1892911@gmail.com
 ```
 **Frontend (`frontend/.env`):**
 ```env

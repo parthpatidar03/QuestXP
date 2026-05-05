@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Zap, Bell, Search, BookOpenCheck, Moon, Sun } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Zap, Bell, Search, BookOpenCheck, Moon, Sun, MessageSquare, X, Send } from 'lucide-react';
 import useAuthStore from '../store/useAuthStore';
 import useGamificationStore from '../store/useGamificationStore';
 import { getGamificationProfile } from '../services/gamificationApi';
+import api from '../services/api';
 
 const NavBar = () => {
-    const { user, logout } = useAuthStore();
+    const { user } = useAuthStore();
     const { totalXP, level, setProfile } = useGamificationStore();
-    const navigate = useNavigate();
     const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
+    const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+    const [feedbackMessage, setFeedbackMessage] = useState('');
+    const [feedbackState, setFeedbackState] = useState({ loading: false, error: '', success: '' });
 
     useEffect(() => {
         getGamificationProfile()
@@ -26,6 +29,41 @@ const NavBar = () => {
         } else {
             document.documentElement.classList.remove('dark');
             localStorage.setItem('theme', 'light');
+        }
+    };
+
+    const openFeedback = () => {
+        setFeedbackState({ loading: false, error: '', success: '' });
+        setIsFeedbackOpen(true);
+    };
+
+    const closeFeedback = () => {
+        if (feedbackState.loading) return;
+        setIsFeedbackOpen(false);
+        setFeedbackMessage('');
+        setFeedbackState({ loading: false, error: '', success: '' });
+    };
+
+    const submitFeedback = async (event) => {
+        event.preventDefault();
+
+        const trimmed = feedbackMessage.trim();
+        if (trimmed.length < 10) {
+            setFeedbackState({ loading: false, error: 'Please write at least 10 characters.', success: '' });
+            return;
+        }
+
+        try {
+            setFeedbackState({ loading: true, error: '', success: '' });
+            await api.post('/feedback', {
+                message: trimmed,
+                contextPage: window.location.pathname,
+            });
+            setFeedbackState({ loading: false, error: '', success: 'Thanks. Feedback sent successfully.' });
+            setFeedbackMessage('');
+        } catch (error) {
+            const message = error?.response?.data?.error || 'Failed to send feedback. Please try again.';
+            setFeedbackState({ loading: false, error: message, success: '' });
         }
     };
 
@@ -59,6 +97,15 @@ const NavBar = () => {
                 </nav>
 
                 <div className="flex items-center gap-2">
+                    <button
+                        onClick={openFeedback}
+                        className="p-2 text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-lg transition-colors"
+                        title="Send feedback"
+                        aria-label="Send feedback"
+                    >
+                        <MessageSquare className="w-5 h-5" />
+                    </button>
+
                     <button 
                         onClick={toggleTheme}
                         className="p-2 text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-lg transition-colors"
@@ -95,6 +142,69 @@ const NavBar = () => {
                 </Link>
 
             </div>
+
+            {isFeedbackOpen && (
+                <div className="fixed inset-0 z-[60] bg-bg/70 backdrop-blur-sm flex items-center justify-center px-4" role="dialog" aria-modal="true" aria-label="Send feedback">
+                    <div className="w-full max-w-lg rounded-2xl border border-border bg-surface p-5 shadow-2xl">
+                        <div className="flex items-start justify-between gap-4">
+                            <div>
+                                <h2 className="text-lg font-semibold text-text-primary">Share Feedback</h2>
+                                <p className="text-sm text-text-muted mt-1">Your feedback helps us improve QuestXP during development.</p>
+                            </div>
+                            <button
+                                onClick={closeFeedback}
+                                className="p-1.5 rounded-md text-text-muted hover:text-text-primary hover:bg-surface-2 transition-colors"
+                                aria-label="Close feedback dialog"
+                            >
+                                <X className="w-4 h-4" />
+                            </button>
+                        </div>
+
+                        <form className="mt-4" onSubmit={submitFeedback}>
+                            <label htmlFor="feedback-message" className="text-sm font-medium text-text-secondary">Feedback</label>
+                            <textarea
+                                id="feedback-message"
+                                value={feedbackMessage}
+                                onChange={(e) => setFeedbackMessage(e.target.value)}
+                                placeholder="Tell us what is working, what is confusing, or what you want next..."
+                                className="mt-2 w-full min-h-32 rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary/40"
+                                maxLength={2000}
+                                disabled={feedbackState.loading}
+                            />
+                            <div className="mt-2 flex items-center justify-between text-xs text-text-muted">
+                                <span>Minimum 10 characters</span>
+                                <span>{feedbackMessage.length}/2000</span>
+                            </div>
+
+                            {feedbackState.error && (
+                                <p className="mt-3 text-sm text-danger">{feedbackState.error}</p>
+                            )}
+                            {feedbackState.success && (
+                                <p className="mt-3 text-sm text-success">{feedbackState.success}</p>
+                            )}
+
+                            <div className="mt-5 flex items-center justify-end gap-2">
+                                <button
+                                    type="button"
+                                    onClick={closeFeedback}
+                                    className="px-4 py-2 rounded-lg text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors"
+                                    disabled={feedbackState.loading}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="px-4 py-2 rounded-lg text-sm font-semibold bg-primary text-white hover:bg-primary-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center gap-2"
+                                    disabled={feedbackState.loading}
+                                >
+                                    <Send className="w-4 h-4" />
+                                    {feedbackState.loading ? 'Sending...' : 'Send Feedback'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </header>
     );
 };
