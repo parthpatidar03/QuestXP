@@ -18,6 +18,9 @@ const QuizTab = ({ lectureId, quizStatus, errorReason, autoStart = false }) => {
     const [submitting, setSubmitting] = useState(false);
     const [result, setResult] = useState(null);
     const [startTime, setStartTime] = useState(null);
+    
+    const [simulatedProgress, setSimulatedProgress] = useState(0);
+    const [statusMessage, setStatusMessage] = useState('Analyzing Lecture');
 
     const fetchQuiz = async () => {
         if (quizStatus !== 'complete') return;
@@ -43,6 +46,39 @@ const QuizTab = ({ lectureId, quizStatus, errorReason, autoStart = false }) => {
         fetchQuiz();
     };
 
+    // Simulated progress effect
+    useEffect(() => {
+        let interval;
+        if (quizStatus === 'in_progress') {
+            setSimulatedProgress(5);
+            setStatusMessage('Analyzing Lecture');
+            
+            interval = setInterval(() => {
+                setSimulatedProgress(prev => {
+                    const next = prev + (Math.random() * 3 + 0.5);
+                    
+                    // Update messages based on progress
+                    if (next > 80) setStatusMessage('Finalizing Quiz');
+                    else if (next > 50) setStatusMessage('Crafting Questions');
+                    else if (next > 25) setStatusMessage('Extracting Topics');
+                    
+                    if (next >= 98) {
+                        clearInterval(interval);
+                        return 98;
+                    }
+                    return next;
+                });
+            }, 600);
+        } else if (quizStatus === 'complete') {
+            setSimulatedProgress(100);
+            setStatusMessage('Quiz Ready!');
+        } else {
+            setSimulatedProgress(0);
+            setStatusMessage('Analyzing Lecture');
+        }
+        return () => clearInterval(interval);
+    }, [quizStatus]);
+
     // Reset when lecture changes
     useEffect(() => {
         setTriggered(false);
@@ -60,8 +96,12 @@ const QuizTab = ({ lectureId, quizStatus, errorReason, autoStart = false }) => {
         }
 
         if (shouldAutoStart && quizStatus === 'complete') {
-            setTriggered(true);
-            fetchQuiz();
+            // Small delay to show 100% progress
+            const timer = setTimeout(() => {
+                setTriggered(true);
+                fetchQuiz();
+            }, 800);
+            return () => clearTimeout(timer);
         }
     }, [lectureId, quizStatus, autoStart]);
 
@@ -120,6 +160,8 @@ const QuizTab = ({ lectureId, quizStatus, errorReason, autoStart = false }) => {
     // Trigger card
     if (!triggered) {
         const isReady = quizStatus === 'complete';
+        const isInProgress = quizStatus === 'in_progress';
+
         return (
             <div className="flex flex-col items-center justify-center min-h-[300px] p-8 text-center">
                 <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4" style={{ background: 'rgba(245,165,36,0.10)', border: '1px solid rgba(245,165,36,0.3)' }}>
@@ -129,17 +171,33 @@ const QuizTab = ({ lectureId, quizStatus, errorReason, autoStart = false }) => {
                 <p className="text-sm mb-6 text-text-secondary">
                     {isReady
                         ? 'Test your knowledge with AI-generated questions from this lesson.'
-                        : quizStatus === 'in_progress' ? 'AI is crafting your quiz…' : 'Quiz not ready yet — watch more of the lecture first.'}
+                        : isInProgress ? 'AI is crafting your quiz…' : 'Quiz not ready yet — watch more of the lecture first.'}
                 </p>
+                
+                {isInProgress && (
+                    <div className="w-full max-w-[260px] mb-6">
+                        <div className="flex items-center justify-between mb-2">
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted animate-pulse">{statusMessage}</span>
+                            <span className="text-[10px] font-bold text-[var(--color-primary)]">{Math.round(simulatedProgress)}%</span>
+                        </div>
+                        <div className="progress-bar h-2 shadow-inner">
+                            <div 
+                                className="progress-bar__fill shadow-[0_0_12px_var(--color-primary)]" 
+                                style={{ width: `${simulatedProgress}%` }}
+                            />
+                        </div>
+                    </div>
+                )}
+
                 {isReady && (
                     <button onClick={handleTrigger} className="btn-esports text-sm">
                         Start Quiz 🎮
                     </button>
                 )}
-                {!isReady && (
+                {!isReady && !isInProgress && (
                     <div className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold" style={{ background: 'rgba(245,165,36,0.1)', border: '1px solid rgba(245,165,36,0.3)', color: '#f5a524' }}>
                         <span className="w-2 h-2 rounded-full bg-[#f5a524] animate-pulse" />
-                        {quizStatus === 'in_progress' ? 'Generating quiz…' : 'Coming soon'}
+                        Coming soon
                     </div>
                 )}
             </div>
