@@ -381,8 +381,7 @@ const Player = () => {
                         {activeTab === 'quiz' && (
                             <QuizTab
                                 lectureId={currentLecture._id}
-                                quizStatus={currentAiStatus.quiz || 'pending'}
-                                errorReason={currentAiStatus.errorReason}
+                                aiStatus={currentAiStatus}
                                 autoStart={quizAutoStart || shouldStartQuiz}
                             />
                         )}

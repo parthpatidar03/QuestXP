@@ -6,13 +6,14 @@ import LockedFeature from '../LockedFeature';
 
 const LEVEL_QUIZ = 1;
 
-const QuizTab = ({ lectureId, quizStatus, errorReason, autoStart = false }) => {
+const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
     const { user } = useAuthStore();
     const processingRequestRef = useRef(null);
     const [triggered, setTriggered] = useState(false);
     const [quiz, setQuiz] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [isTriggering, setIsTriggering] = useState(false);
     
     const [answers, setAnswers] = useState([]);
     const [submitting, setSubmitting] = useState(false);
@@ -21,6 +22,11 @@ const QuizTab = ({ lectureId, quizStatus, errorReason, autoStart = false }) => {
     
     const [simulatedProgress, setSimulatedProgress] = useState(0);
     const [statusMessage, setStatusMessage] = useState('Analyzing Lecture');
+
+    const quizStatus = aiStatus.quiz || 'pending';
+    const transcriptionStatus = aiStatus.transcription || 'pending';
+    const errorReason = aiStatus.errorReason;
+    const isInProgress = quizStatus === 'in_progress' || transcriptionStatus === 'in_progress' || isTriggering;
 
     const fetchQuiz = async () => {
         if (quizStatus !== 'complete') return;
@@ -46,21 +52,38 @@ const QuizTab = ({ lectureId, quizStatus, errorReason, autoStart = false }) => {
         fetchQuiz();
     };
 
+    const handleManualStart = async () => {
+        try {
+            setIsTriggering(true);
+            await api.post(`/internal/lectures/${lectureId}/process`);
+            // Status will be updated via polling in Player.jsx
+        } catch (err) {
+            setError('Failed to start quiz generation.');
+            setIsTriggering(false);
+        }
+    };
+
     // Simulated progress effect
     useEffect(() => {
         let interval;
-        if (quizStatus === 'in_progress') {
+        if (isInProgress) {
             setSimulatedProgress(5);
-            setStatusMessage('Analyzing Lecture');
+            setStatusMessage(transcriptionStatus === 'in_progress' ? 'Transcribing Video' : 'Analyzing Lecture');
             
             interval = setInterval(() => {
                 setSimulatedProgress(prev => {
-                    const next = prev + (Math.random() * 3 + 0.5);
+                    const next = prev + (Math.random() * 2 + 0.5);
                     
                     // Update messages based on progress
-                    if (next > 80) setStatusMessage('Finalizing Quiz');
-                    else if (next > 50) setStatusMessage('Crafting Questions');
-                    else if (next > 25) setStatusMessage('Extracting Topics');
+                    if (quizStatus === 'in_progress') {
+                        if (next > 80) setStatusMessage('Finalizing Quiz');
+                        else setStatusMessage('Crafting Questions');
+                    } else if (transcriptionStatus === 'in_progress') {
+                        if (next > 50) setStatusMessage('Extracting Topics');
+                        else setStatusMessage('Transcribing Video');
+                    } else if (isTriggering) {
+                        setStatusMessage('Preparing AI...');
+                    }
                     
                     if (next >= 98) {
                         clearInterval(interval);
@@ -68,16 +91,16 @@ const QuizTab = ({ lectureId, quizStatus, errorReason, autoStart = false }) => {
                     }
                     return next;
                 });
-            }, 600);
+            }, 800);
         } else if (quizStatus === 'complete') {
             setSimulatedProgress(100);
             setStatusMessage('Quiz Ready!');
         } else {
             setSimulatedProgress(0);
-            setStatusMessage('Analyzing Lecture');
+            setIsTriggering(false);
         }
         return () => clearInterval(interval);
-    }, [quizStatus]);
+    }, [isInProgress, quizStatus, transcriptionStatus]);
 
     // Reset when lecture changes
     useEffect(() => {
@@ -86,11 +109,12 @@ const QuizTab = ({ lectureId, quizStatus, errorReason, autoStart = false }) => {
         setResult(null);
         setError(null);
         setLoading(false);
+        setIsTriggering(false);
 
         // Auto-trigger if explicitly requested or video ended
         const params = new URLSearchParams(window.location.search);
         const shouldAutoStart = params.get('startQuiz') === 'true' || autoStart;
-        if (shouldAutoStart && quizStatus === 'pending' && processingRequestRef.current !== lectureId) {
+        if (shouldAutoStart && quizStatus === 'pending' && transcriptionStatus === 'pending' && processingRequestRef.current !== lectureId) {
             processingRequestRef.current = lectureId;
             api.post(`/internal/lectures/${lectureId}/process`).catch(() => {});
         }
@@ -103,7 +127,7 @@ const QuizTab = ({ lectureId, quizStatus, errorReason, autoStart = false }) => {
             }, 800);
             return () => clearTimeout(timer);
         }
-    }, [lectureId, quizStatus, autoStart]);
+    }, [lectureId, quizStatus, transcriptionStatus, autoStart]);
 
     const handleOptionSelect = (questionIndex, optionIndex) => {
         if (result) return; // Prevent changing answers after submission
@@ -147,7 +171,7 @@ const QuizTab = ({ lectureId, quizStatus, errorReason, autoStart = false }) => {
         setStartTime(Date.now());
     };
 
-    if (quizStatus === 'failed') {
+    if (quizStatus === 'failed' || transcriptionStatus === 'failed') {
         return (
             <div className="p-8 text-center text-text-muted">
                 <XCircle className="w-8 h-8 text-danger mx-auto mb-3" />
@@ -160,7 +184,6 @@ const QuizTab = ({ lectureId, quizStatus, errorReason, autoStart = false }) => {
     // Trigger card
     if (!triggered) {
         const isReady = quizStatus === 'complete';
-        const isInProgress = quizStatus === 'in_progress';
 
         return (
             <div className="flex flex-col items-center justify-center min-h-[300px] p-8 text-center">
@@ -175,7 +198,7 @@ const QuizTab = ({ lectureId, quizStatus, errorReason, autoStart = false }) => {
                 </p>
                 
                 {isInProgress && (
-                    <div className="w-full max-w-[260px] mb-6">
+                    <div className="w-full max-w-[260px] mb-6 animate-in fade-in zoom-in duration-500">
                         <div className="flex items-center justify-between mb-2">
                             <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted animate-pulse">{statusMessage}</span>
                             <span className="text-[10px] font-bold text-[var(--color-primary)]">{Math.round(simulatedProgress)}%</span>
@@ -195,9 +218,17 @@ const QuizTab = ({ lectureId, quizStatus, errorReason, autoStart = false }) => {
                     </button>
                 )}
                 {!isReady && !isInProgress && (
-                    <div className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold" style={{ background: 'rgba(245,165,36,0.1)', border: '1px solid rgba(245,165,36,0.3)', color: '#f5a524' }}>
-                        <span className="w-2 h-2 rounded-full bg-[#f5a524] animate-pulse" />
-                        Coming soon
+                    <div className="flex flex-col items-center gap-4">
+                        <div className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold" style={{ background: 'rgba(245,165,36,0.1)', border: '1px solid rgba(245,165,36,0.3)', color: '#f5a524' }}>
+                            <span className="w-2 h-2 rounded-full bg-[#f5a524] animate-pulse" />
+                            Coming soon
+                        </div>
+                        <button 
+                            onClick={handleManualStart}
+                            className="text-[10px] uppercase tracking-tighter font-bold text-text-muted hover:text-[var(--color-primary)] transition-colors underline underline-offset-4"
+                        >
+                            Or Generate Now ⚡
+                        </button>
                     </div>
                 )}
             </div>
