@@ -50,17 +50,9 @@ const savePosition = async (userId, courseId, lectureId, { position, watchedSeco
     lectureProg.lastPosition = position;
     lectureProg.lastAccessedAt = new Date();
 
+    // Auto-completion based on watch time removed per US-RESTRUCTURE
+    // Completion now requires a Quiz submission.
     let newlyCompleted = false;
-
-    // Check completion criteria: >80% AND >120s (or if lecture is shorter than 120s, just 80%)
-    if (!lectureProg.completed) {
-        const reqDuration = Math.min(120, lectureDuration * 0.8);
-        if (lectureProg.watchedSeconds >= reqDuration || lectureProg.watchedSeconds >= lectureDuration * 0.8) {
-            lectureProg.completed = true;
-            lectureProg.completedAt = new Date();
-            newlyCompleted = true;
-        }
-    }
 
     // Append study session for today
     const todayStr = streakService.getISTDateString();
@@ -115,6 +107,64 @@ const savePosition = async (userId, courseId, lectureId, { position, watchedSeco
     };
 };
 
+const completeLecture = async (userId, courseId, lectureId) => {
+    let progress = await Progress.findOne({ user: userId, course: courseId });
+    const course = await Course.findById(courseId);
+
+    if (!course) throw new Error('Course not found');
+    if (!progress) {
+        progress = new Progress({
+            user: userId,
+            course: courseId,
+            lectureProgress: [],
+            studySessions: [],
+            studyPlan: { dailyGoalMins: 45 }
+        });
+    }
+
+    let lectureProg = progress.lectureProgress.find(lp => lp.lecture.toString() === lectureId.toString());
+
+    if (!lectureProg) {
+        lectureProg = {
+            lecture: lectureId,
+            lastPosition: 0,
+            watchedSeconds: 0,
+            completed: false
+        };
+        progress.lectureProgress.push(lectureProg);
+    }
+
+    if (lectureProg.completed) {
+        return { alreadyCompleted: true, completionPct: progress.completionPct };
+    }
+
+    // Mark complete
+    lectureProg.completed = true;
+    lectureProg.completedAt = new Date();
+
+    // Award XP
+    const awardResult = await xpService.award(userId, 'LECTURE_COMPLETED');
+    const xpAwarded = awardResult?.xpEarned || 50;
+
+    // Record Streak Activity
+    await streakService.recordActivity(userId);
+
+    // Recalculate Course Completion
+    const completedCount = progress.lectureProgress.filter(lp => lp.completed).length;
+    progress.completionPct = course.totalLectures > 0 ? Math.round((completedCount / course.totalLectures) * 100) : 0;
+    progress.lastAccessedAt = new Date();
+
+    await progress.save();
+
+    return {
+        success: true,
+        xpAwarded,
+        completionPct: progress.completionPct,
+        lectureProgress: lectureProg
+    };
+};
+
 module.exports = {
-    savePosition
+    savePosition,
+    completeLecture
 };

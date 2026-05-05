@@ -7,6 +7,7 @@ const Course = require('../models/Course');
 const Quiz = require('../models/Quiz');
 const QuizAttempt = require('../models/QuizAttempt');
 const xpService = require('../services/xpService');
+const progressService = require('../services/progressService');
 const { aiRouteLogger, attachUserIdToLog } = require('../middleware/aiLogger');
 
 const router = express.Router();
@@ -18,7 +19,7 @@ router.use(aiRouteLogger);
 // Feature Gate configs (aligns with levels.js or defaults)
 const LEVEL_NOTES_READ = 2;
 const LEVEL_NOTES_EDIT = 3;
-const LEVEL_QUIZ = 3;
+const LEVEL_QUIZ = 1;
 
 // T020: GET /api/lectures/:lectureId/notes
 router.get('/:lectureId/notes', async (req, res, next) => {
@@ -232,13 +233,22 @@ router.post('/:lectureId/quiz/submit', [
         if (score >= 60) await xpService.award(req.user._id, 'QUIZ_PASSED', attempt._id.toString());
         if (score === 100) await xpService.award(req.user._id, 'QUIZ_ACED', attempt._id.toString());
 
+        // T030: MISSION COMPLETION TRIGGER
+        // We auto-complete the mission when a quiz is submitted (teaching moment)
+        const courseLookup = await Course.findOne({ "sections.lectures._id": lectureId }, { _id: 1 });
+        let progressResult = null;
+        if (courseLookup) {
+            progressResult = await progressService.completeLecture(req.user._id, courseLookup._id.toString(), lectureId);
+        }
+
         res.json({
             score,
             correctCount,
             totalCount: quiz.questionCount,
             isNewPersonalBest,
             attemptNumber,
-            evaluatedQuestions
+            evaluatedQuestions,
+            progress: progressResult
         });
 
     } catch (error) {

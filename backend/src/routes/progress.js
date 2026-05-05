@@ -7,7 +7,8 @@ const {
     getPlan,
     getTodayTarget,
     getWeeklyTargets,
-    deletePlan
+    deletePlan,
+    completeLecture
 } = require('../controllers/progressController');
 const auth = require('../middleware/auth');
 const featureGate = require('../middleware/featureGate');
@@ -15,6 +16,11 @@ const featureGate = require('../middleware/featureGate');
 const router = express.Router();
 
 router.use(auth); // Protect all progress routes
+
+router.post('/:courseId/lectures/:lectureId/complete', [
+    param('courseId').isMongoId().withMessage('Invalid courseId'),
+    param('lectureId').isMongoId().withMessage('Invalid lectureId')
+], completeLecture);
 
 router.patch('/:courseId/lectures/:lectureId/position', [
     param('courseId').isMongoId().withMessage('Invalid courseId'),

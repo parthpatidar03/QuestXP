@@ -12,6 +12,7 @@ import { BGPattern } from '../components/ui/bg-pattern';
 import FeedbackModal from '../components/FeedbackModal';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { StatCardSkeleton, CourseCardSkeleton } from '../components/ui/Skeleton';
+import Footer from '../components/ui/Footer';
 
 
 /* ── Helpers ─────────────────────────────────────────────────────────── */
@@ -336,13 +337,8 @@ const Dashboard = () => {
                 </aside>
             </div>
 
-            <footer className="border-t border-border bg-surface/70">
-                <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs sm:text-sm text-text-secondary">
-                    <p>QuestXP is in development. Your feedback helps improve the product.</p>
-                    <button onClick={() => setFeedbackOpen(true)} className="font-medium hover:text-text-primary transition-colors">Send Feedback</button>
-                </div>
-                <FeedbackModal open={feedbackOpen} onClose={() => setFeedbackOpen(false)} contextPage="Dashboard" />
-            </footer>
+            <Footer onOpenFeedback={() => setFeedbackOpen(true)} />
+            <FeedbackModal isOpen={feedbackOpen} onClose={() => setFeedbackOpen(false)} contextPage="Dashboard" />
         </div>
     );
 };

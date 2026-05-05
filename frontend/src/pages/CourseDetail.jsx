@@ -8,8 +8,9 @@ import SetupPlanModal from '../components/Dashboard/SetupPlanModal';
 import {
     ArrowLeft, PlayCircle, Loader2, AlertOctagon, Clock,
     BookOpen, Layers, Zap, Lock, CheckCircle2, ChevronRight,
-    MessageSquareText, StickyNote, BarChart3, ChevronDown
+    MessageSquareText, StickyNote, BarChart3, ChevronDown, Trophy, Flag, HelpCircle
 } from 'lucide-react';
+
 
 import { BGPattern } from '../components/ui/bg-pattern';
 
@@ -27,58 +28,83 @@ function MissionRow({ lecture, index, isCompleted, isActive, isLocked, courseId 
     return (
         <Link
             to={isLocked ? '#' : `/courses/${courseId}/lectures/${lecture._id}`}
-            className={`flex items-center gap-4 px-5 py-4 border-b border-border transition-all group ${isLocked ? 'cursor-not-allowed opacity-50' : 'hover:bg-surface-2/60'}`}
+            className={`flex items-center gap-6 px-6 py-5 border-b border-border transition-all group ${isLocked ? 'cursor-not-allowed opacity-50' : 'hover:bg-surface-2/60'}`}
             onClick={e => isLocked && e.preventDefault()}
         >
             {/* Hex mission number */}
             <div
-                className="hex-clip w-9 h-9 flex items-center justify-center text-xs font-black shrink-0"
+                className="hex-clip w-10 h-10 flex items-center justify-center text-[11px] font-black shrink-0 shadow-sm transition-transform group-hover:scale-105"
                 style={{ 
-                    background: isCompleted ? 'var(--color-success)' : isActive ? 'var(--color-primary)' : 'var(--color-surface-2)', 
-                    color: isLocked ? 'var(--color-text-muted)' : '#fff' 
+                    background: isCompleted ? 'var(--color-success)' : isActive ? 'var(--color-primary)' : 'var(--color-surface-3)', 
+                    color: isLocked 
+                        ? 'var(--color-text-muted)' 
+                        : (isCompleted || isActive) 
+                            ? '#fff' 
+                            : 'var(--color-text-secondary)',
+                    border: isActive ? '2px solid rgba(255,255,255,0.2)' : 'none'
                 }}
             >
-                {isCompleted ? <CheckCircle2 className="w-4 h-4" /> : isLocked ? <Lock className="w-4 h-4" /> : index + 1}
+                {isCompleted ? <CheckCircle2 className="w-5 h-5" /> : isLocked ? <Lock className="w-4 h-4" /> : index + 1}
             </div>
 
             {/* Thumbnail (small) */}
-            <div className="relative w-16 h-10 rounded overflow-hidden shrink-0 bg-surface-3">
-                {lecture.thumbnailUrl
-                    ? <img src={lecture.thumbnailUrl} alt="" className="w-full h-full object-cover" />
-                    : <PlayCircle className="w-5 h-5 m-auto mt-2 text-text-muted" />}
+            <div className="relative w-24 h-14 rounded-lg overflow-hidden shrink-0 bg-surface-3 border border-border shadow-sm group-hover:border-primary/50 transition-colors">
+                {lecture.thumbnailUrl || lecture.youtubeId
+                    ? <img src={lecture.thumbnailUrl || `https://img.youtube.com/vi/${lecture.youtubeId}/mqdefault.jpg`} alt="" className="w-full h-full object-cover" />
+                    : <PlayCircle className="w-6 h-6 m-auto mt-4 text-text-muted" />}
                 {!isLocked && (
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40">
-                        <PlayCircle className="w-5 h-5 text-white" />
+                        <div className="w-8 h-8 rounded-full bg-primary/90 flex items-center justify-center shadow-lg transform scale-75 group-hover:scale-100 transition-transform">
+                            <PlayCircle className="w-5 h-5 text-white fill-white" />
+                        </div>
                     </div>
                 )}
             </div>
 
             {/* Title + Duration */}
             <div className="flex-1 min-w-0">
-                <p className={`text-sm font-semibold leading-snug line-clamp-2 ${isActive ? 'text-primary' : 'text-text-primary'} group-hover:text-primary transition-colors`}>
+                <p className={`text-[14px] font-bold leading-tight line-clamp-2 ${isActive ? 'text-primary' : 'text-text-primary'} group-hover:text-primary transition-colors`}>
                     {lecture.title}
                 </p>
-                <div className="flex items-center gap-2 mt-1">
-                    <span className="flex items-center gap-1 text-xs text-text-muted">
-                        <Clock className="w-3 h-3" /> {fmtDuration(lecture.duration)}
+                <div className="flex items-center gap-2.5 mt-1.5">
+                    <span className="flex items-center gap-1.5 text-xs font-medium text-text-muted">
+                        <Clock className="w-3.5 h-3.5" /> {fmtDuration(lecture.duration)}
                     </span>
                     {isActive && (
-                        <span className="text-[9px] font-black tracking-widest px-1.5 py-0.5 rounded border border-primary/40 bg-primary/10 text-primary animate-pulse">
+                        <span className="text-[9px] font-black tracking-[0.15em] px-2 py-0.5 rounded-full border border-primary/40 bg-primary/10 text-primary animate-pulse">
                             ACTIVE
                         </span>
                     )}
                 </div>
             </div>
 
-            {/* XP chip */}
-            <div className="xp-chip shrink-0">
-                <Zap className="w-3 h-3" /> +{XP_PER_LECTURE}
+            {/* Quiz Fast-Track / Status */}
+            <div className="flex items-center gap-3 shrink-0 ml-auto">
+                {!isCompleted && !isLocked && (
+                    <Link
+                        to={`/courses/${courseId}/lectures/${lecture._id}?startQuiz=true`}
+                        className="p-2 rounded-lg bg-surface-3 hover:bg-primary/20 text-text-muted hover:text-primary transition-all group/quiz flex flex-col items-center gap-1 border border-border"
+                        title="Take Quiz to Complete"
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <MessageSquareText className="w-4 h-4" />
+                        <span className="text-[8px] font-black uppercase tracking-widest hidden sm:block">Test</span>
+                    </Link>
+                )}
+
+                {/* XP chip */}
+                <div className="xp-chip shrink-0 opacity-80 group-hover:opacity-100 transition-opacity">
+                    <Zap className="w-3.5 h-3.5 fill-gold/20" /> +{XP_PER_LECTURE}
+                </div>
             </div>
         </Link>
     );
 }
 
-/* ── CourseDetail ───────────────────────────────────────────────────── */
+
+/* ── CourseDetail ───────────────────────────────────────────────────── */import Footer from '../components/ui/Footer';
+
+
 const CourseDetail = () => {
     const { courseId } = useParams();
     const navigate = useNavigate();
@@ -87,13 +113,19 @@ const CourseDetail = () => {
     const [statusData, setStatusData] = useState(null);
     const [error, setError] = useState(null);
     const [showSetupModal, setShowSetupModal] = useState(false);
+    const [showOnboarding, setShowOnboarding] = useState(false);
     const [collapsedSections, setCollapsedSections] = useState({});
 
-    const toggleSection = (index) => {
-        setCollapsedSections(prev => ({
-            ...prev,
-            [index]: !prev[index]
-        }));
+    useEffect(() => {
+        const hasOnboarded = localStorage.getItem('questxp_onboarded');
+        if (!hasOnboarded) {
+            setShowOnboarding(true);
+        }
+    }, []);
+
+    const markOnboarded = () => {
+        localStorage.setItem('questxp_onboarded', 'true');
+        setShowOnboarding(false);
     };
 
 
@@ -274,10 +306,54 @@ const CourseDetail = () => {
 
                         {/* Mission List */}
                         <div className="glass-card overflow-hidden" style={{ padding: 0 }}>
-                            <div className="flex items-center gap-2 px-5 py-4 border-b border-border">
-                                <Layers className="w-4 h-4 text-primary" />
-                                <h2 className="text-sm font-bold uppercase tracking-widest text-text-primary">Mission List</h2>
-                                <div className="ml-auto text-xs text-text-muted">{completedCount}/{allLectures.length} complete</div>
+                            <div className="px-8 py-6 border-b border-border bg-surface/30">
+                                <div className="flex items-center justify-between mb-6">
+                                    <div className="flex flex-col">
+                                        <h2 className="text-base font-black uppercase tracking-tight text-text-primary leading-none" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>Quest Journey</h2>
+                                        <p className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em] mt-1.5 opacity-80">Walking towards your goal</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <div className="text-lg font-black text-primary leading-none" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>{pct}%</div>
+                                        <div className="text-[9px] font-black text-text-muted uppercase tracking-widest mt-1.5">COMPLETED</div>
+                                    </div>
+                                </div>
+                                
+                                {/* Elite Journey Progress Bar */}
+                                <div className="relative pt-4 pb-8">
+                                    {/* Track */}
+                                    <div className="h-3 w-full bg-surface-2 rounded-full border border-border/50 relative overflow-visible shadow-inner">
+                                        {/* Progress Fill */}
+                                        <motion.div 
+                                            initial={{ width: 0 }}
+                                            animate={{ width: `${pct}%` }}
+                                            transition={{ duration: 1.2, ease: "circOut" }}
+                                            className="absolute top-0 left-0 h-full bg-primary rounded-full shadow-[0_0_15px_oklch(0.47_0.095_155_/_0.3)]"
+                                        >
+                                            {/* Journey Thumb (The Runner) */}
+                                            <div className="absolute -right-2 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-white border-[3px] border-primary shadow-[0_0_12px_var(--color-primary)] z-10 flex items-center justify-center">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                                            </div>
+                                        </motion.div>
+                                        
+                                        {/* Goal Icon */}
+                                        <div className="absolute -right-1 -top-10 flex flex-col items-center">
+                                            <Trophy className={`w-6 h-6 ${pct === 100 ? 'text-gold animate-bounce' : 'text-text-muted opacity-30'}`} />
+                                            <div className="text-[9px] font-black text-text-muted mt-1 uppercase tracking-tighter">FINISH</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Done vs Remaining Stats */}
+                                <div className="flex items-center justify-between mt-4 px-8 py-5 border-t border-border/40">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-2.5 h-2.5 rounded-full bg-primary shadow-[0_0_8px_var(--color-primary)]" />
+                                        <span className="text-[11px] font-bold text-text-secondary uppercase tracking-wider">Done: <span className="text-text-primary">{completedCount} Missions</span></span>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-[11px] font-bold text-text-secondary uppercase tracking-wider">Remaining: <span className="text-text-primary">{allLectures.length - completedCount} Missions</span></span>
+                                        <div className="w-2.5 h-2.5 rounded-full bg-surface-3" />
+                                    </div>
+                                </div>
                             </div>
 
                             {course.sections.map((section, sIdx) => {
@@ -406,6 +482,124 @@ const CourseDetail = () => {
                     }}
                 />
             )}
+            {/* Onboarding Walkthrough */}
+            <AnimatePresence>
+                {showOnboarding && (
+                    <OnboardingModal onClose={markOnboarded} />
+                )}
+            </AnimatePresence>
+            <Footer />
+        </div>
+    );
+};
+
+const OnboardingModal = ({ onClose }) => {
+    const [step, setStep] = useState(0);
+
+    const steps = [
+        {
+            title: "Welcome to QuestXP",
+            description: "You're not just watching videos—you're on a Quest. This app is designed to help you MASTER skills through active learning.",
+            icon: <Trophy className="w-8 h-8 text-gold" />,
+            color: "var(--color-primary)"
+        },
+        {
+            title: "The Mastery System",
+            description: "Passive watching is over. To complete a mission, you MUST pass the AI Knowledge Quiz at the end of each video.",
+            icon: <Zap className="w-8 h-8 text-primary" />,
+            color: "var(--color-primary)"
+        },
+        {
+            title: "Proof of Knowledge",
+            description: "Already an expert? Use the 'Test' button to skip the video and jump straight to the quiz. No wasted time.",
+            icon: <HelpCircle className="w-8 h-8 text-secondary" />,
+            color: "var(--color-secondary)"
+        },
+        {
+            title: "Earn XP & Rewards",
+            description: "Pass quizzes to earn +50 XP and unlock new levels. Your streak and progress are tracked in real-time.",
+            icon: <CheckCircle2 className="w-8 h-8 text-success" />,
+            color: "#10B981"
+        }
+    ];
+
+    return (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+            <motion.div
+                initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                className="w-full max-w-lg bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-3xl overflow-hidden shadow-2xl relative"
+            >
+                {/* Progress Bar */}
+                <div className="absolute top-0 left-0 w-full h-1 bg-[var(--color-surface-3)]">
+                    <motion.div 
+                        className="h-full bg-[var(--color-primary)]" 
+                        initial={{ width: 0 }}
+                        animate={{ width: `${((step + 1) / steps.length) * 100}%` }}
+                    />
+                </div>
+
+                <div className="p-8 sm:p-12 text-center">
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={step}
+                            initial={{ x: 20, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            exit={{ x: -20, opacity: 0 }}
+                            className="flex flex-col items-center"
+                        >
+                            <div className="w-20 h-20 rounded-2xl bg-[var(--color-surface-3)] flex items-center justify-center mb-8 border border-[var(--color-border)] shadow-xl">
+                                {steps[step].icon}
+                            </div>
+                            <h2 className="text-3xl font-black mb-4 uppercase tracking-tight text-[var(--color-primary)]" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
+                                {steps[step].title}
+                            </h2>
+                            <p className="text-[var(--color-text-secondary)] text-base leading-relaxed mb-10 max-w-sm font-medium">
+                                {steps[step].description}
+                            </p>
+                        </motion.div>
+                    </AnimatePresence>
+
+                    <div className="flex items-center justify-between gap-4 mt-4">
+                        <button 
+                            onClick={onClose}
+                            className="text-xs font-bold uppercase tracking-widest text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors"
+                        >
+                            Skip Tour
+                        </button>
+                        
+                        <div className="flex gap-2">
+                            {step > 0 && (
+                                <button 
+                                    onClick={() => setStep(step - 1)}
+                                    className="p-4 rounded-2xl bg-[var(--color-surface-3)] border border-[var(--color-border)] hover:bg-[var(--color-surface)] transition-colors text-[var(--color-text-primary)]"
+                                >
+                                    <ChevronRight className="w-5 h-5 rotate-180" />
+                                </button>
+                            )}
+                            <button 
+                                onClick={() => step < steps.length - 1 ? setStep(step + 1) : onClose()}
+                                className="px-8 py-4 rounded-2xl bg-[var(--color-primary)] text-black font-black uppercase tracking-widest text-xs hover:scale-105 active:scale-95 transition-all flex items-center gap-2 shadow-lg shadow-primary/20"
+                            >
+                                {step < steps.length - 1 ? (
+                                    <>Next <ChevronRight className="w-4 h-4" /></>
+                                ) : "Begin My Quest 🏆"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Dot Indicator */}
+                <div className="flex justify-center gap-2 pb-8">
+                    {steps.map((_, i) => (
+                        <div 
+                            key={i} 
+                            className={`h-1.5 rounded-full transition-all duration-300 ${i === step ? 'w-6 bg-[var(--color-primary)]' : 'w-1.5 bg-[var(--color-surface-3)]'}`}
+                        />
+                    ))}
+                </div>
+            </motion.div>
         </div>
     );
 };

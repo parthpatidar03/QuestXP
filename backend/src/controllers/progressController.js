@@ -146,6 +146,16 @@ const deletePlan = async (req, res, next) => {
     }
 };
 
+const completeLecture = async (req, res, next) => {
+    try {
+        const { courseId, lectureId } = req.params;
+        const result = await progressService.completeLecture(req.user._id, courseId, lectureId);
+        res.json(result);
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     savePosition,
     getProgress,
@@ -154,4 +164,5 @@ module.exports = {
     getTodayTarget,
     getWeeklyTargets,
     deletePlan,
+    completeLecture,
 };

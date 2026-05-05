@@ -17,6 +17,7 @@ import { BGPattern } from '../components/ui/bg-pattern';
 import FeedbackModal from '../components/FeedbackModal';
 import VideoModal from '../components/VideoModal';
 import { Play } from 'lucide-react';
+import Footer from '../components/ui/Footer';
 
 
 const LandingPage = () => {
@@ -250,22 +251,8 @@ const LandingPage = () => {
                 </section>
             </main>
 
-            <footer className="relative z-10 border-t border-border bg-surface/85">
-                <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-8 flex flex-col gap-6 sm:gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                        <p className="text-sm font-semibold text-text-primary">QuestXP</p>
-                        <p className="text-xs text-text-muted mt-1">Learning platform first, game second.</p>
-                        <p className="text-xs text-text-muted mt-1">Made by Parth Patidar with chai☕.</p>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs sm:text-sm text-text-secondary">
-                        <a href="#features" className="hover:text-text-primary transition-colors">Features</a>
-                        <a href="#how-it-works" className="hover:text-text-primary transition-colors">How it works</a>
-                        <button onClick={openApp} className="hover:text-text-primary transition-colors">Open App</button>
-                        <button onClick={() => setFeedbackOpen(true)} className="hover:text-text-primary transition-colors">Send Feedback</button>
-                    </div>
-                </div>
-            </footer>
-            <FeedbackModal open={feedbackOpen} onClose={() => setFeedbackOpen(false)} contextPage="Landing Page" />
+            <Footer onOpenFeedback={() => setFeedbackOpen(true)} />
+            <FeedbackModal isOpen={feedbackOpen} onClose={() => setFeedbackOpen(false)} contextPage="Landing Page" />
             <VideoModal 
                 isOpen={videoOpen} 
                 onClose={() => setVideoOpen(false)} 

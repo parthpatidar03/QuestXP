@@ -25,8 +25,7 @@ class QuizService {
             throw error;
         }
 
-        const isShortQuiz = transcript.durationSecs < MIN_DURATION_FOR_QUIZ_FULL;
-        const requiredQuestions = isShortQuiz ? 3 : 10;
+        const requiredQuestions = 5;
 
         const QUIZ_SYSTEM_PROMPT = `
 You are an expert educator producing challenging, concept-driven multiple choice quizzes.
@@ -45,7 +44,7 @@ Respond strictly in valid JSON matching this schema:
 Rules:
 - Provide exactly 4 options per question.
 - "correctIndex" must be the 0-based integer index of the correct option (0 to 3).
-- Explanations should cover why the right answer is correct and why a tricky distractor is wrong.
+- "explanation": This is CRITICAL. Write a clear, teaching-oriented explanation (2-3 sentences) that explains the core concept. If a user gets it wrong, they should LEARN why from this text.
 - Output MUST be valid JSON (response_format: { type: "json_object" }).
 `;
 
@@ -57,7 +56,7 @@ Rules:
 
         // Call GPT API
         const response = await openai.chat.completions.create({
-            model: process.env.OPENAI_MODEL || 'gpt-4o',
+            model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
             response_format: { type: 'json_object' },
             messages,
         });

@@ -4,7 +4,7 @@ import useAuthStore from '../../store/useAuthStore';
 import api from '../../services/api';
 import LockedFeature from '../LockedFeature';
 
-const LEVEL_QUIZ = 3;
+const LEVEL_QUIZ = 1;
 
 const QuizTab = ({ lectureId, quizStatus, errorReason }) => {
     const { user } = useAuthStore();
@@ -49,7 +49,14 @@ const QuizTab = ({ lectureId, quizStatus, errorReason }) => {
         setResult(null);
         setError(null);
         setLoading(false);
-    }, [lectureId]);
+
+        // Auto-trigger if explicitly requested or video ended
+        const params = new URLSearchParams(window.location.search);
+        if ((params.get('startQuiz') === 'true' || autoStart) && quizStatus === 'complete') {
+            setTriggered(true);
+            fetchQuiz();
+        }
+    }, [lectureId, quizStatus, autoStart]);
 
     const handleOptionSelect = (questionIndex, optionIndex) => {
         if (result) return; // Prevent changing answers after submission
@@ -71,6 +78,15 @@ const QuizTab = ({ lectureId, quizStatus, errorReason }) => {
             });
             
             setResult(data);
+
+            // Celebration Logic
+            if (data.progress?.success || data.progress?.alreadyCompleted) {
+                const xp = data.progress?.xpAwarded || 50;
+                // We'll use window dispatch to tell Player to show completion
+                window.dispatchEvent(new CustomEvent('mission-completed', { 
+                    detail: { xpEarned: xp } 
+                }));
+            }
         } catch (err) {
             console.error('Failed to submit quiz', err);
         } finally {

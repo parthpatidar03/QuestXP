@@ -95,77 +95,69 @@ const Player = () => {
 
     const handleTopicClick = (t) => setCurrentTime(t);
 
-    const handleVideoEnd = async () => {
-        setShowCompletionCard(true);
-        try {
-            // Send full duration so progressService completion check passes (>80%)
-            const duration = Math.max(currentLecture.duration || 300, 30);
-            const res = await api.patch(`/progress/${courseId}/lectures/${lectureId}/position`, {
-                position: duration,
-                watchedSeconds: duration
-            });
-            // Response shape: { completed, xpAwarded, completionPct, lectureProgress }
-            const earned = res.data?.xpAwarded || 50;
-            setXpEarned(earned);
-            if (earned > 0) {
-                addXPToast(earned, 'Mission Complete');
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('startQuiz') === 'true') {
+            setActiveTab('quiz');
+        }
+    }, [lectureId]);
+
+    useEffect(() => {
+        const handleMissionComplete = (e) => {
+            const { xpEarned } = e.detail;
+            setXpEarned(xpEarned);
+            setShowCompletionCard(true);
+            if (xpEarned > 0) {
+                addXPToast(xpEarned, 'Mission Complete');
             }
             // Refresh gamification profile so NavBar XP updates
-            try {
-                const { getGamificationProfile } = await import('../services/gamificationApi');
-                const profile = await getGamificationProfile();
-                const { setProfile } = (await import('../store/useGamificationStore')).default.getState();
-                setProfile(profile);
-            } catch (_) {}
-        } catch (_) {
-            addXPToast(50, 'Mission Complete');
-            setXpEarned(50);
-        }
+            import('../services/gamificationApi').then(({ getGamificationProfile }) => {
+                getGamificationProfile().then(profile => {
+                    import('../store/useGamificationStore').then(m => {
+                        m.default.getState().setProfile(profile);
+                    });
+                });
+            }).catch(() => {});
+        };
+
+        window.addEventListener('mission-completed', handleMissionComplete);
+        return () => window.removeEventListener('mission-completed', handleMissionComplete);
+    }, []);
+
+    const handleVideoEnd = () => {
+        setActiveTab('quiz');
+        // We no longer auto-complete via API here. 
+        // Completion happens after Quiz submission.
+        addXPToast(0, 'Video Finished! Take the quiz to complete mission.');
     };
 
     const handleNextLecture = () => nextLecture
         ? navigate(`/courses/${courseId}/lectures/${nextLecture._id}`)
         : navigate(`/courses/${courseId}`);
 
-    const theme = isDark
-        ? {
-            pageBg: '#08090f',
-            panelBg: '#0d0f1a',
-            panelAlt: '#12152a',
-            border: '#1a1e35',
-            muted: '#4a5480',
-            text: '#eef2ff',
-            secondaryText: '#8b9cc8',
-            patternFill: 'rgba(255,255,255,0.05)',
-            progressTrack: '#1a1e35',
-            shadow: '0 0 30px rgba(0,180,255,0.12)',
-            completionBg: 'rgba(18,21,42,0.97)',
-            completionBorder: '1px solid rgba(0,180,255,0.3)',
-            completionBtnBg: '#12152a',
-            completionBtnBorder: '#2a2f52',
-            completionBtnText: '#8b9cc8',
-        }
-        : {
-            pageBg: '#f3f6fb',
-            panelBg: '#ffffff',
-            panelAlt: '#f3f6fb',
-            border: '#d8e1ef',
-            muted: '#5f6e8a',
-            text: '#172033',
-            secondaryText: '#41506d',
-            patternFill: 'rgba(23,32,51,0.06)',
-            progressTrack: '#d8e1ef',
-            shadow: '0 0 0 rgba(0,0,0,0)',
-            completionBg: 'rgba(255,255,255,0.98)',
-            completionBorder: '1px solid rgba(0,180,255,0.24)',
-            completionBtnBg: '#eef3fb',
-            completionBtnBorder: '#d8e1ef',
-            completionBtnText: '#41506d',
-        };
+    const theme = {
+        pageBg: 'var(--color-bg)',
+        panelBg: 'var(--color-surface)',
+        panelAlt: 'var(--color-surface-2)',
+        border: 'var(--color-border)',
+        muted: 'var(--color-text-muted)',
+        text: 'var(--color-text-primary)',
+        secondaryText: 'var(--color-text-secondary)',
+        patternFill: 'var(--color-primary)',
+        progressTrack: 'var(--color-surface-2)',
+        shadow: '0 8px 32px rgba(0, 255, 128, 0.1)',
+        completionBg: 'rgba(18, 21, 42, 0.95)',
+        completionBorder: '1px solid var(--color-primary)',
+        completionBtnBg: 'var(--color-surface-2)',
+        completionBtnBorder: 'var(--color-border)',
+        completionBtnText: 'var(--color-text-secondary)',
+        primary: 'var(--color-primary)', // #00FF80 style
+    };
+
 
     if (loading) return (
         <div className="min-h-screen flex flex-col items-center justify-center" style={{ background: theme.pageBg }}>
-            <div className="w-10 h-10 rounded-full border-2 border-[#00b4ff] border-t-transparent animate-spin mb-4" />
+            <div className="w-10 h-10 rounded-full border-2 border-[var(--color-primary)] border-t-transparent animate-spin mb-4" />
             <p className="text-xs uppercase tracking-widest font-semibold" style={{ color: theme.muted }}>Loading Mission</p>
         </div>
     );
@@ -185,10 +177,10 @@ const Player = () => {
             <BGPattern variant="grid" mask="fade-edges" fill={theme.patternFill} className="opacity-10 z-0" />
 
             {/* Top progress bar */}
-            <div className="fixed top-0 left-0 w-full h-[2px] z-50" style={{ background: theme.progressTrack }}>
+            <div className="fixed top-0 left-0 w-full h-[3px] z-50" style={{ background: theme.progressTrack }}>
                 <div
-                    className="h-full transition-all duration-500"
-                    style={{ width: `${((currentLectureIndex + 1) / allLectures.length) * 100}%`, background: 'linear-gradient(90deg, #00b4ff, #00e5ff)' }}
+                    className="h-full transition-all duration-500 shadow-[0_0_8px_var(--color-primary)]"
+                    style={{ width: `${((currentLectureIndex + 1) / allLectures.length) * 100}%`, background: 'var(--color-primary)' }}
                 />
             </div>
 
@@ -197,13 +189,13 @@ const Player = () => {
                 <div className="flex items-start justify-between gap-3">
                     <Link
                         to={`/courses/${courseId}`}
-                        className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-semibold uppercase tracking-wider group hover:text-[#00b4ff] transition-colors"
+                        className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-semibold uppercase tracking-wider group hover:text-[var(--color-primary)] transition-colors"
                         style={{ color: theme.muted }}
                     >
                         <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
                         {course.title}
                     </Link>
-                    <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded shrink-0" style={{ background: 'rgba(0,180,255,0.12)', color: '#00b4ff' }}>
+                    <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded shrink-0" style={{ background: 'rgba(0,255,128,0.12)', color: 'var(--color-primary)' }}>
                         Mission {currentLectureIndex + 1}/{allLectures.length}
                     </span>
                 </div>
@@ -227,7 +219,7 @@ const Player = () => {
                             <button
                                 onClick={handleNextLecture}
                                 className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold transition-colors"
-                                style={{ background: 'rgba(0,180,255,0.12)', border: '1px solid rgba(0,180,255,0.3)', color: '#00b4ff' }}
+                                style={{ background: 'rgba(0,255,128,0.12)', border: '1px solid rgba(0,255,128,0.3)', color: 'var(--color-primary)' }}
                             >
                                 <span className="hidden sm:inline">Next</span>
                                 <ChevronRight className="w-3.5 h-3.5" />
@@ -243,7 +235,7 @@ const Player = () => {
                 {/* Video Area */}
                 <div className="shrink-0 lg:flex-1 flex flex-col items-center lg:justify-center p-2 sm:p-4 lg:p-6 min-h-0 relative" style={{ background: theme.pageBg }}>
                     <div className="w-full max-w-5xl mx-auto aspect-video relative">
-                        <div className="w-full h-full rounded-xl overflow-hidden" style={{ border: '1px solid rgba(0,180,255,0.25)', boxShadow: theme.shadow }}>
+                        <div className="w-full h-full rounded-xl overflow-hidden" style={{ border: '1px solid rgba(0,255,128,0.25)', boxShadow: theme.shadow }}>
                             <VideoPlayer
                                 courseId={courseId}
                                 lectureId={lectureId}
@@ -318,9 +310,9 @@ const Player = () => {
                                 onClick={() => setActiveTab(tab.key)}
                                 className="flex-1 py-2.5 sm:py-3 text-[11px] sm:text-xs font-bold transition-colors border-b-2"
                                 style={{
-                                    borderBottomColor: activeTab === tab.key ? '#00b4ff' : 'transparent',
-                                    color: activeTab === tab.key ? '#00b4ff' : theme.muted,
-                                    background: activeTab === tab.key ? 'rgba(0,180,255,0.05)' : 'transparent'
+                                    borderBottomColor: activeTab === tab.key ? 'var(--color-primary)' : 'transparent',
+                                    color: activeTab === tab.key ? 'var(--color-primary)' : theme.muted,
+                                    background: activeTab === tab.key ? 'rgba(0,255,128,0.05)' : 'transparent'
                                 }}
                             >
                                 {tab.label}
