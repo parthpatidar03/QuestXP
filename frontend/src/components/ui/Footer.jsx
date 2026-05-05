@@ -45,7 +45,7 @@ const Footer = ({ onOpenFeedback }) => {
                         <Linkedin className="w-5 h-5 text-text-muted group-hover:text-primary transition-colors" />
                     </a>
                     <a 
-                        href="mailto:contact@parthpatidar.com" // Placeholder or user email
+                        href="mailto:u1892911@gmail.com" 
                         className="px-5 py-3 rounded-2xl bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-[0.2em] hover:bg-primary/20 transition-all"
                     >
                         Contact Me
