@@ -10,6 +10,8 @@ const connection = new IORedis(process.env.REDIS_URL || 'redis://localhost:6379'
     maxRetriesPerRequest: null,
 });
 
+console.log('[CourseProcessor] Loaded YouTube Data API playlist importer');
+
 const courseProcessor = new Worker('course-processing', async job => {
     const { courseId, sections } = job.data;
 
