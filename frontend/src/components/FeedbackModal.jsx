@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { X, Send } from 'lucide-react';
-import api from '../services/api';
 
 const FeedbackModal = ({ open, onClose, contextPage = 'unknown' }) => {
     const [message, setMessage] = useState('');
-    const [state, setState] = useState({ loading: false, error: '', success: '' });
+    const [error, setError] = useState('');
 
     useEffect(() => {
         if (!open) return;
@@ -21,40 +20,37 @@ const FeedbackModal = ({ open, onClose, contextPage = 'unknown' }) => {
 
     useEffect(() => {
         if (open) {
-            setState({ loading: false, error: '', success: '' });
+            setError('');
         }
     }, [open]);
 
     if (!open) return null;
 
     const close = () => {
-        if (state.loading) return;
         setMessage('');
-        setState({ loading: false, error: '', success: '' });
+        setError('');
         onClose();
     };
 
-    const submit = async (event) => {
+    const submit = (event) => {
         event.preventDefault();
 
         const trimmed = message.trim();
         if (trimmed.length < 10) {
-            setState({ loading: false, error: 'Please write at least 10 characters.', success: '' });
+            setError('Please write at least 10 characters.');
             return;
         }
 
-        try {
-            setState({ loading: true, error: '', success: '' });
-            await api.post('/feedback', {
-                message: trimmed,
-                contextPage,
-            });
-            setState({ loading: false, error: '', success: 'Thanks. Feedback sent successfully.' });
-            setMessage('');
-        } catch (error) {
-            const errorMessage = error?.response?.data?.error || 'Failed to send feedback. Please try again.';
-            setState({ loading: false, error: errorMessage, success: '' });
-        }
+        // Open Gmail with pre-filled recipient, subject, and body
+        const recipientEmail = 'u1892911@gmail.com';
+        const subject = 'QuestXP Feedback';
+        const body = `${trimmed}\n\n--- Sent from ${contextPage} page`;
+
+        const mailtoLink = `mailto:${recipientEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        window.location.href = mailtoLink;
+
+        // Close modal after a brief delay
+        setTimeout(close, 500);
     };
 
     return (
@@ -83,18 +79,14 @@ const FeedbackModal = ({ open, onClose, contextPage = 'unknown' }) => {
                         placeholder="Tell us what is working, what is confusing, or what you want next..."
                         className="mt-2 w-full min-h-32 rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary/40"
                         maxLength={2000}
-                        disabled={state.loading}
                     />
                     <div className="mt-2 flex items-center justify-between text-xs text-text-muted">
                         <span>Minimum 10 characters</span>
                         <span>{message.length}/2000</span>
                     </div>
 
-                    {state.error && (
-                        <p className="mt-3 text-sm text-danger">{state.error}</p>
-                    )}
-                    {state.success && (
-                        <p className="mt-3 text-sm text-success">{state.success}</p>
+                    {error && (
+                        <p className="mt-3 text-sm text-danger">{error}</p>
                     )}
 
                     <div className="mt-5 flex items-center justify-end gap-2">
@@ -102,17 +94,15 @@ const FeedbackModal = ({ open, onClose, contextPage = 'unknown' }) => {
                             type="button"
                             onClick={close}
                             className="px-4 py-2 rounded-lg text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors"
-                            disabled={state.loading}
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
-                            className="px-4 py-2 rounded-lg text-sm font-semibold bg-primary text-white hover:bg-primary-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center gap-2"
-                            disabled={state.loading}
+                            className="px-4 py-2 rounded-lg text-sm font-semibold bg-primary text-white hover:bg-primary-hover transition-colors inline-flex items-center gap-2"
                         >
                             <Send className="w-4 h-4" />
-                            {state.loading ? 'Sending...' : 'Send Feedback'}
+                            Send Feedback
                         </button>
                     </div>
                 </form>

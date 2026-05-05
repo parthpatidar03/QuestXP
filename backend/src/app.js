@@ -19,10 +19,25 @@ const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5173')
     .split(',').map(o => o.trim());
 console.log('[Debug] CORS Allowed Origins:', allowedOrigins);
 
+const isLocalDevOrigin = (origin) => {
+    try {
+        const url = new URL(origin);
+        return ['localhost', '127.0.0.1', '::1'].includes(url.hostname);
+    } catch {
+        return false;
+    }
+};
+
 app.use(cors({
     origin: (origin, cb) => {
         // Allow non-browser (e.g. Postman) or listed origins
         if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+
+        // In local development, allow any localhost/127.0.0.1 port so Vite can move between ports.
+        if (process.env.NODE_ENV !== 'production' && isLocalDevOrigin(origin)) {
+            return cb(null, true);
+        }
+
         cb(new Error(`CORS: origin '${origin}' not allowed`));
     },
     credentials: true,
