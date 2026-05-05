@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import api from '../services/api';
 import NavBar from '../components/NavBar';
 import StudyPlan from '../components/Dashboard/StudyPlan';
@@ -7,8 +8,9 @@ import SetupPlanModal from '../components/Dashboard/SetupPlanModal';
 import {
     ArrowLeft, PlayCircle, Loader2, AlertOctagon, Clock,
     BookOpen, Layers, Zap, Lock, CheckCircle2, ChevronRight,
-    MessageSquareText, StickyNote, BarChart3
+    MessageSquareText, StickyNote, BarChart3, ChevronDown
 } from 'lucide-react';
+
 import { BGPattern } from '../components/ui/bg-pattern';
 
 /* ── helpers ────────────────────────────────────────────────────────── */
@@ -85,6 +87,15 @@ const CourseDetail = () => {
     const [statusData, setStatusData] = useState(null);
     const [error, setError] = useState(null);
     const [showSetupModal, setShowSetupModal] = useState(false);
+    const [collapsedSections, setCollapsedSections] = useState({});
+
+    const toggleSection = (index) => {
+        setCollapsedSections(prev => ({
+            ...prev,
+            [index]: !prev[index]
+        }));
+    };
+
 
     useEffect(() => {
         const fetchAll = async () => {
@@ -269,34 +280,53 @@ const CourseDetail = () => {
                                 <div className="ml-auto text-xs text-text-muted">{completedCount}/{allLectures.length} complete</div>
                             </div>
 
-                            {course.sections.map((section, sIdx) => (
-                                <React.Fragment key={sIdx}>
-                                    {course.sections.length > 1 && (
-                                        <div className="px-5 py-2.5 text-xs font-bold uppercase tracking-widest bg-surface-2 text-text-muted">
-                                            Section {sIdx + 1}: {section.title}
-                                        </div>
-                                    )}
-                                    {section.lectures.map((lec, lIdx) => {
-                                        const globalIdx = course.sections.slice(0, sIdx).reduce((a, s) => a + s.lectures.length, 0) + lIdx;
-                                        const isDone = completedSet.has(lec._id);
-                                        const isActive = !isDone && startLec?._id === lec._id;
-                                        // Unlock if: done OR is active (next to take)
-                                        const isLocked = !isDone && !isActive && false; // For now, all unlocked
+                            {course.sections.map((section, sIdx) => {
+                                const isCollapsed = !!collapsedSections[sIdx];
+                                return (
+                                    <div key={sIdx} className="border-b border-border last:border-0">
+                                        {course.sections.length > 1 && (
+                                            <button 
+                                                onClick={() => toggleSection(sIdx)}
+                                                className="w-full px-5 py-3 text-xs font-bold uppercase tracking-widest bg-surface-2/40 text-text-muted flex items-center justify-between hover:bg-surface-2 transition-colors group"
+                                            >
+                                                <span>Section {sIdx + 1}: {section.title}</span>
+                                                <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isCollapsed ? '-rotate-90' : ''}`} />
+                                            </button>
+                                        )}
+                                        <AnimatePresence initial={false}>
+                                            {!isCollapsed && (
+                                                <motion.div
+                                                    initial={{ height: 0, opacity: 0 }}
+                                                    animate={{ height: 'auto', opacity: 1 }}
+                                                    exit={{ height: 0, opacity: 0 }}
+                                                    transition={{ duration: 0.3, ease: 'easeInOut' }}
+                                                    className="overflow-hidden"
+                                                >
+                                                    {section.lectures.map((lec, lIdx) => {
+                                                        const globalIdx = course.sections.slice(0, sIdx).reduce((a, s) => a + s.lectures.length, 0) + lIdx;
+                                                        const isDone = completedSet.has(lec._id);
+                                                        const isActive = !isDone && startLec?._id === lec._id;
+                                                        const isLocked = !isDone && !isActive && false;
 
-                                        return (
-                                            <MissionRow
-                                                key={lec._id}
-                                                lecture={lec}
-                                                index={globalIdx}
-                                                isCompleted={isDone}
-                                                isActive={isActive}
-                                                isLocked={isLocked}
-                                                courseId={courseId}
-                                            />
-                                        );
-                                    })}
-                                </React.Fragment>
-                            ))}
+                                                        return (
+                                                            <MissionRow
+                                                                key={lec._id}
+                                                                lecture={lec}
+                                                                index={globalIdx}
+                                                                isCompleted={isDone}
+                                                                isActive={isActive}
+                                                                isLocked={isLocked}
+                                                                courseId={courseId}
+                                                            />
+                                                        );
+                                                    })}
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </div>
+                                );
+                            })}
+
                         </div>
                     </div>
 

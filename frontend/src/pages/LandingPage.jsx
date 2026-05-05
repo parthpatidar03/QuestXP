@@ -225,15 +225,16 @@ const LandingPage = () => {
                         <h2 className="text-xl sm:text-2xl font-semibold text-text-primary mb-4">How it works</h2>
                         <div className="grid gap-3 sm:gap-4 sm:grid-cols-3">
                             {[
-                                { step: '1', text: 'Paste a YouTube playlist' },
-                                { step: '2', text: 'QuestXP builds your course structure' },
-                                { step: '3', text: 'Study daily and track progress' },
+                                { step: '1', text: 'Paste a YouTube playlist', sub: 'Open playlist in new tab & copy URL (not the video link)' },
+                                { step: '2', text: 'QuestXP builds your course structure', sub: 'AI parses lectures and sections' },
+                                { step: '3', text: 'Study daily and track progress', sub: 'Earn XP and level up as you learn' },
                             ].map((item) => (
                                 <div key={item.step} className="rounded-lg border border-border bg-surface-2 px-4 py-4">
                                     <div className="inline-flex w-7 h-7 items-center justify-center rounded-full bg-primary text-white text-sm font-semibold mb-2">
                                         {item.step}
                                     </div>
-                                    <p className="text-sm text-text-primary">{item.text}</p>
+                                    <p className="text-sm font-semibold text-text-primary mb-1">{item.text}</p>
+                                    <p className="text-[10px] text-text-muted leading-tight">{item.sub}</p>
                                 </div>
                             ))}
                         </div>

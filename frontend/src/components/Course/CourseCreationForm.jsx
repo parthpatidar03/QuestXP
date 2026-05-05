@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
-import { Plus, X, Link as LinkIcon, AlertCircle } from 'lucide-react';
+import { Plus, X, Link as LinkIcon, AlertCircle, Info } from 'lucide-react';
 
 const CourseCreationForm = () => {
     const [title, setTitle] = useState('');
@@ -94,6 +94,13 @@ const CourseCreationForm = () => {
                                             className="w-full p-2.5 bg-surface border border-border focus:border-primary rounded-md outline-none text-sm text-text-primary placeholder:text-text-muted"
                                             placeholder="https://youtube.com/playlist?list=..."
                                         />
+                                        <div className="mt-2 p-2.5 bg-surface/50 rounded-lg border border-border/30 flex items-start gap-2 text-[10px] text-text-muted leading-relaxed">
+                                            <Info className="w-3 h-3 text-primary shrink-0 mt-0.5" />
+                                            <span>
+                                                <strong className="text-primary uppercase tracking-tighter mr-1">URL Tip:</strong> 
+                                                Open the playlist in a new tab. Copy the URL from the browser bar. It must contain <code className="text-primary font-mono bg-primary/5 px-1 rounded">?list=</code>. (Don't copy the video link from inside the playlist).
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

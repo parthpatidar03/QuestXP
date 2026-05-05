@@ -1,6 +1,7 @@
 const { Worker } = require('bullmq');
 const IORedis = require('ioredis');
-const ytpl = require('ytpl');
+const axios = require('axios');
+
 const Course = require('../models/Course');
 const embeddingQueue = require('../queues/embeddingQueue');
 const EmbeddingStatus = require('../models/EmbeddingStatus');
@@ -18,26 +19,61 @@ const courseProcessor = new Worker('course-processing', async job => {
         const processedSections = [];
 
         for (const section of sections) {
-            let playlist;
+            let playlistItems = [];
             try {
-                // ytpl requires just the ID or full URL
-                playlist = await ytpl(section.playlistUrl, { limit: Infinity });
+                const playlistId = section.playlistUrl.includes('list=') 
+                    ? section.playlistUrl.split('list=')[1].split('&')[0]
+                    : section.playlistUrl;
+
+                // Official YouTube API Call
+                const apiKey = process.env.YOUTUBE_API_KEY;
+                if (!apiKey) throw new Error('YOUTUBE_API_KEY missing in .env');
+
+                const response = await axios.get('https://www.googleapis.com/youtube/v3/playlistItems', {
+                    params: {
+                        part: 'snippet,contentDetails',
+                        maxResults: 50,
+                        playlistId: playlistId,
+                        key: apiKey
+                    }
+                });
+
+                const videoIds = response.data.items.map(item => item.contentDetails.videoId).join(',');
+                
+                // Get Durations
+                const videoResponse = await axios.get('https://www.googleapis.com/youtube/v3/videos', {
+                    params: {
+                        part: 'contentDetails',
+                        id: videoIds,
+                        key: apiKey
+                    }
+                });
+
+                const durationsMap = {};
+                videoResponse.data.items.forEach(v => {
+                    // Simple ISO 8601 duration parser (e.g. PT1M30S)
+                    const duration = v.contentDetails.duration;
+                    const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+                    const hours = parseInt(match[1] || 0);
+                    const minutes = parseInt(match[2] || 0);
+                    const seconds = parseInt(match[3] || 0);
+                    durationsMap[v.id] = hours * 3600 + minutes * 60 + seconds;
+                });
+
+                playlistItems = response.data.items.map(item => ({
+                    id: item.contentDetails.videoId,
+                    title: item.snippet.title,
+                    durationSec: durationsMap[item.contentDetails.videoId] || 0,
+                    bestThumbnail: { url: item.snippet.thumbnails?.high?.url || item.snippet.thumbnails?.default?.url }
+                }));
+
             } catch (err) {
-                console.error(`Failed to fetch playlist ${section.playlistUrl}`, err);
+                console.error(`YouTube API Error for ${section.playlistUrl}:`, err.response?.data || err.message);
                 throw new Error(`Invalid or private playlist: ${section.playlistUrl}`);
             }
 
-            const lectures = playlist.items.map((item, index) => {
-                // Duration is usually a string like "4:20" or "1:04:20".
-                // We'll parse it to total seconds.
-                let durationSecs = 0;
-                if (item.durationSec) {
-                    durationSecs = item.durationSec;
-                } else if (item.duration) {
-                    const parts = item.duration.split(':').map(Number);
-                    if (parts.length === 3) durationSecs = parts[0] * 3600 + parts[1] * 60 + parts[2];
-                    else if (parts.length === 2) durationSecs = parts[0] * 60 + parts[1];
-                }
+            const lectures = playlistItems.map((item, index) => {
+                const durationSecs = item.durationSec || 0;
 
                 totalLectures += 1;
                 totalDuration += durationSecs;
