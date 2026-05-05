@@ -15,12 +15,17 @@ import {
 } from 'lucide-react';
 import { BGPattern } from '../components/ui/bg-pattern';
 import FeedbackModal from '../components/FeedbackModal';
+import VideoModal from '../components/VideoModal';
+import { Play } from 'lucide-react';
+
 
 const LandingPage = () => {
     const navigate = useNavigate();
     const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [feedbackOpen, setFeedbackOpen] = useState(false);
+    const [videoOpen, setVideoOpen] = useState(false);
+
 
     useEffect(() => {
         const theme = localStorage.getItem('theme') || 'dark';
@@ -148,10 +153,15 @@ const LandingPage = () => {
                                     Start Learning
                                     <ChevronRight className="w-4 h-4" />
                                 </button>
-                                <a href="#features" className="inline-flex items-center justify-center px-6 py-3 rounded-lg border border-border bg-surface text-sm sm:text-base font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors">
-                                    See Features
-                                </a>
+                                <button 
+                                    onClick={() => setVideoOpen(true)}
+                                    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg border border-border bg-surface text-sm sm:text-base font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors"
+                                >
+                                    <Play className="w-4 h-4 fill-current" />
+                                    Watch Demo
+                                </button>
                             </div>
+
                         </motion.div>
 
                         <motion.div
@@ -255,8 +265,14 @@ const LandingPage = () => {
                 </div>
             </footer>
             <FeedbackModal open={feedbackOpen} onClose={() => setFeedbackOpen(false)} contextPage="Landing Page" />
+            <VideoModal 
+                isOpen={videoOpen} 
+                onClose={() => setVideoOpen(false)} 
+                videoUrl="https://res.cloudinary.com/dx7uo17cy/video/upload/q_auto/f_auto/v1777964684/Video_Project_zfs9vm.mp4" 
+            />
         </div>
     );
 };
+
 
 export default LandingPage;

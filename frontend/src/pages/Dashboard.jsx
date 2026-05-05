@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Flame, Zap, Trophy, Shield, BookOpen, Plus, ChevronRight, Star, Trash2 } from 'lucide-react';
 import useAuthStore from '../store/useAuthStore';
@@ -10,6 +10,9 @@ import XPLeaderboardSidebar from '../components/Dashboard/XPLeaderboardSidebar';
 import CourseCreationForm from '../components/Course/CourseCreationForm';
 import { BGPattern } from '../components/ui/bg-pattern';
 import FeedbackModal from '../components/FeedbackModal';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { StatCardSkeleton, CourseCardSkeleton } from '../components/ui/Skeleton';
+
 
 /* ── Helpers ─────────────────────────────────────────────────────────── */
 const XP_PER_LECTURE = 50;
@@ -56,17 +59,21 @@ function CourseCard({ course, progress, onDelete, isDeleting }) {
         <Link to={`/courses/${course._id}`} className="glass-card group block transition-all" style={{ padding: 0, overflow: 'hidden' }}>
             <div
                 className="relative w-full aspect-video overflow-hidden"
-                style={{
-                    background: thumb
-                        ? `linear-gradient(to bottom, transparent 40%, var(--color-bg) 100%), url(${thumb}) center / cover no-repeat`
-                        : 'var(--color-surface-2)',
-                }}
             >
-                {!thumb && (
-                    <div className="w-full h-full flex items-center justify-center">
+                {thumb ? (
+                    <img 
+                        src={thumb} 
+                        alt={course.title}
+                        loading="lazy"
+                        className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-500"
+                    />
+                ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-surface-2">
                         <BookOpen className="w-10 h-10 text-text-muted" />
                     </div>
                 )}
+                <div className="absolute inset-0 bg-gradient-to-t from-bg via-transparent to-transparent opacity-60" />
+
                 <div className="absolute top-2 right-2 xp-chip">
                     <Zap className="w-3 h-3" /> +{xpPool} XP
                 </div>
@@ -115,38 +122,60 @@ function CourseCard({ course, progress, onDelete, isDeleting }) {
 const Dashboard = () => {
     const { user } = useAuthStore();
     const { totalXP, level, levelTitle, streak, setProfile } = useGamificationStore();
+    const queryClient = useQueryClient();
 
-    const [courses, setCourses] = useState([]);
-    const [progressMap, setProgressMap] = useState({});
     const [showCreate, setShowCreate] = useState(false);
-    const [gamifLoaded, setGamifLoaded] = useState(false);
     const [deletingCourseId, setDeletingCourseId] = useState(null);
     const [deleteError, setDeleteError] = useState('');
     const [feedbackOpen, setFeedbackOpen] = useState(false);
+    const [visibleCount, setVisibleCount] = useState(6);
 
-    useEffect(() => {
-        getGamificationProfile()
-            .then(data => { setProfile(data); setGamifLoaded(true); })
-            .catch(() => setGamifLoaded(true));
-    }, [setProfile]);
+    // ── Queries ──────────────────────────────────────────────────────────
 
-    useEffect(() => {
-        const load = async () => {
-            try {
-                const { data } = await api.get('/courses');
-                setCourses(data.courses || []);
-                const pMap = {};
-                await Promise.allSettled((data.courses || []).map(async c => {
-                    try {
-                        const p = await api.get(`/progress/${c._id}`);
-                        if (p.data.progress) pMap[c._id] = p.data.progress;
-                    } catch (_) {}
-                }));
-                setProgressMap(pMap);
-            } catch (_) {}
-        };
-        load();
-    }, []);
+    const { data: profile, isLoading: profileLoading } = useQuery({
+        queryKey: ['profile'],
+        queryFn: async () => {
+            const data = await getGamificationProfile();
+            setProfile(data);
+            return data;
+        }
+    });
+
+    const { data: coursesData, isLoading: coursesLoading } = useQuery({
+        queryKey: ['courses'],
+        queryFn: async () => {
+            const { data } = await api.get('/courses');
+            return data.courses || [];
+        }
+    });
+
+    const { data: progressMap = {}, isLoading: progressLoading } = useQuery({
+        queryKey: ['progress'],
+        queryFn: async () => {
+            const courses = await queryClient.ensureQueryData({ queryKey: ['courses'] });
+            const pMap = {};
+            await Promise.allSettled(courses.map(async c => {
+                try {
+                    const p = await api.get(`/progress/${c._id}`);
+                    if (p.data.progress) pMap[c._id] = p.data.progress;
+                } catch (_) {}
+            }));
+            return pMap;
+        },
+        enabled: !!coursesData
+    });
+
+    const deleteMutation = useMutation({
+        mutationFn: async (courseId) => api.delete(`/courses/${courseId}`),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['courses'] });
+            queryClient.invalidateQueries({ queryKey: ['progress'] });
+        },
+        onError: (err) => {
+            setDeleteError(err.response?.data?.error || 'Failed to delete course.');
+        }
+    });
+
 
     const handleDeleteCourse = async (course) => {
         const isSure = window.confirm(`Are you sure you want to permanently delete "${course.title}"? This action cannot be undone.`);
@@ -157,28 +186,19 @@ const Dashboard = () => {
 
         setDeleteError('');
         setDeletingCourseId(course._id);
-        try {
-            await api.delete(`/courses/${course._id}`);
-            setCourses(prev => prev.filter(c => c._id !== course._id));
-            setProgressMap(prev => {
-                const next = { ...prev };
-                delete next[course._id];
-                return next;
-            });
-        } catch (err) {
-            setDeleteError(err.response?.data?.error || 'Failed to delete course. Please try again.');
-        } finally {
-            setDeletingCourseId(null);
-        }
+        deleteMutation.mutate(course._id, {
+            onSettled: () => setDeletingCourseId(null)
+        });
     };
+
 
     if (!user) return null;
 
-    const feedbackHref = 'mailto:u1892911@gmail.com?subject=QuestXP%20Feedback&body=Page:%20Dashboard%0A%0AYour%20feedback%20here...';
-
+    const courses = coursesData || [];
     const activeCourse = courses[0];
     const activePct = activeCourse ? calcCourseProgress(activeCourse, progressMap[activeCourse._id]) : 0;
     const firstLecId = activeCourse?.sections?.[0]?.lectures?.[0]?._id;
+
 
     return (
         <div className="min-h-screen bg-bg text-text-primary relative overflow-hidden">
@@ -223,11 +243,18 @@ const Dashboard = () => {
                     )}
 
                     <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <StatCard icon={<Zap className="w-4 h-4" />} label="Total XP" value={(totalXP || user?.totalXP || 0).toLocaleString()} color="var(--color-gold)" />
-                        <StatCard icon={<Flame className="w-4 h-4" />} label="Streak" value={`${streak?.current ?? user?.streak?.current ?? 0}d`} color="var(--color-warning)" />
-                        <StatCard icon={<Trophy className="w-4 h-4" />} label="Completed" value={courses.filter(c => calcCourseProgress(c, progressMap[c._id]) === 100).length} color="var(--color-success)" />
-                        <StatCard icon={<Shield className="w-4 h-4" />} label="Level" value={`Lv ${level || user?.level || 1}`} color="var(--color-primary)" />
+                        {profileLoading ? (
+                            Array(4).fill(0).map((_, i) => <StatCardSkeleton key={i} />)
+                        ) : (
+                            <>
+                                <StatCard icon={<Zap className="w-4 h-4" />} label="Total XP" value={(totalXP || user?.totalXP || 0).toLocaleString()} color="var(--color-gold)" />
+                                <StatCard icon={<Flame className="w-4 h-4" />} label="Streak" value={`${streak?.current ?? user?.streak?.current ?? 0}d`} color="var(--color-warning)" />
+                                <StatCard icon={<Trophy className="w-4 h-4" />} label="Completed" value={courses.filter(c => calcCourseProgress(c, progressMap[c._id]) === 100).length} color="var(--color-success)" />
+                                <StatCard icon={<Shield className="w-4 h-4" />} label="Level" value={`Lv ${level || user?.level || 1}`} color="var(--color-primary)" />
+                            </>
+                        )}
                     </section>
+
 
                     <section>
                         <div className="flex items-center justify-between mb-4">
@@ -247,7 +274,11 @@ const Dashboard = () => {
                                 <CourseCreationForm onSuccess={() => setShowCreate(false)} />
                             </div>
                         )}
-                        {courses.length === 0 && !showCreate ? (
+                        {coursesLoading ? (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                                {Array(6).fill(0).map((_, i) => <CourseCardSkeleton key={i} />)}
+                            </div>
+                        ) : courses.length === 0 && !showCreate ? (
                             <div className="glass-card flex flex-col items-center justify-center py-20 text-center border-dashed">
                                 <BookOpen className="w-12 h-12 mb-4 text-text-muted" />
                                 <h3 className="text-lg font-semibold text-text-primary mb-2">No courses yet</h3>
@@ -255,18 +286,33 @@ const Dashboard = () => {
                                 <button onClick={() => setShowCreate(true)} className="btn-esports">Create your first course</button>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                                {courses.map(c => (
-                                    <CourseCard
-                                        key={c._id}
-                                        course={c}
-                                        progress={progressMap[c._id]}
-                                        onDelete={handleDeleteCourse}
-                                        isDeleting={deletingCourseId === c._id}
-                                    />
-                                ))}
+                            <div className="space-y-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                                    {courses.slice(0, visibleCount).map(c => (
+                                        <CourseCard
+                                            key={c._id}
+                                            course={c}
+                                            progress={progressMap[c._id]}
+                                            onDelete={handleDeleteCourse}
+                                            isDeleting={deletingCourseId === c._id}
+                                        />
+                                    ))}
+                                </div>
+                                {visibleCount < courses.length && (
+                                    <div className="flex justify-center pt-4">
+                                        <button 
+                                            onClick={() => setVisibleCount(prev => prev + 6)}
+                                            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg border border-border bg-surface text-sm font-semibold text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-all shadow-sm"
+                                        >
+                                            Load More Courses
+                                            <ChevronRight className="w-4 h-4 rotate-90" />
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         )}
+
+
                     </section>
                 </div>
 
