@@ -14,11 +14,13 @@ import {
     Sparkles,
 } from 'lucide-react';
 import { BGPattern } from '../components/ui/bg-pattern';
+import FeedbackModal from '../components/FeedbackModal';
 
 const LandingPage = () => {
     const navigate = useNavigate();
     const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [feedbackOpen, setFeedbackOpen] = useState(false);
 
     useEffect(() => {
         const theme = localStorage.getItem('theme') || 'dark';
@@ -248,9 +250,11 @@ const LandingPage = () => {
                         <a href="#features" className="hover:text-text-primary transition-colors">Features</a>
                         <a href="#how-it-works" className="hover:text-text-primary transition-colors">How it works</a>
                         <button onClick={openApp} className="hover:text-text-primary transition-colors">Open App</button>
+                        <button onClick={() => setFeedbackOpen(true)} className="hover:text-text-primary transition-colors">Send Feedback</button>
                     </div>
                 </div>
             </footer>
+            <FeedbackModal open={feedbackOpen} onClose={() => setFeedbackOpen(false)} contextPage="Landing Page" />
         </div>
     );
 };

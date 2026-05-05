@@ -1,11 +1,8 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
 const nodemailer = require('nodemailer');
-const auth = require('../middleware/auth');
 
 const router = express.Router();
-
-router.use(auth);
 
 const getTransportConfig = () => {
     const smtpHost = process.env.SMTP_HOST;
@@ -59,9 +56,8 @@ router.post(
             const fromEmail = process.env.SMTP_FROM || process.env.SMTP_USER;
             const contextPage = req.body.contextPage || 'unknown';
             const message = req.body.message;
-            const userName = req.user?.name || 'Unknown User';
-            const userEmail = req.user?.email || 'No email on account';
-            const userId = req.user?._id?.toString() || 'unknown';
+            const userName = req.body.name?.trim() || req.body.userName?.trim() || 'Anonymous';
+            const userEmail = req.body.email?.trim() || req.body.userEmail?.trim() || 'Not provided';
 
             const transporter = nodemailer.createTransport(transportConfig);
 
@@ -69,7 +65,6 @@ router.post(
                 'New QuestXP Feedback',
                 `User: ${userName}`,
                 `Email: ${userEmail}`,
-                `User ID: ${userId}`,
                 `Page: ${contextPage}`,
                 `Submitted At: ${new Date().toISOString()}`,
                 '',

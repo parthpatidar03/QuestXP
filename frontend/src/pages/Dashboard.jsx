@@ -9,6 +9,7 @@ import NavBar from '../components/NavBar';
 import XPLeaderboardSidebar from '../components/Dashboard/XPLeaderboardSidebar';
 import CourseCreationForm from '../components/Course/CourseCreationForm';
 import { BGPattern } from '../components/ui/bg-pattern';
+import FeedbackModal from '../components/FeedbackModal';
 
 /* ── Helpers ─────────────────────────────────────────────────────────── */
 const XP_PER_LECTURE = 50;
@@ -121,6 +122,7 @@ const Dashboard = () => {
     const [gamifLoaded, setGamifLoaded] = useState(false);
     const [deletingCourseId, setDeletingCourseId] = useState(null);
     const [deleteError, setDeleteError] = useState('');
+    const [feedbackOpen, setFeedbackOpen] = useState(false);
 
     useEffect(() => {
         getGamificationProfile()
@@ -171,6 +173,8 @@ const Dashboard = () => {
     };
 
     if (!user) return null;
+
+    const feedbackHref = 'mailto:u1892911@gmail.com?subject=QuestXP%20Feedback&body=Page:%20Dashboard%0A%0AYour%20feedback%20here...';
 
     const activeCourse = courses[0];
     const activePct = activeCourse ? calcCourseProgress(activeCourse, progressMap[activeCourse._id]) : 0;
@@ -285,6 +289,14 @@ const Dashboard = () => {
                     </Link>
                 </aside>
             </div>
+
+            <footer className="border-t border-border bg-surface/70">
+                <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs sm:text-sm text-text-secondary">
+                    <p>QuestXP is in development. Your feedback helps improve the product.</p>
+                    <button onClick={() => setFeedbackOpen(true)} className="font-medium hover:text-text-primary transition-colors">Send Feedback</button>
+                </div>
+                <FeedbackModal open={feedbackOpen} onClose={() => setFeedbackOpen(false)} contextPage="Dashboard" />
+            </footer>
         </div>
     );
 };
