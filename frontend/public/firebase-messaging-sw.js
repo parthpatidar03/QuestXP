@@ -9,38 +9,23 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-// Handle background messages
-messaging.onBackgroundMessage((payload) => {
-    console.log('[SW] Background Message:', payload);
-    
-    const notificationTitle = payload.notification?.title || 'QuestXP';
-    const notificationOptions = {
-        body: payload.notification?.body || 'New update available!',
-        icon: '/logo.png',
-        badge: '/logo.png',
-        data: {
-            url: payload.data?.url || '/'
-        }
-    };
+// Firebase automatically shows push notifications when the payload has the `notification` object.
+// We only need to handle the click event to focus the tab.
 
-    return self.registration.showNotification(notificationTitle, notificationOptions);
-});
-
-// Handle notification click
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
-    const urlToOpen = event.notification.data.url || '/';
+    
+    // Default to origin if no custom URL
+    const urlToOpen = event.notification.data?.url || self.location.origin;
 
     event.waitUntil(
         clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
-            // If tab already open, focus it
             for (let i = 0; i < windowClients.length; i++) {
                 const client = windowClients[i];
                 if (client.url.includes(urlToOpen) && 'focus' in client) {
                     return client.focus();
                 }
             }
-            // Otherwise open new tab
             if (clients.openWindow) {
                 return clients.openWindow(urlToOpen);
             }
