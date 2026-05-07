@@ -30,18 +30,24 @@ export const requestNotificationPermission = async () => {
     try {
         const permission = await Notification.requestPermission();
         if (permission === 'granted') {
-            // USER: Add your VAPID key here
             const token = await getToken(messaging, { 
                 vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY 
             });
             
             if (token) {
-                // Send token to our backend
-                await api.post('/notifications/register', {
-                    fcmToken: token,
-                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
-                });
+                console.log('[Firebase] ✅ Token generated successfully!');
+                try {
+                    await api.post('/notifications/register', {
+                        fcmToken: token,
+                        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                    });
+                    console.log('[Firebase] ✅ Token saved to database successfully!');
+                } catch (apiErr) {
+                    console.error('[Firebase] ❌ Token generated, but failed to save to Database. Are you logged in?', apiErr);
+                }
                 return token;
+            } else {
+                console.warn('[Firebase] ❌ Permission granted but no token returned.');
             }
         }
         return null;

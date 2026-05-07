@@ -155,7 +155,14 @@ export default function NotificationBell({ profile, user }) {
     // Check push permission status and log session start on mount
     useEffect(() => {
         if ('Notification' in window) {
-            setPushEnabled(Notification.permission === 'granted');
+            const isGranted = Notification.permission === 'granted';
+            setPushEnabled(isGranted);
+            if (isGranted) {
+                // Silently re-sync token with backend in case it failed previously
+                import('../services/firebase').then(({ requestNotificationPermission }) => {
+                    requestNotificationPermission();
+                });
+            }
         }
         
         // Log session start for ML timing algorithm
