@@ -1,7 +1,9 @@
-importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.13.2/firebase-messaging-compat.js');
 
 firebase.initializeApp({
+    apiKey: "AIzaSyD1xVn_7Yg9fvis3emserxElqSgYKYBz1I",
+    authDomain: "questxp-52faf.firebaseapp.com",
     projectId: "questxp-52faf",
     messagingSenderId: "371903063687",
     appId: "1:371903063687:web:25e094945096c294163a22"
@@ -9,13 +11,9 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-// Firebase automatically shows push notifications when the payload has the `notification` object.
-// We only need to handle the click event to focus the tab.
-
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
     
-    // Default to origin if no custom URL
     const urlToOpen = event.notification.data?.url || self.location.origin;
 
     event.waitUntil(
