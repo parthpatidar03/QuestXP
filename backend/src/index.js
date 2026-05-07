@@ -10,6 +10,8 @@ require('./workers/quizWorker');
 require('./workers/topicsWorker');
 require('./workers/embeddingWorker');
 require('./workers/streakWorker');
+require('./workers/notificationWorker');
+require('./workers/notificationScheduler');
 
 const PORT = process.env.PORT || 5000;
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/questxp')

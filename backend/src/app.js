@@ -65,6 +65,7 @@ app.use('/api/lectures', require('./routes/lectures'));
 app.use('/api/doubts', doubtRoutes);
 app.use('/api/gamification', gamificationRoutes);
 app.use('/api/feedback', feedbackRoutes);
+app.use('/api/notifications', require('./routes/notificationRoutes'));
 
 // T063 — 404 handler for unknown routes
 app.use((req, res) => {

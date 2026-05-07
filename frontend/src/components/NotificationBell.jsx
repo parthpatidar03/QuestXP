@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Bell, X, Trophy, Zap, Flame, Star, Sparkles, BookOpen, PartyPopper } from 'lucide-react';
+import { Bell, X, Trophy, Zap, Flame, Star, Sparkles, BookOpen, PartyPopper, Send } from 'lucide-react';
+import { requestNotificationPermission } from '../services/firebase';
 
 const STORAGE_KEY = 'questxp_notifications';
 const SEEN_KEY = 'questxp_notifs_seen';
@@ -126,7 +127,34 @@ export default function NotificationBell({ profile, user }) {
     const [open, setOpen] = useState(false);
     const [notifications, setNotifications] = useState([]);
     const [seenIds, setSeenIds] = useState(new Set());
+    const [pushEnabled, setPushEnabled] = useState(false);
+    const [enabling, setEnabling] = useState(false);
     const panelRef = useRef(null);
+
+    // Check push permission status and log session start on mount
+    useEffect(() => {
+        if ('Notification' in window) {
+            setPushEnabled(Notification.permission === 'granted');
+        }
+        
+        // Log session start for ML timing algorithm
+        // We do this once per mount/session. Using a sessionStorage flag prevents spamming on hot reloads.
+        if (!sessionStorage.getItem('session_logged')) {
+            import('../services/api').then(({ default: api }) => {
+                api.post('/notifications/session-start').catch(e => console.error(e));
+                sessionStorage.setItem('session_logged', 'true');
+            });
+        }
+    }, []);
+
+    const handleEnablePush = async () => {
+        setEnabling(true);
+        const token = await requestNotificationPermission();
+        if (token) {
+            setPushEnabled(true);
+        }
+        setEnabling(false);
+    };
 
     // Load persisted notifications + generate new ones
     useEffect(() => {
@@ -220,6 +248,20 @@ export default function NotificationBell({ profile, user }) {
                             </button>
                         </div>
                     </div>
+
+                    {/* Push Enable Banner */}
+                    {!pushEnabled && 'Notification' in window && Notification.permission !== 'denied' && (
+                        <div className="bg-primary/10 border-b border-primary/20 px-4 py-2.5 flex items-center justify-between">
+                            <span className="text-[10px] font-bold text-primary">Get notified when it's study time!</span>
+                            <button 
+                                onClick={handleEnablePush}
+                                disabled={enabling}
+                                className="text-[10px] bg-primary text-white px-2 py-1 rounded shadow-sm hover:bg-primary-hover font-bold flex items-center gap-1 disabled:opacity-50"
+                            >
+                                {enabling ? 'Enabling...' : <><Send className="w-3 h-3" /> Enable</>}
+                            </button>
+                        </div>
+                    )}
 
                     {/* List */}
                     <div className="max-h-80 overflow-y-auto">

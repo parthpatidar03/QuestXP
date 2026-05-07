@@ -44,20 +44,41 @@ const generatorWorker = new Worker('notificationGeneratorQueue', async (job) => 
 
 }, { connection });
 
+const admin = require('../services/firebase');
+
 // 2. Delivery Worker: Actually sends via FCM and logs to DB
 const deliveryWorker = new Worker('notificationDeliveryQueue', async (job) => {
     const { userId, fcmToken, tone, text } = job.data;
 
-    // TODO: Integrate actual firebase-admin SDK here
-    // await admin.messaging().send({ token: fcmToken, notification: { title: "QuestXP", body: text } });
-    console.log(`[PUSH] Sent to ${userId} (${tone}): ${text}`);
+    try {
+        if (fcmToken && admin.apps?.length > 0) {
+            await admin.messaging().send({
+                token: fcmToken,
+                notification: {
+                    title: 'QuestXP',
+                    body: text
+                },
+                data: {
+                    click_action: 'FLUTTER_NOTIFICATION_CLICK',
+                    tone
+                }
+            });
+            console.log(`[PUSH] Sent to ${userId} (${tone}): ${text}`);
+        } else {
+            console.log(`[PUSH-MOCK] Would send to ${userId} (${tone}): ${text}`);
+        }
 
-    // Log it
-    await NotificationLog.create({
-        userId,
-        tone,
-        content: text
-    });
+        // Log it
+        await NotificationLog.create({
+            userId,
+            tone,
+            content: text,
+            opened: false
+        });
+    } catch (error) {
+        console.error(`[PUSH ERROR] Failed for ${userId}:`, error.message);
+        throw error;
+    }
 
 }, { connection });
 
