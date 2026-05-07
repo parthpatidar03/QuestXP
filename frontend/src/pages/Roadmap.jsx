@@ -66,37 +66,35 @@ const Roadmap = () => {
     }, [courseId]);
 
     if (loading) return (
-        <div className="min-h-screen bg-bg flex items-center justify-center">
+        <div className="min-h-screen bg-bg">
             <NavBar />
-            <div className="max-w-4xl w-full mx-auto px-4 py-8">
+            <div className="max-w-3xl mx-auto px-4 py-12 animate-pulse">
                 {/* Skeleton Header */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-                    <div className="flex items-center gap-4">
-                        <div className="p-2 bg-surface-2 rounded-xl w-10 h-10 animate-pulse" />
-                        <div className="space-y-2">
-                            <div className="h-6 bg-surface-2 rounded w-48 animate-pulse" />
-                            <div className="h-4 bg-surface-2 rounded w-64 animate-pulse" />
-                        </div>
-                    </div>
-                    <div className="h-10 bg-surface-2 rounded-lg w-32 animate-pulse" />
+                <div className="mb-12">
+                    <div className="h-8 bg-surface-2 rounded-lg w-64 mb-3" />
+                    <div className="h-4 bg-surface-2 rounded w-48" />
                 </div>
                 {/* Skeleton Sections */}
-                <div className="space-y-3">
-                    {[1, 2, 3].map(i => (
-                        <div key={i} className="bg-surface border border-border rounded-xl p-5">
-                            <div className="h-6 bg-surface-2 rounded w-3/4 animate-pulse" />
-                            <div className="h-4 bg-surface-2 rounded w-1/2 animate-pulse mt-3" />
+                <div className="space-y-2">
+                    {[1, 2, 3, 4].map(i => (
+                        <div key={i} className="border-b border-border py-4 px-3">
+                            <div className="h-5 bg-surface-2 rounded w-3/4 mb-2" />
+                            <div className="h-3 bg-surface-2 rounded w-40" />
                         </div>
                     ))}
+                </div>
+                {/* Skeleton Footer */}
+                <div className="mt-12 pt-8 border-t border-border flex justify-center">
+                    <div className="h-9 bg-surface-2 rounded-lg w-36" />
                 </div>
             </div>
         </div>
     );
 
     if (error) return (
-        <div className="min-h-screen bg-bg flex items-center justify-center">
+        <div className="min-h-screen bg-bg">
             <NavBar />
-            <div className="max-w-4xl w-full mx-auto px-4 py-8">
+            <div className="max-w-3xl mx-auto px-4 py-12">
                 <div className="bg-danger/10 border border-danger/30 rounded-xl p-6 flex gap-4">
                     <AlertCircle className="w-6 h-6 text-danger shrink-0 mt-0.5" />
                     <div className="flex-1">

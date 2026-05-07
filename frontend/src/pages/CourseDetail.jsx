@@ -200,8 +200,48 @@ const CourseDetail = () => {
     );
 
     if (!course) return (
-        <div className="min-h-screen flex items-center justify-center bg-bg">
-            <Loader2 className="w-10 h-10 animate-spin text-primary" />
+        <div className="min-h-screen bg-bg">
+            <NavBar />
+            <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-8 animate-pulse">
+                <div className="h-4 bg-surface-2 rounded w-28 mb-6" />
+                <div className="flex flex-col lg:flex-row gap-6">
+                    <div className="flex-1 min-w-0">
+                        <div className="rounded-2xl bg-surface border border-border h-52 mb-6 p-7">
+                            <div className="h-4 bg-surface-2 rounded w-24 mb-4" />
+                            <div className="h-8 bg-surface-2 rounded w-3/4 mb-3" />
+                            <div className="h-4 bg-surface-2 rounded w-40 mb-6" />
+                            <div className="h-10 bg-surface-2 rounded-lg w-36" />
+                        </div>
+                        <div className="bg-surface border border-border rounded-2xl overflow-hidden">
+                            <div className="px-8 py-6 border-b border-border">
+                                <div className="h-5 bg-surface-2 rounded w-32 mb-2" />
+                                <div className="h-3 bg-surface-2 rounded w-48" />
+                            </div>
+                            {[1, 2, 3, 4].map(i => (
+                                <div key={i} className="flex items-center gap-6 px-6 py-5 border-b border-border">
+                                    <div className="w-10 h-10 rounded-full bg-surface-2" />
+                                    <div className="w-24 h-14 rounded-lg bg-surface-2" />
+                                    <div className="flex-1">
+                                        <div className="h-4 bg-surface-2 rounded w-3/4 mb-2" />
+                                        <div className="h-3 bg-surface-2 rounded w-20" />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <aside className="w-full lg:w-72 xl:w-80 shrink-0 space-y-4">
+                        <div className="bg-surface border border-border rounded-2xl p-5 space-y-4">
+                            <div className="h-4 bg-surface-2 rounded w-24" />
+                            {[1, 2, 3, 4].map(i => (
+                                <div key={i} className="flex justify-between py-2 border-b border-border">
+                                    <div className="h-3 bg-surface-2 rounded w-24" />
+                                    <div className="h-3 bg-surface-2 rounded w-12" />
+                                </div>
+                            ))}
+                        </div>
+                    </aside>
+                </div>
+            </div>
         </div>
     );
 
