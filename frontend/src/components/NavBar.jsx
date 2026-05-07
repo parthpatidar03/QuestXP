@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Zap, Bell, Search, BookOpenCheck, Moon, Sun, BookOpen, X, Loader2 } from 'lucide-react';
+import { Zap, Search, BookOpenCheck, Moon, Sun, BookOpen, X, Loader2 } from 'lucide-react';
+import NotificationBell from './NotificationBell';
 import useAuthStore from '../store/useAuthStore';
 import useGamificationStore from '../store/useGamificationStore';
 import { getGamificationProfile } from '../services/gamificationApi';
@@ -246,10 +247,10 @@ const NavBar = () => {
                         {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                     </button>
 
-                    <button className="relative p-2 text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-lg transition-colors">
-                        <Bell className="w-5 h-5" />
-                        <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full ring-2 ring-surface" />
-                    </button>
+                    <NotificationBell
+                        profile={{ totalXP, level, levelTitle: useGamificationStore.getState().levelTitle, streak: useGamificationStore.getState().streak, badges: useGamificationStore.getState().badges }}
+                        user={user}
+                    />
                 </div>
 
                 <div className="hidden sm:flex items-center gap-1.5 bg-surface-2 border border-border rounded-lg px-3 py-1.5">
