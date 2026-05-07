@@ -16,6 +16,13 @@ const userSchema = new Schema({
     },
     badges: [{ badgeId: String, earnedAt: Date, seen: Boolean }],
     unlockedFeatures: [String],
+    
+    // Push Notifications
+    fcmToken: { type: String },
+    timezone: { type: String, default: 'UTC' },
+    lastActive: { type: Date, default: Date.now },
+    notificationState: { type: String, enum: ['active', 'cooling_down', 'stopped'], default: 'active' },
+    
     createdAt: { type: Date, default: Date.now },
 });
 
