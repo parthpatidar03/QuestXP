@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Bell, X, Trophy, Zap, Flame, Star, Sparkles, BookOpen, PartyPopper, Send } from 'lucide-react';
-import { requestNotificationPermission } from '../services/firebase';
+import { requestNotificationPermission, onMessageListener } from '../services/firebase';
 
 const STORAGE_KEY = 'questxp_notifications';
 const SEEN_KEY = 'questxp_notifs_seen';
@@ -130,6 +130,27 @@ export default function NotificationBell({ profile, user }) {
     const [pushEnabled, setPushEnabled] = useState(false);
     const [enabling, setEnabling] = useState(false);
     const panelRef = useRef(null);
+
+    // Listen for foreground messages
+    useEffect(() => {
+        const unsubscribe = onMessageListener().then((payload) => {
+            const newNotif = {
+                id: Date.now().toString(),
+                icon: payload.data?.tone === 'dramatic' ? 'flame' : 'zap',
+                title: payload.notification.title,
+                body: payload.notification.body,
+                time: new Date().toISOString(),
+                type: 'push'
+            };
+            setNotifications(prev => {
+                const updated = [newNotif, ...prev].slice(0, 20);
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+                return updated;
+            });
+        }).catch(err => console.log('foreground check failed: ', err));
+        
+        return () => {}; // clean up if needed
+    }, []);
 
     // Check push permission status and log session start on mount
     useEffect(() => {

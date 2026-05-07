@@ -1,11 +1,16 @@
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 const mongoose = require('mongoose');
 const User = require('../models/User');
 const admin = require('../services/firebase');
-require('dotenv').config();
 
 async function directBlast() {
     try {
         console.log('[DIRECT-BLAST] Connecting to Production DB...');
+        if (!process.env.MONGODB_URI) {
+            throw new Error('MONGODB_URI is missing from .env');
+        }
+
         await mongoose.connect(process.env.MONGODB_URI);
         
         const users = await User.find({ fcmToken: { $exists: true, $ne: null } });
@@ -27,9 +32,9 @@ async function directBlast() {
         }
         
         console.log('[DIRECT-BLAST] Done.');
-        process.exit(0);
+        setTimeout(() => process.exit(0), 1000);
     } catch (error) {
-        console.error('[DIRECT-BLAST] Fatal Error:', error);
+        console.error('[DIRECT-BLAST] Fatal Error:', error.message);
         process.exit(1);
     }
 }
