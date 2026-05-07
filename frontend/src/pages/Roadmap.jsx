@@ -5,7 +5,15 @@ import api from '../services/api';
 import NavBar from '../components/NavBar';
 import { BGPattern } from '../components/ui/bg-pattern';
 import { format, parseISO } from 'date-fns';
-import html2pdf from 'html2pdf.js';
+
+
+// XSS-safe string escape for the PDF HTML builder
+const escHtml = (str) =>
+    String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
 
 const Roadmap = () => {
     const { courseId } = useParams();
@@ -134,43 +142,110 @@ const Roadmap = () => {
         }
     };
 
-    const handleDownloadPdf = async () => {
+    const handleDownloadPdf = () => {
         try {
             setPdfError(null);
             setPdfExporting(true);
-            const element = document.getElementById('roadmap-container');
-            if (!element) {
-                throw new Error("Roadmap content not found");
-            }
-            
-            // Expand all sections before printing so content isn't hidden
-            const allExpanded = {};
-            course.sections.forEach(s => {
-                allExpanded[s._id] = true;
-            });
-            setExpandedSections(allExpanded);
-            
-            // Wait for React to render expanded sections
-            await new Promise(resolve => setTimeout(resolve, 500));
-            
-            const opt = {
-                margin:       0.5,
-                filename:     `Course-${courseId}-Roadmap.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#0d0f1a' },
-                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
-            };
 
-            await html2pdf().set(opt).from(element).save();
+            // Build a standalone HTML document from the JS data.
+            // Zero dependency on html2canvas / CSS parsing — completely immune
+            // to oklch() failures. The browser renders and prints it natively.
+            const deadline = plan?.deadline
+                ? new Date(plan.deadline).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+                : null;
+
+            const sectionsHtml = (course.sections || []).map(section => {
+                const completed = (section.lectures || []).filter(l => {
+                    const p = (progress?.lectureProgress || []).find(x => x.lecture === l._id);
+                    return p?.completed;
+                }).length;
+                const total = section.lectures?.length || 0;
+                const pct = total ? Math.round((completed / total) * 100) : 0;
+
+                const lecturesHtml = (section.lectures || []).map(lec => {
+                    const done = (progress?.lectureProgress || []).find(x => x.lecture === lec._id)?.completed;
+                    const dur = lec.durationSeconds ? `${Math.round(lec.durationSeconds / 60)}m` : '';
+                    return `
+                        <div class="lecture ${done ? 'done' : ''}">
+                            <span class="check">${done ? '✓' : '○'}</span>
+                            <span class="title ${done ? 'strikethrough' : ''}">${escHtml(lec.title || '')}</span>
+                            ${dur ? `<span class="dur">${dur}</span>` : ''}
+                        </div>`;
+                }).join('');
+
+                return `
+                    <div class="section">
+                        <div class="section-header">
+                            <div>
+                                <div class="section-title">${escHtml(section.title)}</div>
+                                <div class="section-meta">${completed} of ${total} • ${pct}% complete</div>
+                            </div>
+                            <div class="pct-badge">${pct}%</div>
+                        </div>
+                        <div class="lectures">${lecturesHtml}</div>
+                    </div>`;
+            }).join('');
+
+            const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>${escHtml(course.title)} — Roadmap</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #0d0f1a; color: #f1f5f9; padding: 40px 48px; }
+  h1 { font-size: 26px; font-weight: 700; color: #f1f5f9; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: #64748b; margin-bottom: 32px; }
+  .subtitle span { color: #22c55e; font-weight: 600; }
+  .section { border: 1px solid #2a2d3e; border-radius: 10px; margin-bottom: 14px; overflow: hidden; }
+  .section-header { display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 18px; background: #12141f; }
+  .section-title { font-size: 14px; font-weight: 600; color: #f1f5f9; }
+  .section-meta { font-size: 11px; color: #64748b; margin-top: 3px; }
+  .pct-badge { font-size: 13px; font-weight: 700; color: #22c55e; }
+  .lectures { padding: 8px 18px 12px; }
+  .lecture { display: flex; align-items: center; gap: 10px; padding: 7px 0;
+    border-bottom: 1px solid #1a1d2e; font-size: 12px; color: #94a3b8; }
+  .lecture:last-child { border-bottom: none; }
+  .lecture.done { color: #64748b; }
+  .check { width: 16px; text-align: center; color: #22c55e; flex-shrink: 0; font-weight: 700; }
+  .lecture.done .check { color: #22c55e; }
+  .title { flex: 1; }
+  .strikethrough { text-decoration: line-through; }
+  .dur { font-size: 11px; color: #4a5568; flex-shrink: 0; }
+  .footer { margin-top: 32px; font-size: 11px; color: #2a2d3e; text-align: center; }
+  @media print {
+    body { background: #0d0f1a !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    @page { size: A4; margin: 20mm; }
+  }
+</style>
+</head>
+<body>
+  <h1>${escHtml(course.title)}</h1>
+  <p class="subtitle">
+    ${ deadline ? `Target completion: <span>${deadline}</span>` : 'QuestXP Course Roadmap' }
+  </p>
+  ${sectionsHtml}
+  <div class="footer">Generated by QuestXP • ${new Date().toLocaleDateString()}</div>
+  <script>window.onload = () => { window.print(); window.onafterprint = () => window.close(); };<\/script>
+</body>
+</html>`;
+
+            const win = window.open('', '_blank', 'width=900,height=700');
+            if (!win) {
+                throw new Error('Pop-up blocked. Please allow pop-ups for this site and try again.');
+            }
+            win.document.write(html);
+            win.document.close();
             setPdfExporting(false);
         } catch (err) {
-            console.error("PDF export failed:", err);
-            setPdfError("Failed to generate PDF. Please try again.");
+            console.error('PDF export failed:', err);
+            setPdfError(err.message || 'Failed to generate PDF. Please try again.');
             setPdfExporting(false);
-            // Auto-clear error after 5 seconds
-            setTimeout(() => setPdfError(null), 5000);
+            setTimeout(() => setPdfError(null), 6000);
         }
     };
+
 
     return (
         <div className="min-h-screen bg-bg text-text-primary font-sans relative overflow-hidden">

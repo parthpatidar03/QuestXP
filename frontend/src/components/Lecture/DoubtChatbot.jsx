@@ -162,8 +162,10 @@ const DoubtChatbot = ({ lectureId, courseTitle = '', lectureTitle = '' }) => {
                             {messages.length > 0 && (
                                 <button
                                     onClick={() => setMessages([])}
-                                    className="text-xs px-2 py-1 rounded-lg transition-colors"
-                                    style={{ color: '#4a5480', background: 'rgba(255,255,255,0.05)' }}
+                                    className="text-xs px-2 py-1 rounded-lg transition-all"
+                                    style={{ color: '#f87171', background: 'rgba(248,113,113,0.12)', border: '1px solid rgba(248,113,113,0.25)' }}
+                                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(248,113,113,0.25)'; e.currentTarget.style.color = '#fca5a5'; }}
+                                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(248,113,113,0.12)'; e.currentTarget.style.color = '#f87171'; }}
                                     title="Clear chat"
                                 >
                                     Clear
