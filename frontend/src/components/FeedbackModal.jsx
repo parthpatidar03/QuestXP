@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { X, Send } from 'lucide-react';
 
-const FeedbackModal = ({ open, onClose, contextPage = 'unknown' }) => {
+const FeedbackModal = ({ open: openProp, isOpen, onClose, contextPage = 'unknown' }) => {
+    const open = openProp ?? isOpen ?? false;
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
 
@@ -54,7 +55,13 @@ const FeedbackModal = ({ open, onClose, contextPage = 'unknown' }) => {
     };
 
     return (
-        <div className="fixed inset-0 z-[60] bg-bg/70 backdrop-blur-sm flex items-center justify-center px-4" role="dialog" aria-modal="true" aria-label="Send feedback">
+        <div
+            className="fixed inset-0 z-[60] bg-bg/70 backdrop-blur-sm flex items-center justify-center px-4"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Send feedback"
+            onClick={(e) => { if (e.target === e.currentTarget) close(); }}
+        >
             <div className="w-full max-w-lg rounded-2xl border border-border bg-surface p-5 shadow-2xl">
                 <div className="flex items-start justify-between gap-4">
                     <div>

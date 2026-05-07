@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Zap, Bell, Search, BookOpenCheck, Moon, Sun, MessageSquare, BookOpen, X, Loader2 } from 'lucide-react';
+import { Zap, Bell, Search, BookOpenCheck, Moon, Sun, BookOpen, X, Loader2 } from 'lucide-react';
 import useAuthStore from '../store/useAuthStore';
 import useGamificationStore from '../store/useGamificationStore';
 import { getGamificationProfile } from '../services/gamificationApi';
-import FeedbackModal from './FeedbackModal';
+
 import { useQueryClient } from '@tanstack/react-query';
 import api from '../services/api';
 
@@ -189,7 +189,7 @@ const NavBar = () => {
     const { user } = useAuthStore();
     const { totalXP, level, setProfile } = useGamificationStore();
     const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
-    const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+
 
     useEffect(() => {
         getGamificationProfile()
@@ -237,14 +237,6 @@ const NavBar = () => {
                 </nav>
 
                 <div className="flex items-center gap-2">
-                    <button
-                        onClick={() => setIsFeedbackOpen(true)}
-                        className="p-2 text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-lg transition-colors"
-                        title="Send feedback"
-                        aria-label="Send feedback"
-                    >
-                        <MessageSquare className="w-5 h-5" />
-                    </button>
 
                     <button
                         onClick={toggleTheme}
@@ -283,7 +275,7 @@ const NavBar = () => {
 
             </div>
 
-            <FeedbackModal open={isFeedbackOpen} onClose={() => setIsFeedbackOpen(false)} contextPage={window.location.pathname} />
+
         </header>
     );
 };
