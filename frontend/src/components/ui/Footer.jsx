@@ -1,5 +1,5 @@
 import React from 'react';
-import { Github, Linkedin, Heart } from 'lucide-react';
+import { Github, Linkedin, Heart, MessageSquare } from 'lucide-react';
 
 const Footer = ({ onOpenFeedback }) => {
     return (
@@ -15,17 +15,20 @@ const Footer = ({ onOpenFeedback }) => {
                     </div>
                     <p className="text-[10px] text-text-muted font-medium flex items-center gap-1.5 mt-1">
                         Designed with <Heart className="w-2.5 h-2.5 text-danger fill-danger" /> by <span className="text-text-primary font-bold">Parth Patidar</span>
-                        {onOpenFeedback && (
-                            <>
-                                <span className="opacity-20 px-1">•</span>
-                                <button onClick={onOpenFeedback} className="hover:text-primary transition-colors">Send Feedback</button>
-                            </>
-                        )}
                     </p>
                 </div>
 
-                {/* Social Links */}
-                <div className="flex items-center gap-4">
+                {/* Social Links + Feedback */}
+                <div className="flex items-center gap-3">
+                    {onOpenFeedback && (
+                        <button
+                            onClick={onOpenFeedback}
+                            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary/10 border border-primary/30 text-primary text-xs font-bold hover:bg-primary/20 hover:border-primary/50 transition-all"
+                        >
+                            <MessageSquare className="w-4 h-4" />
+                            Send Feedback
+                        </button>
+                    )}
                     <a 
                         href="https://github.com/parthpatidar03" 
                         target="_blank" 
