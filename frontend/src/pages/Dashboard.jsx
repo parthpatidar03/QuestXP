@@ -58,6 +58,8 @@ function RankCard({ rank, percentile, trend }) {
 }
 
 function LearningTimeCard({ totalHours, weeklyHours, avgPerDay }) {
+    const hasHours = totalHours > 0;
+
     return (
         <div className="glass-card p-5 relative overflow-hidden group hover:scale-[1.02] transition-all">
             <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
@@ -70,17 +72,19 @@ function LearningTimeCard({ totalHours, weeklyHours, avgPerDay }) {
                 <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Learning Time</span>
             </div>
             <div className="flex items-baseline gap-2 mb-1">
-                <span className="text-3xl font-black text-text-primary tracking-tight">{totalHours}h</span>
-                <span className="text-xs font-bold text-text-muted">Total</span>
+                <span className="text-3xl font-black text-text-primary tracking-tight">
+                    {hasHours ? `${totalHours}h` : '—'}
+                </span>
+                <span className="text-xs font-bold text-text-muted">{hasHours ? 'Total' : 'No activity yet'}</span>
             </div>
             <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/40">
                 <div className="flex flex-col">
                     <span className="text-[10px] font-bold text-text-muted uppercase tracking-tighter">This Week</span>
-                    <span className="text-sm font-black text-text-primary">{weeklyHours}h</span>
+                    <span className="text-sm font-black text-text-primary">{weeklyHours > 0 ? `${weeklyHours}h` : '—'}</span>
                 </div>
                 <div className="flex flex-col text-right">
                     <span className="text-[10px] font-bold text-text-muted uppercase tracking-tighter">Daily Avg</span>
-                    <span className="text-sm font-black text-text-primary">{avgPerDay}h</span>
+                    <span className="text-sm font-black text-text-primary">{avgPerDay > 0 ? `${avgPerDay}h` : '—'}</span>
                 </div>
             </div>
         </div>
@@ -88,11 +92,11 @@ function LearningTimeCard({ totalHours, weeklyHours, avgPerDay }) {
 }
 
 function DeadlineCard({ deadline }) {
-    if (!deadline) {
+    if (!deadline || !deadline.courseTitle) {
         return (
             <div className="glass-card p-5 flex flex-col justify-center items-center text-center opacity-80 hover:opacity-100 transition-opacity">
                 <Calendar className="w-8 h-8 text-text-muted mb-2 opacity-30" />
-                <p className="text-xs font-bold text-text-muted uppercase tracking-widest">No Active Deadlines</p>
+                <p className="text-xs font-bold text-text-muted uppercase tracking-widest">No Active Targets</p>
                 <p className="text-[10px] text-text-muted mt-1">Set a study plan to see targets</p>
             </div>
         );
@@ -373,7 +377,7 @@ const Dashboard = () => {
                                 </h1>
                                 <div className="flex items-center gap-2 mb-3">
                                     <span className="xp-chip"><Zap className="w-3 h-3" /> {Math.floor(activePct * (activeCourse.totalLectures * XP_PER_LECTURE) / 100)} / {activeCourse.totalLectures * XP_PER_LECTURE} XP</span>
-                                    <span className="text-xs text-text-muted">{activePct}% complete</span>
+                                    <span className="text-xs text-text-muted">{activePct > 0 ? `${activePct}% complete` : 'Ready to begin'}</span>
                                 </div>
                                 <div className="progress-bar mb-4 max-w-xs">
                                     <div className="progress-bar__fill" style={{ width: `${activePct}%` }} />
