@@ -4,9 +4,10 @@ import { Flame, Zap, Trophy, Shield, BookOpen, Plus, ChevronRight, Star, Trash2 
 import useAuthStore from '../store/useAuthStore';
 import useGamificationStore from '../store/useGamificationStore';
 import api from '../services/api';
-import { getGamificationProfile } from '../services/gamificationApi';
+import { getGamificationProfile, getXPHistory } from '../services/gamificationApi';
 import NavBar from '../components/NavBar';
 import XPLeaderboardSidebar from '../components/Dashboard/XPLeaderboardSidebar';
+import StreakCalendar from '../components/StreakCalendar';
 import CourseCreationForm from '../components/Course/CourseCreationForm';
 import { BGPattern } from '../components/ui/bg-pattern';
 import FeedbackModal from '../components/FeedbackModal';
@@ -140,6 +141,11 @@ const Dashboard = () => {
             setProfile(data);
             return data;
         }
+    });
+
+    const { data: historyData = [] } = useQuery({
+        queryKey: ['xpHistory'],
+        queryFn: getXPHistory
     });
 
     const { data: coursesData, isLoading: coursesLoading } = useQuery({
@@ -319,6 +325,15 @@ const Dashboard = () => {
 
                 <aside className="hidden xl:flex flex-col w-72 shrink-0 space-y-4">
                     <XPLeaderboardSidebar players={user ? [{ name: user.name, totalXP: totalXP || user.totalXP || 0, level: level || user.level || 1 }] : []} />
+                    
+                    <div className="glass-card p-5">
+                        <div className="flex items-center gap-2 mb-4">
+                            <Flame className="w-4 h-4 text-warning" />
+                            <h2 className="text-sm font-semibold tracking-wide text-text-primary">Study Streak</h2>
+                        </div>
+                        <StreakCalendar history={historyData} />
+                    </div>
+
                     <Link to="/profile" className="glass-card block transition-all p-4">
                         <div className="flex items-center gap-3 mb-3">
                             <div className="w-10 h-10 rounded-full border border-border flex items-center justify-center font-semibold text-sm bg-primary text-white">
