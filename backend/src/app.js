@@ -28,9 +28,16 @@ app.set('trust proxy', 1);
 app.use(limiter);
 app.use(express.json());
 app.use(cookieParser());
+app.use((req, res, next) => {
+    // Critical for Google Auth Popups to work across origins
+    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+    res.setHeader('Cross-Origin-Embedder-Policy', 'unsafe-none');
+    next();
+});
+
 const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5173')
     .split(',')
-    .map(o => o.trim().replace(/\/$/, '')); // Remove trailing slash if present
+    .map(o => o.trim().replace(/\/$/, ''));
 console.log('[Debug] CORS Allowed Origins:', allowedOrigins);
 
 const isLocalDevOrigin = (origin) => {
@@ -44,11 +51,16 @@ const isLocalDevOrigin = (origin) => {
 
 app.use(cors({
     origin: (origin, cb) => {
-        // Allow non-browser (e.g. Postman) or listed origins
-        if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+        if (!origin) return cb(null, true);
+        if (allowedOrigins.includes(origin)) return cb(null, true);
 
-        // In local development, allow any localhost/127.0.0.1 port so Vite can move between ports.
+        // Fail-safe for local development
         if (process.env.NODE_ENV !== 'production' && isLocalDevOrigin(origin)) {
+            return cb(null, true);
+        }
+
+        // Specifically allow vercel preview and production urls if needed
+        if (origin.endsWith('.vercel.app')) {
             return cb(null, true);
         }
 

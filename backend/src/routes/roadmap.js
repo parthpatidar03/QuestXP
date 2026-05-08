@@ -10,7 +10,7 @@ const { addDays } = require('date-fns');
 // @desc    Generate a new roadmap
 router.post('/generate', auth, async (req, res) => {
     try {
-        const { playlistIds, sectionIds, dailyHours, startDate, courseId } = req.body;
+        const { playlistIds, sectionIds, weekdayHours = 2, weekendHours = 4, startDate, courseId = null } = req.body;
 
         // 1. Fetch relevant courses
         const playlists = await Course.find({ _id: { $in: playlistIds } });
@@ -33,8 +33,6 @@ router.post('/generate', auth, async (req, res) => {
                 }
             });
         });
-
-        const { playlistIds, sectionIds, weekdayHours = 2, weekendHours = 4, startDate, courseId = null } = req.body;
 
         if (allVideos.length === 0) {
             return res.status(400).json({ msg: 'No videos found for selected content' });
@@ -77,8 +75,10 @@ router.get('/current', auth, async (req, res) => {
         if (courseId) filter.courseId = courseId;
         else filter.courseId = null; // Get global one if no courseId
 
-        const roadmap = await Roadmap.findOne(filter);
-        if (!roadmap) return res.status(404).json({ msg: 'No active roadmap' });
+        const roadmap = await Roadmap.findOne(filter).sort({ createdAt: -1 });
+        if (!roadmap) {
+            return res.status(404).json({ msg: 'No active roadmap' });
+        }
         res.json(roadmap);
     } catch (err) {
         console.error(err);
