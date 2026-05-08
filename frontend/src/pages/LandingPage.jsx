@@ -238,7 +238,7 @@ const LandingPage = () => {
                         className="text-center"
                     >
                         <span className="text-3xl sm:text-5xl md:text-6xl font-black italic tracking-normal text-transparent bg-clip-text bg-gradient-to-r from-primary via-gold to-primary uppercase pr-4">
-                            # Multiple Creators • One Platform
+                            # Multiple Channels • Multiple Playlists • One Platform
                         </span>
                     </motion.div>
                 </section>
