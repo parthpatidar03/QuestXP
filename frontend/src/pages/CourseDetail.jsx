@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import api from '../services/api';
 import NavBar from '../components/NavBar';
 import StudyPlan from '../components/Dashboard/StudyPlan';
-import SetupPlanModal from '../components/Dashboard/SetupPlanModal';
+import GenerateRoadmapModal from '../components/Roadmap/GenerateRoadmapModal';
 import {
     ArrowLeft, PlayCircle, Loader2, AlertOctagon, Clock,
     BookOpen, Layers, Zap, Lock, CheckCircle2, ChevronRight,
@@ -535,12 +535,11 @@ const CourseDetail = () => {
             </div>
 
             {showSetupModal && (
-                <SetupPlanModal
-                    courseId={courseId}
+                <GenerateRoadmapModal
                     isOpen={showSetupModal}
                     onClose={() => setShowSetupModal(false)}
-                    onPlanGenerated={() => {
-                        window.dispatchEvent(new CustomEvent('refresh-plan', { detail: { courseId } }));
+                    onGenerated={() => {
+                        window.location.reload();
                     }}
                 />
             )}
