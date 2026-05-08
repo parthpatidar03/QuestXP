@@ -8,40 +8,27 @@ function WaveText({
     className = "",
 }) {
     return (
-        <motion.span
+        <motion.div
             className={cn(
-                "inline-block cursor-pointer text-3xl transition-all",
+                "inline-flex flex-wrap justify-center items-center gap-x-0 cursor-pointer transition-all",
                 className
             )}
             whileHover="hover"
-            animate="animate"
             initial="initial"
         >
             {text.split("").map((char, index) => (
                 <motion.span
                     key={index}
-                    className="inline-block"
+                    className="inline-block whitespace-pre"
                     variants={{
-                        initial: {
-                            y: 0,
-                            scale: 1,
-                        },
-                        animate: {
-                            y: [0, -5, 0],
-                            transition: {
-                                duration: 2,
-                                repeat: Infinity,
-                                ease: "easeInOut",
-                                delay: index * 0.1,
-                            }
-                        },
+                        initial: { y: 0 },
                         hover: {
-                            y: -8,
-                            scale: 1.2,
+                            y: -10,
                             transition: {
                                 type: "spring",
-                                stiffness: 300,
-                                damping: 15,
+                                stiffness: 400,
+                                damping: 10,
+                                delay: index * 0.02,
                             },
                         },
                     }}
@@ -49,7 +36,7 @@ function WaveText({
                     {char === " " ? "\u00A0" : char}
                 </motion.span>
             ))}
-        </motion.span>
+        </motion.div>
     );
 }
 
