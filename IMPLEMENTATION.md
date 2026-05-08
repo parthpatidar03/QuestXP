@@ -72,6 +72,15 @@ To maximize privacy and minimize user friction, the platform now treats the "Ide
 
 ---
 
+## 6. Project Communication Standards
+
+### Git Commit Messages
+- **Format**: Human-readable, detailed, and plain English.
+- **Restriction**: No conventional commit prefixes (feat, fix, style, etc.).
+- **Purpose**: To maintain a beginner-friendly and professional history that reads like a development log rather than a machine-generated list.
+
+---
+
 ## Interview Questions Solved
 1. **How do you handle a unique field for existing users without a migration?**
    *Answer*: Use a Sparse Unique Index in MongoDB and Lazy-assignment logic in the API.
