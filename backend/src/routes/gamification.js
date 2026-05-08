@@ -191,4 +191,30 @@ router.get('/leaderboard', async (req, res) => {
     }
 });
 
+const StudySession = require('../models/StudySession');
+
+// POST /api/gamification/heartbeat
+// Pings every 60s to track presence time
+router.post('/heartbeat', async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const today = new Date().toISOString().split('T')[0];
+        
+        // 1. Update User Total
+        await User.findByIdAndUpdate(userId, { $inc: { totalStudyTime: 60 } });
+
+        // 2. Update Daily Session
+        await StudySession.findOneAndUpdate(
+            { user: userId, date: today },
+            { $inc: { seconds: 60 }, $set: { lastActive: new Date() } },
+            { upsert: true, new: true }
+        );
+
+        res.json({ success: true });
+    } catch (err) {
+        console.error('[Heartbeat] error:', err);
+        res.status(500).json({ error: 'Failed to record session' });
+    }
+});
+
 module.exports = router;

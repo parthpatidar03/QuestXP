@@ -21,8 +21,11 @@ const ProtectedRoute = ({ children }) => {
     return isAuthenticated ? children : <Navigate to="/login" replace />;
 };
 
+import useHeartbeat from './hooks/useHeartbeat';
+
 const App = () => {
     const { checkAuth, isLoading } = useAuthStore();
+    useHeartbeat();
 
     useEffect(() => {
         checkAuth();

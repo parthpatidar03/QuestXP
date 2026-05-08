@@ -25,25 +25,22 @@ router.get('/stats', async (req, res) => {
         
         // Trend (mocked for now as we don't have historical rank snapshots yet)
         const trend = currentRank < 10 ? 'up' : 'stable'; 
-
-        // 2. Learning Time (Aggregate studySessions from all Progress)
         const progressDocs = await Progress.find({ user: userId });
-        let totalMins = 0;
-        let weeklyMins = 0;
-        const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+        // 2. Learning Time (Aggregate StudySessions)
+        const StudySession = require('../models/StudySession');
+        const sevenDaysAgoStr = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
         
-        progressDocs.forEach(p => {
-            p.studySessions.forEach(s => {
-                totalMins += (s.minutes || 0);
-                if (s.date >= sevenDaysAgo) {
-                    weeklyMins += (s.minutes || 0);
-                }
-            });
+        const weeklySessions = await StudySession.find({
+            user: userId,
+            date: { $gte: sevenDaysAgoStr }
         });
 
-        // Use the new totalStudyTime field if available (more accurate watch time)
-        const totalHours = Math.round((req.user.totalStudyTime || (totalMins * 60)) / 3600);
-        const weeklyHours = Math.round((weeklyMins * 60) / 3600);
+        let weeklySeconds = 0;
+        weeklySessions.forEach(s => { weeklySeconds += s.seconds; });
+
+        const totalHours = ((req.user.totalStudyTime || 0) / 3600).toFixed(1);
+        const weeklyHours = (weeklySeconds / 3600).toFixed(1);
         const avgPerDay = (weeklyHours / 7).toFixed(1);
 
         // 3. Course Deadlines
