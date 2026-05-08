@@ -8,7 +8,7 @@ import GenerateRoadmapModal from '../components/Roadmap/GenerateRoadmapModal';
 import {
     ArrowLeft, PlayCircle, Loader2, AlertOctagon, Clock,
     BookOpen, Layers, Zap, Lock, CheckCircle2, ChevronRight,
-    MessageSquareText, StickyNote, BarChart3, ChevronDown, Trophy, Flag, HelpCircle
+    MessageSquareText, StickyNote, BarChart3, ChevronDown, Trophy, Flag, HelpCircle, Edit2
 } from 'lucide-react';
 
 
@@ -141,12 +141,49 @@ const CourseDetail = () => {
     const [newPlaylistTitle, setNewPlaylistTitle] = useState('');
     const [newPlaylistUrl, setNewPlaylistUrl] = useState('');
     const [addingPlaylist, setAddingPlaylist] = useState(false);
+    const [editingSectionId, setEditingSectionId] = useState(null);
+    const [editSectionTitle, setEditSectionTitle] = useState('');
+    const [isEditingCourse, setIsEditingCourse] = useState(false);
+    const [editCourseTitle, setEditCourseTitle] = useState('');
 
     const toggleSection = (idx) => {
         setCollapsedSections(prev => ({
             ...prev,
             [idx]: !prev[idx]
         }));
+    };
+
+    const handleRenameCourse = async () => {
+        if (!editCourseTitle.trim() || editCourseTitle === course.title) {
+            setIsEditingCourse(false);
+            return;
+        }
+        try {
+            await api.patch(`/courses/${courseId}`, { title: editCourseTitle });
+            setCourse({ ...course, title: editCourseTitle });
+            setIsEditingCourse(false);
+        } catch (err) {
+            console.error(err);
+            alert("Failed to rename course");
+        }
+    };
+
+    const handleRenameSection = async (sectionId) => {
+        if (!editSectionTitle.trim()) {
+            setEditingSectionId(null);
+            return;
+        }
+        try {
+            await api.patch(`/courses/${courseId}/sections/${sectionId}`, { title: editSectionTitle });
+            setCourse({
+                ...course,
+                sections: course.sections.map(s => s._id === sectionId ? { ...s, title: editSectionTitle } : s)
+            });
+            setEditingSectionId(null);
+        } catch (err) {
+            console.error(err);
+            alert("Failed to rename playlist");
+        }
     };
 
     const handleAddPlaylist = async (e) => {

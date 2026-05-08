@@ -30,6 +30,14 @@ router.patch('/:courseId/sections', [
         .matches(youtubePlaylistRegex).withMessage('Valid YouTube playlist URL is required'),
 ], addCourseSection);
 
+router.patch('/:courseId', [
+    body('title').notEmpty().withMessage('Course title is required'),
+], updateCourse);
+
+router.patch('/:courseId/sections/:sectionId', [
+    body('title').notEmpty().withMessage('Section title is required'),
+], updateSection);
+
 // T033: GET /api/courses/:courseId/progress
 router.get('/:courseId/progress', auth, async (req, res, next) => {
     try {

@@ -187,11 +187,45 @@ const deleteCourse = async (req, res, next) => {
     }
 };
 
+const updateCourse = async (req, res, next) => {
+    try {
+        const { title } = req.body;
+        const course = await Course.findOneAndUpdate(
+            { _id: req.params.courseId, owner: req.user._id },
+            { $set: { title } },
+            { new: true }
+        );
+        if (!course) return res.status(404).json({ error: 'Course not found' });
+        res.json({ course });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const updateSection = async (req, res, next) => {
+    try {
+        const { title } = req.body;
+        const course = await Course.findOne({ _id: req.params.courseId, owner: req.user._id });
+        if (!course) return res.status(404).json({ error: 'Course not found' });
+
+        const section = course.sections.id(req.params.sectionId);
+        if (!section) return res.status(404).json({ error: 'Section not found' });
+
+        section.title = title;
+        await course.save();
+        res.json({ course });
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     createCourse,
     getCourses,
     getCourseById,
     getCourseStatus,
     addCourseSection,
-    deleteCourse
+    deleteCourse,
+    updateCourse,
+    updateSection
 };
