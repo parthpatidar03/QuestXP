@@ -1,7 +1,7 @@
 const LEVELS = [
-  { level: 1,  title: 'Curious Beginner',   threshold: 0,      unlockedFeatures: [] },
+  { level: 1,  title: 'Curious Beginner',   threshold: 0,      unlockedFeatures: ['STUDY_PLAN'] },
   { level: 2,  title: 'Active Learner',      threshold: 200,    unlockedFeatures: ['DOUBT_CHATBOT_LIMITED','MULTI_PLAYLIST','AI_NOTES_LIMITED'] },
-  { level: 3,  title: 'Consistent Student',  threshold: 500,    unlockedFeatures: ['STUDY_PLAN','AI_NOTES_UNLIMITED','STREAK_FREEZE','QUIZ_LIMITED'] },
+  { level: 3,  title: 'Consistent Student',  threshold: 500,    unlockedFeatures: ['AI_NOTES_UNLIMITED','STREAK_FREEZE','QUIZ_LIMITED'] },
   { level: 4,  title: 'Knowledge Seeker',    threshold: 1000,   unlockedFeatures: ['FIVE_PLAYLISTS','DOUBT_CHATBOT_UNLIMITED','PDF_EXPORT','CUSTOM_QUIZ'] },
   { level: 5,  title: 'Dedicated Scholar',   threshold: 2000,   unlockedFeatures: ['COURSE_SHARE','LEADERBOARD','ANALYTICS','STREAK_FREEZE_3'] },
   { level: 6,  title: 'Deep Diver',          threshold: 3500,   unlockedFeatures: [] },
@@ -15,7 +15,7 @@ const FEATURE_LEVELS = {
   DOUBT_CHATBOT_LIMITED: 2,
   MULTI_PLAYLIST: 2,
   AI_NOTES_LIMITED: 2,
-  STUDY_PLAN: 3,
+  STUDY_PLAN: 1,
   AI_NOTES_UNLIMITED: 3,
   STREAK_FREEZE: 3,
   QUIZ_LIMITED: 3,

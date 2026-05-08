@@ -13,9 +13,11 @@ const firebaseConfig = {
 };
 
 let messaging = null;
+let serviceWorkerRegistrationPromise = null;
+const MESSAGING_SW_PATH = '/firebase-messaging-sw.js';
 
 try {
-    if (firebaseConfig.apiKey) {
+    if (typeof window !== 'undefined' && firebaseConfig.apiKey) {
         const app = initializeApp(firebaseConfig);
         messaging = getMessaging(app);
     } else {
@@ -25,12 +27,35 @@ try {
     console.error('[Firebase] Initialization error:', error);
 }
 
+const registerMessagingServiceWorker = async () => {
+    if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return null;
+    if (!serviceWorkerRegistrationPromise) {
+        serviceWorkerRegistrationPromise = navigator.serviceWorker.register(MESSAGING_SW_PATH)
+            .then(async (registration) => {
+                await navigator.serviceWorker.ready;
+                return registration;
+            })
+            .catch((error) => {
+                console.error('[Firebase] Service worker registration failed:', error);
+                return null;
+            });
+    }
+    return serviceWorkerRegistrationPromise;
+};
+
 export const requestNotificationPermission = async () => {
-    if (!messaging) return null;
+    if (!messaging || typeof window === 'undefined' || !('Notification' in window)) return null;
     try {
         const permission = await Notification.requestPermission();
         if (permission === 'granted') {
-            const token = await getToken(messaging, { 
+            const serviceWorkerRegistration = await registerMessagingServiceWorker();
+            if (!serviceWorkerRegistration) {
+                console.warn('[Firebase] ❌ Service worker unavailable. Push notifications disabled.');
+                return null;
+            }
+
+            const token = await getToken(messaging, {
+                serviceWorkerRegistration,
                 vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY 
             });
             
@@ -57,12 +82,9 @@ export const requestNotificationPermission = async () => {
     }
 };
 
-export const onMessageListener = () =>
-    new Promise((resolve) => {
-        if (!messaging) return;
-        onMessage(messaging, (payload) => {
-            resolve(payload);
-        });
-    });
+export const onMessageListener = (handler) => {
+    if (!messaging || typeof handler !== 'function') return () => {};
+    return onMessage(messaging, handler);
+};
 
 export default messaging;

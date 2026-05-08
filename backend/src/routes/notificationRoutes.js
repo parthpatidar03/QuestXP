@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require('../models/User');
 const ActiveWindow = require('../models/ActiveWindow');
 const { getCircularMeanHour } = require('../algorithms/notificationEngine');
+const { notificationDeliveryQueue } = require('../queues/notificationQueue');
 const auth = require('../middleware/auth'); // Assuming there's an auth middleware that sets req.user
 
 // Save FCM Token and Timezone
@@ -11,7 +12,11 @@ router.post('/register', auth, async (req, res) => {
         const { fcmToken, timezone } = req.body;
         
         const updates = {};
-        if (fcmToken) updates.fcmToken = fcmToken;
+        if (fcmToken) {
+            updates.fcmToken = fcmToken;
+            updates.notificationState = 'active';
+            updates.lastActive = new Date();
+        }
         if (timezone) updates.timezone = timezone;
 
         if (Object.keys(updates).length > 0) {
@@ -57,6 +62,29 @@ router.post('/session-start', auth, async (req, res) => {
     } catch (error) {
         console.error('Error logging session:', error);
         res.status(500).json({ success: false, error: 'Failed to log session' });
+    }
+});
+
+// Send an immediate test push to the logged-in user
+router.post('/test', auth, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).select('name fcmToken');
+        if (!user || !user.fcmToken) {
+            return res.status(400).json({ success: false, error: 'No FCM token registered for user' });
+        }
+
+        await notificationDeliveryQueue.add('sendPush', {
+            userId: user._id,
+            fcmToken: user.fcmToken,
+            tone: 'playful',
+            text: `Hey ${user.name?.split(' ')[0] || 'Explorer'}! Push notifications are working. 🚀`,
+            forceDisplay: true
+        });
+
+        res.status(200).json({ success: true, message: 'Test notification queued' });
+    } catch (error) {
+        console.error('Error queuing test notification:', error);
+        res.status(500).json({ success: false, error: 'Failed to queue test notification' });
     }
 });
 

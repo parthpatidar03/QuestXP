@@ -11,6 +11,19 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
+messaging.onBackgroundMessage((payload) => {
+    const title = payload?.notification?.title || 'QuestXP';
+    const body = payload?.notification?.body || 'You have a new update.';
+    const url = payload?.data?.url || self.location.origin;
+
+    self.registration.showNotification(title, {
+        body,
+        icon: '/favicon.png',
+        badge: '/favicon.png',
+        data: { url }
+    });
+});
+
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
     

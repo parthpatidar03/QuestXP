@@ -4,6 +4,7 @@ const User = require('../models/User');
 const NotificationLog = require('../models/NotificationLog');
 const { determineTone } = require('../algorithms/notificationEngine');
 const { notificationDeliveryQueue } = require('../queues/notificationQueue');
+const appUrl = (process.env.FRONTEND_URL || 'http://localhost:5173').split(',')[0].trim().replace(/\/+$/, '');
 
 // Mock LLM or template generator
 async function generatePushText(user, tone) {
@@ -48,7 +49,7 @@ const admin = require('../services/firebase');
 
 // 2. Delivery Worker: Actually sends via FCM and logs to DB
 const deliveryWorker = new Worker('notificationDeliveryQueue', async (job) => {
-    const { userId, fcmToken, tone, text } = job.data;
+    const { userId, fcmToken, tone, text, forceDisplay } = job.data;
 
     try {
         if (fcmToken && admin.apps?.length > 0) {
@@ -58,9 +59,23 @@ const deliveryWorker = new Worker('notificationDeliveryQueue', async (job) => {
                     title: 'QuestXP',
                     body: text
                 },
+                webpush: {
+                    headers: {
+                        Urgency: 'high',
+                        TTL: '86400'
+                    },
+                    fcmOptions: {
+                        link: appUrl
+                    },
+                    notification: {
+                        icon: `${appUrl}/favicon.png`,
+                        badge: `${appUrl}/favicon.png`
+                    }
+                },
                 data: {
-                    click_action: 'FLUTTER_NOTIFICATION_CLICK',
-                    tone
+                    tone,
+                    url: appUrl,
+                    forceDisplay: forceDisplay ? 'true' : 'false'
                 }
             });
             console.log(`[PUSH] Sent to ${userId} (${tone}): ${text}`);

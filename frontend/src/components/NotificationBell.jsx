@@ -133,23 +133,48 @@ export default function NotificationBell({ profile, user }) {
 
     // Listen for foreground messages
     useEffect(() => {
-        const unsubscribe = onMessageListener().then((payload) => {
+        const showBrowserNotification = (payload) => {
+            if (!('Notification' in window) || Notification.permission !== 'granted') return;
+            const forceDisplay = payload?.data?.forceDisplay === 'true';
+            if (!forceDisplay && document.visibilityState === 'visible') return;
+
+            const title = payload?.notification?.title || 'QuestXP';
+            const body = payload?.notification?.body || 'You have a new update.';
+            const url = payload?.data?.url || '/';
+            const notif = new Notification(title, {
+                body,
+                icon: '/favicon.png',
+                data: { url }
+            });
+
+            notif.onclick = () => {
+                window.focus();
+                if (url) window.location.href = url;
+                notif.close();
+            };
+        };
+
+        const unsubscribe = onMessageListener((payload) => {
             const newNotif = {
                 id: Date.now().toString(),
                 icon: payload.data?.tone === 'dramatic' ? 'flame' : 'zap',
-                title: payload.notification.title,
-                body: payload.notification.body,
+                title: payload.notification?.title || 'QuestXP',
+                body: payload.notification?.body || 'You have a new update.',
                 time: new Date().toISOString(),
                 type: 'push'
             };
+
             setNotifications(prev => {
                 const updated = [newNotif, ...prev].slice(0, 20);
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
                 return updated;
             });
-        }).catch(err => console.log('foreground check failed: ', err));
-        
-        return () => {}; // clean up if needed
+            showBrowserNotification(payload);
+        });
+
+        return () => {
+            unsubscribe();
+        };
     }, []);
 
     // Check push permission status and log session start on mount
@@ -180,6 +205,9 @@ export default function NotificationBell({ profile, user }) {
         const token = await requestNotificationPermission();
         if (token) {
             setPushEnabled(true);
+            import('../services/api').then(({ default: api }) => {
+                api.post('/notifications/test').catch(e => console.error(e));
+            });
         }
         setEnabling(false);
     };
