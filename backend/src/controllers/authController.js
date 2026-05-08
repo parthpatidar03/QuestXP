@@ -84,12 +84,12 @@ const register = async (req, res, next) => {
         const passwordHash = await bcrypt.hash(password, 12);
 
         const user = new User({
-            name,
             email: email.toLowerCase(),
             passwordHash,
             username: generateRandomUsername(),
             usernameSet: false
         });
+        user.name = user.username; // Ensure name equals username for V1 identity
 
         await user.save();
 
@@ -260,12 +260,12 @@ const googleLogin = async (req, res, next) => {
         let user = await User.findOne({ email: email.toLowerCase() });
         if (!user) {
             user = new User({
-                name: payload.name,
                 email: payload.email.toLowerCase(),
                 googleId: payload.sub,
                 username: generateRandomUsername(),
                 usernameSet: false
             });
+            user.name = user.username; // Sync name with generated identity
             await user.save();
         } else if (!user.googleId) {
             user.googleId = payload.sub;
@@ -306,6 +306,7 @@ const updateUsername = async (req, res, next) => {
 
         const user = await User.findById(req.user._id);
         user.username = cleanUsername;
+        user.name = cleanUsername; // Sync name with chosen identity
         user.usernameSet = true;
         await user.save();
 

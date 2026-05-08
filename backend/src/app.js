@@ -55,8 +55,7 @@ app.use(cors({
     credentials: true,
 }));
 
-app.get('/api/health', (req, res) => res.json({ status: 'QuestXP Live' }));
-app.get('/api/test-direct', (req, res) => res.json({ message: 'Direct' }));
+app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/dashboard', dashboardRoutes);

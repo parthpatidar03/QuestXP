@@ -60,6 +60,18 @@ Uses `Promise.all` to fetch stats in parallel (Rank, Study Time, Deadlines, Mast
 
 ---
 
+## 5. V1 Identity Pivot (Name Sync)
+
+### The Decision
+To maximize privacy and minimize user friction, the platform now treats the "Identity Name" (Username) as the user's primary name across the entire system.
+
+### Technical Implementation
+- **Automatic Sync**: In `authController.js`, both the registration and `updateUsername` flows now set `user.name = user.username`.
+- **Dynamic Avatars**: The frontend `NavBar` and `Profile` headers calculate initials dynamically using `.split(/[ _]/).map(n => n[0]).join('')`. This supports both space-separated and underscore-separated identity names.
+- **Privacy Enforcement**: The "Real Name" field has been removed from the public-facing UI to ensure that only the chosen identity is visible to others.
+
+---
+
 ## Interview Questions Solved
 1. **How do you handle a unique field for existing users without a migration?**
    *Answer*: Use a Sparse Unique Index in MongoDB and Lazy-assignment logic in the API.

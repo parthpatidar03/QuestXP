@@ -272,7 +272,7 @@ const NavBar = () => {
                     <div className="relative">
                         <div className="w-9 h-9 rounded-full border border-border p-0.5 bg-surface">
                             <div className="w-full h-full rounded-full bg-primary flex items-center justify-center text-white font-semibold text-xs">
-                                {user?.name?.charAt(0)?.toUpperCase() ?? 'Q'}
+                                {user?.name?.split(/[ _]/).map(n => n[0]).join('').toUpperCase() ?? 'Q'}
                             </div>
                         </div>
                         <div className="absolute -bottom-1 -right-1 bg-gold text-text-primary text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center border border-surface">
@@ -280,7 +280,7 @@ const NavBar = () => {
                         </div>
                     </div>
                     <span className="hidden lg:block text-sm font-medium text-text-primary group-hover:text-primary transition-colors truncate max-w-[100px]">
-                        {user?.name?.split(' ')[0] ?? 'Player'}
+                        {user?.name ?? 'Player'}
                     </span>
                 </Link>
 

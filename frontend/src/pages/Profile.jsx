@@ -93,7 +93,7 @@ const Profile = () => {
                                 boxShadow: '0 0 0 1px var(--color-border)'
                             }}
                         >
-                            {user.name?.charAt(0)?.toUpperCase()}
+                            {user.name?.split(/[ _]/).map(n => n[0]).join('').toUpperCase()}
                         </div>
                         {/* Level badge */}
                         <div
@@ -122,7 +122,6 @@ const Profile = () => {
                                 {levelTitle || 'Explorer'} · <span className="text-gold">Level {level}</span>
                             </p>
                             <div className="flex flex-col gap-0.5">
-                                <p className="text-sm text-text-secondary font-medium">Real Name: <span className="text-text-primary">{user.name}</span></p>
                                 <p className="text-sm text-text-muted">{user.email}</p>
                             </div>
                         </div>
