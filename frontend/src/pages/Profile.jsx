@@ -7,7 +7,7 @@ import NavBar from '../components/NavBar';
 import { BGPattern } from '../components/ui/bg-pattern';
 
 /* ── Streak Heatmap ─────────────────────────────────────────────────── */
-function StreakHeatmap({ history = [] }) {
+function StreakHeatmap({ history = [], joinDate }) {
     const [currentDate, setCurrentDate] = useState(new Date());
 
     const xpByDate = {};
@@ -35,15 +35,25 @@ function StreakHeatmap({ history = [] }) {
 
     for (let i = 1; i <= daysInMonth; i++) {
         const d = new Date(year, month, i);
-        // Correctly format local date to YYYY-MM-DD
+        d.setHours(0, 0, 0, 0); // normalize time
+
         const key = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
         const isToday = d.getTime() === today.getTime();
         const isPast = d.getTime() < today.getTime();
+        
+        // Check if date is before user joined
+        let isBeforeJoin = false;
+        if (joinDate) {
+            const normalizedJoinDate = new Date(joinDate);
+            normalizedJoinDate.setHours(0, 0, 0, 0);
+            isBeforeJoin = d.getTime() < normalizedJoinDate.getTime();
+        }
+
         const xp = xpByDate[key] || 0;
         
         let display = null;
         if (isPast && xp > 0) display = '🔥';
-        else if (isPast && xp === 0) display = '🥹';
+        else if (isPast && xp === 0 && !isBeforeJoin) display = '🥹';
         else if (isToday && xp > 0) display = '🔥';
         else if (isToday && xp === 0) display = '⏱️';
         
@@ -132,6 +142,9 @@ const Profile = () => {
     }, [setProfile]);
 
     if (!user) return null;
+
+    // Derive join date from MongoDB ObjectId
+    const joinDate = user._id ? new Date(parseInt(user._id.substring(0, 8), 16) * 1000) : new Date();
 
     const xpProgress = xpToNextLevel
         ? Math.round(((totalXP % 1000) / 1000) * 100)
@@ -251,7 +264,7 @@ const Profile = () => {
                             {[...Array(30)].map((_, i) => <div key={i} className="skeleton w-7 h-7 rounded-md" />)}
                         </div>
                     ) : (
-                        <StreakHeatmap history={history} />
+                        <StreakHeatmap history={history} joinDate={joinDate} />
                     )}
                 </section>
 
