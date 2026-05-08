@@ -289,7 +289,7 @@ const LandingPage = () => {
                             </div>
                             <h3 className="text-xl font-bold text-text-primary mb-3">AI Course Roadmaps</h3>
                             <p className="text-sm text-text-secondary leading-relaxed">
-                                Transform any YouTube playlist into a structured course. Our engine organizes lectures into logical sections for a cohesive path.
+                                Transform multiple YouTube playlists from different creators into a single, cohesive learning platform.
                             </p>
                         </article>
 
