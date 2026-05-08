@@ -1,5 +1,4 @@
 const Roadmap = require('../models/Roadmap');
-const Video = require('../models/Video'); // Assuming Video model exists
 const Course = require('../models/Course');
 
 /**

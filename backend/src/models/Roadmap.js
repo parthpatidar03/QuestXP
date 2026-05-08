@@ -18,7 +18,7 @@ const RoadmapSchema = new mongoose.Schema({
         dayIndex: Number,
         isRestDay: { type: Boolean, default: false },
         plannedVideos: [{
-            videoId: { type: mongoose.Schema.Types.ObjectId, ref: 'Video' },
+            videoId: { type: mongoose.Schema.Types.ObjectId },
             title: String,
             duration: Number,
             playlistId: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' },
