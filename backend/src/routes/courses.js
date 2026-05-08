@@ -1,6 +1,10 @@
 const express = require('express');
 const { body } = require('express-validator');
-const { createCourse, getCourses, getCourseById, getCourseStatus, addCourseSection, deleteCourse } = require('../controllers/courseController');
+const { 
+    createCourse, getCourses, getCourseById, getCourseStatus, 
+    addCourseSection, deleteCourse, updateCourse, updateSection 
+} = require('../controllers/courseController');
+const Course = require('../models/Course');
 const auth = require('../middleware/auth');
 
 const router = express.Router();
