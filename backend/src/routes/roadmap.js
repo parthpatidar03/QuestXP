@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
 const Roadmap = require('../models/Roadmap');
-const Playlist = require('../models/Playlist');
+const Course = require('../models/Course');
 const { generateRoadmapLogic } = require('../services/roadmapGenerator');
 
 // @route   POST /api/roadmap/generate
@@ -12,7 +12,7 @@ router.post('/generate', auth, async (req, res) => {
         const { playlistIds, dailyHours, startDate, excludedDays } = req.body;
 
         // 1. Fetch all videos for the selected playlists in order
-        const playlists = await Playlist.find({ _id: { $in: playlistIds } }).populate('sections.lectures');
+        const playlists = await Course.find({ _id: { $in: playlistIds } });
         
         let allVideos = [];
         playlists.forEach(pl => {

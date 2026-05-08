@@ -1,6 +1,6 @@
 const Roadmap = require('../models/Roadmap');
 const Video = require('../models/Video'); // Assuming Video model exists
-const Playlist = require('../models/Playlist');
+const Course = require('../models/Course');
 
 /**
  * Deterministic Roadmap Generation Algorithm

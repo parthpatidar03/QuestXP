@@ -11,7 +11,7 @@ const RoadmapSchema = new mongoose.Schema({
         targetDate: Date,
         dailyHours: { type: Number, default: 2 },
         excludedDays: [Number], // 0-6
-        playlistIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Playlist' }]
+        playlistIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }]
     },
     days: [{
         date: Date,
@@ -21,7 +21,7 @@ const RoadmapSchema = new mongoose.Schema({
             videoId: { type: mongoose.Schema.Types.ObjectId, ref: 'Video' },
             title: String,
             duration: Number,
-            playlistId: { type: mongoose.Schema.Types.ObjectId, ref: 'Playlist' },
+            playlistId: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' },
             playlistName: String
         }],
         totalMinutes: Number
