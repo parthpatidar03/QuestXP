@@ -45,11 +45,13 @@ dump.rdb
 specs/
 design-system/
 .agent/
+.agents/
 .claude/
 .github/workflows/
-.claude/
 QuestXP.pdf
 .specify/
+Docs/
+query
 
 # Local MongoDB data directory
 backend/data/
