@@ -58,15 +58,15 @@ app.use(cors({
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
 app.use('/api/auth', authRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/gamification', gamificationRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/progress', progressRoutes);
 app.use('/api/plan', planRoutes);
 app.use('/api/internal', require('./routes/internal'));
 app.use('/api/lectures', require('./routes/lectures'));
 app.use('/api/doubts', doubtRoutes);
-app.use('/api/gamification', gamificationRoutes);
 app.use('/api/feedback', feedbackRoutes);
-app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/notifications', require('./routes/notificationRoutes'));
 
 // T063 — 404 handler for unknown routes
