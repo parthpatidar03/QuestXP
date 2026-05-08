@@ -110,7 +110,7 @@ export default function StreakCalendar({ history = [] }) {
             {showInfo && (
                 <div 
                     ref={infoRef}
-                    className="absolute z-50 top-14 left-0 w-full sm:w-[320px] bg-surface border border-white/10 rounded-xl shadow-2xl p-4 text-sm"
+                    className="absolute z-50 bottom-[calc(100%+8px)] left-0 w-full sm:w-[340px] bg-surface border border-white/10 rounded-xl shadow-2xl p-4 text-sm"
                     style={{ background: 'var(--color-surface)', boxShadow: '0 10px 40px -10px rgba(0,0,0,0.5)' }}
                 >
                     <div className="flex items-center gap-2 mb-3 text-text-primary font-semibold">
