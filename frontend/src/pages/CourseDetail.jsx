@@ -137,12 +137,41 @@ const CourseDetail = () => {
     const [showSetupModal, setShowSetupModal] = useState(false);
     const [showOnboarding, setShowOnboarding] = useState(false);
     const [collapsedSections, setCollapsedSections] = useState({});
+    const [showAddPlaylist, setShowAddPlaylist] = useState(false);
+    const [newPlaylistTitle, setNewPlaylistTitle] = useState('');
+    const [newPlaylistUrl, setNewPlaylistUrl] = useState('');
+    const [addingPlaylist, setAddingPlaylist] = useState(false);
 
     const toggleSection = (idx) => {
         setCollapsedSections(prev => ({
             ...prev,
             [idx]: !prev[idx]
         }));
+    };
+
+    const handleAddPlaylist = async (e) => {
+        e.preventDefault();
+        if (!newPlaylistTitle || !newPlaylistUrl) return;
+        
+        setAddingPlaylist(true);
+        try {
+            await api.patch(`/courses/${courseId}/sections`, {
+                title: newPlaylistTitle,
+                playlistUrl: newPlaylistUrl
+            });
+            setNewPlaylistTitle('');
+            setNewPlaylistUrl('');
+            setShowAddPlaylist(false);
+            // Refresh course data
+            const res = await api.get(`/courses/${courseId}`);
+            setCourse(res.data.course);
+            alert("New playlist added! Videos are being processed in the background.");
+        } catch (err) {
+            console.error(err);
+            alert("Failed to add playlist. Please check the URL.");
+        } finally {
+            setAddingPlaylist(false);
+        }
     };
 
     useEffect(() => {

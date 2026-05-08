@@ -119,11 +119,9 @@ const addCourseSection = async (req, res, next) => {
         }
 
         const { title, playlistUrl } = req.body;
-        course.sections.push({ title, playlistUrl, lectures: [] });
-        await course.save();
-
-        // TODO: spec-003 — trigger courseProcessor to process new section
-        // await courseProcessor.enqueueLectures(course._id);
+        
+        // Trigger background processing for the new section
+        await courseService.addSection(course._id, { title, playlistUrl });
 
         // T052b: Wire section-added recalculation
         let newEndDateMessage = null;
@@ -137,8 +135,7 @@ const addCourseSection = async (req, res, next) => {
         }
 
         res.status(201).json({
-            message: 'Section added',
-            section: course.sections[course.sections.length - 1],
+            message: 'Playlist added and processing started',
             newEndDateMessage
         });
     } catch (error) {

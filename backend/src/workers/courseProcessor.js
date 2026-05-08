@@ -11,11 +11,11 @@ const connection = new IORedis(process.env.REDIS_URL || 'redis://localhost:6379'
 console.log('[CourseProcessor] Loaded YouTube Data API playlist importer');
 
 const courseProcessor = new Worker('course-processing', async job => {
-    const { courseId, sections } = job.data;
+    const { courseId, sections, isAppend = false } = job.data;
 
     try {
-        let totalLectures = 0;
-        let totalDuration = 0;
+        let totalLecturesIncrement = 0;
+        let totalDurationIncrement = 0;
         const processedSections = [];
 
         for (const section of sections) {
@@ -25,7 +25,6 @@ const courseProcessor = new Worker('course-processing', async job => {
                     ? section.playlistUrl.split('list=')[1].split('&')[0]
                     : section.playlistUrl;
 
-                // Official YouTube API Call
                 const apiKey = process.env.YOUTUBE_API_KEY;
                 if (!apiKey) throw new Error('YOUTUBE_API_KEY missing in .env');
 
@@ -40,7 +39,6 @@ const courseProcessor = new Worker('course-processing', async job => {
 
                 const videoIds = response.data.items.map(item => item.contentDetails.videoId).join(',');
                 
-                // Get Durations
                 const videoResponse = await axios.get('https://www.googleapis.com/youtube/v3/videos', {
                     params: {
                         part: 'contentDetails',
@@ -51,7 +49,6 @@ const courseProcessor = new Worker('course-processing', async job => {
 
                 const durationsMap = {};
                 videoResponse.data.items.forEach(v => {
-                    // Simple ISO 8601 duration parser (e.g. PT1M30S)
                     const duration = v.contentDetails.duration;
                     const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
                     const hours = parseInt(match[1] || 0);
@@ -74,9 +71,8 @@ const courseProcessor = new Worker('course-processing', async job => {
 
             const lectures = playlistItems.map((item, index) => {
                 const durationSecs = item.durationSec || 0;
-
-                totalLectures += 1;
-                totalDuration += durationSecs;
+                totalLecturesIncrement += 1;
+                totalDurationIncrement += durationSecs;
 
                 return {
                     youtubeId: item.id,
@@ -89,7 +85,7 @@ const courseProcessor = new Worker('course-processing', async job => {
                         notes: 'pending',
                         quiz: 'pending',
                         topics: 'pending',
-                        embedding: 'pending' // From spec 004
+                        embedding: 'pending'
                     }
                 };
             });
@@ -97,25 +93,42 @@ const courseProcessor = new Worker('course-processing', async job => {
             processedSections.push({
                 title: section.title,
                 playlistUrl: section.playlistUrl,
-                order: section.order,
+                order: section.order || 0,
                 lectures
             });
         }
 
-        const course = await Course.findByIdAndUpdate(courseId, {
-            sections: processedSections,
-            status: 'ready',
-            totalLectures,
-            totalDuration
-        }, { new: true });
+        let course;
+        if (isAppend) {
+            // Append mode: Push new sections and update totals
+            course = await Course.findById(courseId);
+            if (!course) throw new Error('Course not found');
+            
+            course.sections.push(...processedSections);
+            course.totalLectures = (course.totalLectures || 0) + totalLecturesIncrement;
+            course.totalDuration = (course.totalDuration || 0) + totalDurationIncrement;
+            course.status = 'ready';
+            await course.save();
+        } else {
+            // Replace mode (Creation)
+            course = await Course.findByIdAndUpdate(courseId, {
+                sections: processedSections,
+                status: 'ready',
+                totalLectures: totalLecturesIncrement,
+                totalDuration: totalDurationIncrement
+            }, { new: true });
+        }
 
-        // T015: Fan-out to transcription queue for each saved lecture.
-        // Use Mongo subdocument _id for pipeline records; youtubeId is only source video id.
+        // Fan-out to transcription queue for ONLY THE NEW LECTURES
         const transcriptionQueue = require('../queues/transcriptionQueue');
         const jobOptions = require('../queues/jobOptions');
         
-        for (const section of course.sections) {
-            for (const lecture of section.lectures) {
+        for (const section of processedSections) {
+            // We need to find the actual saved lecture subdocs to get their _ids
+            const savedSection = course.sections.find(s => s.playlistUrl === section.playlistUrl);
+            if (!savedSection) continue;
+
+            for (const lecture of savedSection.lectures) {
                 await transcriptionQueue.add('transcribe', {
                     courseId: course._id.toString(),
                     lectureId: lecture._id.toString(),
