@@ -12,12 +12,16 @@ import {
     CheckCircle2,
     Target,
     Sparkles,
+    Trophy,
+    Crown,
+    Zap,
 } from 'lucide-react';
 import { BGPattern } from '../components/ui/bg-pattern';
 import FeedbackModal from '../components/FeedbackModal';
 import VideoModal from '../components/VideoModal';
 import { Play } from 'lucide-react';
 import Footer from '../components/ui/Footer';
+import LeaderboardPodium from '../components/Dashboard/LeaderboardPodium';
 
 
 const LandingPage = () => {
@@ -238,64 +242,109 @@ const LandingPage = () => {
                     </div>
                 </section>
 
-                <section id="features" className="max-w-screen-xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
-                    <div className="grid gap-4 sm:gap-5 md:grid-cols-3">
-                        {[
-                            {
-                                icon: <Target className="w-5 h-5" />,
-                                title: 'Structured roadmap',
-                                text: 'Playlist chaos becomes a clear sequence of sections, lectures, and milestones.',
-                            },
-                            {
-                                icon: <Sparkles className="w-5 h-5" />,
-                                title: 'AI study support',
-                                text: 'Get notes, quizzes, and topic summaries generated from lecture context.',
-                            },
-                            {
-                                icon: <CheckCircle2 className="w-5 h-5" />,
-                                title: 'Progress that sticks',
-                                text: 'Track completion, XP, and streaks with clear feedback and no clutter.',
-                            },
-                        ].map((feature) => (
-                            <article key={feature.title} className="glass-card p-5 sm:p-6">
-                                <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-4 bg-primary/15 text-primary border border-primary/20">
-                                    {feature.icon}
-                                </div>
-                                <h3 className="text-base sm:text-lg font-semibold text-text-primary mb-2">{feature.title}</h3>
-                                <p className="text-sm text-text-secondary leading-relaxed">{feature.text}</p>
-                            </article>
-                        ))}
+                <section className="max-w-screen-xl mx-auto px-4 sm:px-6 py-16">
+                    <div className="text-center mb-16">
+                        <h2 className="text-3xl sm:text-4xl font-bold text-text-primary tracking-tight mb-4">
+                            Global Hall of Fame
+                        </h2>
+                        <p className="text-text-secondary max-w-2xl mx-auto text-base sm:text-lg">
+                            Compete with learners worldwide. Earn XP for every lecture, quiz, and milestone you complete.
+                        </p>
+                    </div>
+
+                    <div className="relative">
+                        <div className="absolute inset-0 bg-primary/5 blur-3xl -z-10 rounded-full" />
+                        <LeaderboardPodium 
+                            players={[
+                                { name: 'Alex_Mastery', totalXP: 12450, level: 12 },
+                                { name: 'Quantum_Learner', totalXP: 10200, level: 10 },
+                                { name: 'Deep_Focus', totalXP: 9850, level: 9 },
+                            ]} 
+                        />
+                        
+                        <div className="mt-12 text-center">
+                            <button onClick={openApp} className="btn-primary px-8 py-4 text-sm font-black tracking-widest uppercase flex items-center gap-2 mx-auto hover:scale-105 transition-all">
+                                View Full Leaderboard
+                                <ChevronRight className="w-4 h-4" />
+                            </button>
+                        </div>
                     </div>
                 </section>
 
-                <section id="how-it-works" className="max-w-screen-xl mx-auto px-4 sm:px-6 py-6 sm:py-12">
-                    <div className="glass-card p-5 sm:p-6">
-                        <h2 className="text-xl sm:text-2xl font-semibold text-text-primary mb-4">How it works</h2>
-                        <div className="grid gap-3 sm:gap-4 sm:grid-cols-3">
-                            {[
-                                { step: '1', text: 'Paste a YouTube playlist', sub: 'Open playlist in new tab & copy URL (not the video link)' },
-                                { step: '2', text: 'QuestXP builds your course structure', sub: 'AI parses lectures and sections' },
-                                { step: '3', text: 'Study daily and track progress', sub: 'Earn XP and level up as you learn' },
-                            ].map((item) => (
-                                <div key={item.step} className="rounded-lg border border-border bg-surface-2 px-4 py-4">
-                                    <div className="inline-flex w-7 h-7 items-center justify-center rounded-full bg-primary text-white text-sm font-semibold mb-2">
-                                        {item.step}
-                                    </div>
-                                    <p className="text-sm font-semibold text-text-primary mb-1">{item.text}</p>
-                                    <p className="text-[10px] text-text-muted leading-tight">{item.sub}</p>
-                                </div>
-                            ))}
-                        </div>
-                        <ul className="mt-5 space-y-2 text-sm text-text-secondary">
-                            {keyPoints.map(point => (
-                                <li key={point} className="flex items-start gap-2">
-                                    <CheckCircle2 className="w-4 h-4 text-success mt-0.5 shrink-0" />
-                                    <span>{point}</span>
-                                </li>
-                            ))}
-                        </ul>
+
+                <section id="features" className="max-w-screen-xl mx-auto px-4 sm:px-6 py-16">
+                    <div className="text-center mb-12">
+                        <h2 className="text-3xl sm:text-4xl font-bold text-text-primary tracking-tight mb-4">
+                            Deep Learning Features
+                        </h2>
+                        <p className="text-text-secondary max-w-2xl mx-auto text-base sm:text-lg">
+                            QuestXP provides the tools to transform video content into actionable knowledge.
+                        </p>
+                    </div>
+
+                    <div className="grid gap-5 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
+                        <article className="glass-card p-6 sm:p-8 group hover:border-primary/50 transition-all">
+                            <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                <BookOpen className="w-6 h-6" />
+                            </div>
+                            <h3 className="text-xl font-bold text-text-primary mb-3">AI Course Roadmaps</h3>
+                            <p className="text-sm text-text-secondary leading-relaxed">
+                                Transform any YouTube playlist into a structured course. Our engine organizes lectures into logical sections for a cohesive path.
+                            </p>
+                        </article>
+
+                        <article className="glass-card p-6 sm:p-8 group hover:border-primary/50 transition-all">
+                            <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                <Target className="w-6 h-6" />
+                            </div>
+                            <h3 className="text-xl font-bold text-text-primary mb-3">Adaptive Study Plans</h3>
+                            <p className="text-sm text-text-secondary leading-relaxed">
+                                Set your deadline and availability. QuestXP generates a personalized daily roadmap that adjusts based on your progress.
+                            </p>
+                        </article>
+
+                        <article className="glass-card p-6 sm:p-8 group hover:border-primary/50 transition-all">
+                            <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                <Sparkles className="w-6 h-6" />
+                            </div>
+                            <h3 className="text-xl font-bold text-text-primary mb-3">Contextual AI Chatbot</h3>
+                            <p className="text-sm text-text-secondary leading-relaxed">
+                                Chat with an AI that knows your course inside out. Get precise answers based specifically on the lecture content.
+                            </p>
+                        </article>
+
+                        <article className="glass-card p-6 sm:p-8 group hover:border-primary/50 transition-all">
+                            <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                <CheckCircle2 className="w-6 h-6" />
+                            </div>
+                            <h3 className="text-xl font-bold text-text-primary mb-3">Automated Assets</h3>
+                            <p className="text-sm text-text-secondary leading-relaxed">
+                                Generate lecture summaries, key takeaways, and practice quizzes instantly. Focus on learning while we handle the notes.
+                            </p>
+                        </article>
+
+                        <article className="glass-card p-6 sm:p-8 group hover:border-primary/50 transition-all">
+                            <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                <Flame className="w-6 h-6" />
+                            </div>
+                            <h3 className="text-xl font-bold text-text-primary mb-3">Productivity Analytics</h3>
+                            <p className="text-sm text-text-secondary leading-relaxed">
+                                Track your rank, learning time, and streaks. Compete on the leaderboard and maintain consistency with deep analytics.
+                            </p>
+                        </article>
+
+                        <article className="glass-card p-6 sm:p-8 group hover:border-primary/50 transition-all">
+                            <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                <Play className="w-6 h-6" />
+                            </div>
+                            <h3 className="text-xl font-bold text-text-primary mb-3">Distraction-Free Player</h3>
+                            <p className="text-sm text-text-secondary leading-relaxed">
+                                A specialized player designed for focus. No ads, no recommendations—just your course content and learning tools.
+                            </p>
+                        </article>
                     </div>
                 </section>
+
             </main>
 
             <Footer onOpenFeedback={() => setFeedbackOpen(true)} />

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Flame, Zap, Trophy, Shield, BookOpen, Plus, ChevronRight, Star, Trash2 } from 'lucide-react';
 import useAuthStore from '../store/useAuthStore';
@@ -14,6 +14,9 @@ import FeedbackModal from '../components/FeedbackModal';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { StatCardSkeleton, CourseCardSkeleton } from '../components/ui/Skeleton';
 import Footer from '../components/ui/Footer';
+import UsernameModal from '../components/Dashboard/UsernameModal';
+import { BarChart3, Clock, Calendar, ArrowUpRight, TrendingUp, Crown } from 'lucide-react';
+import GlobalLeaderboardModal from '../components/Dashboard/GlobalLeaderboardModal';
 
 
 /* ── Helpers ─────────────────────────────────────────────────────────── */
@@ -25,19 +28,125 @@ function calcCourseProgress(course, progress) {
     return Math.round((done / total) * 100);
 }
 
-/* ── Stat Card ──────────────────────────────────────────────────────── */
-function StatCard({ icon, label, value, color, glow }) {
+/* ── Productivity Cards ─────────────────────────────────────────────── */
+function RankCard({ rank, percentile, trend }) {
     return (
-        <div className="glass-card p-4 flex flex-col gap-2">
-            <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-surface-2" style={{ color }}>
-                    {icon}
-                </div>
-                <span className="text-xs font-semibold uppercase tracking-wide text-text-muted">{label}</span>
+        <div className="glass-card p-5 relative overflow-hidden group hover:scale-[1.02] transition-all">
+            <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                <Trophy className="w-16 h-16" />
             </div>
-            <span className="text-2xl font-semibold text-text-primary">
-                {value}
-            </span>
+            <div className="flex items-center gap-2 mb-3">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-gold/10 text-gold border border-gold/20">
+                    <Crown className="w-4 h-4" />
+                </div>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Rank Position</span>
+            </div>
+            <div className="flex items-baseline gap-2 mb-1">
+                <span className="text-3xl font-black text-text-primary tracking-tight">#{rank || '—'}</span>
+                {trend === 'up' && (
+                    <span className="text-xs font-bold text-success flex items-center gap-0.5">
+                        <TrendingUp className="w-3 h-3" /> Trend Up
+                    </span>
+                )}
+            </div>
+            <p className="text-xs font-semibold text-text-secondary">
+                <span className="text-primary">Top {percentile}%</span> of learners this week
+            </p>
+        </div>
+    );
+}
+
+function LearningTimeCard({ totalHours, weeklyHours, avgPerDay }) {
+    return (
+        <div className="glass-card p-5 relative overflow-hidden group hover:scale-[1.02] transition-all">
+            <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                <Clock className="w-16 h-16" />
+            </div>
+            <div className="flex items-center gap-2 mb-3">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-primary/10 text-primary border border-primary/20">
+                    <Clock className="w-4 h-4" />
+                </div>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Learning Time</span>
+            </div>
+            <div className="flex items-baseline gap-2 mb-1">
+                <span className="text-3xl font-black text-text-primary tracking-tight">{totalHours}h</span>
+                <span className="text-xs font-bold text-text-muted">Total</span>
+            </div>
+            <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/40">
+                <div className="flex flex-col">
+                    <span className="text-[10px] font-bold text-text-muted uppercase tracking-tighter">This Week</span>
+                    <span className="text-sm font-black text-text-primary">{weeklyHours}h</span>
+                </div>
+                <div className="flex flex-col text-right">
+                    <span className="text-[10px] font-bold text-text-muted uppercase tracking-tighter">Daily Avg</span>
+                    <span className="text-sm font-black text-text-primary">{avgPerDay}h</span>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function DeadlineCard({ deadline }) {
+    if (!deadline) {
+        return (
+            <div className="glass-card p-5 flex flex-col justify-center items-center text-center opacity-80 hover:opacity-100 transition-opacity">
+                <Calendar className="w-8 h-8 text-text-muted mb-2 opacity-30" />
+                <p className="text-xs font-bold text-text-muted uppercase tracking-widest">No Active Deadlines</p>
+                <p className="text-[10px] text-text-muted mt-1">Set a study plan to see targets</p>
+            </div>
+        );
+    }
+
+    const isUrgent = deadline.daysLeft <= 2;
+
+    return (
+        <div 
+            className={`glass-card p-5 relative overflow-hidden group hover:scale-[1.02] transition-all border-l-4 ${isUrgent ? 'border-l-danger bg-danger/[0.02]' : 'border-l-primary'}`}
+        >
+            <div className="flex items-center gap-2 mb-3">
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isUrgent ? 'bg-danger/10 text-danger' : 'bg-primary/10 text-primary'} border border-border`}>
+                    <Calendar className="w-4 h-4" />
+                </div>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Next Milestone</span>
+            </div>
+            <h4 className="text-sm font-black text-text-primary truncate mb-1" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
+                {deadline.courseTitle}
+            </h4>
+            <div className="flex items-center justify-between mb-3">
+                <span className={`text-xs font-bold ${isUrgent ? 'text-danger' : 'text-text-secondary'}`}>
+                    {deadline.daysLeft} Days Left
+                </span>
+                <span className="text-[10px] font-bold text-text-muted">{deadline.progress}%</span>
+            </div>
+            <div className="progress-bar h-1.5 bg-surface-3">
+                <div 
+                    className={`progress-bar__fill ${isUrgent ? 'bg-danger' : 'bg-primary'}`} 
+                    style={{ width: `${deadline.progress}%` }} 
+                />
+            </div>
+        </div>
+    );
+}
+
+function ProductivityCard({ completionRate, completedCourses, totalEnrolled }) {
+    return (
+        <div className="glass-card p-5 relative overflow-hidden group hover:scale-[1.02] transition-all">
+            <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                <BarChart3 className="w-16 h-16" />
+            </div>
+            <div className="flex items-center gap-2 mb-3">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-success/10 text-success border border-success/20">
+                    <BarChart3 className="w-4 h-4" />
+                </div>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Mastery Level</span>
+            </div>
+            <div className="flex items-baseline gap-2 mb-1">
+                <span className="text-3xl font-black text-text-primary tracking-tight">{completionRate}%</span>
+                <span className="text-xs font-bold text-text-muted">Global</span>
+            </div>
+            <p className="text-xs font-semibold text-text-secondary">
+                <span className="text-success">{completedCourses}</span> courses mastered out of {totalEnrolled}
+            </p>
         </div>
     );
 }
@@ -130,6 +239,38 @@ const Dashboard = () => {
     const [deletingCourseId, setDeletingCourseId] = useState(null);
     const [deleteError, setDeleteError] = useState('');
     const [feedbackOpen, setFeedbackOpen] = useState(false);
+    const [showUsernameModal, setShowUsernameModal] = useState(false);
+    const [showLeaderboard, setShowLeaderboard] = useState(false);
+
+    useEffect(() => {
+        if (user && !user.usernameSet) {
+            setShowUsernameModal(true);
+        }
+    }, [user]);
+
+    useEffect(() => {
+        const handleOpenLeaderboard = () => setShowLeaderboard(true);
+        window.addEventListener('open-leaderboard', handleOpenLeaderboard);
+        return () => window.removeEventListener('open-leaderboard', handleOpenLeaderboard);
+    }, []);
+
+    const { data: stats, isLoading: statsLoading } = useQuery({
+        queryKey: ['dashboard-stats'],
+        queryFn: async () => {
+            const { data } = await api.get('/dashboard/stats');
+            return data;
+        },
+        enabled: !!user
+    });
+
+    const { data: leaderboardData = [] } = useQuery({
+        queryKey: ['global-leaderboard'],
+        queryFn: async () => {
+            const { data } = await api.get('/gamification/leaderboard');
+            return data;
+        },
+        enabled: !!user
+    });
     const [visibleCount, setVisibleCount] = useState(6);
 
     // ── Queries ──────────────────────────────────────────────────────────
@@ -249,15 +390,27 @@ const Dashboard = () => {
                         </section>
                     )}
 
-                    <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {profileLoading ? (
+                    <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        {statsLoading ? (
                             Array(4).fill(0).map((_, i) => <StatCardSkeleton key={i} />)
                         ) : (
                             <>
-                                <StatCard icon={<Zap className="w-4 h-4" />} label="Total XP" value={(totalXP || user?.totalXP || 0).toLocaleString()} color="var(--color-gold)" />
-                                <StatCard icon={<Flame className="w-4 h-4" />} label="Streak" value={`${streak?.current ?? user?.streak?.current ?? 0}d`} color="var(--color-warning)" />
-                                <StatCard icon={<Trophy className="w-4 h-4" />} label="Completed" value={courses.filter(c => calcCourseProgress(c, progressMap[c._id]) === 100).length} color="var(--color-success)" />
-                                <StatCard icon={<Shield className="w-4 h-4" />} label="Level" value={`Lv ${level || user?.level || 1}`} color="var(--color-primary)" />
+                                <RankCard 
+                                    rank={stats?.rank?.current} 
+                                    percentile={stats?.rank?.percentile} 
+                                    trend={stats?.rank?.trend} 
+                                />
+                                <LearningTimeCard 
+                                    totalHours={stats?.learningTime?.totalHours} 
+                                    weeklyHours={stats?.learningTime?.weeklyHours} 
+                                    avgPerDay={stats?.learningTime?.avgPerDay} 
+                                />
+                                <DeadlineCard deadline={stats?.deadlines} />
+                                <ProductivityCard 
+                                    completionRate={stats?.productivity?.completionRate} 
+                                    completedCourses={stats?.productivity?.completedCourses} 
+                                    totalEnrolled={stats?.productivity?.totalEnrolled} 
+                                />
                             </>
                         )}
                     </section>
@@ -324,7 +477,7 @@ const Dashboard = () => {
                 </div>
 
                 <aside className="hidden xl:flex flex-col w-72 shrink-0 space-y-4">
-                    <XPLeaderboardSidebar players={user ? [{ name: user.name, totalXP: totalXP || user.totalXP || 0, level: level || user.level || 1 }] : []} />
+                    <XPLeaderboardSidebar players={leaderboardData} />
                     
                     <div className="glass-card p-5">
                         <div className="flex items-center gap-2 mb-4">
@@ -341,7 +494,7 @@ const Dashboard = () => {
                             </div>
                             <div>
                                 <p className="text-sm font-semibold text-text-primary">{user.name}</p>
-                                <p className="text-xs text-text-secondary">{levelTitle || 'Explorer'} · Lv {level || user?.level}</p>
+                                <p className="text-xs text-text-secondary">{levelTitle || 'Explorer'} · Level {level || user?.level}</p>
                             </div>
                         </div>
                         <div className="progress-bar mb-1">
@@ -354,6 +507,12 @@ const Dashboard = () => {
 
             <Footer onOpenFeedback={() => setFeedbackOpen(true)} />
             <FeedbackModal isOpen={feedbackOpen} onClose={() => setFeedbackOpen(false)} contextPage="Dashboard" />
+            <UsernameModal isOpen={showUsernameModal} onClose={() => setShowUsernameModal(false)} />
+            <GlobalLeaderboardModal 
+                isOpen={showLeaderboard} 
+                onClose={() => setShowLeaderboard(false)} 
+                players={leaderboardData} 
+            />
         </div>
     );
 };

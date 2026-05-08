@@ -48,7 +48,7 @@ const XPLeaderboardSidebar = ({ players = [] }) => {
                             {/* Name + Level */}
                             <div className="flex-1 min-w-0">
                                 <p className={`text-sm font-semibold truncate ${i === 0 ? 'text-text-primary' : 'text-text-primary'}`}>{p.name}</p>
-                                <p className="text-xs text-text-muted">Lv {p.level}</p>
+                                <p className="text-xs text-text-muted">Level {p.level}</p>
                             </div>
 
                             {/* XP */}
@@ -60,6 +60,13 @@ const XPLeaderboardSidebar = ({ players = [] }) => {
                     ))}
                 </div>
             )}
+
+            <button 
+                onClick={() => window.dispatchEvent(new CustomEvent('open-leaderboard'))}
+                className="w-full mt-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-primary hover:text-primary-dark transition-colors border-t border-border/30 pt-4"
+            >
+                View Full Hall of Fame →
+            </button>
         </section>
     );
 };

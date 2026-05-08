@@ -5,6 +5,7 @@ const { validationResult } = require('express-validator');
 const { OAuth2Client } = require('google-auth-library');
 const Progress = require('../models/Progress');
 const studyPlanService = require('../services/studyPlanService');
+const { generateRandomUsername } = require('../utils/nameGenerator');
 const {
     ACCESS_TOKEN_COOKIE,
     REFRESH_TOKEN_COOKIE,
@@ -42,6 +43,8 @@ const userResponse = (user) => ({
     streak: user.streak,
     badges: user.badges,
     unlockedFeatures: user.unlockedFeatures,
+    username: user.username,
+    usernameSet: user.usernameSet,
 });
 
 const getRequestIp = (req) => {
@@ -83,7 +86,9 @@ const register = async (req, res, next) => {
         const user = new User({
             name,
             email: email.toLowerCase(),
-            passwordHash
+            passwordHash,
+            username: generateRandomUsername(),
+            usernameSet: false
         });
 
         await user.save();
@@ -255,13 +260,19 @@ const googleLogin = async (req, res, next) => {
         let user = await User.findOne({ email: email.toLowerCase() });
         if (!user) {
             user = new User({
-                name,
-                email: email.toLowerCase(),
-                googleId,
+                name: payload.name,
+                email: payload.email.toLowerCase(),
+                googleId: payload.sub,
+                username: generateRandomUsername(),
+                usernameSet: false
             });
             await user.save();
         } else if (!user.googleId) {
-            user.googleId = googleId;
+            user.googleId = payload.sub;
+            if (!user.username) {
+                user.username = generateRandomUsername();
+                user.usernameSet = false;
+            }
             await user.save();
         }
 
@@ -276,4 +287,32 @@ const googleLogin = async (req, res, next) => {
     }
 };
 
-module.exports = { register, login, googleLogin, getMe, refresh, logout, logoutAll };
+const updateUsername = async (req, res, next) => {
+    try {
+        const { username } = req.body;
+        if (!username || username.length < 3) {
+            return res.status(400).json({ error: 'Username must be at least 3 characters' });
+        }
+
+        const cleanUsername = username.trim().toLowerCase();
+        if (cleanUsername.length < 3) {
+            return res.status(400).json({ error: 'Username too short' });
+        }
+
+        const existing = await User.findOne({ username: cleanUsername });
+        if (existing) {
+            return res.status(400).json({ error: 'Username already taken' });
+        }
+
+        const user = await User.findById(req.user._id);
+        user.username = cleanUsername;
+        user.usernameSet = true;
+        await user.save();
+
+        res.json({ success: true, user: userResponse(user) });
+    } catch (error) {
+        next(error);
+    }
+};
+
+module.exports = { register, login, googleLogin, getMe, refresh, logout, logoutAll, updateUsername };

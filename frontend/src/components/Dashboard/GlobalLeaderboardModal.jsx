@@ -1,0 +1,65 @@
+import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, Crown } from 'lucide-react';
+import LeaderboardPodium from './LeaderboardPodium';
+import LeaderboardTable from './LeaderboardTable';
+
+const GlobalLeaderboardModal = ({ isOpen, onClose, players = [] }) => {
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl">
+            <motion.div
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                className="w-full max-w-4xl h-[90vh] bg-surface border border-border rounded-[2.5rem] flex flex-col overflow-hidden shadow-2xl"
+            >
+                {/* Header */}
+                <div className="p-6 sm:p-8 border-b border-border flex items-center justify-between shrink-0 bg-surface/50">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-gold/10 flex items-center justify-center border border-gold/20">
+                            <Crown className="w-6 h-6 text-gold" />
+                        </div>
+                        <div>
+                            <h2 className="text-xl font-black uppercase tracking-tight text-text-primary" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
+                                Global Hall of Fame
+                            </h2>
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted opacity-60">Top 50 Learners</p>
+                        </div>
+                    </div>
+                    <button 
+                        onClick={onClose}
+                        className="p-2 rounded-full hover:bg-surface-2 text-text-muted hover:text-text-primary transition-colors"
+                    >
+                        <X className="w-6 h-6" />
+                    </button>
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 overflow-y-auto p-6 sm:p-10 space-y-12 scrollbar-thin">
+                    <section>
+                        <LeaderboardPodium players={players.slice(0, 3)} />
+                    </section>
+
+                    <section>
+                        <div className="mb-6 flex items-center justify-between">
+                            <h3 className="text-xs font-black uppercase tracking-widest text-text-muted">Rankings</h3>
+                            <span className="text-[10px] font-bold text-text-muted px-2 py-1 bg-surface-2 rounded-md border border-border">Total 50 users</span>
+                        </div>
+                        <LeaderboardTable players={players} />
+                    </section>
+                </div>
+
+                {/* Footer */}
+                <div className="p-6 border-t border-border bg-surface/50 text-center shrink-0">
+                    <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest opacity-60">
+                        Updates every hour • Keep learning to stay on top
+                    </p>
+                </div>
+            </motion.div>
+        </div>
+    );
+};
+
+export default GlobalLeaderboardModal;

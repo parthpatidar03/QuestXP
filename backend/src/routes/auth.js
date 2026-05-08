@@ -1,6 +1,6 @@
 const express = require('express');
 const { body } = require('express-validator');
-const { register, login, googleLogin, getMe, refresh, logout, logoutAll } = require('../controllers/authController');
+const { register, login, googleLogin, getMe, refresh, logout, logoutAll, updateUsername } = require('../controllers/authController');
 const auth = require('../middleware/auth');
 
 const router = express.Router();
@@ -32,5 +32,6 @@ router.post('/refresh', refresh);
 
 router.post('/logout', logout);
 router.post('/logout-all', auth, logoutAll);
+router.patch('/username', auth, updateUsername);
 
 module.exports = router;

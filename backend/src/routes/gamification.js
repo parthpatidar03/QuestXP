@@ -146,4 +146,43 @@ router.post('/xp', [
     }
 });
 
+// GET /api/gamification/leaderboard
+router.get('/leaderboard', async (req, res) => {
+    try {
+        const User = require('../models/User');
+        const { generateRandomUsername } = require('../utils/nameGenerator');
+        
+        const players = await User.find({}, 'name username usernameSet totalXP level streak')
+            .sort({ totalXP: -1 })
+            .limit(50);
+        
+        const formattedPlayers = await Promise.all(players.map(async (p, i) => {
+            let currentUsername = p.username;
+            
+            // If no username exists, generate a random one and save it
+            if (!currentUsername) {
+                currentUsername = generateRandomUsername();
+                p.username = currentUsername;
+                p.usernameSet = false; // Mark as auto-generated
+                await p.save();
+            }
+
+            return {
+                _id: p._id,
+                rank: i + 1,
+                name: currentUsername,
+                displayName: currentUsername,
+                totalXP: p.totalXP,
+                level: p.level,
+                streak: p.streak,
+                isMe: p._id.toString() === req.user._id.toString()
+            };
+        }));
+        
+        res.status(200).json(formattedPlayers);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 module.exports = router;
