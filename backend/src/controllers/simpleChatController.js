@@ -1,5 +1,5 @@
 const { validationResult } = require('express-validator');
-const aiProvider = require('../services/aiProvider');
+const aiProvider = require('../services/ai-provider');
 
 /**
  * POST /api/doubts/:lectureId/simple

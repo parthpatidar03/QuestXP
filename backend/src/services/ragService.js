@@ -1,5 +1,5 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-const aiProvider = require('./aiProvider');
+const aiProvider = require('./ai-provider');
 const { Pinecone } = require('@pinecone-database/pinecone');
 const { validate, SchemaValidationError } = require('../schemas/ragAnswerSchema');
 

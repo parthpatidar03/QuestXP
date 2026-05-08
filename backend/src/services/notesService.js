@@ -1,4 +1,4 @@
-const aiProvider = require('./aiProvider');
+const aiProvider = require('./ai-provider');
 const Transcript = require('../models/Transcript');
 const Notes = require('../models/Notes');
 const { validateNotes } = require('../schemas/notesSchema');
