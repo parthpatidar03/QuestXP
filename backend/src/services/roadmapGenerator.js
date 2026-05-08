@@ -3,9 +3,12 @@ const Course = require('../models/Course');
 
 /**
  * Deterministic Roadmap Generation Algorithm
+ * Supports separate capacities for Weekdays and Weekends
  */
-const generateRoadmapLogic = (videos, startDate, dailyHours, excludedDays = []) => {
-    const dailyMinutes = dailyHours * 60;
+const generateRoadmapLogic = (videos, startDate, weekdayHours = 2, weekendHours = 4, excludedDays = []) => {
+    const weekdayMinutes = weekdayHours * 60;
+    const weekendMinutes = weekendHours * 60;
+    
     const roadmap = [];
     let currentDay = new Date(startDate);
     currentDay.setHours(0, 0, 0, 0);
@@ -14,7 +17,9 @@ const generateRoadmapLogic = (videos, startDate, dailyHours, excludedDays = []) 
     let dayCounter = 0;
 
     while (videoIndex < videos.length) {
-        const dayOfWeek = currentDay.getDay();
+        const dayOfWeek = currentDay.getDay(); // 0 = Sunday, 6 = Saturday
+        const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+        const dailyMinutes = isWeekend ? weekendMinutes : weekdayMinutes;
         
         // Handle Rest Days
         if (excludedDays.includes(dayOfWeek)) {

@@ -10,9 +10,9 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
     const [selectedSectionIds, setSelectedSectionIds] = useState([]);
     const [expandedCourses, setExpandedCourses] = useState([]);
     
-    const [dailyHours, setDailyHours] = useState(2);
+    const [weekdayHours, setWeekdayHours] = useState(2);
+    const [weekendHours, setWeekendHours] = useState(4);
     const [startDate, setStartDate] = useState(format(new Date(), 'yyyy-MM-dd'));
-    const [targetDate, setTargetDate] = useState(format(addDays(new Date(), 30), 'yyyy-MM-dd'));
     const [loading, setLoading] = useState(false);
     const [fetching, setFetching] = useState(true);
 
@@ -24,7 +24,6 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
                     setCourses(fetchedCourses);
                     setFetching(false);
                     
-                    // If courseId is provided (from CourseDetail), auto-select it and expand it
                     if (courseId) {
                         setSelectedCourseIds([courseId]);
                         setExpandedCourses([courseId]);
@@ -75,9 +74,10 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
             const config = {
                 playlistIds: selectedCourseIds,
                 sectionIds: selectedSectionIds,
-                dailyHours: parseFloat(dailyHours),
+                weekdayHours: parseFloat(weekdayHours),
+                weekendHours: parseFloat(weekendHours),
                 startDate,
-                courseId: courseId // Pin to this course if provided
+                courseId: courseId
             };
             const roadmap = await generateRoadmap(config);
             if (onGenerated) onGenerated(roadmap);
@@ -103,8 +103,8 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
                             <Sparkles className="w-5 h-5" />
                         </div>
                         <div>
-                            <h2 className="text-xl font-bold text-text-primary">Custom Study Roadmap</h2>
-                            <p className="text-xs text-text-muted">Pick specific playlists to master</p>
+                            <h2 className="text-xl font-bold text-text-primary">Mastery Roadmap</h2>
+                            <p className="text-xs text-text-muted">Set your study capacity and conquer</p>
                         </div>
                     </div>
                     <button onClick={onClose} className="p-2 hover:bg-surface-3 rounded-lg transition-colors">
@@ -115,10 +115,10 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
                 <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-6">
                     {/* Content Selection */}
                     <div>
-                        <label className="text-sm font-bold text-text-primary mb-3 block">Mastery Content</label>
-                        <div className="space-y-3">
+                        <label className="text-sm font-bold text-text-primary mb-3 block">Course Playlists</label>
+                        <div className="space-y-2">
                             {fetching ? (
-                                <div className="text-sm text-text-muted animate-pulse">Scanning library...</div>
+                                <div className="text-sm text-text-muted animate-pulse">Fetching library...</div>
                             ) : courses.length > 0 ? (
                                 courses.filter(c => !courseId || c._id === courseId).map(course => (
                                     <div key={course._id} className="border border-border rounded-xl overflow-hidden bg-surface-2/40">
@@ -133,7 +133,7 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
                                             
                                             <div className="flex-1 cursor-pointer" onClick={() => toggleCourse(course._id)}>
                                                 <p className="text-sm font-bold text-text-primary">{course.title}</p>
-                                                <p className="text-[10px] text-text-muted uppercase tracking-wider">{course.sections?.length || 0} Playlists</p>
+                                                <p className="text-[10px] text-text-muted uppercase tracking-widest">{course.sections?.length || 0} Playlists</p>
                                             </div>
 
                                             <button type="button" onClick={() => toggleCourse(course._id)} className="p-1 hover:bg-surface-3 rounded">
@@ -162,64 +162,76 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
                             ) : (
                                 <div className="p-8 border border-dashed border-border rounded-2xl text-center">
                                     <BookOpen className="w-8 h-8 text-text-muted mx-auto mb-3 opacity-20" />
-                                    <p className="text-sm text-text-muted">No courses found in your library.</p>
+                                    <p className="text-sm text-text-muted">Library empty. Enroll in a course first.</p>
                                 </div>
                             )}
                         </div>
                     </div>
 
+                    {/* Schedule Config */}
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <label className="text-xs font-bold text-text-muted uppercase tracking-widest">Study Hours / Day</label>
+                            <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Weekday Hours</label>
                             <div className="relative">
                                 <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
                                 <input 
-                                    type="number" min="0.5" step="0.5" max="12"
-                                    value={dailyHours}
-                                    onChange={e => setDailyHours(e.target.value)}
-                                    className="w-full bg-surface-2 border border-border rounded-xl pl-10 pr-4 py-3 text-sm focus:border-primary outline-none transition-colors"
+                                    type="number" min="0.5" step="0.5" max="24"
+                                    value={weekdayHours}
+                                    onChange={e => setWeekdayHours(e.target.value)}
+                                    className="w-full bg-surface-2 border border-border rounded-xl pl-10 pr-4 py-3 text-sm font-bold focus:border-primary outline-none transition-colors"
                                 />
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <label className="text-xs font-bold text-text-muted uppercase tracking-widest">Start Date</label>
+                            <label className="text-[10px] font-black text-primary uppercase tracking-widest">Weekend Hours</label>
                             <div className="relative">
-                                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+                                <Zap className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary" />
                                 <input 
-                                    type="date" 
-                                    value={startDate}
-                                    onChange={e => setStartDate(e.target.value)}
-                                    className="w-full bg-surface-2 border border-border rounded-xl pl-10 pr-4 py-3 text-sm focus:border-primary outline-none transition-colors"
+                                    type="number" min="0.5" step="0.5" max="24"
+                                    value={weekendHours}
+                                    onChange={e => setWeekendHours(e.target.value)}
+                                    className="w-full bg-primary/5 border border-primary/20 rounded-xl pl-10 pr-4 py-3 text-sm font-bold focus:border-primary outline-none transition-colors"
                                 />
                             </div>
+                        </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Start Date</label>
+                        <div className="relative">
+                            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+                            <input 
+                                type="date" 
+                                value={startDate}
+                                onChange={e => setStartDate(e.target.value)}
+                                className="w-full bg-surface-2 border border-border rounded-xl pl-10 pr-4 py-3 text-sm font-bold focus:border-primary outline-none transition-colors"
+                            />
                         </div>
                     </div>
 
                     <div className="p-4 bg-primary/5 border border-primary/10 rounded-2xl flex gap-3">
                         <AlertCircle className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                        <p className="text-xs text-text-secondary leading-relaxed">
-                            {selectedSectionIds.length > 0 
-                                ? `Distributing content from ${selectedSectionIds.length} playlists across your timeline.` 
-                                : "Select at least one playlist to generate your master roadmap."}
+                        <p className="text-[11px] text-text-secondary leading-relaxed">
+                            Our algorithm will prioritize larger missions for your weekend blocks to maximize your learning momentum.
                         </p>
                     </div>
                 </form>
 
                 <div className="p-6 border-t border-border bg-surface-2 flex gap-3">
-                    <button onClick={onClose} type="button" className="flex-1 px-4 py-3.5 rounded-xl border border-border text-xs font-black uppercase tracking-widest text-text-primary hover:bg-surface-3 transition-all">
+                    <button onClick={onClose} type="button" className="flex-1 px-4 py-4 rounded-xl border border-border text-xs font-black uppercase tracking-widest text-text-primary hover:bg-surface-3 transition-all">
                         Cancel
                     </button>
                     <button 
                         onClick={handleSubmit}
                         disabled={loading || selectedSectionIds.length === 0}
-                        className="flex-[2] px-4 py-3.5 rounded-xl bg-primary text-white text-xs font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
+                        className="flex-[2] px-4 py-4 rounded-xl bg-primary text-white text-xs font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
                     >
                         {loading ? (
                             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                         ) : (
                             <>
                                 <Sparkles className="w-4 h-4" />
-                                GENERATE MASTER PLAN
+                                GENERATE ADAPTIVE PLAN
                             </>
                         )}
                     </button>

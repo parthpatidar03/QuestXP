@@ -10,6 +10,8 @@ const RoadmapSchema = new mongoose.Schema({
         startDate: { type: Date, default: Date.now },
         targetDate: Date,
         dailyHours: { type: Number, default: 2 },
+        weekdayHours: { type: Number, default: 2 },
+        weekendHours: { type: Number, default: 4 },
         excludedDays: [Number], // 0-6
         playlistIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
         sectionIds: [String] // IDs of specific playlists/sections

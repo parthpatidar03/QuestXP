@@ -34,12 +34,14 @@ router.post('/generate', auth, async (req, res) => {
             });
         });
 
+        const { playlistIds, sectionIds, weekdayHours = 2, weekendHours = 4, startDate, courseId = null } = req.body;
+
         if (allVideos.length === 0) {
             return res.status(400).json({ msg: 'No videos found for selected content' });
         }
 
         // 2. Run Algorithm
-        const roadmapDays = generateRoadmapLogic(allVideos, startDate || new Date(), dailyHours || 2, []);
+        const roadmapDays = generateRoadmapLogic(allVideos, startDate || new Date(), weekdayHours, weekendHours, []);
 
         // 3. Save to DB (Handle global vs course-specific)
         const filter = courseId ? { userId: req.user.id, courseId } : { userId: req.user.id, courseId: null };
@@ -51,7 +53,8 @@ router.post('/generate', auth, async (req, res) => {
             config: {
                 playlistIds,
                 sectionIds: sectionIds || [],
-                dailyHours,
+                weekdayHours,
+                weekendHours,
                 startDate,
             },
             days: roadmapDays
@@ -116,7 +119,10 @@ router.patch('/adjust', auth, async (req, res) => {
             });
         });
 
-        const roadmapDays = generateRoadmapLogic(allVideos, newStart, roadmap.config.dailyHours, []);
+        const weekdayHours = roadmap.config.weekdayHours || roadmap.config.dailyHours || 2;
+        const weekendHours = roadmap.config.weekendHours || roadmap.config.dailyHours || 4;
+
+        const roadmapDays = generateRoadmapLogic(allVideos, newStart, weekdayHours, weekendHours, []);
         
         roadmap.config.startDate = newStart;
         roadmap.days = roadmapDays;
