@@ -52,6 +52,8 @@ QuestXP.pdf
 .specify/
 Docs/
 query
+DESIGN.md
+PRODUCT.md
 
 # Local MongoDB data directory
 backend/data/
