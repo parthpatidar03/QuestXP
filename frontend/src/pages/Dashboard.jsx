@@ -57,6 +57,16 @@ function RankCard({ rank, percentile, trend }) {
     );
 }
 
+const formatTime = (hours) => {
+    if (!hours || hours <= 0) return '—';
+    const h = parseFloat(hours);
+    if (h < 1) {
+        const mins = Math.round(h * 60);
+        return `${mins}m`;
+    }
+    return `${h}h`;
+};
+
 function LearningTimeCard({ totalHours, weeklyHours, avgPerDay }) {
     const hasHours = totalHours > 0;
 
@@ -73,18 +83,18 @@ function LearningTimeCard({ totalHours, weeklyHours, avgPerDay }) {
             </div>
             <div className="flex items-baseline gap-2 mb-1">
                 <span className="text-3xl font-black text-text-primary tracking-tight">
-                    {hasHours ? `${totalHours}h` : '—'}
+                    {formatTime(totalHours)}
                 </span>
                 <span className="text-xs font-bold text-text-muted">{hasHours ? 'Total' : 'No activity yet'}</span>
             </div>
             <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/40">
                 <div className="flex flex-col">
                     <span className="text-[10px] font-bold text-text-muted uppercase tracking-tighter">This Week</span>
-                    <span className="text-sm font-black text-text-primary">{weeklyHours > 0 ? `${weeklyHours}h` : '—'}</span>
+                    <span className="text-sm font-black text-text-primary">{formatTime(weeklyHours)}</span>
                 </div>
                 <div className="flex flex-col text-right">
                     <span className="text-[10px] font-bold text-text-muted uppercase tracking-tighter">Daily Avg</span>
-                    <span className="text-sm font-black text-text-primary">{avgPerDay > 0 ? `${avgPerDay}h` : '—'}</span>
+                    <span className="text-sm font-black text-text-primary">{formatTime(avgPerDay)}</span>
                 </div>
             </div>
         </div>
