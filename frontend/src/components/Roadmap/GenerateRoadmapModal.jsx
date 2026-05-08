@@ -15,7 +15,7 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated }) => {
 
     useEffect(() => {
         if (isOpen) {
-            api.get('/courses/user/enrolled')
+            api.get('/courses')
                 .then(res => {
                     setPlaylists(res.data.courses || []);
                     setFetching(false);
