@@ -19,7 +19,7 @@ const planRoutes = require('./routes/plan');
 const doubtRoutes = require('./routes/doubtRoutes');
 const gamificationRoutes = require('./routes/gamification');
 const feedbackRoutes = require('./routes/feedback');
-const dashboardRoutes = require('./routes/dashboard');
+const dashboardRoutes = require('./routes/hub');
 
 const app = express();
 
@@ -58,7 +58,7 @@ app.use(cors({
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
 app.use('/api/auth', authRoutes);
-app.use('/api/v2/dashboard', dashboardRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/gamification', gamificationRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/progress', progressRoutes);
