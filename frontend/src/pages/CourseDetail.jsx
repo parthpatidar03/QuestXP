@@ -138,6 +138,13 @@ const CourseDetail = () => {
     const [showOnboarding, setShowOnboarding] = useState(false);
     const [collapsedSections, setCollapsedSections] = useState({});
 
+    const toggleSection = (idx) => {
+        setCollapsedSections(prev => ({
+            ...prev,
+            [idx]: !prev[idx]
+        }));
+    };
+
     useEffect(() => {
         const hasOnboarded = localStorage.getItem('questxp_onboarded');
         if (!hasOnboarded) {
