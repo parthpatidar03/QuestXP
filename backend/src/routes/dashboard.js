@@ -6,8 +6,8 @@ const User = require('../models/User');
 const Course = require('../models/Course');
 const streakService = require('../services/streakService');
 
+router.get('/test', (req, res) => res.json({ message: 'Dashboard mounted' }));
 router.use(auth);
-console.log('[Debug] Dashboard router loaded');
 
 /**
  * GET /api/dashboard/stats
