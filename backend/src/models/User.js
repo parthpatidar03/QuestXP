@@ -23,6 +23,10 @@ const userSchema = new Schema({
     lastActive: { type: Date, default: Date.now },
     notificationState: { type: String, enum: ['active', 'cooling_down', 'stopped'], default: 'active' },
     
+    username: { type: String, unique: true, sparse: true, trim: true, lowercase: true },
+    usernameSet: { type: Boolean, default: false },
+    totalStudyTime: { type: Number, default: 0 }, // in seconds
+
     createdAt: { type: Date, default: Date.now },
 });
 

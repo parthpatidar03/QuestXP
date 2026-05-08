@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Zap, Flame, Trophy, Shield, Star, BookOpen, BarChart3, Calendar, LogOut } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Zap, Flame, Trophy, Shield, Star, BookOpen, BarChart3, Calendar, LogOut, ShieldCheck, User } from 'lucide-react';
 import useAuthStore from '../store/useAuthStore';
 import useGamificationStore from '../store/useGamificationStore';
 import { getGamificationProfile, getXPHistory, markBadgesSeen } from '../services/gamificationApi';
 import NavBar from '../components/NavBar';
+import UsernameModal from '../components/Dashboard/UsernameModal';
 import { BGPattern } from '../components/ui/bg-pattern';
 import StreakCalendar from '../components/StreakCalendar';
 
@@ -36,6 +38,8 @@ const Profile = () => {
     const [isLoggingOut, setIsLoggingOut] = useState(false);
     const [logoutError, setLogoutError] = useState('');
 
+    const [showUsernameModal, setShowUsernameModal] = useState(false);
+
     useEffect(() => {
         Promise.allSettled([
             getGamificationProfile().then(d => setProfile(d)),
@@ -43,6 +47,12 @@ const Profile = () => {
             markBadgesSeen()
         ]).finally(() => setLoading(false));
     }, [setProfile]);
+
+    useEffect(() => {
+        const handleOpen = () => setShowUsernameModal(true);
+        window.addEventListener('open-username-modal', handleOpen);
+        return () => window.removeEventListener('open-username-modal', handleOpen);
+    }, []);
 
     if (!user) return null;
 
@@ -95,41 +105,67 @@ const Profile = () => {
                     </div>
 
                     <div className="flex-1 min-w-0">
-                        <h1 className="text-3xl sm:text-4xl font-semibold text-text-primary mb-1">
-                            {user.name}
-                        </h1>
-                        <p className="text-sm mb-4 text-text-secondary">
-                            {levelTitle || 'Explorer'} · Level {level}
-                        </p>
-                        <p className="text-xs mb-4 text-text-muted break-all">
-                            {user.email || 'No email available'}
-                        </p>
+                        <div className="flex items-center flex-wrap gap-3 mb-2">
+                            <h1 className="text-4xl sm:text-5xl font-black uppercase tracking-tight text-white" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
+                                {user.username || user.name}
+                            </h1>
+                            {!user.usernameSet && (
+                                <span className="px-3 py-1 rounded-lg bg-primary/20 border border-primary/40 text-[11px] font-black text-primary uppercase tracking-widest">
+                                    Random Identity
+                                </span>
+                            )}
+                        </div>
+                        
+                        <div className="flex flex-col gap-2 mb-6">
+                            <p className="text-lg font-bold text-text-primary flex items-center gap-2">
+                                <ShieldCheck className="w-5 h-5 text-gold" />
+                                {levelTitle || 'Explorer'} · <span className="text-gold">Level {level}</span>
+                            </p>
+                            <div className="flex flex-col gap-0.5">
+                                <p className="text-sm text-text-secondary font-medium">Real Name: <span className="text-text-primary">{user.name}</span></p>
+                                <p className="text-sm text-text-muted">{user.email}</p>
+                            </div>
+                        </div>
+
+                        <button 
+                            onClick={() => window.dispatchEvent(new CustomEvent('open-username-modal'))}
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-surface-2 border border-border text-xs font-black uppercase tracking-widest text-primary hover:bg-primary/10 hover:border-primary/30 transition-all mb-8 shadow-sm"
+                        >
+                            <User className="w-3.5 h-3.5" />
+                            Change Identity →
+                        </button>
 
                         {/* XP Progress bar */}
-                        <div className="mb-1 flex items-center justify-between text-xs">
-                            <span className="text-text-secondary">XP to Level {(level || 1) + 1}</span>
-                            <span className="font-semibold text-text-primary">
-                                {totalXP?.toLocaleString()} / {xpToNextLevel ? (totalXP + xpToNextLevel).toLocaleString() : '—'} XP
-                            </span>
-                        </div>
-                        <div className="progress-bar max-w-sm">
-                            <div className="progress-bar__fill progress-bar__fill--gold" style={{ width: `${xpProgress}%` }} />
+                        <div className="max-w-md">
+                            <div className="mb-2 flex items-center justify-between text-sm">
+                                <span className="text-text-secondary font-bold uppercase tracking-wider text-[11px]">XP to Level {(level || 1) + 1}</span>
+                                <span className="font-black text-white">
+                                    {totalXP?.toLocaleString()} / {xpToNextLevel ? (totalXP + xpToNextLevel).toLocaleString() : '—'} XP
+                                </span>
+                            </div>
+                            <div className="h-3 w-full bg-surface-2 rounded-full overflow-hidden border border-border/50">
+                                <motion.div 
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${xpProgress}%` }}
+                                    className="h-full bg-gradient-to-r from-gold to-amber-500 shadow-[0_0_12px_rgba(255,191,0,0.3)]"
+                                />
+                            </div>
                         </div>
                     </div>
 
                     {/* Quick stats */}
-                    <div className="flex gap-4 sm:gap-6 shrink-0">
+                    <div className="flex gap-6 sm:gap-10 shrink-0 bg-surface-2/50 p-6 rounded-3xl border border-border/40 backdrop-blur-sm">
                         {[
-                            { icon: <Zap className="w-4 h-4" />, val: (totalXP || 0).toLocaleString(), label: 'Total XP', color: 'var(--color-gold)' },
-                            { icon: <Flame className="w-4 h-4" />, val: `${streak?.current ?? 0}d`, label: 'Streak', color: 'var(--color-warning)' },
-                            { icon: <Trophy className="w-4 h-4" />, val: badges.filter(b => b.earned).length, label: 'Badges', color: 'var(--color-success)' },
+                            { icon: <Zap className="w-5 h-5" />, val: (totalXP || 0).toLocaleString(), label: 'Total XP', color: 'var(--color-gold)' },
+                            { icon: <Flame className="w-5 h-5" />, val: `${streak?.current ?? 0}d`, label: 'Streak', color: 'var(--color-warning)' },
+                            { icon: <Trophy className="w-5 h-5" />, val: badges.filter(b => b.earned).length, label: 'Badges', color: 'var(--color-success)' },
                         ].map(s => (
-                            <div key={s.label} className="flex flex-col items-center gap-1">
-                                <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: `${s.color}18`, color: s.color }}>
+                            <div key={s.label} className="flex flex-col items-center gap-2">
+                                <div className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-inner" style={{ background: `${s.color}20`, color: s.color, border: `1px solid ${s.color}30` }}>
                                     {s.icon}
                                 </div>
-                                <span className="text-lg font-semibold text-text-primary">{s.val}</span>
-                                <span className="text-[10px] uppercase tracking-wide text-text-muted">{s.label}</span>
+                                <span className="text-2xl font-black text-white tracking-tight">{s.val}</span>
+                                <span className="text-[11px] font-bold uppercase tracking-widest text-text-muted">{s.label}</span>
                             </div>
                         ))}
                     </div>
@@ -217,6 +253,7 @@ const Profile = () => {
                     <p className="text-center mt-2 text-xs text-red-400">{logoutError}</p>
                 )}
             </div>
+            <UsernameModal isOpen={showUsernameModal} onClose={() => setShowUsernameModal(false)} />
         </div>
     );
 };

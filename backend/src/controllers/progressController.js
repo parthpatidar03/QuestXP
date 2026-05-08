@@ -83,9 +83,8 @@ const getPlan = async (req, res, next) => {
         const { courseId } = req.params;
         const progress = await Progress.findOne({ user: req.user._id, course: courseId });
 
-        // T021: 404 if no plan exists
         if (!progress || !progress.studyPlan) {
-            return res.status(404).json({ error: 'PLAN_NOT_FOUND', message: 'No study plan exists for this course' });
+            return res.json({ plan: null });
         }
 
         // Trigger dynamic recalculation (idempotent guard inside service)
@@ -103,7 +102,7 @@ const getTodayTarget = async (req, res, next) => {
         const target = await studyPlanService.getTodayAllocation(req.user._id, courseId);
 
         if (!target) {
-            return res.status(404).json({ error: 'PLAN_NOT_FOUND', message: 'No study plan exists for this course' });
+            return res.json({ todayAllocation: null });
         }
 
         res.json({ todayAllocation: target });
@@ -118,7 +117,7 @@ const getWeeklyTargets = async (req, res, next) => {
         const weeklyTargets = await studyPlanService.getWeeklyView(req.user._id, courseId);
 
         if (!weeklyTargets) {
-            return res.status(404).json({ error: 'PLAN_NOT_FOUND', message: 'No study plan exists for this course' });
+            return res.json({ weeklyTargets: [] });
         }
 
         res.json({ weeklyTargets });

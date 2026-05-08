@@ -398,7 +398,18 @@ const generatePlan = async (userId, courseId, {
     if (!course) throw Object.assign(new Error('Course not found'), { status: 404 });
 
     let progress = await Progress.findOne({ user: userId, course: courseId });
-    if (!progress) throw Object.assign(new Error('Progress not found'), { status: 404 });
+    if (!progress) {
+        progress = new Progress({
+            user: userId,
+            course: courseId,
+            lectureProgress: [],
+            studySessions: [],
+            studyPlan: {
+                dailyGoalMins: 45 // default
+            }
+        });
+        // We will save it at the end of generatePlan
+    }
 
     // T051: Zero-lecture guard (course not ready)
     const totalLectures = course.sections.reduce((sum, s) => sum + s.lectures.length, 0);
@@ -545,7 +556,7 @@ const generatePlan = async (userId, courseId, {
  */
 const recalculateIfNeeded = async (userId, courseId, { reason = 'login' } = {}) => {
     const progress = await Progress.findOne({ user: userId, course: courseId });
-    if (!progress || !progress.studyPlan) return null;
+    if (!progress || !progress.studyPlan || !progress.studyPlan.generatedAt) return null;
 
     const plan = progress.studyPlan;
     const todayStr = format(new Date(), 'yyyy-MM-dd');

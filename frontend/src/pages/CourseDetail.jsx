@@ -331,7 +331,7 @@ const CourseDetail = () => {
                             <div className="relative z-10 p-7">
                                 <div className="flex items-center gap-2 mb-2">
                                     <span className="badge-epic">EPIC</span>
-                                    <span className="text-xs text-text-secondary">{allLectures.length} Missions · {totalDurMins}m</span>
+                                    <span className="text-xs text-text-secondary">{allLectures.length} Missions · {totalDurMins} Minutes</span>
                                 </div>
                                 <h1 className="text-3xl sm:text-4xl font-black text-text-primary mb-4 leading-tight max-w-xl" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
                                     {course.title}
@@ -476,7 +476,7 @@ const CourseDetail = () => {
                             <h3 className="text-xs font-bold uppercase tracking-widest mb-4 text-text-secondary">Quest Stats</h3>
                             {[
                                 { icon: <Layers className="w-4 h-4" />, label: 'Total Missions', val: allLectures.length },
-                                { icon: <Clock className="w-4 h-4" />, label: 'Duration', val: `${totalDurMins}m` },
+                                { icon: <Clock className="w-4 h-4" />, label: 'Duration', val: `${totalDurMins} Minutes` },
                                 { icon: <Zap className="w-4 h-4 text-gold" />, label: 'XP Pool', val: `${totalXpPool} XP` },
                                 { icon: <BarChart3 className="w-4 h-4 text-success" />, label: 'Your Progress', val: `${pct}%` },
                             ].map(({ icon, label, val }) => (

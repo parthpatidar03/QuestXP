@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Zap, Search, BookOpenCheck, Moon, Sun, BookOpen, X, Loader2 } from 'lucide-react';
+import { Zap, Search, BookOpenCheck, Moon, Sun, BookOpen, X, Loader2, Star } from 'lucide-react';
 import NotificationBell from './NotificationBell';
 import useAuthStore from '../store/useAuthStore';
 import useGamificationStore from '../store/useGamificationStore';
@@ -224,7 +224,17 @@ const NavBar = () => {
                 </Link>
 
                 {/* Live search */}
-                <CourseSearch />
+                <div className="flex flex-1 items-center gap-2">
+                    <CourseSearch />
+                    <Link 
+                        to="/explore" 
+                        className="btn-glass hidden sm:flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all hover:bg-surface-3 group border border-border"
+                    >
+                        <Star className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
+                        <span className="hidden lg:inline">Explore Courses</span>
+                        <span className="lg:hidden">Explore</span>
+                    </Link>
+                </div>
 
                 <div className="flex-1" />
 

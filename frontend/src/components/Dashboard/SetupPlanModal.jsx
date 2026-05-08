@@ -12,7 +12,7 @@ const PresetButton = ({ minutes, label, isSelected, onClick }) => (
                 : 'bg-surface border border-border text-text-secondary hover:text-text-primary hover:border-primary/30'
         }`}
     >
-        {label || `${minutes}m`}
+        {label || `${minutes} Minutes`}
     </button>
 );
 

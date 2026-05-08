@@ -14,10 +14,7 @@ const savePosition = async (userId, courseId, lectureId, { position, watchedSeco
             user: userId,
             course: courseId,
             lectureProgress: [],
-            studySessions: [],
-            studyPlan: {
-                dailyGoalMins: 45 // default
-            }
+            studySessions: []
         });
     }
 
@@ -66,6 +63,10 @@ const savePosition = async (userId, courseId, lectureId, { position, watchedSeco
     if (watchedSeconds > 0) {
         // For simplicity, add to minutes (fractional)
         session.minutes += (watchedSeconds / 60);
+
+        // Update User's total study time
+        const User = require('../models/User');
+        await User.findByIdAndUpdate(userId, { $inc: { totalStudyTime: watchedSeconds } });
     }
 
     // Save changes to progress before doing side-effects
@@ -91,7 +92,7 @@ const savePosition = async (userId, courseId, lectureId, { position, watchedSeco
         await streakService.recordActivity(userId); // Any watch time counts for streak
     }
 
-    if (session.minutes >= progress.studyPlan.dailyGoalMins) {
+    if (progress.studyPlan?.dailyGoalMins && session.minutes >= progress.studyPlan.dailyGoalMins) {
         // Assuming xpService handles dedup logic per day per user based on resourceId/date
         const streakResult = await xpService.award(userId, 'GOAL_MET', todayStr);
         if (streakResult && streakResult.xpEarned && !awardResult) {
@@ -117,8 +118,7 @@ const completeLecture = async (userId, courseId, lectureId) => {
             user: userId,
             course: courseId,
             lectureProgress: [],
-            studySessions: [],
-            studyPlan: { dailyGoalMins: 45 }
+            studySessions: []
         });
     }
 

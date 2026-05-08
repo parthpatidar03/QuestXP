@@ -240,7 +240,7 @@ const StudyPlan = ({ courseId, onOpenSetup }) => {
                                 </div>
                                 
                                 <div className="flex flex-col items-end">
-                                    <span className="text-sm font-bold text-warning">{week.totalMins}m</span>
+                                    <span className="text-sm font-bold text-warning">{week.totalMins} Minutes</span>
                                     <span className="text-[10px] text-text-muted uppercase font-bold tracking-wider">Target</span>
                                 </div>
                             </div>
