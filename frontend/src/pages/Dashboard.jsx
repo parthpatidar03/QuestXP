@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Flame, Zap, Trophy, Shield, BookOpen, Plus, ChevronRight, Star, Trash2 } from 'lucide-react';
+import { Flame, Zap, Trophy, Shield, BookOpen, Plus, ChevronRight, Star, Trash2, Target } from 'lucide-react';
 import useAuthStore from '../store/useAuthStore';
 import useGamificationStore from '../store/useGamificationStore';
 import api from '../services/api';
@@ -485,6 +485,33 @@ const Dashboard = () => {
                             <h2 className="text-sm font-semibold tracking-wide text-text-primary">Study Streak</h2>
                         </div>
                         <StreakCalendar history={historyData} />
+                    </div>
+
+                    <div className="glass-card p-5">
+                        <div className="flex items-center gap-2 mb-4">
+                            <Target className="w-4 h-4 text-success" />
+                            <h2 className="text-sm font-semibold tracking-wide text-text-primary">Daily Quests</h2>
+                        </div>
+                        <div className="space-y-3">
+                            <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-surface-2 hover:border-success/50 transition-colors cursor-pointer group">
+                                <div>
+                                    <p className="text-sm font-medium text-text-primary group-hover:text-success transition-colors">Study for 15 minutes</p>
+                                    <p className="text-xs text-text-secondary mt-0.5">Gain 50 XP</p>
+                                </div>
+                                <div className="w-8 h-8 rounded-full bg-surface border border-border flex items-center justify-center group-hover:bg-success/10 group-hover:border-success/30 transition-colors">
+                                    <Zap className="w-4 h-4 text-gold opacity-70 group-hover:opacity-100 transition-opacity" />
+                                </div>
+                            </div>
+                            <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-surface-2 hover:border-success/50 transition-colors cursor-pointer group">
+                                <div>
+                                    <p className="text-sm font-medium text-text-primary group-hover:text-success transition-colors">Complete a Quiz</p>
+                                    <p className="text-xs text-text-secondary mt-0.5">Gain 100 XP</p>
+                                </div>
+                                <div className="w-8 h-8 rounded-full bg-surface border border-border flex items-center justify-center group-hover:bg-success/10 group-hover:border-success/30 transition-colors">
+                                    <Zap className="w-4 h-4 text-gold opacity-70 group-hover:opacity-100 transition-opacity" />
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <Link to="/profile" className="glass-card block transition-all p-4">
