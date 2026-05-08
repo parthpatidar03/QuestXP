@@ -105,7 +105,7 @@ function CourseSearch() {
 
     return (
         <div ref={containerRef} className="relative flex-1 max-w-md hidden md:block">
-            <div className={`flex items-center gap-2 bg-surface-2 border rounded-lg px-3 py-2 text-sm transition-colors ${focused ? 'border-primary' : 'border-border hover:border-text-muted'}`}>
+            <div className={`flex items-center gap-2 bg-surface-2 border rounded-lg px-3 h-10 text-sm transition-colors ${focused ? 'border-primary' : 'border-border hover:border-text-muted'}`}>
                 {isFetching
                     ? <Loader2 className="w-4 h-4 shrink-0 text-primary animate-spin" />
                     : <Search className="w-4 h-4 shrink-0 text-text-muted" />
@@ -229,7 +229,7 @@ const NavBar = () => {
                     <CourseSearch />
                     <Link 
                         to="/explore" 
-                        className="btn-glass hidden sm:flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all hover:bg-surface-3 group border border-border"
+                        className="btn-glass hidden sm:flex items-center gap-2 px-4 h-10 rounded-lg text-sm font-bold transition-all hover:bg-surface-3 group border border-border whitespace-nowrap"
                     >
                         <Star className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
                         <span className="hidden lg:inline">Explore Courses</span>
