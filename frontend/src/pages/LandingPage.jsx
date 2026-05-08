@@ -227,7 +227,7 @@ const LandingPage = () => {
                 </section>
 
                 <section id="why" className="max-w-screen-xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-                    <div className="rounded-2xl border border-primary/20 bg-primary/5 p-6 sm:p-10 text-center max-w-4xl mx-auto">
+                    <div className="rounded-2xl border border-border bg-surface-2 dark:bg-primary/5 dark:border-primary/20 p-6 sm:p-10 text-center max-w-4xl mx-auto shadow-sm">
                         <h2 className="text-2xl sm:text-3xl font-semibold text-text-primary mb-4">Why we built QuestXP</h2>
                         <p className="text-sm sm:text-base text-text-secondary leading-relaxed mb-6">
                             No single YouTube channel is perfect. You might love <span className="text-text-primary font-medium">Photography tips</span> from one creator, and <span className="text-text-primary font-medium">Personal Finance</span> from another. But jumping between channels means scattered playlists, lost progress, and endless YouTube distractions.
