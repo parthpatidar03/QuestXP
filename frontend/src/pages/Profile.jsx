@@ -93,7 +93,7 @@ const Profile = () => {
                                 boxShadow: '0 0 0 1px var(--color-border)'
                             }}
                         >
-                            {user.name?.split(/[ _]/).map(n => n[0]).join('').toUpperCase()}
+                            {(user.username || user.name)?.split(/[ _]/).map(n => n[0]).join('').toUpperCase()}
                         </div>
                         {/* Level badge */}
                         <div
