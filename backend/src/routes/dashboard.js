@@ -6,7 +6,7 @@ const User = require('../models/User');
 const Course = require('../models/Course');
 const streakService = require('../services/streakService');
 
-router.get('/test', (req, res) => res.json({ message: 'Dashboard mounted' }));
+router.get('/', (req, res) => res.json({ message: 'Dashboard Root' }));
 router.use(auth);
 
 /**
