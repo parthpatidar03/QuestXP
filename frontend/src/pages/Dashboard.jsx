@@ -237,7 +237,7 @@ function CourseCard({ course, progress, onDelete, isDeleting }) {
 /* ── Dashboard ──────────────────────────────────────────────────────── */
 const Dashboard = () => {
     const { user } = useAuthStore();
-    const { totalXP, level, levelTitle, streak, setProfile } = useGamificationStore();
+    const { totalXP, level, levelTitle, streak, xpProgress, xpToNextLevel, setProfile } = useGamificationStore();
     const queryClient = useQueryClient();
 
     const [showCreate, setShowCreate] = useState(false);
@@ -531,9 +531,11 @@ const Dashboard = () => {
                             </div>
                         </div>
                         <div className="progress-bar mb-1">
-                            <div className="progress-bar__fill" style={{ width: '62%' }} />
+                            <div className="progress-bar__fill" style={{ width: `${xpProgress}%` }} />
                         </div>
-                        <p className="text-xs text-right text-text-secondary group-hover:text-primary transition-colors">View full profile</p>
+                        <p className="text-[10px] text-right text-text-muted uppercase tracking-widest font-bold">
+                            {xpToNextLevel} XP to Level {level + 1}
+                        </p>
                     </Link>
                 </aside>
             </div>

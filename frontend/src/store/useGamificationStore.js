@@ -17,6 +17,8 @@ const useGamificationStore = create((set, get) => ({
     // T006 Actions
     setProfile: (profileData) => set({
         totalXP: profileData.totalXP ?? 0,
+        xpProgress: profileData.xpProgress ?? 0,
+        xpToNextLevel: profileData.xpToNextLevel ?? 0,
         level: profileData.level ?? 1,
         levelTitle: profileData.levelTitle ?? 'Curious Beginner',
         streak: profileData.streak ?? { current: 0, longest: 0, multiplier: 1 },

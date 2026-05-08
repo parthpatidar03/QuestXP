@@ -31,11 +31,17 @@ router.get('/profile', async (req, res) => {
             };
         });
         
+        const xpInCurrentLevel = user.totalXP - currentLevelObj.threshold;
+        const xpNeededForLevel = nextLevelObj ? (nextLevelObj.threshold - currentLevelObj.threshold) : 1000;
+        const xpProgress = nextLevelObj ? Math.min(100, Math.max(0, (xpInCurrentLevel / xpNeededForLevel) * 100)) : 100;
+        
         res.status(200).json({
             totalXP: user.totalXP,
             level: user.level,
             levelTitle: currentLevelObj.title,
             xpToNextLevel: nextLevelObj ? Math.max(0, nextLevelObj.threshold - user.totalXP) : 0,
+            nextLevelXP: nextLevelObj ? nextLevelObj.threshold : user.totalXP,
+            xpProgress: Math.round(xpProgress),
             nextLevelTitle: nextLevelObj ? nextLevelObj.title : null,
             streak: {
                 current: currentStreak,
