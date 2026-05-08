@@ -15,18 +15,23 @@ const quizSchema = {
                     options: {
                         type: "array",
                         minItems: 2,
-                        maxItems: 4,
+                        maxItems: 5,
                         items: { type: "string" }
                     },
-                    correctIndex: { type: "integer", minimum: 0, maximum: 3 },
+                    correctIndices: { 
+                        type: "array",
+                        items: { type: "integer" },
+                        minItems: 1
+                    },
+                    isMultipleChoice: { type: "boolean" },
                     explanation: { type: "string" }
                 },
-                required: ["question", "options", "correctIndex", "explanation"]
+                required: ["question", "options", "correctIndices", "isMultipleChoice", "explanation"]
             }
         }
     },
     required: ["questions"],
-    additionalProperties: false
+    additionalProperties: true
 };
 
 const validateQuiz = ajv.compile(quizSchema);

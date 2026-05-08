@@ -227,14 +227,16 @@ const NavBar = () => {
                 {/* Live search */}
                 <div className="flex flex-1 items-center gap-2">
                     <CourseSearch />
-                    <Link 
-                        to="/explore" 
+                    <a 
+                        href="https://www.youtube.com/feed/playlists"
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="btn-glass hidden sm:flex items-center gap-2 px-4 h-10 rounded-lg text-sm font-bold transition-all hover:bg-surface-3 group border border-border whitespace-nowrap"
                     >
                         <Star className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
-                        <span className="hidden lg:inline">Explore Courses</span>
-                        <span className="lg:hidden">Explore</span>
-                    </Link>
+                        <span className="hidden lg:inline">Explore more courses</span>
+                        <span className="lg:hidden">Explore more</span>
+                    </a>
                 </div>
 
                 <div className="flex-1" />
@@ -333,14 +335,16 @@ const NavBar = () => {
                                 <Layout className="w-5 h-5 text-primary" />
                                 Roadmap
                             </Link>
-                            <Link 
-                                to="/explore" 
+                            <a 
+                                href="https://www.youtube.com/feed/playlists"
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 onClick={() => setMobileOpen(false)}
                                 className="flex items-center gap-3 p-3 rounded-xl bg-surface-2 border border-border text-sm font-semibold text-text-primary"
                             >
                                 <Star className="w-5 h-5 text-gold" />
-                                Explore
-                            </Link>
+                                Explore more
+                            </a>
                             <Link 
                                 to="/profile" 
                                 onClick={() => setMobileOpen(false)}

@@ -7,9 +7,14 @@ const quizSchema = new Schema({
         question: { type: String, required: true },
         options: {
             type: [String],
-            validate: [val => val.length >= 2 && val.length <= 4, '{PATH} must have between 2 and 4 options']
+            validate: [val => val.length >= 2 && val.length <= 5, '{PATH} must have between 2 and 5 options']
         },
-        correctIndex: { type: Number, required: true, min: 0, max: 3 },
+        correctIndices: { 
+            type: [Number], 
+            required: true,
+            validate: [val => val.length >= 1, 'At least one correct index is required']
+        },
+        isMultipleChoice: { type: Boolean, default: false },
         explanation: { type: String, required: true }
     }],
     questionCount: { type: Number, required: true },

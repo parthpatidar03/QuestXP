@@ -55,7 +55,7 @@ const notesSchema = {
         }
     },
     required: ["summary", "keyPoints", "definitions", "highPriority"],
-    additionalProperties: false
+    additionalProperties: true
 };
 
 const validateNotes = ajv.compile(notesSchema);

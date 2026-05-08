@@ -57,18 +57,19 @@ function RankCard({ rank, percentile, trend }) {
     );
 }
 
-const formatTime = (hours) => {
-    if (!hours || hours <= 0) return '—';
-    const h = parseFloat(hours);
-    if (h < 1) {
-        const mins = Math.round(h * 60);
+const formatTime = (seconds) => {
+    if (!seconds || seconds <= 0) return '—';
+    const s = parseInt(seconds);
+    if (s < 3600) {
+        const mins = Math.ceil(s / 60);
         return `${mins}m`;
     }
+    const h = (s / 3600).toFixed(1);
     return `${h}h`;
 };
 
-function LearningTimeCard({ totalHours, weeklyHours, avgPerDay }) {
-    const hasHours = totalHours > 0;
+function LearningTimeCard({ totalSeconds, weeklySeconds, avgSecondsPerDay }) {
+    const hasActivity = totalSeconds > 0;
 
     return (
         <div className="glass-card p-5 relative overflow-hidden group hover:scale-[1.02] transition-all">
@@ -83,18 +84,18 @@ function LearningTimeCard({ totalHours, weeklyHours, avgPerDay }) {
             </div>
             <div className="flex items-baseline gap-2 mb-1">
                 <span className="text-3xl font-black text-text-primary tracking-tight">
-                    {formatTime(totalHours)}
+                    {formatTime(totalSeconds)}
                 </span>
-                <span className="text-xs font-bold text-text-muted">{hasHours ? 'Total' : 'No activity yet'}</span>
+                <span className="text-xs font-bold text-text-muted">{hasActivity ? 'Total' : 'No activity yet'}</span>
             </div>
             <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/40">
                 <div className="flex flex-col">
                     <span className="text-[10px] font-bold text-text-muted uppercase tracking-tighter">This Week</span>
-                    <span className="text-sm font-black text-text-primary">{formatTime(weeklyHours)}</span>
+                    <span className="text-sm font-black text-text-primary">{formatTime(weeklySeconds)}</span>
                 </div>
                 <div className="flex flex-col text-right">
                     <span className="text-[10px] font-bold text-text-muted uppercase tracking-tighter">Daily Avg</span>
-                    <span className="text-sm font-black text-text-primary">{formatTime(avgPerDay)}</span>
+                    <span className="text-sm font-black text-text-primary">{formatTime(avgSecondsPerDay)}</span>
                 </div>
             </div>
         </div>
@@ -416,9 +417,9 @@ const Dashboard = () => {
                                     trend={stats?.rank?.trend} 
                                 />
                                 <LearningTimeCard 
-                                    totalHours={stats?.learningTime?.totalHours} 
-                                    weeklyHours={stats?.learningTime?.weeklyHours} 
-                                    avgPerDay={stats?.learningTime?.avgPerDay} 
+                                    totalSeconds={stats?.learningTime?.totalSeconds} 
+                                    weeklySeconds={stats?.learningTime?.weeklySeconds} 
+                                    avgSecondsPerDay={stats?.learningTime?.avgSecondsPerDay} 
                                 />
                                 <DeadlineCard deadline={stats?.deadlines} />
                                 <ProductivityCard 

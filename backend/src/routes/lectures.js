@@ -160,9 +160,9 @@ router.get('/:lectureId/quiz', async (req, res, next) => {
         const quiz = await Quiz.findOne({ lecture: lectureId }).lean();
         if (!quiz) return res.status(404).json({ error: 'Quiz missing' });
 
-        // Strip correctIndex
+        // Strip answers
         const questionsWithoutAnswers = quiz.questions.map(q => {
-            const { correctIndex, ...rest } = q;
+            const { correctIndex, correctIndices, ...rest } = q;
             return rest;
         });
 
@@ -201,11 +201,23 @@ router.post('/:lectureId/quiz/submit', [
 
         let correctCount = 0;
         const evaluatedQuestions = quiz.questions.map((q, idx) => {
-            const isCorrect = answers[idx] === q.correctIndex;
+            const userAnswers = answers[idx];
+            const correctIndices = q.correctIndices || (q.correctIndex !== undefined ? [q.correctIndex] : []);
+            
+            let isCorrect = false;
+            if (Array.isArray(userAnswers)) {
+                // For multi-choice
+                isCorrect = userAnswers.length === correctIndices.length &&
+                            userAnswers.every(val => correctIndices.includes(val));
+            } else if (typeof userAnswers === 'number') {
+                // For legacy single choice
+                isCorrect = correctIndices.length === 1 && correctIndices[0] === userAnswers;
+            }
+
             if (isCorrect) correctCount++;
             return {
                 ...q,
-                userAnswer: answers[idx],
+                userAnswer: userAnswers,
                 isCorrect
             };
         });

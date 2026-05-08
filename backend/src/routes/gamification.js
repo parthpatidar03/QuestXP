@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const User = require('../models/User');
 const auth = require('../middleware/auth');
 // Controllers will be implemented in later tasks
 // const gamificationController = require('../controllers/gamificationController');
@@ -155,7 +156,6 @@ router.post('/xp', [
 // GET /api/gamification/leaderboard
 router.get('/leaderboard', async (req, res) => {
     try {
-        const User = require('../models/User');
         const { generateRandomUsername } = require('../utils/nameGenerator');
         
         const players = await User.find({}, 'name username usernameSet totalXP level streak')
@@ -194,23 +194,28 @@ router.get('/leaderboard', async (req, res) => {
 const StudySession = require('../models/StudySession');
 
 // POST /api/gamification/heartbeat
-// Pings every 60s to track presence time
+// Pings periodically to track presence time (default 60s)
 router.post('/heartbeat', async (req, res) => {
     try {
         const userId = req.user._id;
+        const seconds = parseInt(req.body.seconds) || 60;
         const today = new Date().toISOString().split('T')[0];
         
         // 1. Update User Total
-        await User.findByIdAndUpdate(userId, { $inc: { totalStudyTime: 60 } });
+        await User.findByIdAndUpdate(userId, { $inc: { totalStudyTime: seconds } });
 
         // 2. Update Daily Session
         await StudySession.findOneAndUpdate(
             { user: userId, date: today },
-            { $inc: { seconds: 60 }, $set: { lastActive: new Date() } },
+            { $inc: { seconds: seconds }, $set: { lastActive: new Date() } },
             { upsert: true, new: true }
         );
 
-        res.json({ success: true });
+        // 3. Record Activity for Streak
+        const streakService = require('../services/streakService');
+        await streakService.recordActivity(userId);
+
+        res.json({ success: true, added: seconds });
     } catch (err) {
         console.error('[Heartbeat] error:', err);
         res.status(500).json({ error: 'Failed to record session' });

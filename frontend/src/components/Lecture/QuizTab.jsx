@@ -34,7 +34,7 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
             setLoading(true);
             const { data } = await api.get(`/lectures/${lectureId}/quiz`);
             setQuiz(data.quiz);
-            setAnswers(new Array(data.quiz.questionCount).fill(null));
+            setAnswers(data.quiz.questions.map(() => []));
             setStartTime(Date.now());
         } catch (err) {
             if (err.response?.status === 403) {
@@ -130,14 +130,27 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
     }, [lectureId, quizStatus, transcriptionStatus, autoStart]);
 
     const handleOptionSelect = (questionIndex, optionIndex) => {
-        if (result) return; // Prevent changing answers after submission
-        const newAnswers = [...answers];
-        newAnswers[questionIndex] = optionIndex;
-        setAnswers(newAnswers);
+        if (result) return;
+        const q = quiz.questions[questionIndex];
+        const current = answers[questionIndex] || [];
+        
+        setAnswers(prev => {
+            const next = [...prev];
+            if (q.isMultipleChoice) {
+                if (current.includes(optionIndex)) {
+                    next[questionIndex] = current.filter(i => i !== optionIndex);
+                } else {
+                    next[questionIndex] = [...current, optionIndex];
+                }
+            } else {
+                next[questionIndex] = [optionIndex];
+            }
+            return next;
+        });
     };
 
     const handleSubmit = async () => {
-        if (answers.includes(null)) return;
+        if (answers.some(a => !a || a.length === 0)) return;
         
         try {
             setSubmitting(true);
@@ -167,7 +180,7 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
 
     const handleRetake = () => {
         setResult(null);
-        setAnswers(new Array(quiz.questionCount).fill(null));
+        setAnswers(quiz.questions.map(() => []));
         setStartTime(Date.now());
     };
 
@@ -273,7 +286,7 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
         );
     }
 
-    const isAllAnswered = !answers.includes(null);
+    const isAllAnswered = answers.every(a => a && a.length > 0);
 
     return (
         <div className="p-6 max-w-3xl mx-auto min-h-full">
@@ -334,10 +347,13 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
                                 
                                 <div className="space-y-2 ml-10">
                                     {q.options.map((opt, oIndex) => {
-                                        let optionClass = "p-3 rounded-lg border text-sm ";
-                                        if (oIndex === q.correctIndex) {
+                                        let optionClass = "p-3 rounded-lg border text-sm flex items-center justify-between ";
+                                        const isCorrect = q.correctIndices?.includes(oIndex) || oIndex === q.correctIndex;
+                                        const isUserSelected = Array.isArray(q.userAnswer) ? q.userAnswer.includes(oIndex) : q.userAnswer === oIndex;
+
+                                        if (isCorrect) {
                                             optionClass += "bg-success/10 border-success/30 text-success font-medium";
-                                        } else if (oIndex === q.userAnswer && !q.isCorrect) {
+                                        } else if (isUserSelected && !q.isCorrect) {
                                             optionClass += "bg-danger/10 border-danger/30 text-danger font-medium";
                                         } else {
                                             optionClass += "bg-surface text-text-secondary border-border opacity-50";
@@ -345,7 +361,9 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
 
                                         return (
                                             <div key={oIndex} className={optionClass}>
-                                                {opt}
+                                                <span>{opt}</span>
+                                                {isCorrect && <CheckCircle2 className="w-4 h-4" />}
+                                                {isUserSelected && !isCorrect && <XCircle className="w-4 h-4" />}
                                             </div>
                                         );
                                     })}
@@ -376,7 +394,7 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
                             </h4>
                             <div className="space-y-3">
                                 {q.options.map((opt, oIndex) => {
-                                    const isSelected = answers[qIndex] === oIndex;
+                                    const isSelected = answers[qIndex]?.includes(oIndex);
                                     return (
                                         <button
                                             key={oIndex}
@@ -387,16 +405,25 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
                                                     : 'bg-surface border-border text-text-secondary hover:border-text-muted hover:bg-surface-3 hover:text-text-primary'
                                             }`}
                                         >
-                                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
+                                            <div className={`w-5 h-5 rounded-lg border-2 flex items-center justify-center shrink-0 transition-colors ${
                                                 isSelected ? 'border-primary' : 'border-text-muted'
-                                            }`}>
-                                                {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-primary" />}
+                                            } ${!q.isMultipleChoice ? 'rounded-full' : 'rounded-md'}`}>
+                                                {isSelected && (
+                                                    q.isMultipleChoice 
+                                                        ? <div className="w-2.5 h-2.5 bg-primary rounded-sm" />
+                                                        : <div className="w-2.5 h-2.5 bg-primary rounded-full" />
+                                                )}
                                             </div>
                                             <span className="text-sm font-medium">{opt}</span>
                                         </button>
                                     );
                                 })}
                             </div>
+                            {q.isMultipleChoice && (
+                                <p className="text-[10px] uppercase tracking-widest text-text-muted mt-4 font-bold">
+                                    Multiple answers possible
+                                </p>
+                            )}
                         </div>
                     ))}
 

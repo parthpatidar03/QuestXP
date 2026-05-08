@@ -116,9 +116,16 @@ const embeddingWorker = new Worker('embedding', async job => {
         }
 
         // Upsert to Pinecone in batches
+        if (upsertData.length === 0) {
+            throw new Error(`No vectors generated for lecture ${lectureId}. Check OpenAI response.`);
+        }
+
+        console.log(`Upserting ${upsertData.length} vectors to Pinecone for lecture ${lectureId}`);
         for (let i = 0; i < upsertData.length; i += batchSize) {
             const batch = upsertData.slice(i, i + batchSize);
-            await index.namespace(lectureId.toString()).upsert(batch);
+            if (batch.length > 0) {
+                await index.namespace(lectureId.toString()).upsert(batch);
+            }
         }
 
         // 7. Complete status

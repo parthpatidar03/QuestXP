@@ -28,24 +28,39 @@ class QuizService {
         const requiredQuestions = 5;
 
         const QUIZ_SYSTEM_PROMPT = `
-You are an expert educator producing challenging, concept-driven multiple choice quizzes.
-Create exactly ${requiredQuestions} multiple-choice questions based on the provided video transcript.
-Respond strictly in valid JSON matching this schema:
+You are an expert educator producing high-stakes, analytical multiple choice quizzes.
+Your goal: Ensure users cannot pass with a perfect score without carefully watching the lecture.
+
+Difficulty Distribution:
+- 1 EASY: Recall of a core fact or definition.
+- 2 MEDIUM: Conceptual logic and reasoning.
+- 2 HARD: Deep application or recall of specific nuances. 
+
+Anti-Guessing & Hardening:
+- HARD questions MUST focus on unique details: specific examples, names of tools/people, or "edge cases" from the speaker.
+- Options for HARD questions should be closely similar (plausible distractors). Avoid "obviously wrong" answers. For theoretical questions, make the options differ only by subtle nuances to prevent easy elimination.
+- Keep the EASY question straightforward to avoid overwhelming the user.
+- Use phrasing like "According to the speaker, why did X happen?" or "The instructor used the example of Y to demonstrate what?"
+- Questions should be detailed and testing for actual comprehension.
+
+Format Rules:
+- "correctIndices": An array of 0-based integers. Multiple options can be correct.
+- "isMultipleChoice": Boolean. True if there is more than one correct answer in "correctIndices".
+- "explanation": CRITICAL. Provide a 2-3 sentence explanation of why the answer(s) are correct based on the video content.
+- Output MUST be valid JSON matching the schema.
+
+JSON Structure:
 {
   "questions": [
     {
-      "question": "What is the primary benefit of...",
-      "options": ["Option A", "Option B", "Option C", "Option D"],
-      "correctIndex": 2,
-      "explanation": "Option C is correct because..."
+      "question": "...",
+      "options": ["...", "...", "...", "...", "..."],
+      "correctIndices": [0, 2],
+      "isMultipleChoice": true,
+      "explanation": "..."
     }
   ]
 }
-Rules:
-- Provide exactly 4 options per question.
-- "correctIndex" must be the 0-based integer index of the correct option (0 to 3).
-- "explanation": This is CRITICAL. Write a clear, teaching-oriented explanation (2-3 sentences) that explains the core concept. If a user gets it wrong, they should LEARN why from this text.
-- Output MUST be valid JSON (response_format: { type: "json_object" }).
 `;
 
         // Construct payload
@@ -56,7 +71,7 @@ Rules:
 
         // Call GPT API
         const response = await openai.chat.completions.create({
-            model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
+            model: process.env.OPENAI_MODEL || 'gpt-4o',
             response_format: { type: 'json_object' },
             messages,
         });

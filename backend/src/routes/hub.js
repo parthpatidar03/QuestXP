@@ -39,9 +39,9 @@ router.get('/stats', async (req, res) => {
         let weeklySeconds = 0;
         weeklySessions.forEach(s => { weeklySeconds += s.seconds; });
 
-        const totalHours = ((req.user.totalStudyTime || 0) / 3600).toFixed(1);
-        const weeklyHours = (weeklySeconds / 3600).toFixed(1);
-        const avgPerDay = (weeklyHours / 7).toFixed(1);
+        const totalSeconds = req.user.totalStudyTime || 0;
+        const weeklySecondsValue = weeklySeconds;
+        const avgSecondsPerDay = Math.round(weeklySecondsValue / 7);
 
         // 3. Course Deadlines
         const activeProgress = progressDocs.filter(p => p.studyPlan?.deadline && !p.studyPlan?.isOverdue);
@@ -76,9 +76,9 @@ router.get('/stats', async (req, res) => {
                 totalPlayers: totalUsers
             },
             learningTime: {
-                totalHours,
-                weeklyHours,
-                avgPerDay
+                totalSeconds,
+                weeklySeconds: weeklySecondsValue,
+                avgSecondsPerDay
             },
             deadlines: nearestDeadline,
             productivity: {

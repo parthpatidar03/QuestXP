@@ -63,10 +63,6 @@ const savePosition = async (userId, courseId, lectureId, { position, watchedSeco
     if (watchedSeconds > 0) {
         // For simplicity, add to minutes (fractional)
         session.minutes += (watchedSeconds / 60);
-
-        // Update User's total study time
-        const User = require('../models/User');
-        await User.findByIdAndUpdate(userId, { $inc: { totalStudyTime: watchedSeconds } });
     }
 
     // Save changes to progress before doing side-effects

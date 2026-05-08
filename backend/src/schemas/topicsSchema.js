@@ -18,7 +18,7 @@ const topicsSchema = {
         }
     },
     required: ["topics"],
-    additionalProperties: false
+    additionalProperties: true
 };
 
 const validateTopics = ajv.compile(topicsSchema);

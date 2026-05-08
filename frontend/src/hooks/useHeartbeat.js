@@ -8,20 +8,42 @@ const useHeartbeat = () => {
     useEffect(() => {
         if (!user) return;
 
-        // Send first heartbeat immediately on mount/login
+        let lastPing = Date.now();
+        
         const sendHeartbeat = async () => {
+            const now = Date.now();
+            const deltaSeconds = Math.round((now - lastPing) / 1000);
+            
+            // Avoid spamming with 0s or negative
+            if (deltaSeconds < 1) return;
+
             try {
-                await api.post('/gamification/heartbeat');
+                await api.post('/gamification/heartbeat', { seconds: deltaSeconds });
+                lastPing = now; // Only update lastPing if request was successful or at least attempted
             } catch (err) {
                 console.error('[Heartbeat] failed:', err);
             }
         };
 
-        sendHeartbeat();
+        const interval = setInterval(sendHeartbeat, 30000); // Check every 30s
 
-        const interval = setInterval(sendHeartbeat, 60000); // 60 seconds
+        // Also send heartbeat when user leaves the page
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'hidden') {
+                sendHeartbeat();
+            } else {
+                lastPing = Date.now(); // Reset start time when they come back
+            }
+        };
 
-        return () => clearInterval(interval);
+        window.addEventListener('visibilitychange', handleVisibilityChange);
+        window.addEventListener('beforeunload', sendHeartbeat);
+
+        return () => {
+            clearInterval(interval);
+            window.removeEventListener('visibilitychange', handleVisibilityChange);
+            window.removeEventListener('beforeunload', sendHeartbeat);
+        };
     }, [user]);
 };
 

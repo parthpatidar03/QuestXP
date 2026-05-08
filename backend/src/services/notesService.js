@@ -11,7 +11,7 @@ const openai = new OpenAI({
 const NOTES_SYSTEM_PROMPT = `
 You are an expert AI tutor creating high-quality, structured study notes.
 Extract and summarize the provided video transcript into the following structure:
-- "summary": A brief, engaging overview (2-3 sentences).
+- "summary": A brief, engaging overview (2-3 sentences). This field is MANDATORY.
 - "keyPoints": Array of strings covering the main takeaways.
 - "definitions": Array of { term, definition, timestamp (in seconds) } objects. Use precise timestamps.
 - "formulas": (Optional) Array of { label, content, timestamp } objects. Provide if math/logic equations are present.
@@ -20,6 +20,7 @@ Extract and summarize the provided video transcript into the following structure
 - "highPriority": Important topics or exam-focused highlights.
 
 You MUST respond strictly in valid JSON matching this schema precisely. No trailing commas. No markdown wrappers. Use the response_format: { type: "json_object" } feature.
+The "summary" field is required for validation.
 `;
 
 class NotesService {
@@ -50,6 +51,18 @@ class NotesService {
             console.error('[NotesService] Failed to parse GPT JSON:', content);
             throw new Error(ERROR_GPT_SCHEMA_INVALID);
         }
+
+        // Fallback for summary if missing
+        if (!raw.summary && raw.keyPoints && raw.keyPoints.length > 0) {
+            raw.summary = raw.keyPoints[0];
+        } else if (!raw.summary) {
+            raw.summary = "Study notes for this lecture.";
+        }
+
+        // Fallback for other required fields
+        if (!raw.keyPoints) raw.keyPoints = [];
+        if (!raw.definitions) raw.definitions = [];
+        if (!raw.highPriority) raw.highPriority = [];
 
         const isValid = validateNotes(raw);
         if (!isValid) {
