@@ -244,12 +244,12 @@ const Roadmap = () => {
             <NavBar />
 
             <main className="max-w-4xl mx-auto px-4 py-12 relative z-10">
-                <div className="flex items-center gap-4 mb-8">
-                    <Link to="/dashboard" className="p-2 hover:bg-surface-2 rounded-xl transition-colors">
-                        <ArrowLeft className="w-5 h-5" />
-                    </Link>
-                    <h1 className="text-xl font-black uppercase tracking-[0.2em] italic">Study Planner</h1>
-                </div>
+                <Link to="/dashboard" className="inline-flex items-center gap-3 px-5 py-2.5 bg-surface-2 hover:bg-surface-3 border border-border rounded-xl transition-all group mb-8 w-fit">
+                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center group-hover:-translate-x-1 transition-transform">
+                        <ArrowLeft className="w-5 h-5 text-primary" />
+                    </div>
+                    <span className="text-sm font-black uppercase tracking-widest text-text-primary italic">Back to Hub</span>
+                </Link>
                 
                 {roadmap ? (
                     <>

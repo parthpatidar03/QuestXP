@@ -223,44 +223,46 @@ const Player = () => {
             </div>
 
             {/* Header */}
-            <header className="shrink-0 px-3 sm:px-5 py-2.5 sm:py-3 flex flex-col gap-2 border-b" style={{ borderColor: theme.border, background: theme.panelBg }}>
-                <div className="flex items-start justify-between gap-3">
+            <header className="shrink-0 px-3 sm:px-6 py-3 sm:py-4 flex flex-col gap-3 border-b" style={{ borderColor: theme.border, background: theme.panelBg }}>
+                <div className="flex items-center justify-between gap-3">
                     <Link
                         to={`/courses/${courseId}`}
-                        className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-semibold uppercase tracking-wider group hover:text-[var(--color-primary)] transition-colors"
-                        style={{ color: theme.muted }}
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-surface-2 hover:bg-surface-3 border border-border rounded-xl transition-all group"
                     >
-                        <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
-                        {course.title}
+                        <ArrowLeft className="w-4 h-4 text-primary group-hover:-translate-x-1 transition-transform" />
+                        <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-text-primary">Course Overview</span>
                     </Link>
-                    <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded shrink-0" style={{ background: 'rgba(0,255,128,0.12)', color: 'var(--color-primary)' }}>
-                        Mission {currentLectureIndex + 1}/{allLectures.length}
-                    </span>
+                    <div className="flex items-center gap-2">
+                        <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-full border border-primary/20" style={{ background: 'rgba(0,255,128,0.05)', color: 'var(--color-primary)' }}>
+                            MISSION {currentLectureIndex + 1} OF {allLectures.length}
+                        </span>
+                    </div>
                 </div>
 
-                <div className="flex items-center justify-between gap-2 min-w-0">
-                    <div className="flex items-center gap-2">
-                        <h1 className="text-sm sm:text-base font-bold line-clamp-1 pr-2" style={{ color: theme.text }}>{currentLecture.title}</h1>
-                    </div>
-                    <div className="flex items-center gap-1.5 shrink-0">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 min-w-0">
+                    <h1 className="text-base sm:text-lg font-black tracking-tight line-clamp-1" style={{ color: theme.text, fontFamily: "'Barlow Condensed', sans-serif" }}>
+                        {currentLecture.title}
+                    </h1>
+                    
+                    <div className="flex items-center gap-2 shrink-0">
                         {prevLecture && (
                             <button
                                 onClick={() => navigate(`/courses/${courseId}/lectures/${prevLecture._id}`)}
-                                className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold transition-colors"
+                                className="flex items-center gap-2 px-4 sm:px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98]"
                                 style={{ background: theme.panelAlt, border: `1px solid ${theme.border}`, color: theme.secondaryText }}
                             >
-                                <ChevronLeft className="w-3.5 h-3.5" />
-                                <span className="hidden sm:inline">Prev</span>
+                                <ChevronLeft className="w-4 h-4" />
+                                <span>Prev</span>
                             </button>
                         )}
                         {nextLecture && (
                             <button
                                 onClick={handleNextLecture}
-                                className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold transition-colors"
-                                style={{ background: 'rgba(0,255,128,0.12)', border: '1px solid rgba(0,255,128,0.3)', color: 'var(--color-primary)' }}
+                                className="flex items-center gap-2 px-4 sm:px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/10"
+                                style={{ background: 'var(--color-primary)', border: 'none', color: '#000' }}
                             >
-                                <span className="hidden sm:inline">Next</span>
-                                <ChevronRight className="w-3.5 h-3.5" />
+                                <span>Next</span>
+                                <ChevronRight className="w-4 h-4" />
                             </button>
                         )}
                     </div>

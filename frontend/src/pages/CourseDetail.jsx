@@ -308,9 +308,11 @@ const CourseDetail = () => {
             <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-8">
 
                 {/* Back link */}
-                <Link to="/dashboard" className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider mb-6 group transition-colors text-text-secondary">
-                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform text-primary" />
-                    Back to Library
+                <Link to="/dashboard" className="inline-flex items-center gap-3 px-5 py-2.5 bg-surface-2 hover:bg-surface-3 border border-border rounded-xl transition-all group mb-8 w-fit">
+                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center group-hover:-translate-x-1 transition-transform">
+                        <ArrowLeft className="w-5 h-5 text-primary" />
+                    </div>
+                    <span className="text-sm font-black uppercase tracking-widest text-text-primary">Back to Library</span>
                 </Link>
 
                 <div className="flex flex-col lg:flex-row gap-6">
