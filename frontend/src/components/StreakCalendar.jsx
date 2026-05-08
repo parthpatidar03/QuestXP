@@ -1,9 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Info, Flame, Trophy } from 'lucide-react';
 import useAuthStore from '../store/useAuthStore';
 
 export default function StreakCalendar({ history = [] }) {
     const { user } = useAuthStore();
     const [currentDate, setCurrentDate] = useState(new Date());
+    const [showInfo, setShowInfo] = useState(false);
+    const infoRef = useRef(null);
+
+    // Close info popup on click outside
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (infoRef.current && !infoRef.current.contains(event.target)) {
+                setShowInfo(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     const xpByDate = {};
     history.forEach(d => { xpByDate[d.date] = d.totalXP; });
@@ -67,18 +81,62 @@ export default function StreakCalendar({ history = [] }) {
     const prevMonth = () => setCurrentDate(new Date(year, month - 1, 1));
 
     return (
-        <div className="w-full max-w-[320px] mx-auto py-2">
+        <div className="w-full max-w-[320px] mx-auto py-2 relative">
             <div className="flex items-center justify-between mb-6">
-                <button onClick={prevMonth} className="w-8 h-8 rounded-full bg-surface-2 flex items-center justify-center hover:bg-surface-3 transition-colors border border-white/5 text-text-secondary hover:text-text-primary">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                <button 
+                    onClick={() => setShowInfo(!showInfo)} 
+                    className="w-8 h-8 rounded-full bg-surface-2 border border-white/5 flex items-center justify-center hover:bg-surface-3 transition-colors text-text-secondary hover:text-text-primary"
+                    aria-label="Streak information"
+                >
+                    <Info className="w-4 h-4" />
                 </button>
-                <div className="px-4 py-1.5 rounded-full bg-surface-2 border border-white/5 text-sm font-semibold tracking-wide text-text-primary shadow-sm shadow-black/20">
-                    {currentDate.toLocaleString('default', { month: 'long' })}
+                
+                <div className="flex items-center gap-3">
+                    <button onClick={prevMonth} className="w-8 h-8 rounded-full bg-surface-2 flex items-center justify-center hover:bg-surface-3 transition-colors border border-white/5 text-text-secondary hover:text-text-primary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    </button>
+                    <div className="px-4 py-1.5 rounded-full bg-surface-2 border border-white/5 text-sm font-semibold tracking-wide text-text-primary shadow-sm shadow-black/20 min-w-[100px] text-center">
+                        {currentDate.toLocaleString('default', { month: 'long' })}
+                    </div>
+                    <button onClick={nextMonth} className="w-8 h-8 rounded-full bg-surface-2 flex items-center justify-center hover:bg-surface-3 transition-colors border border-white/5 text-text-secondary hover:text-text-primary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                    </button>
                 </div>
-                <button onClick={nextMonth} className="w-8 h-8 rounded-full bg-surface-2 flex items-center justify-center hover:bg-surface-3 transition-colors border border-white/5 text-text-secondary hover:text-text-primary">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-                </button>
+
+                <div className="w-8 h-8 opacity-0 pointer-events-none" /> {/* Spacer for balance */}
             </div>
+
+            {/* Info Popover */}
+            {showInfo && (
+                <div 
+                    ref={infoRef}
+                    className="absolute z-50 top-14 left-0 w-full sm:w-[320px] bg-surface border border-white/10 rounded-xl shadow-2xl p-4 text-sm"
+                    style={{ background: 'var(--color-surface)', boxShadow: '0 10px 40px -10px rgba(0,0,0,0.5)' }}
+                >
+                    <div className="flex items-center gap-2 mb-3 text-text-primary font-semibold">
+                        <Info className="w-4 h-4" />
+                        Keep in mind:
+                    </div>
+                    <ol className="list-decimal list-outside ml-4 space-y-2 text-text-secondary text-xs leading-relaxed mb-4">
+                        <li>
+                            Only <span className="text-warning font-medium">completed lectures</span> or generating new courses counts.
+                        </li>
+                        <li>
+                            Earning any amount of XP (greater than 0) will automatically extend your streak.
+                        </li>
+                    </ol>
+                    <p className="text-xs text-text-muted mb-2">
+                        Streaks are tracked based on <span className="text-warning font-medium">your local timezone (midnight)</span>.
+                    </p>
+                    <p className="text-xs text-text-muted mb-4">
+                        Make sure your learning is done before then to count for the day!
+                    </p>
+                    <p className="text-xs text-text-secondary">
+                        Thanks for your <span className="text-warning font-medium">dedication</span> - <br/>
+                        <span className="text-text-primary font-semibold">Keep going and happy learning!</span>
+                    </p>
+                </div>
+            )}
             
             <div className="grid grid-cols-7 gap-y-4 gap-x-2 text-center mb-4">
                 {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(d => (
@@ -96,6 +154,21 @@ export default function StreakCalendar({ history = [] }) {
                         )}
                     </div>
                 ))}
+            </div>
+
+            {/* Streak Stats Pill */}
+            <div className="mt-8 flex items-center justify-between bg-surface-2 border border-white/5 rounded-xl px-4 py-3">
+                <div className="flex items-center gap-2">
+                    <span className="text-xs font-semibold text-text-primary">Current</span>
+                    <span className="text-lg">🔥</span>
+                    <span className="font-bold text-text-primary">{user?.streak?.current || 0}</span>
+                </div>
+                <div className="w-px h-6 bg-border mx-2" />
+                <div className="flex items-center gap-2">
+                    <span className="text-xs font-semibold text-text-primary">Max</span>
+                    <Trophy className="w-4 h-4 text-gold" />
+                    <span className="font-bold text-text-primary">{user?.streak?.longest || 0}</span>
+                </div>
             </div>
         </div>
     );
