@@ -28,7 +28,8 @@ app.use(limiter);
 app.use(express.json());
 app.use(cookieParser());
 const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5173')
-    .split(',').map(o => o.trim());
+    .split(',')
+    .map(o => o.trim().replace(/\/$/, '')); // Remove trailing slash if present
 console.log('[Debug] CORS Allowed Origins:', allowedOrigins);
 
 const isLocalDevOrigin = (origin) => {
