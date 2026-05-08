@@ -230,7 +230,7 @@ const LandingPage = () => {
                     <div className="rounded-2xl border border-primary/20 bg-primary/5 p-6 sm:p-10 text-center max-w-4xl mx-auto">
                         <h2 className="text-2xl sm:text-3xl font-semibold text-text-primary mb-4">Why we built QuestXP</h2>
                         <p className="text-sm sm:text-base text-text-secondary leading-relaxed mb-6">
-                            No single YouTube channel is perfect. You might love <span className="text-text-primary font-medium">React</span> from one creator, and <span className="text-text-primary font-medium">Node.js</span> from another. But jumping between channels means scattered playlists, lost progress, and endless YouTube distractions.
+                            No single YouTube channel is perfect. You might love <span className="text-text-primary font-medium">Photography tips</span> from one creator, and <span className="text-text-primary font-medium">Personal Finance</span> from another. But jumping between channels means scattered playlists, lost progress, and endless YouTube distractions.
                         </p>
                         <p className="text-sm sm:text-base text-text-primary font-medium leading-relaxed">
                             QuestXP brings all your favorite playlists from different creators into <span className="text-primary">one unified workspace</span>. Build your custom learning path, track everything in one place, and focus without the noise.
