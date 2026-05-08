@@ -106,13 +106,20 @@ export default function StreakCalendar({ history = [] }) {
                 <div className="w-8 h-8 opacity-0 pointer-events-none" /> {/* Spacer for balance */}
             </div>
 
-            {/* Info Popover */}
+            {/* Info Modal */}
             {showInfo && (
-                <div 
-                    ref={infoRef}
-                    className="absolute z-50 bottom-[calc(100%+8px)] left-0 w-full sm:w-[340px] bg-surface border border-white/10 rounded-xl shadow-2xl p-4 text-sm"
-                    style={{ background: 'var(--color-surface)', boxShadow: '0 10px 40px -10px rgba(0,0,0,0.5)' }}
-                >
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    {/* Backdrop */}
+                    <div 
+                        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                        onClick={() => setShowInfo(false)}
+                    />
+                    {/* Modal Content */}
+                    <div 
+                        ref={infoRef}
+                        className="relative z-10 w-full max-w-[340px] bg-surface border border-white/10 rounded-xl shadow-2xl p-6 text-sm"
+                        style={{ background: 'var(--color-surface)', boxShadow: '0 20px 40px -10px rgba(0,0,0,0.8)' }}
+                    >
                     <div className="flex items-center gap-2 mb-3 text-text-primary font-semibold">
                         <Info className="w-4 h-4" />
                         Keep in mind:
@@ -135,6 +142,7 @@ export default function StreakCalendar({ history = [] }) {
                         Thanks for your <span className="text-warning font-medium">dedication</span> - <br/>
                         <span className="text-text-primary font-semibold">Keep going and happy learning!</span>
                     </p>
+                </div>
                 </div>
             )}
             
