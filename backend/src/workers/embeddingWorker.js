@@ -2,7 +2,7 @@ const { Worker } = require('bullmq');
 const IORedis = require('ioredis');
 const { Pinecone } = require('@pinecone-database/pinecone');
 const { RecursiveCharacterTextSplitter } = require('@langchain/textsplitters');
-const { OpenAI } = require('openai');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 // Optional: import mongoose model for Transcript if available, but spec says:
 // "fetch Transcript.content by lectureId" -> Assuming Transcript model is in ../models/Transcript
 let Transcript;
@@ -18,7 +18,8 @@ const connection = new IORedis(process.env.REDIS_URL || 'redis://localhost:6379'
     maxRetriesPerRequest: null,
 });
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const embeddingModel = genAI.getGenerativeModel({ model: "text-embedding-004" });
 const pc = new Pinecone({ apiKey: process.env.PINECONE_API_KEY });
 const indexName = process.env.PINECONE_INDEX_NAME || 'questxp';
 
@@ -80,15 +81,19 @@ const embeddingWorker = new Worker('embedding', async job => {
         for (let i = 0; i < chunkTexts.length; i += batchSize) {
             const batch = chunkTexts.slice(i, i + batchSize);
             
-            const embeddingResponse = await openai.embeddings.create({
-                model: 'text-embedding-3-small',
-                input: batch
+            const batchEmbedResponse = await embeddingModel.batchEmbedContents({
+                requests: batch.map(t => ({
+                    content: { parts: [{ text: t }] },
+                    taskType: "RETRIEVAL_DOCUMENT"
+                }))
             });
+
+            const batchEmbeddings = batchEmbedResponse.embeddings;
 
             // 5 & 6. Assemble vectors
             const batchVectors = batch.map((text, batchIndex) => {
                 const globalIndex = i + batchIndex;
-                const embedding = embeddingResponse.data[batchIndex].embedding;
+                const embedding = batchEmbeddings[batchIndex].values;
                 
                 // Estimate timestamp if no exact match (simplified)
                 let startTimestamp = 0;

@@ -1,11 +1,15 @@
-const OpenAI = require('openai');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 const Transcript = require('../models/Transcript');
 const Notes = require('../models/Notes');
 const { validateNotes } = require('../schemas/notesSchema');
 const { ERROR_GPT_SCHEMA_INVALID } = require('../constants/aiPipeline');
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ 
+    model: 'gemini-1.5-flash',
+    generationConfig: {
+        responseMimeType: "application/json",
+    }
 });
 
 const NOTES_SYSTEM_PROMPT = `
@@ -29,26 +33,23 @@ class NotesService {
         const transcript = await Transcript.findOne({ lecture: lectureId });
         if (!transcript) throw new Error('Transcript not found for this lecture');
 
-        // Construct payload
-        const messages = [
-            { role: 'system', content: NOTES_SYSTEM_PROMPT },
-            { role: 'user', content: transcript.fullText }
-        ];
-
-        // Call GPT API
-        const response = await openai.chat.completions.create({
-            model: process.env.OPENAI_MODEL || 'gpt-4o',
-            response_format: { type: 'json_object' },
-            messages,
-        });
-
-        // Parse and validate
-        const content = response.choices[0].message.content;
         let raw;
         try {
+            const prompt = `
+            TRANSCRIPT:
+            ${transcript.fullText}
+
+            TASK:
+            ${NOTES_SYSTEM_PROMPT}
+            `;
+
+            const result = await model.generateContent(prompt);
+            const response = await result.response;
+            const content = response.text();
+            
             raw = JSON.parse(content);
         } catch (error) {
-            console.error('[NotesService] Failed to parse GPT JSON:', content);
+            console.error('[NotesService] Failed to generate/parse Gemini JSON:', error);
             throw new Error(ERROR_GPT_SCHEMA_INVALID);
         }
 

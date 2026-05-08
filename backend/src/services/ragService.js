@@ -1,10 +1,10 @@
-const { OpenAI } = require('openai');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 const { Pinecone } = require('@pinecone-database/pinecone');
 const { validate, SchemaValidationError } = require('../schemas/ragAnswerSchema');
 
 // Lazy-initialize so env vars are loaded before use
-let _openai, _pc;
-const getOpenAI = () => _openai || (_openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY }));
+let _genAI, _pc;
+const getGenAI = () => _genAI || (_genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY));
 const getPinecone = () => _pc || (_pc = new Pinecone({ apiKey: process.env.PINECONE_API_KEY }));
 
 // T015 & T020 Grounding System Prompt
@@ -19,18 +19,24 @@ Return your response as a JSON object with "answerText" (the prose answer), "cit
 `;
 
 exports.queryLecture = async (lectureId, questionText) => {
-    const openai = getOpenAI();
+    const genAI = getGenAI();
+    const embeddingModel = genAI.getGenerativeModel({ model: "text-embedding-004" });
+    const chatModel = genAI.getGenerativeModel({ 
+        model: "gemini-1.5-flash",
+        generationConfig: { responseMimeType: "application/json" }
+    });
+
     const pc = getPinecone();
     const startTime = Date.now();
     const indexName = process.env.PINECONE_INDEX_NAME || 'questxp';
     const index = pc.Index(indexName);
 
     // 1. Embed Question
-    const embedRes = await openai.embeddings.create({
-        model: 'text-embedding-3-small',
-        input: questionText
+    const embedRes = await embeddingModel.embedContent({
+        content: { parts: [{ text: questionText }] },
+        taskType: "RETRIEVAL_QUERY"
     });
-    const queryEmbedding = embedRes.data[0].embedding;
+    const queryEmbedding = embedRes.embedding.values;
 
     // 2. Query Pinecone
     const topK = parseInt(process.env.RAG_TOP_K) || 5;
@@ -64,20 +70,20 @@ exports.queryLecture = async (lectureId, questionText) => {
 
     const userMessage = `CONTEXT:\n${contextString}\n\nQUESTION: ${questionText}`;
 
-    // 5. GPT-4o Call
+    // 5. Gemini Call
     const gptStart = Date.now();
-    const chatRes = await openai.chat.completions.create({
-        model: 'gpt-4o',
-        response_format: { type: 'json_object' },
-        messages: [
-            { role: 'system', content: GROUNDING_SYSTEM_PROMPT },
-            { role: 'user', content: userMessage }
-        ]
-    });
-    const gptLatency = Date.now() - gptStart;
-    console.log(`[RAG] GPT call took ${gptLatency}ms.`);
+    const prompt = `
+    SYSTEM: ${GROUNDING_SYSTEM_PROMPT}
+    
+    ${userMessage}
+    `;
 
-    const parsedContent = JSON.parse(chatRes.choices[0].message.content);
+    const chatResult = await chatModel.generateContent(prompt);
+    const chatRes = await chatResult.response;
+    const gptLatency = Date.now() - gptStart;
+    console.log(`[RAG] Gemini call took ${gptLatency}ms.`);
+
+    const parsedContent = JSON.parse(chatRes.text());
 
     // 6. Validate Output
     validate(parsedContent);

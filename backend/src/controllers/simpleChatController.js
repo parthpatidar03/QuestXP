@@ -1,7 +1,8 @@
 const { validationResult } = require('express-validator');
-const OpenAI = require('openai');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 /**
  * POST /api/doubts/:lectureId/simple
@@ -30,28 +31,25 @@ Your role:
 - Format your response clearly. Use bullet points or numbered lists where helpful.
 Keep answers focused and under 200 words unless a detailed explanation is truly needed.`;
 
-        // Build messages array for multi-turn
-        const messages = [{ role: 'system', content: systemPrompt }];
-
-        // Add prior conversation history (last 10 exchanges = 20 messages max)
+        // Build history for Gemini
+        const geminiHistory = [];
         const recentHistory = history.slice(-20);
         for (const msg of recentHistory) {
-            if (msg.role === 'user' || msg.role === 'assistant') {
-                messages.push({ role: msg.role, content: msg.content });
-            }
+            const role = msg.role === 'assistant' ? 'model' : 'user';
+            geminiHistory.push({
+                role,
+                parts: [{ text: msg.content }]
+            });
         }
 
-        // Add current question
-        messages.push({ role: 'user', content: questionText });
-
-        const completion = await openai.chat.completions.create({
-            model: 'gpt-4o-mini',             // fast and cheap
-            messages,
-            max_tokens: 500,
-            temperature: 0.6,
+        const chat = model.startChat({
+            history: geminiHistory,
+            systemInstruction: systemPrompt
         });
 
-        const answer = completion.choices?.[0]?.message?.content?.trim() || 'I could not generate a response. Please try again.';
+        const result = await chat.sendMessage(questionText);
+        const response = await result.response;
+        const answer = response.text().trim() || 'I could not generate a response. Please try again.';
 
         return res.json({ answer, questionText });
 

@@ -13,6 +13,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@langchain/textsplitters": "^1.0.1",
     "@pinecone-database/pinecone": "^7.1.0",
     "ajv": "^8.18.0",
