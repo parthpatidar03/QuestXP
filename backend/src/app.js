@@ -58,7 +58,7 @@ app.use(cors({
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
 app.use('/api/auth', authRoutes);
-app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/v2/dashboard', dashboardRoutes);
 app.use('/api/gamification', gamificationRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/progress', progressRoutes);
