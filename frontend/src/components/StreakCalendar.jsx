@@ -157,13 +157,13 @@ export default function StreakCalendar({ history = [] }) {
             </div>
 
             {/* Streak Stats Pill */}
-            <div className="mt-8 flex items-center justify-between bg-surface-2 border border-white/5 rounded-xl px-4 py-3">
+            <div className="mt-8 flex items-center justify-center bg-surface-2 border border-white/5 rounded-xl px-4 py-3">
                 <div className="flex items-center gap-2">
                     <span className="text-xs font-semibold text-text-primary">Current</span>
                     <span className="text-lg">🔥</span>
                     <span className="font-bold text-text-primary">{user?.streak?.current || 0}</span>
                 </div>
-                <div className="w-px h-6 bg-border mx-2" />
+                <div className="w-px h-6 bg-border mx-4" />
                 <div className="flex items-center gap-2">
                     <span className="text-xs font-semibold text-text-primary">Max</span>
                     <Trophy className="w-4 h-4 text-gold" />
