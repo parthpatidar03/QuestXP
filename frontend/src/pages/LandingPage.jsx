@@ -237,8 +237,8 @@ const LandingPage = () => {
                         viewport={{ once: true }}
                         className="text-center"
                     >
-                        <span className="text-3xl sm:text-5xl md:text-6xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-primary via-gold to-primary/80 uppercase">
-                            #MultipleCreatorsOnePlatform
+                        <span className="text-3xl sm:text-5xl md:text-6xl font-black italic tracking-normal text-transparent bg-clip-text bg-gradient-to-r from-primary via-gold to-primary/80 uppercase">
+                            # Multiple Creators • One Platform
                         </span>
                     </motion.div>
                 </section>
