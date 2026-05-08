@@ -246,6 +246,9 @@ const NavBar = () => {
                     <Link to="/dashboard" className="px-3 py-1.5 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-lg transition-colors">
                         My Courses
                     </Link>
+                    <Link to="/roadmap" className="px-3 py-1.5 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-lg transition-colors">
+                        Roadmap
+                    </Link>
                 </nav>
 
                 <div className="flex items-center gap-2">
@@ -321,6 +324,14 @@ const NavBar = () => {
                             >
                                 <Zap className="w-5 h-5 text-warning" />
                                 Courses
+                            </Link>
+                            <Link 
+                                to="/roadmap" 
+                                onClick={() => setMobileOpen(false)}
+                                className="flex items-center gap-3 p-3 rounded-xl bg-surface-2 border border-border text-sm font-semibold text-text-primary"
+                            >
+                                <Layout className="w-5 h-5 text-primary" />
+                                Roadmap
                             </Link>
                             <Link 
                                 to="/explore" 

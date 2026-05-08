@@ -20,6 +20,7 @@ const doubtRoutes = require('./routes/doubtRoutes');
 const gamificationRoutes = require('./routes/gamification');
 const feedbackRoutes = require('./routes/feedback');
 const dashboardRoutes = require('./routes/hub');
+const roadmapRoutes = require('./routes/roadmap');
 
 const app = express();
 
@@ -68,6 +69,7 @@ app.use('/api/internal', require('./routes/internal'));
 app.use('/api/lectures', require('./routes/lectures'));
 app.use('/api/doubts', doubtRoutes);
 app.use('/api/feedback', feedbackRoutes);
+app.use('/api/roadmap', roadmapRoutes);
 app.use('/api/notifications', require('./routes/notificationRoutes'));
 
 // T063 — 404 handler for unknown routes

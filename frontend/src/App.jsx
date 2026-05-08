@@ -57,7 +57,7 @@ const App = () => {
                 <Route path="/courses/:courseId" element={
                     <ProtectedRoute><CourseDetail /></ProtectedRoute>
                 } />
-                <Route path="/courses/:courseId/roadmap" element={
+                <Route path="/roadmap" element={
                     <ProtectedRoute><Roadmap /></ProtectedRoute>
                 } />
                 <Route path="/courses/:courseId/lectures/:lectureId" element={
