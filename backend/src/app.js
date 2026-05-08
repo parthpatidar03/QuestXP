@@ -24,51 +24,47 @@ const roadmapRoutes = require('./routes/roadmap');
 
 const app = express();
 
+// 1. Trusted Proxy (Railway/Heroku)
 app.set('trust proxy', 1);
-app.use(limiter);
-app.use(express.json());
-app.use(cookieParser());
-app.use((req, res, next) => {
-    // Critical for Google Auth Popups to work across origins
-    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
-    res.setHeader('Cross-Origin-Embedder-Policy', 'unsafe-none');
-    next();
-});
 
+// 2. Origin Configuration
 const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5173')
     .split(',')
     .map(o => o.trim().replace(/\/$/, ''));
 console.log('[Debug] CORS Allowed Origins:', allowedOrigins);
 
-const isLocalDevOrigin = (origin) => {
-    try {
-        const url = new URL(origin);
-        return ['localhost', '127.0.0.1', '::1'].includes(url.hostname);
-    } catch {
-        return false;
-    }
-};
-
+// 3. Global CORS
 app.use(cors({
     origin: (origin, cb) => {
         if (!origin) return cb(null, true);
-        if (allowedOrigins.includes(origin)) return cb(null, true);
-
-        // Fail-safe for local development
-        if (process.env.NODE_ENV !== 'production' && isLocalDevOrigin(origin)) {
-            return cb(null, true);
-        }
-
-        // Specifically allow vercel preview and production urls if needed
-        if (origin.endsWith('.vercel.app')) {
-            return cb(null, true);
-        }
-
+        
+        const isAllowed = allowedOrigins.some(allowed => origin === allowed) || 
+                         origin.endsWith('.vercel.app') ||
+                         (['localhost', '127.0.0.1'].some(h => origin.includes(h)) && process.env.NODE_ENV !== 'production');
+        
+        if (isAllowed) return cb(null, true);
         cb(new Error(`CORS: origin '${origin}' not allowed`));
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
 }));
 
+// Handle Preflight for all routes
+app.options('*', cors());
+
+// 4. Security Headers & Rate Limiting
+app.use((req, res, next) => {
+    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+    res.setHeader('Cross-Origin-Embedder-Policy', 'unsafe-none');
+    next();
+});
+
+app.use(limiter);
+app.use(express.json());
+app.use(cookieParser());
+
+// 5. Routes
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
 app.use('/api/auth', authRoutes);
@@ -84,12 +80,12 @@ app.use('/api/feedback', feedbackRoutes);
 app.use('/api/roadmap', roadmapRoutes);
 app.use('/api/notifications', require('./routes/notificationRoutes'));
 
-// T063 — 404 handler for unknown routes
+// 404 handler
 app.use((req, res) => {
     res.status(404).json({ error: `Route ${req.method} ${req.path} not found` });
 });
 
-// Central error handler — hide stack traces in production
+// Central error handler
 app.use((err, req, res, next) => {
     console.error('[Error]', err.message, process.env.NODE_ENV !== 'production' ? err.stack : '');
     res.status(err.status || 500).json({
