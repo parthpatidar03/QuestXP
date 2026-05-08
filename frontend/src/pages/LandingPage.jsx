@@ -169,24 +169,59 @@ const LandingPage = () => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.55, ease: 'easeOut', delay: 0.08 }}
-                            className="glass-card p-4 sm:p-5"
+                            className="relative h-[380px] w-full rounded-2xl border border-border bg-surface-2/40 backdrop-blur-xl overflow-hidden flex flex-col shadow-2xl shadow-black/20"
                         >
-                            <h2 className="text-sm font-semibold text-text-primary mb-4">Today at a glance</h2>
-                            <div className="space-y-3">
-                                {[
-                                    { label: 'Current course', value: 'DSA in JavaScript' },
-                                    { label: 'Progress', value: '61% complete' },
-                                    { label: 'Next action', value: 'Finish Binary Trees lecture' },
-                                ].map((item) => (
-                                    <div key={item.label} className="rounded-lg border border-border bg-surface-2 px-3 py-3">
-                                        <p className="text-xs text-text-muted">{item.label}</p>
-                                        <p className="text-sm sm:text-base font-medium text-text-primary mt-1 break-words">{item.value}</p>
+                            <div className="p-4 border-b border-border bg-surface-2/60 flex items-center gap-2 shrink-0">
+                                <Sparkles className="w-4 h-4 text-primary" />
+                                <h2 className="text-sm font-semibold text-text-primary tracking-wide">The QuestXP Journey</h2>
+                            </div>
+                            
+                            <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent pr-4">
+                                {/* Step 1 */}
+                                <div className="relative pl-6 border-l border-primary/30 pb-2 group">
+                                    <div className="absolute -left-[5px] top-0 w-2.5 h-2.5 rounded-full bg-primary ring-4 ring-bg group-hover:scale-125 transition-transform" />
+                                    <h3 className="text-sm font-bold text-text-primary mb-1 -mt-1">1. Add Playlists</h3>
+                                    <p className="text-xs text-text-secondary leading-relaxed mb-3">Paste any YouTube playlist link into your dashboard.</p>
+                                    <div className="rounded border border-border bg-surface p-2 shadow-sm">
+                                        <div className="flex items-center gap-2 opacity-50">
+                                            <div className="w-3 h-3 rounded bg-white/20" />
+                                            <div className="h-1.5 w-1/2 bg-white/20 rounded" />
+                                        </div>
                                     </div>
-                                ))}
+                                </div>
+
+                                {/* Step 2 */}
+                                <div className="relative pl-6 border-l border-primary/30 pb-2 group">
+                                    <div className="absolute -left-[5px] top-0 w-2.5 h-2.5 rounded-full bg-surface border border-primary ring-4 ring-bg group-hover:bg-primary transition-colors" />
+                                    <h3 className="text-sm font-bold text-text-primary mb-1 -mt-1">2. AI Course Roadmap</h3>
+                                    <p className="text-xs text-text-secondary leading-relaxed mb-3">QuestXP generates a structured roadmap with sections.</p>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div className="h-6 rounded border border-border bg-surface shadow-sm" />
+                                        <div className="h-6 rounded border border-border bg-surface shadow-sm" />
+                                    </div>
+                                </div>
+
+                                {/* Step 3 */}
+                                <div className="relative pl-6 border-l border-primary/30 pb-2 group">
+                                    <div className="absolute -left-[5px] top-0 w-2.5 h-2.5 rounded-full bg-surface border border-primary ring-4 ring-bg group-hover:bg-primary transition-colors" />
+                                    <h3 className="text-sm font-bold text-text-primary mb-1 -mt-1">3. Learn & Take Quizzes</h3>
+                                    <p className="text-xs text-text-secondary leading-relaxed mb-3">Watch lectures without distractions and complete AI quizzes.</p>
+                                    <div className="rounded border border-border bg-surface p-2 flex gap-2 items-center shadow-sm">
+                                        <CheckCircle2 className="w-3 h-3 text-success opacity-70" />
+                                        <div className="h-1.5 w-full bg-white/10 rounded" />
+                                    </div>
+                                </div>
+
+                                {/* Step 4 */}
+                                <div className="relative pl-6 border-l border-transparent pb-2 group">
+                                    <div className="absolute -left-[5px] top-0 w-2.5 h-2.5 rounded-full bg-surface border border-primary ring-4 ring-bg group-hover:bg-primary transition-colors" />
+                                    <h3 className="text-sm font-bold text-text-primary mb-1 -mt-1">4. Earn XP & Streaks</h3>
+                                    <p className="text-xs text-text-secondary leading-relaxed">Level up your profile as you finish videos and build daily streaks.</p>
+                                </div>
                             </div>
-                            <div className="mt-4 pt-4 border-t border-border text-xs sm:text-sm text-text-secondary">
-                                Designed for focused study sessions, not noisy dashboards.
-                            </div>
+                            
+                            {/* Scroll fade overlay */}
+                            <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-[var(--color-surface-2)] to-transparent pointer-events-none opacity-80" />
                         </motion.div>
                     </div>
                 </section>
