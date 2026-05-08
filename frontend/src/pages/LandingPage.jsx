@@ -230,6 +230,19 @@ const LandingPage = () => {
                     </div>
                 </section>
 
+                <section className="py-12 flex justify-center">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        className="text-center"
+                    >
+                        <span className="text-3xl sm:text-5xl md:text-6xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-primary via-gold to-primary/80 uppercase">
+                            #MultipleCreatorsOnePlatform
+                        </span>
+                    </motion.div>
+                </section>
+
                 <section id="why" className="max-w-screen-xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
                     <div className="rounded-2xl border border-border bg-surface-2 dark:bg-primary/5 dark:border-primary/20 p-6 sm:p-10 text-center max-w-4xl mx-auto shadow-sm">
                         <h2 className="text-2xl sm:text-3xl font-semibold text-text-primary mb-4">Why we built QuestXP</h2>
