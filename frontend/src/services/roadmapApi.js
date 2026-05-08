@@ -5,12 +5,12 @@ export const generateRoadmap = async (config) => {
     return response.data;
 };
 
-export const getCurrentRoadmap = async () => {
-    const response = await api.get('/roadmap/current');
+export const getCurrentRoadmap = async (courseId = null) => {
+    const response = await api.get('/roadmap/current', { params: { courseId } });
     return response.data;
 };
 
-export const updateRoadmapDays = async (daysToAdd) => {
-    const response = await api.patch('/roadmap/adjust', { daysToAdd });
+export const adjustRoadmap = async (roadmapId, daysToShift) => {
+    const response = await api.patch('/roadmap/adjust', { roadmapId, daysToShift });
     return response.data;
 };

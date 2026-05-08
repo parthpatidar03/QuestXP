@@ -37,7 +37,7 @@ const createCourse = async (req, res, next) => {
 const getCourses = async (req, res, next) => {
     try {
         const courses = await Course.find({ owner: req.user._id })
-            .select('title status totalLectures createdAt sections.lectures.thumbnailUrl')
+            .select('title status totalLectures createdAt sections.title sections._id sections.lectures.thumbnailUrl')
             .sort({ createdAt: -1 })
             .lean();
 

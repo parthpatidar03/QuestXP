@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { X, Calendar, Clock, BookOpen, AlertCircle, Sparkles } from 'lucide-react';
+import { X, Calendar, Clock, BookOpen, AlertCircle, Sparkles, ChevronDown, ChevronRight, Check } from 'lucide-react';
 import { format, addDays } from 'date-fns';
 import api from '../../services/api';
 import { generateRoadmap } from '../../services/roadmapApi';
 
-const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated }) => {
-    const [playlists, setPlaylists] = useState([]);
-    const [selectedIds, setSelectedIds] = useState([]);
+const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null }) => {
+    const [courses, setCourses] = useState([]);
+    const [selectedCourseIds, setSelectedCourseIds] = useState([]);
+    const [selectedSectionIds, setSelectedSectionIds] = useState([]);
+    const [expandedCourses, setExpandedCourses] = useState([]);
+    
     const [dailyHours, setDailyHours] = useState(2);
     const [startDate, setStartDate] = useState(format(new Date(), 'yyyy-MM-dd'));
     const [targetDate, setTargetDate] = useState(format(addDays(new Date(), 30), 'yyyy-MM-dd'));
@@ -17,32 +20,71 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated }) => {
         if (isOpen) {
             api.get('/courses')
                 .then(res => {
-                    setPlaylists(res.data.courses || []);
+                    const fetchedCourses = res.data.courses || [];
+                    setCourses(fetchedCourses);
                     setFetching(false);
+                    
+                    // If courseId is provided (from CourseDetail), auto-select it and expand it
+                    if (courseId) {
+                        setSelectedCourseIds([courseId]);
+                        setExpandedCourses([courseId]);
+                        const targetCourse = fetchedCourses.find(c => c._id === courseId);
+                        if (targetCourse) {
+                            setSelectedSectionIds(targetCourse.sections.map(s => s._id));
+                        }
+                    }
                 })
                 .catch(err => {
-                    console.error("Failed to fetch playlists", err);
+                    console.error("Failed to fetch courses", err);
                     setFetching(false);
                 });
         }
-    }, [isOpen]);
+    }, [isOpen, courseId]);
+
+    const toggleCourse = (id) => {
+        setExpandedCourses(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
+    };
+
+    const toggleCourseSelection = (course) => {
+        const isSelected = selectedCourseIds.includes(course._id);
+        if (isSelected) {
+            setSelectedCourseIds(selectedCourseIds.filter(id => id !== course._id));
+            setSelectedSectionIds(selectedSectionIds.filter(id => !course.sections.map(s => s._id).includes(id)));
+        } else {
+            setSelectedCourseIds([...selectedCourseIds, course._id]);
+            setSelectedSectionIds([...selectedSectionIds, ...course.sections.map(s => s._id)]);
+        }
+    };
+
+    const toggleSectionSelection = (sectionId, parentCourseId) => {
+        const isSelected = selectedSectionIds.includes(sectionId);
+        if (isSelected) {
+            setSelectedSectionIds(selectedSectionIds.filter(id => id !== sectionId));
+        } else {
+            setSelectedSectionIds([...selectedSectionIds, sectionId]);
+            if (!selectedCourseIds.includes(parentCourseId)) {
+                setSelectedCourseIds([...selectedCourseIds, parentCourseId]);
+            }
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         try {
             const config = {
-                playlistIds: selectedIds,
-                dailyHours,
+                playlistIds: selectedCourseIds,
+                sectionIds: selectedSectionIds,
+                dailyHours: parseFloat(dailyHours),
                 startDate,
-                excludedDays: [0] // Sunday rest by default
+                courseId: courseId // Pin to this course if provided
             };
             const roadmap = await generateRoadmap(config);
-            onGenerated(roadmap);
+            if (onGenerated) onGenerated(roadmap);
             onClose();
         } catch (err) {
             console.error(err);
-            alert("Failed to generate roadmap. Please check your inputs.");
+            alert("Failed to generate roadmap.");
         } finally {
             setLoading(false);
         }
@@ -61,8 +103,8 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated }) => {
                             <Sparkles className="w-5 h-5" />
                         </div>
                         <div>
-                            <h2 className="text-xl font-bold text-text-primary">Plan Your Journey</h2>
-                            <p className="text-xs text-text-muted">Create a personalized study roadmap</p>
+                            <h2 className="text-xl font-bold text-text-primary">Custom Study Roadmap</h2>
+                            <p className="text-xs text-text-muted">Pick specific playlists to master</p>
                         </div>
                     </div>
                     <button onClick={onClose} className="p-2 hover:bg-surface-3 rounded-lg transition-colors">
@@ -71,91 +113,113 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated }) => {
                 </div>
 
                 <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-6">
-                    {/* Playlist Selection */}
+                    {/* Content Selection */}
                     <div>
-                        <label className="text-sm font-bold text-text-primary mb-3 block">Select Content to Include</label>
-                        <div className="grid grid-cols-1 gap-2">
+                        <label className="text-sm font-bold text-text-primary mb-3 block">Mastery Content</label>
+                        <div className="space-y-3">
                             {fetching ? (
-                                <div className="text-sm text-text-muted">Loading courses...</div>
-                            ) : playlists.length > 0 ? (
-                                playlists.map(pl => (
-                                    <label key={pl._id} className={`flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer ${selectedIds.includes(pl._id) ? 'bg-primary/5 border-primary' : 'bg-surface-2 border-border hover:border-text-muted'}`}>
-                                        <input 
-                                            type="checkbox" 
-                                            className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
-                                            checked={selectedIds.includes(pl._id)}
-                                            onChange={(e) => {
-                                                if (e.target.checked) setSelectedIds([...selectedIds, pl._id]);
-                                                else setSelectedIds(selectedIds.filter(id => id !== pl._id));
-                                            }}
-                                        />
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-semibold text-text-primary truncate">{pl.title}</p>
-                                            <p className="text-[10px] text-text-muted uppercase tracking-wider">{pl.totalLectures} Lectures</p>
+                                <div className="text-sm text-text-muted animate-pulse">Scanning library...</div>
+                            ) : courses.length > 0 ? (
+                                courses.filter(c => !courseId || c._id === courseId).map(course => (
+                                    <div key={course._id} className="border border-border rounded-xl overflow-hidden bg-surface-2/40">
+                                        <div className="flex items-center p-3 gap-3 hover:bg-surface-2 transition-colors">
+                                            <button 
+                                                type="button"
+                                                onClick={() => toggleCourseSelection(course)}
+                                                className={`w-5 h-5 rounded border flex items-center justify-center transition-all ${selectedCourseIds.includes(course._id) ? 'bg-primary border-primary' : 'border-border bg-surface'}`}
+                                            >
+                                                {selectedCourseIds.includes(course._id) && <Check className="w-3 h-3 text-white" />}
+                                            </button>
+                                            
+                                            <div className="flex-1 cursor-pointer" onClick={() => toggleCourse(course._id)}>
+                                                <p className="text-sm font-bold text-text-primary">{course.title}</p>
+                                                <p className="text-[10px] text-text-muted uppercase tracking-wider">{course.sections?.length || 0} Playlists</p>
+                                            </div>
+
+                                            <button type="button" onClick={() => toggleCourse(course._id)} className="p-1 hover:bg-surface-3 rounded">
+                                                {expandedCourses.includes(course._id) ? <ChevronDown className="w-4 h-4 text-text-muted" /> : <ChevronRight className="w-4 h-4 text-text-muted" />}
+                                            </button>
                                         </div>
-                                    </label>
+
+                                        {expandedCourses.includes(course._id) && (
+                                            <div className="bg-black/20 border-t border-border/50 p-2 space-y-1">
+                                                {course.sections?.map(section => (
+                                                    <div 
+                                                        key={section._id} 
+                                                        onClick={() => toggleSectionSelection(section._id, course._id)}
+                                                        className={`flex items-center gap-3 p-2.5 rounded-lg cursor-pointer transition-all ${selectedSectionIds.includes(section._id) ? 'bg-primary/10' : 'hover:bg-white/5'}`}
+                                                    >
+                                                        <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${selectedSectionIds.includes(section._id) ? 'bg-primary border-primary' : 'border-border'}`}>
+                                                            {selectedSectionIds.includes(section._id) && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                                                        </div>
+                                                        <span className="text-xs font-medium text-text-secondary truncate">{section.title}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
                                 ))
                             ) : (
-                                <div className="p-4 rounded-xl border border-dashed border-border text-center">
-                                    <p className="text-sm text-text-muted">No courses found. Enroll in some first!</p>
+                                <div className="p-8 border border-dashed border-border rounded-2xl text-center">
+                                    <BookOpen className="w-8 h-8 text-text-muted mx-auto mb-3 opacity-20" />
+                                    <p className="text-sm text-text-muted">No courses found in your library.</p>
                                 </div>
                             )}
                         </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="text-sm font-bold text-text-primary mb-2 block">Study Hours / Day</label>
+                        <div className="space-y-2">
+                            <label className="text-xs font-bold text-text-muted uppercase tracking-widest">Study Hours / Day</label>
                             <div className="relative">
                                 <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
                                 <input 
-                                    type="number" 
-                                    min="0.5" 
-                                    step="0.5"
-                                    max="12"
+                                    type="number" min="0.5" step="0.5" max="12"
                                     value={dailyHours}
                                     onChange={e => setDailyHours(e.target.value)}
-                                    className="w-full bg-surface-2 border border-border rounded-xl pl-10 pr-4 py-2.5 text-sm focus:border-primary outline-none"
+                                    className="w-full bg-surface-2 border border-border rounded-xl pl-10 pr-4 py-3 text-sm focus:border-primary outline-none transition-colors"
                                 />
                             </div>
                         </div>
-                        <div>
-                            <label className="text-sm font-bold text-text-primary mb-2 block">Target Date</label>
+                        <div className="space-y-2">
+                            <label className="text-xs font-bold text-text-muted uppercase tracking-widest">Start Date</label>
                             <div className="relative">
                                 <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
                                 <input 
                                     type="date" 
-                                    value={targetDate}
-                                    onChange={e => setTargetDate(e.target.value)}
-                                    className="w-full bg-surface-2 border border-border rounded-xl pl-10 pr-4 py-2.5 text-sm focus:border-primary outline-none"
+                                    value={startDate}
+                                    onChange={e => setStartDate(e.target.value)}
+                                    className="w-full bg-surface-2 border border-border rounded-xl pl-10 pr-4 py-3 text-sm focus:border-primary outline-none transition-colors"
                                 />
                             </div>
                         </div>
                     </div>
 
-                    <div className="p-4 bg-primary/5 border border-primary/10 rounded-xl flex gap-3">
+                    <div className="p-4 bg-primary/5 border border-primary/10 rounded-2xl flex gap-3">
                         <AlertCircle className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                         <p className="text-xs text-text-secondary leading-relaxed">
-                            Our algorithm will distribute your study load as evenly as possible across {selectedIds.length} playlists to hit your target date.
+                            {selectedSectionIds.length > 0 
+                                ? `Distributing content from ${selectedSectionIds.length} playlists across your timeline.` 
+                                : "Select at least one playlist to generate your master roadmap."}
                         </p>
                     </div>
                 </form>
 
                 <div className="p-6 border-t border-border bg-surface-2 flex gap-3">
-                    <button onClick={onClose} type="button" className="flex-1 px-4 py-3 rounded-xl border border-border text-sm font-bold text-text-primary hover:bg-surface-3 transition-colors">
+                    <button onClick={onClose} type="button" className="flex-1 px-4 py-3.5 rounded-xl border border-border text-xs font-black uppercase tracking-widest text-text-primary hover:bg-surface-3 transition-all">
                         Cancel
                     </button>
                     <button 
                         onClick={handleSubmit}
-                        disabled={loading || selectedIds.length === 0}
-                        className="flex-[2] px-4 py-3 rounded-xl bg-primary text-white text-sm font-bold hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
+                        disabled={loading || selectedSectionIds.length === 0}
+                        className="flex-[2] px-4 py-3.5 rounded-xl bg-primary text-white text-xs font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
                     >
                         {loading ? (
                             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                         ) : (
                             <>
                                 <Sparkles className="w-4 h-4" />
-                                Start Your Journey
+                                GENERATE MASTER PLAN
                             </>
                         )}
                     </button>

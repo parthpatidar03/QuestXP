@@ -6,6 +6,7 @@ import useGamificationStore from '../store/useGamificationStore';
 import api from '../services/api';
 import { getGamificationProfile, getXPHistory } from '../services/gamificationApi';
 import NavBar from '../components/NavBar';
+import DailyMissionWidget from '../components/Dashboard/DailyMissionWidget';
 import XPLeaderboardSidebar from '../components/Dashboard/XPLeaderboardSidebar';
 import StreakCalendar from '../components/StreakCalendar';
 import CourseCreationForm from '../components/Course/CourseCreationForm';
@@ -477,6 +478,7 @@ const Dashboard = () => {
                 </div>
 
                 <aside className="flex flex-col w-full xl:w-72 shrink-0 space-y-4">
+                    <DailyMissionWidget />
                     <XPLeaderboardSidebar players={leaderboardData} />
                     
                     <div className="glass-card p-5">

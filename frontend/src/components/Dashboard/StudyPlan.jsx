@@ -122,7 +122,7 @@ const StudyPlan = ({ courseId, onOpenSetup }) => {
                 {/* Right: CTA */}
                 <div className="shrink-0 w-full md:w-auto">
                     <Link 
-                        to="/roadmap"
+                        to={`/roadmap?courseId=${courseId}`}
                         className="w-full inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl bg-primary text-white font-black text-xs uppercase tracking-widest hover:bg-primary-hover transition-all shadow-xl shadow-primary/30 group/btn"
                     >
                         VIEW FULL ROADMAP

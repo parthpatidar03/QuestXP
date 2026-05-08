@@ -11,7 +11,12 @@ const RoadmapSchema = new mongoose.Schema({
         targetDate: Date,
         dailyHours: { type: Number, default: 2 },
         excludedDays: [Number], // 0-6
-        playlistIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }]
+        playlistIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
+        sectionIds: [String] // IDs of specific playlists/sections
+    },
+    courseId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Course'
     },
     days: [{
         date: Date,

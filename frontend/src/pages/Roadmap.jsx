@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { 
     CheckCircle2, 
     Circle, 
@@ -12,10 +13,11 @@ import {
     Minus,
     ArrowLeft,
     Sparkles,
-    Layout
+    Layout,
+    Play
 } from 'lucide-react';
 import { format, differenceInDays } from 'date-fns';
-import { getCurrentRoadmap } from '../services/roadmapApi';
+import { getCurrentRoadmap, adjustRoadmap } from '../services/roadmapApi';
 import NavBar from '../components/NavBar';
 import { BGPattern } from '../components/ui/bg-pattern';
 import GenerateRoadmapModal from '../components/Roadmap/GenerateRoadmapModal';
@@ -23,7 +25,7 @@ import useAuthStore from '../store/useAuthStore';
 
 /* ── Components ──────────────────────────────────────────────────────── */
 
-const ProgressHeader = ({ roadmap }) => {
+const ProgressHeader = ({ roadmap, onShift }) => {
     if (!roadmap) return null;
     
     const totalDays = roadmap.days.length;
@@ -49,7 +51,30 @@ const ProgressHeader = ({ roadmap }) => {
                 </div>
 
                 <div className="flex items-center gap-8">
-                    <div className="text-right">
+                    {/* Schedule Adjuster */}
+                    <div className="flex items-center gap-3 bg-surface-2 p-2 rounded-xl border border-border">
+                        <button 
+                            onClick={() => onShift(-1)}
+                            className="p-2 hover:bg-surface-3 rounded-lg text-text-muted hover:text-primary transition-colors"
+                            title="Subtract 1 day"
+                        >
+                            <Minus className="w-4 h-4" />
+                        </button>
+                        <div className="text-center min-w-[80px]">
+                            <span className="text-[9px] font-black text-text-muted uppercase tracking-widest block">Shift Plan</span>
+                            <Calendar className="w-3.5 h-3.5 inline mr-1 text-primary" />
+                            <span className="text-xs font-black text-text-primary">Adjust</span>
+                        </div>
+                        <button 
+                            onClick={() => onShift(1)}
+                            className="p-2 hover:bg-surface-3 rounded-lg text-text-muted hover:text-primary transition-colors"
+                            title="Add 1 day"
+                        >
+                            <Plus className="w-4 h-4" />
+                        </button>
+                    </div>
+
+                    <div className="text-right border-l border-border/50 pl-8">
                         <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest block mb-1">Time Progress</span>
                         <div className="flex items-center gap-3">
                             <span className="text-2xl font-black text-text-primary italic">Day {Math.max(1, currentDayIndex)}/{totalDays}</span>
@@ -67,7 +92,6 @@ const ProgressHeader = ({ roadmap }) => {
 const RoadmapPlaylistCard = ({ playlistId, days, allVideosCompleted }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     
-    // Derived info
     const playlistName = useMemo(() => {
         for (const day of days) {
             const vid = day.plannedVideos.find(v => v.playlistId === playlistId);
@@ -93,14 +117,12 @@ const RoadmapPlaylistCard = ({ playlistId, days, allVideosCompleted }) => {
     return (
         <div className="glass-card mb-4 overflow-hidden border border-border/50 hover:border-primary/30 transition-all">
             <div className="p-5 flex items-center gap-5">
-                {/* Status Indicator */}
                 <div className="shrink-0">
                     <div className={`w-12 h-12 rounded-xl border flex items-center justify-center transition-all ${allVideosCompleted ? 'bg-success/10 border-success/30 text-success shadow-lg shadow-success/10' : 'bg-surface-2 border-border text-text-muted'}`}>
                         {allVideosCompleted ? <CheckCircle2 className="w-6 h-6" /> : <Circle className="w-6 h-6 opacity-40" />}
                     </div>
                 </div>
 
-                {/* Content */}
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                         <h3 className="text-lg font-bold text-text-primary tracking-tight truncate">{playlistName}</h3>
@@ -109,26 +131,12 @@ const RoadmapPlaylistCard = ({ playlistId, days, allVideosCompleted }) => {
                         </span>
                     </div>
                     <div className="flex items-center gap-4">
-                        <div className="flex-1 max-w-[200px] h-1.5 rounded-full bg-surface-3 overflow-hidden border border-border">
-                            <div className="h-full bg-primary" style={{ width: '0%' }} /> {/* Placeholder for real progress */}
+                        <div className="flex items-center gap-1.5 text-[10px] font-black text-text-muted uppercase">
+                            <Calendar className="w-3 h-3 text-primary" /> {dateRange}
                         </div>
-                        <span className="text-xs font-bold text-text-muted">0% Complete</span>
                     </div>
                 </div>
 
-                {/* Date Controls */}
-                <div className="hidden md:flex items-center gap-4 px-6 border-x border-border/50 h-12">
-                    <div className="text-right">
-                        <span className="text-[9px] font-black text-text-muted uppercase tracking-widest block mb-0.5">Timeline</span>
-                        <span className="text-sm font-black text-text-primary italic whitespace-nowrap">{dateRange}</span>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                        <button className="p-1 hover:bg-surface-3 rounded transition-colors text-text-muted hover:text-primary"><Plus className="w-3 h-3" /></button>
-                        <button className="p-1 hover:bg-surface-3 rounded transition-colors text-text-muted hover:text-primary"><Minus className="w-3 h-3" /></button>
-                    </div>
-                </div>
-
-                {/* Expand Toggle */}
                 <button 
                     onClick={() => setIsExpanded(!isExpanded)}
                     className="p-3 hover:bg-surface-3 rounded-xl transition-colors text-text-muted"
@@ -137,7 +145,6 @@ const RoadmapPlaylistCard = ({ playlistId, days, allVideosCompleted }) => {
                 </button>
             </div>
 
-            {/* Expanded Content: Daily Breakdown */}
             {isExpanded && (
                 <div className="bg-surface-2/50 border-t border-border/50 p-4 space-y-3">
                     {days.filter(d => d.plannedVideos.some(v => v.playlistId === playlistId)).map((day, dIdx) => (
@@ -156,7 +163,7 @@ const RoadmapPlaylistCard = ({ playlistId, days, allVideosCompleted }) => {
                             <div className="space-y-2">
                                 {day.plannedVideos.filter(v => v.playlistId === playlistId).map((vid, vIdx) => (
                                     <div key={vIdx} className="flex items-center gap-3 p-2 rounded-lg hover:bg-surface-2 transition-colors group">
-                                        <Circle className="w-3.5 h-3.5 text-text-muted group-hover:text-primary transition-colors" />
+                                        <Play className="w-3 h-3 text-primary fill-primary opacity-0 group-hover:opacity-100 transition-opacity" />
                                         <span className="text-sm font-medium text-text-secondary flex-1 truncate">{vid.title}</span>
                                         <span className="text-[10px] font-bold text-text-muted">{vid.duration}m</span>
                                     </div>
@@ -173,17 +180,23 @@ const RoadmapPlaylistCard = ({ playlistId, days, allVideosCompleted }) => {
 /* ── Main Page ───────────────────────────────────────────────────────── */
 
 const Roadmap = () => {
+    const [searchParams] = useSearchParams();
+    const courseId = searchParams.get('courseId');
+    
     const [roadmap, setRoadmap] = useState(null);
     const [loading, setLoading] = useState(true);
     const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
+    const [adjusting, setAdjusting] = useState(false);
+    
     const { user } = useAuthStore();
 
     const fetchRoadmap = async () => {
         try {
-            const data = await getCurrentRoadmap();
+            const data = await getCurrentRoadmap(courseId);
             setRoadmap(data);
         } catch (err) {
             console.error("No active roadmap found");
+            setRoadmap(null);
         } finally {
             setLoading(false);
         }
@@ -191,9 +204,21 @@ const Roadmap = () => {
 
     useEffect(() => {
         fetchRoadmap();
-    }, []);
+    }, [courseId]);
 
-    // Grouping by Playlist
+    const handleShift = async (days) => {
+        if (!roadmap || adjusting) return;
+        setAdjusting(true);
+        try {
+            const updated = await adjustRoadmap(roadmap._id, days);
+            setRoadmap(updated);
+        } catch (err) {
+            console.error("Failed to shift roadmap", err);
+        } finally {
+            setAdjusting(false);
+        }
+    };
+
     const playlistIds = useMemo(() => {
         if (!roadmap) return [];
         const ids = new Set();
@@ -219,10 +244,16 @@ const Roadmap = () => {
             <NavBar />
 
             <main className="max-w-4xl mx-auto px-4 py-12 relative z-10">
+                <div className="flex items-center gap-4 mb-8">
+                    <Link to="/dashboard" className="p-2 hover:bg-surface-2 rounded-xl transition-colors">
+                        <ArrowLeft className="w-5 h-5" />
+                    </Link>
+                    <h1 className="text-xl font-black uppercase tracking-[0.2em] italic">Study Planner</h1>
+                </div>
                 
                 {roadmap ? (
                     <>
-                        <ProgressHeader roadmap={roadmap} />
+                        <ProgressHeader roadmap={roadmap} onShift={handleShift} />
                         
                         <div className="mb-6 flex items-center justify-between">
                             <h3 className="text-xs font-black text-text-muted uppercase tracking-[0.2em]">Learning Milestones</h3>
@@ -252,7 +283,7 @@ const Roadmap = () => {
                         </div>
                         <h2 className="text-2xl font-black text-text-primary tracking-tight mb-3">No Active Roadmap</h2>
                         <p className="text-sm text-text-muted mb-8 leading-relaxed">
-                            You haven't generated a study plan yet. Pick your enrolled courses and our algorithm will build a custom roadmap for you.
+                            {courseId ? "This course doesn't have a specific roadmap yet." : "You haven't generated a study plan yet."} Generate a custom roadmap to start mastering these playlists.
                         </p>
                         <button 
                             onClick={() => setIsGenerateModalOpen(true)}
@@ -268,6 +299,7 @@ const Roadmap = () => {
             <GenerateRoadmapModal 
                 isOpen={isGenerateModalOpen} 
                 onClose={() => setIsGenerateModalOpen(false)}
+                courseId={courseId}
                 onGenerated={(newRoadmap) => {
                     setRoadmap(newRoadmap);
                     setIsGenerateModalOpen(false);

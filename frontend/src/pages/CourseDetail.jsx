@@ -350,7 +350,7 @@ const CourseDetail = () => {
                                             {completedCount > 0 ? 'Resume Mission' : 'Start Quest'}
                                         </Link>
                                         <Link 
-                                            to="/roadmap" 
+                                            to={`/roadmap?courseId=${courseId}`} 
                                             className="btn-glass inline-flex items-center gap-2 px-5 py-2.5 bg-surface-2 hover:bg-surface-3 transition-colors rounded-lg text-sm font-bold text-text-primary border border-border"
                                         >
                                             <Layers className="w-4 h-4 text-primary" />
