@@ -75,8 +75,7 @@ To maximize privacy and minimize user friction, the platform now treats the "Ide
 ## 6. Project Communication Standards
 
 ### Git Commit Messages
-- **Format**: Human-readable, detailed, and plain English.
-- **Restriction**: No conventional commit prefixes (feat, fix, style, etc.).
+- **Format**: Plain English, one-line only, no machine prefixes.
 - **Purpose**: To maintain a beginner-friendly and professional history that reads like a development log rather than a machine-generated list.
 
 ---
