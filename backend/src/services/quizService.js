@@ -1,4 +1,4 @@
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+const aiProvider = require('./aiProvider');
 const Transcript = require('../models/Transcript');
 const Quiz = require('../models/Quiz');
 const { validateQuiz } = require('../schemas/quizSchema');
@@ -7,14 +7,6 @@ const {
     MIN_DURATION_FOR_QUIZ_FULL,
     ERROR_GPT_SCHEMA_INVALID
 } = require('../constants/aiPipeline');
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({
-    model: 'gemini-1.5-flash',
-    generationConfig: {
-        responseMimeType: "application/json",
-    }
-});
 
 class QuizService {
     async generate(lectureId) {
