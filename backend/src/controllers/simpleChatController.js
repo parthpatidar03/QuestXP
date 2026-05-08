@@ -1,8 +1,5 @@
 const { validationResult } = require('express-validator');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const aiProvider = require('../services/aiProvider');
 
 /**
  * POST /api/doubts/:lectureId/simple
@@ -31,25 +28,7 @@ Your role:
 - Format your response clearly. Use bullet points or numbered lists where helpful.
 Keep answers focused and under 200 words unless a detailed explanation is truly needed.`;
 
-        // Build history for Gemini
-        const geminiHistory = [];
-        const recentHistory = history.slice(-20);
-        for (const msg of recentHistory) {
-            const role = msg.role === 'assistant' ? 'model' : 'user';
-            geminiHistory.push({
-                role,
-                parts: [{ text: msg.content }]
-            });
-        }
-
-        const chat = model.startChat({
-            history: geminiHistory,
-            systemInstruction: systemPrompt
-        });
-
-        const result = await chat.sendMessage(questionText);
-        const response = await result.response;
-        const answer = response.text().trim() || 'I could not generate a response. Please try again.';
+        const answer = await aiProvider.generateChat(questionText, systemPrompt, history);
 
         return res.json({ answer, questionText });
 

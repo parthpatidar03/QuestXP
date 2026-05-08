@@ -2,14 +2,14 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const Transcript = require('../models/Transcript');
 const Quiz = require('../models/Quiz');
 const { validateQuiz } = require('../schemas/quizSchema');
-const { 
+const {
     MIN_DURATION_FOR_QUIZ_SHORT,
     MIN_DURATION_FOR_QUIZ_FULL,
-    ERROR_GPT_SCHEMA_INVALID 
+    ERROR_GPT_SCHEMA_INVALID
 } = require('../constants/aiPipeline');
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ 
+const model = genAI.getGenerativeModel({
     model: 'gemini-1.5-flash',
     generationConfig: {
         responseMimeType: "application/json",
@@ -78,11 +78,7 @@ JSON Structure:
             Create a ${requiredQuestions}-question quiz.
             `;
 
-            const result = await model.generateContent(prompt);
-            const response = await result.response;
-            const content = response.text();
-            
-            const raw = JSON.parse(content);
+            const raw = await aiProvider.generateJSON(prompt, QUIZ_SYSTEM_PROMPT);
 
             if (!validateQuiz(raw)) {
                 console.error('[QuizService] Ajv validation failed:', validateQuiz.errors);

@@ -1,4 +1,4 @@
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+const aiProvider = require('./aiProvider');
 const Transcript = require('../models/Transcript');
 const Course = require('../models/Course');
 const { validateTopics } = require('../schemas/topicsSchema');
@@ -6,14 +6,6 @@ const {
     MIN_DURATION_FOR_TOPICS,
     ERROR_GPT_SCHEMA_INVALID 
 } = require('../constants/aiPipeline');
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ 
-    model: 'gemini-1.5-flash',
-    generationConfig: {
-        responseMimeType: "application/json",
-    }
-});
 
 const TOPICS_SYSTEM_PROMPT = `
 You are an expert AI creating chronological topic chapters for a video.
@@ -58,13 +50,9 @@ class TopicsService {
             ${TOPICS_SYSTEM_PROMPT}
             `;
 
-            const result = await model.generateContent(prompt);
-            const response = await result.response;
-            const content = response.text();
-            
-            raw = JSON.parse(content);
+            raw = await aiProvider.generateJSON(prompt, TOPICS_SYSTEM_PROMPT);
         } catch (error) {
-            console.error('[TopicsService] Failed to generate/parse Gemini JSON:', error);
+            console.error('[TopicsService] AI Generation failed:', error);
             throw new Error(ERROR_GPT_SCHEMA_INVALID);
         }
 

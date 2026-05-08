@@ -1,4 +1,5 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+const aiProvider = require('./aiProvider');
 const { Pinecone } = require('@pinecone-database/pinecone');
 const { validate, SchemaValidationError } = require('../schemas/ragAnswerSchema');
 
@@ -21,10 +22,6 @@ Return your response as a JSON object with "answerText" (the prose answer), "cit
 exports.queryLecture = async (lectureId, questionText) => {
     const genAI = getGenAI();
     const embeddingModel = genAI.getGenerativeModel({ model: "text-embedding-004" });
-    const chatModel = genAI.getGenerativeModel({ 
-        model: "gemini-1.5-flash",
-        generationConfig: { responseMimeType: "application/json" }
-    });
 
     const pc = getPinecone();
     const startTime = Date.now();
@@ -70,20 +67,11 @@ exports.queryLecture = async (lectureId, questionText) => {
 
     const userMessage = `CONTEXT:\n${contextString}\n\nQUESTION: ${questionText}`;
 
-    // 5. Gemini Call
-    const gptStart = Date.now();
-    const prompt = `
-    SYSTEM: ${GROUNDING_SYSTEM_PROMPT}
-    
-    ${userMessage}
-    `;
-
-    const chatResult = await chatModel.generateContent(prompt);
-    const chatRes = await chatResult.response;
-    const gptLatency = Date.now() - gptStart;
-    console.log(`[RAG] Gemini call took ${gptLatency}ms.`);
-
-    const parsedContent = JSON.parse(chatRes.text());
+    // 5. AI Provider Call
+    const aiStart = Date.now();
+    const parsedContent = await aiProvider.generateJSON(userMessage, GROUNDING_SYSTEM_PROMPT);
+    const aiLatency = Date.now() - aiStart;
+    console.log(`[RAG] AI call took ${aiLatency}ms.`);
 
     // 6. Validate Output
     validate(parsedContent);
