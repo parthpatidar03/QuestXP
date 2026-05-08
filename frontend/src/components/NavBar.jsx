@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Zap, Search, BookOpenCheck, Moon, Sun, BookOpen, X, Loader2, Star } from 'lucide-react';
+import { Zap, Search, BookOpenCheck, Moon, Sun, BookOpen, X, Loader2, Star, Menu, Trophy } from 'lucide-react';
 import NotificationBell from './NotificationBell';
 import useAuthStore from '../store/useAuthStore';
 import useGamificationStore from '../store/useGamificationStore';
@@ -190,6 +190,7 @@ const NavBar = () => {
     const { user } = useAuthStore();
     const { totalXP, level, setProfile } = useGamificationStore();
     const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
+    const [mobileOpen, setMobileOpen] = useState(false);
 
 
     useEffect(() => {
@@ -248,6 +249,10 @@ const NavBar = () => {
                 </nav>
 
                 <div className="flex items-center gap-2">
+                    <div className="hidden sm:flex items-center gap-1.5 bg-surface-2 border border-border rounded-lg px-3 py-1.5">
+                        <Zap className="w-4 h-4 text-gold" />
+                        <span className="text-sm font-semibold text-text-primary">{(totalXP || user?.totalXP || 0).toLocaleString()} XP</span>
+                    </div>
 
                     <button
                         onClick={toggleTheme}
@@ -263,10 +268,6 @@ const NavBar = () => {
                     />
                 </div>
 
-                <div className="hidden sm:flex items-center gap-1.5 bg-surface-2 border border-border rounded-lg px-3 py-1.5">
-                    <Zap className="w-4 h-4 text-gold" />
-                    <span className="text-sm font-semibold text-text-primary">{(totalXP || user?.totalXP || 0).toLocaleString()} XP</span>
-                </div>
 
                 <Link to="/profile" className="relative flex items-center gap-2 group">
                     <div className="relative">
@@ -283,6 +284,75 @@ const NavBar = () => {
                         {user?.username || user?.name || 'Player'}
                     </span>
                 </Link>
+
+                {/* Mobile Menu Toggle */}
+                <button
+                    onClick={() => setMobileOpen(!mobileOpen)}
+                    className="md:hidden p-2 text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-lg transition-colors"
+                >
+                    {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                </button>
+
+            </div>
+
+            {/* Mobile Navigation Overlay */}
+            {mobileOpen && (
+                <div className="md:hidden border-t border-border bg-surface/98 backdrop-blur-xl animate-in slide-in-from-top duration-300">
+                    <div className="p-4 space-y-4">
+                        {/* Mobile Search */}
+                        <div className="px-1">
+                            <CourseSearch />
+                        </div>
+
+                        {/* Mobile Nav Links */}
+                        <div className="grid grid-cols-2 gap-2">
+                            <Link 
+                                to="/" 
+                                onClick={() => setMobileOpen(false)}
+                                className="flex items-center gap-3 p-3 rounded-xl bg-surface-2 border border-border text-sm font-semibold text-text-primary"
+                            >
+                                <BookOpenCheck className="w-5 h-5 text-primary" />
+                                Home
+                            </Link>
+                            <Link 
+                                to="/dashboard" 
+                                onClick={() => setMobileOpen(false)}
+                                className="flex items-center gap-3 p-3 rounded-xl bg-surface-2 border border-border text-sm font-semibold text-text-primary"
+                            >
+                                <Zap className="w-5 h-5 text-warning" />
+                                Courses
+                            </Link>
+                            <Link 
+                                to="/explore" 
+                                onClick={() => setMobileOpen(false)}
+                                className="flex items-center gap-3 p-3 rounded-xl bg-surface-2 border border-border text-sm font-semibold text-text-primary"
+                            >
+                                <Star className="w-5 h-5 text-gold" />
+                                Explore
+                            </Link>
+                            <Link 
+                                to="/profile" 
+                                onClick={() => setMobileOpen(false)}
+                                className="flex items-center gap-3 p-3 rounded-xl bg-surface-2 border border-border text-sm font-semibold text-text-primary"
+                            >
+                                <Trophy className="w-5 h-5 text-success" />
+                                Profile
+                            </Link>
+                        </div>
+
+                        {/* Mobile Stats Summary */}
+                        <div className="p-4 rounded-xl bg-surface-2 border border-border flex items-center justify-between">
+                            <div className="flex flex-col">
+                                <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Total Mastery</span>
+                                <span className="text-xl font-black text-text-primary">{(totalXP || user?.totalXP || 0).toLocaleString()} XP</span>
+                            </div>
+                            <div className="w-10 h-10 rounded-full bg-gold/10 flex items-center justify-center text-gold border border-gold/20">
+                                <Zap className="w-5 h-5" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             </div>
 

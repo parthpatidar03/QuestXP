@@ -476,7 +476,7 @@ const Dashboard = () => {
                     </section>
                 </div>
 
-                <aside className="hidden xl:flex flex-col w-72 shrink-0 space-y-4">
+                <aside className="flex flex-col w-full xl:w-72 shrink-0 space-y-4">
                     <XPLeaderboardSidebar players={leaderboardData} />
                     
                     <div className="glass-card p-5">
