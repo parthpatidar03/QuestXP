@@ -56,6 +56,7 @@ app.use(cors({
 }));
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
+app.get('/api/test-direct', (req, res) => res.json({ message: 'Direct' }));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/dashboard', dashboardRoutes);
