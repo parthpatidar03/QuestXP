@@ -160,8 +160,9 @@ const LandingPage = () => {
                             </div>
 
                             <p className="mt-8 text-base sm:text-lg text-text-secondary leading-relaxed max-w-[52ch]">
-                                Convert YouTube playlists into structured courses, continue where you left off,
-                                and stay consistent with progress tracking, AI notes, quizzes, and study plans.
+                                <strong>Life happens. Missed a day?</strong> Shift your plan with one click. 
+                                QuestXP's surgical engine instantly recalculates your entire study roadmap 
+                                in real-time, keeping your goals within reach without the guilt.
                             </p>
 
                             <div className="mt-7 flex flex-col sm:flex-row gap-3 sm:items-center">
