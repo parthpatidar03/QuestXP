@@ -550,7 +550,7 @@ const Dashboard = () => {
                         <div className="progress-bar mb-1">
                             <div className="progress-bar__fill" style={{ width: `${xpProgress}%` }} />
                         </div>
-                        <p className="text-[10px] text-right text-text-muted uppercase tracking-widest font-bold">
+                        <p className="text-xs text-right text-text-muted uppercase tracking-widest font-bold">
                             {xpToNextLevel} XP to Level {level + 1}
                         </p>
                     </Link>

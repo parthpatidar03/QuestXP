@@ -118,9 +118,9 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
                     <div className="p-4 bg-surface-3 border border-border rounded-2xl space-y-2">
                         <div className="flex items-center gap-2 text-primary">
                             <Info className="w-4 h-4" />
-                            <span className="text-[10px] font-black uppercase tracking-wider">How it works</span>
+                            <span className="text-xs font-black uppercase tracking-wider">How it works</span>
                         </div>
-                        <p className="text-[11px] text-text-secondary leading-relaxed">
+                        <p className="text-sm text-text-secondary leading-relaxed">
                             Set your daily limits. Our surgical engine slices your curriculum to fit. 
                             <strong> Missed a day?</strong> Click <span className="text-primary font-bold">+</span> on your roadmap. 
                             <strong> Finished early?</strong> Click <span className="text-primary font-bold">-</span>. 
@@ -227,7 +227,7 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
 
                     <div className="p-4 bg-primary/5 border border-primary/10 rounded-2xl flex gap-3">
                         <AlertCircle className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                        <p className="text-[11px] text-text-secondary leading-relaxed">
+                        <p className="text-xs text-text-secondary leading-relaxed">
                             Our algorithm will prioritize larger missions for your weekend blocks to maximize your learning momentum.
                         </p>
                     </div>
