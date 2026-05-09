@@ -331,16 +331,6 @@ const LandingPage = () => {
 
                         <article className="glass-card p-6 sm:p-8 group hover:border-primary/50 transition-all">
                             <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                                <Target className="w-6 h-6" />
-                            </div>
-                            <h3 className="text-xl font-bold text-text-primary mb-3">Deadline-Oriented Roadmaps</h3>
-                            <p className="text-sm text-text-secondary leading-relaxed">
-                                Set your goals and availability. QuestXP generates a personalized daily roadmap that keeps you accountable to your own timeline.
-                            </p>
-                        </article>
-
-                        <article className="glass-card p-6 sm:p-8 group hover:border-primary/50 transition-all">
-                            <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                                 <Sparkles className="w-6 h-6" />
                             </div>
                             <h3 className="text-xl font-bold text-text-primary mb-3">Contextual AI Chatbot</h3>
