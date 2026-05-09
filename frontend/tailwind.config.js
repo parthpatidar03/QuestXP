@@ -33,10 +33,10 @@ export default {
         }
       },
       fontFamily: {
-        display: ["'Inter'", 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        body: ["'Inter'", 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        display: ["'Plus Jakarta Sans'", 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        body: ["'Outfit'", 'ui-sans-serif', 'system-ui', 'sans-serif'],
         mono: ["'JetBrains Mono'", 'monospace'],
-        sans: ["'Inter'", 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ["'Outfit'", 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
         'card': 'var(--shadow-card)',

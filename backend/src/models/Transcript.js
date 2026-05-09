@@ -16,7 +16,6 @@ const transcriptSchema = new Schema({
     createdAt: { type: Date, default: Date.now },
 });
 
-transcriptSchema.index({ lecture: 1 }, { unique: true });
 transcriptSchema.index({ course: 1 });
 
 module.exports = mongoose.model('Transcript', transcriptSchema);
