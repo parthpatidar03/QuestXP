@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import { Plus, X, Link as LinkIcon, AlertCircle, Info } from 'lucide-react';
 
-const CourseCreationForm = () => {
+const CourseCreationForm = ({ onSuccess }) => {
     const [title, setTitle] = useState('');
     const [sections, setSections] = useState([{ title: '', playlistUrl: '', order: 0 }]);
     const [error, setError] = useState(null);
@@ -33,7 +33,11 @@ const CourseCreationForm = () => {
         setIsSubmitting(true);
         try {
             const { data } = await api.post('/courses', { title, sections });
-            navigate(`/courses/${data.course._id}`);
+            if (onSuccess) {
+                onSuccess(data.course._id);
+            } else {
+                navigate(`/courses/${data.course._id}`);
+            }
         } catch (err) {
             setError(err.response?.data?.errors?.[0]?.msg || err.response?.data?.error || 'Failed to create course');
             setIsSubmitting(false);

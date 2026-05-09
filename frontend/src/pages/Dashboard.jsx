@@ -18,6 +18,7 @@ import Footer from '../components/ui/Footer';
 import UsernameModal from '../components/Dashboard/UsernameModal';
 import { BarChart3, Clock, Calendar, ArrowUpRight, TrendingUp, Crown } from 'lucide-react';
 import GlobalLeaderboardModal from '../components/Dashboard/GlobalLeaderboardModal';
+import GenerateRoadmapModal from '../components/Roadmap/GenerateRoadmapModal';
 
 
 /* ── Helpers ─────────────────────────────────────────────────────────── */
@@ -257,6 +258,7 @@ const Dashboard = () => {
     const [feedbackOpen, setFeedbackOpen] = useState(false);
     const [showUsernameModal, setShowUsernameModal] = useState(false);
     const [showLeaderboard, setShowLeaderboard] = useState(false);
+    const [roadmapCourseId, setRoadmapCourseId] = useState(null);
 
     useEffect(() => {
         if (user && !user.usernameSet) {
@@ -447,7 +449,11 @@ const Dashboard = () => {
                         )}
                         {showCreate && (
                             <div className="mb-6">
-                                <CourseCreationForm onSuccess={() => setShowCreate(false)} />
+                                <CourseCreationForm onSuccess={(courseId) => {
+                                    setShowCreate(false);
+                                    setRoadmapCourseId(courseId);
+                                    queryClient.invalidateQueries({ queryKey: ['courses'] });
+                                }} />
                             </div>
                         )}
                         {coursesLoading ? (
@@ -559,6 +565,13 @@ const Dashboard = () => {
                 onClose={() => setShowLeaderboard(false)} 
                 players={leaderboardData} 
             />
+            {roadmapCourseId && (
+                <GenerateRoadmapModal 
+                    isOpen={!!roadmapCourseId} 
+                    onClose={() => setRoadmapCourseId(null)} 
+                    courseId={roadmapCourseId} 
+                />
+            )}
         </div>
     );
 };
