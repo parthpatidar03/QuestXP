@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Calendar, Clock, BookOpen, AlertCircle, Sparkles, ChevronDown, ChevronRight, Check } from 'lucide-react';
+import { X, Calendar, Clock, BookOpen, AlertCircle, Sparkles, ChevronDown, ChevronRight, Check, Zap } from 'lucide-react';
 import { format, addDays } from 'date-fns';
 import api from '../../services/api';
 import { generateRoadmap } from '../../services/roadmapApi';
