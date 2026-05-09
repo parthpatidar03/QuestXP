@@ -48,19 +48,19 @@ The QuestXP dashboard has been evolved from simple vanity metrics into a profess
 
 ---
 
-## Core Capabilities
+### Core Capabilities
 
 ### Curriculum Orchestration
-Convert any YouTube playlist URL into a structured course. The platform extracts metadata and transcripts to organize lectures into a cohesive educational framework.
+Convert any YouTube playlist URL into a structured course. The platform extracts metadata and transcripts using background workers to organize lectures into a cohesive educational framework.
 
-### RAG-Based Doubt Resolution
-A contextual chatbot powered by Retrieval-Augmented Generation (RAG) using Pinecone. The system understands specific lecture contexts to provide precise answers to technical queries.
+### RAG-Powered Doubt Resolution
+A contextual chatbot powered by Retrieval-Augmented Generation (RAG) using Pinecone. The system understands specific lecture contexts to provide precise answers, with an automatic fallback to Llama 3.2 via OpenRouter for 100% uptime.
 
 ### Adaptive Study Planning
-A dynamic scheduling engine that generates personalized study roadmaps based on user-defined deadlines and availability. The system calculates daily targets and recalibrates based on real-time progress.
+A dynamic "Google Maps for Learning" scheduling engine. It generates personalized study roadmaps and automatically **recalculates** daily targets if progress falls behind, ensuring deadlines are met without manual adjustment.
 
 ### AI-Powered Study Assets
-Automated generation of lecture summaries, key takeaways, and interactive quizzes. Assessments test comprehension at the end of each module to ensure retention.
+Automated generation of lecture summaries, key takeaways, and interactive quizzes using Gemini 1.5 Flash. Assessments test comprehension at the end of each module to award XP and unlock progression.
 
 ---
 
@@ -98,13 +98,13 @@ QuestXP utilizes a tiered progression system to maintain engagement and incentiv
 ### Backend
 - **Runtime**: Node.js / Express.js
 - **Asynchronous Processing**: Redis and BullMQ for background AI tasks
-- **Security**: JWT with HttpOnly cookies and Google OAuth 2.0
+- **Security**: RBAC (Role-Based Access Control), JWT with HttpOnly cookies, and Google OAuth 2.0
 - **Communications**: Resend API for transactional email
 
 ### Persistence and Intelligence
 - **Primary Database**: MongoDB / Mongoose ODM
 - **Vector Database**: Pinecone (for RAG context)
-- **AI Infrastructure**: OpenAI GPT-4o
+- **AI Infrastructure**: Gemini 1.5 Flash (Primary) & OpenRouter / Llama 3.2 (Fallback)
 - **Data Sources**: YouTube Data API v3
 
 ---
