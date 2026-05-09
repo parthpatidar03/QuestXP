@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Calendar, Clock, BookOpen, AlertCircle, Sparkles, ChevronDown, ChevronRight, Check, Zap } from 'lucide-react';
+import { X, Calendar, Clock, BookOpen, AlertCircle, Sparkles, ChevronDown, ChevronRight, Check, Zap, Info } from 'lucide-react';
 import { format, addDays } from 'date-fns';
 import api from '../../services/api';
 import { generateRoadmap } from '../../services/roadmapApi';
@@ -114,6 +114,20 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
                 </div>
 
                 <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-6">
+                    {/* How it works briefing */}
+                    <div className="p-4 bg-surface-3 border border-border rounded-2xl space-y-2">
+                        <div className="flex items-center gap-2 text-primary">
+                            <Info className="w-4 h-4" />
+                            <span className="text-[10px] font-black uppercase tracking-wider">How it works</span>
+                        </div>
+                        <p className="text-[11px] text-text-secondary leading-relaxed">
+                            Set your daily limits. Our surgical engine slices your curriculum to fit. 
+                            <strong> Missed a day?</strong> Click <span className="text-primary font-bold">+</span> on your roadmap. 
+                            <strong> Finished early?</strong> Click <span className="text-primary font-bold">-</span>. 
+                            The entire future plan shifts instantly to keep your goals realistic.
+                        </p>
+                    </div>
+
                     {/* Content Selection */}
                     <div>
                         <label className="text-sm font-bold text-text-primary mb-3 block">Course Playlists</label>
