@@ -182,7 +182,7 @@ const RoadmapPlaylistCard = ({ playlistId, days, roadmapId, courseId, onPartialS
                                 {day.plannedVideos.filter(v => v.playlistId === playlistId).map((vid, vIdx) => (
                                     <Link 
                                         key={vIdx} 
-                                        to={`/courses/${vid.playlistId}/${vid.videoId}`}
+                                        to={`/courses/${vid.playlistId}/lectures/${vid.videoId}`}
                                         className="flex items-center gap-3 p-2 rounded-lg hover:bg-primary/10 transition-colors group"
                                     >
                                         <Play className="w-3 h-3 text-primary fill-primary opacity-0 group-hover:opacity-100 transition-opacity" />
