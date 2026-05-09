@@ -14,7 +14,10 @@ import {
     ArrowLeft,
     Sparkles,
     Layout,
-    Play
+    Play,
+    MinusCircle,
+    PlusCircle,
+    Square
 } from 'lucide-react';
 import { format, differenceInDays } from 'date-fns';
 import { getCurrentRoadmap, adjustRoadmap, partialShiftRoadmap } from '../services/roadmapApi';
@@ -115,81 +118,92 @@ const RoadmapPlaylistCard = ({ playlistId, days, roadmapId, courseId, onPartialS
     }, [days, playlistId]);
 
     return (
-        <div className="glass-card mb-4 overflow-hidden border border-border/50 hover:border-primary/30 transition-all">
-            <div className="p-5 flex items-center gap-5">
-                <div className="shrink-0">
-                    <div className="w-12 h-12 rounded-xl border flex items-center justify-center transition-all bg-surface-2 border-border text-text-muted">
-                        <Circle className="w-6 h-6 opacity-40" />
+        <div className="bg-surface/30 backdrop-blur-md mb-2 overflow-hidden border border-border/40 rounded-xl hover:border-primary/20 transition-all group">
+            <div className="p-4 flex items-center justify-between gap-4">
+                {/* LEFT SIDE */}
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <div className="shrink-0 w-5 h-5 rounded border border-border flex items-center justify-center bg-surface-2">
+                        {/* Mocking completion for now, can be wired to progress data */}
+                        <div className="w-2.5 h-2.5 rounded-sm bg-primary/20" />
                     </div>
+                    <h3 className="text-[13px] font-bold text-text-primary tracking-tight truncate">
+                        {playlistName} 
+                        <span className="text-[11px] font-medium text-text-muted ml-2">({totalVideos}/{totalVideos})</span>
+                    </h3>
                 </div>
 
-                <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                        <h3 className="text-lg font-bold text-text-primary tracking-tight truncate">{playlistName}</h3>
-                        <span className="text-[10px] font-bold text-text-muted bg-surface-2 px-2 py-0.5 rounded border border-border uppercase">
-                            {totalVideos} Videos
+                {/* RIGHT SIDE */}
+                <div className="flex items-center gap-4 shrink-0">
+                    <div className="flex items-center gap-2.5 bg-black/20 px-3 py-1.5 rounded-lg border border-border/50">
+                        <button 
+                            onClick={(e) => { e.stopPropagation(); onPartialShift(days[0].dayIndex, -1); }}
+                            className="text-text-muted hover:text-primary transition-colors"
+                        >
+                            <MinusCircle className="w-4 h-4" />
+                        </button>
+                        <span className="text-[10px] font-black text-text-muted uppercase tracking-tighter min-w-[90px] text-center">
+                            {dateRange}
                         </span>
+                        <button 
+                            onClick={(e) => { e.stopPropagation(); onPartialShift(days[0].dayIndex, 1); }}
+                            className="text-text-muted hover:text-primary transition-colors"
+                        >
+                            <PlusCircle className="w-4 h-4" />
+                        </button>
                     </div>
-                    <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-1.5 text-[10px] font-black text-text-muted uppercase">
-                            <Calendar className="w-3 h-3 text-primary" /> {dateRange}
-                        </div>
-                    </div>
-                </div>
 
-                <button 
-                    onClick={() => setIsExpanded(!isExpanded)}
-                    className="p-3 hover:bg-surface-3 rounded-xl transition-colors text-text-muted"
-                >
-                    {isExpanded ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
-                </button>
+                    <button 
+                        onClick={() => setIsExpanded(!isExpanded)}
+                        className="p-1.5 hover:bg-surface-3 rounded-lg transition-colors text-text-muted"
+                    >
+                        {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                    </button>
+                </div>
             </div>
 
             {isExpanded && (
-                <div className="bg-surface-2/50 border-t border-border/50 p-4 space-y-3">
+                <div className="bg-black/10 border-t border-border/30 p-3 space-y-2">
                     {days.filter(d => d.plannedVideos.some(v => v.playlistId === playlistId)).map((day, dIdx) => (
-                        <div key={dIdx} className="p-4 rounded-xl bg-surface border border-border/40">
-                            <div className="flex items-center justify-between mb-3">
+                        <div key={dIdx} className="p-4 rounded-xl bg-surface/50 border border-border/20">
+                            <div className="flex items-center justify-between mb-4">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-2 h-2 rounded-full bg-primary/40 animate-pulse" />
-                                    <span className="text-xs font-black uppercase tracking-widest text-text-primary">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                                    <span className="text-[10px] font-black uppercase tracking-[0.1em] text-text-primary italic">
                                         Day {day.dayIndex + 1} — {format(new Date(day.date), 'EEEE, MMM dd')}
                                     </span>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    <div className="flex items-center bg-surface-2 rounded-lg border border-border mr-2">
+                                <div className="flex items-center gap-3">
+                                    <div className="flex items-center bg-surface-2 rounded-lg border border-border overflow-hidden">
                                         <button 
                                             onClick={() => onPartialShift(day.dayIndex, -1)}
-                                            className="p-1.5 hover:text-primary transition-colors border-r border-border"
-                                            title="Pull schedule back from here"
+                                            className="p-1.5 hover:bg-surface-3 text-text-muted hover:text-primary transition-colors border-r border-border"
                                         >
                                             <Minus className="w-3 h-3" />
                                         </button>
                                         <button 
                                             onClick={() => onPartialShift(day.dayIndex, 1)}
-                                            className="p-1.5 hover:text-primary transition-colors"
-                                            title="Push schedule forward from here"
+                                            className="p-1.5 hover:bg-surface-3 text-text-muted hover:text-primary transition-colors"
                                         >
                                             <Plus className="w-3 h-3" />
                                         </button>
                                     </div>
-                                    <span className="text-[10px] font-bold text-text-muted bg-surface-3 px-2 py-0.5 rounded">
-                                        Target: {day.totalMinutes}m
-                                    </span>
+                                    <div className="px-2 py-1 rounded bg-primary/10 border border-primary/20">
+                                        <span className="text-[9px] font-black text-primary uppercase">Target: {day.totalMinutes}m</span>
+                                    </div>
                                 </div>
                             </div>
-                            <div className="space-y-2">
+                            <div className="space-y-1.5 pl-4 border-l border-border/30 ml-0.5">
                                 {day.plannedVideos.filter(v => v.playlistId === playlistId).map((vid, vIdx) => (
                                     <Link 
                                         key={vIdx} 
                                         to={`/courses/${vid.playlistId}/lectures/${vid.videoId}`}
-                                        className="flex items-center gap-3 p-2 rounded-lg hover:bg-primary/10 transition-colors group"
+                                        className="flex items-center gap-3 py-1.5 px-3 rounded-lg hover:bg-white/5 transition-all group/item"
                                     >
-                                        <Play className="w-3 h-3 text-primary fill-primary opacity-0 group-hover:opacity-100 transition-opacity" />
-                                        <span className="text-sm font-medium text-text-secondary flex-1 truncate group-hover:text-primary transition-colors underline decoration-transparent group-hover:decoration-primary/30">
+                                        <Play className="w-2.5 h-2.5 text-primary opacity-0 group-hover/item:opacity-100 transition-opacity" />
+                                        <span className="text-xs font-medium text-text-secondary flex-1 truncate group-hover/item:text-text-primary transition-colors">
                                             {vid.title}
                                         </span>
-                                        <span className="text-[10px] font-bold text-text-muted">{vid.duration}m</span>
+                                        <span className="text-[10px] font-bold text-text-muted tabular-nums">{vid.duration}m</span>
                                     </Link>
                                 ))}
                             </div>
