@@ -118,8 +118,8 @@ const RoadmapPlaylistCard = ({ playlistId, days, roadmapId, courseId, onPartialS
         <div className="glass-card mb-4 overflow-hidden border border-border/50 hover:border-primary/30 transition-all">
             <div className="p-5 flex items-center gap-5">
                 <div className="shrink-0">
-                    <div className={`w-12 h-12 rounded-xl border flex items-center justify-center transition-all ${allVideosCompleted ? 'bg-success/10 border-success/30 text-success shadow-lg shadow-success/10' : 'bg-surface-2 border-border text-text-muted'}`}>
-                        {allVideosCompleted ? <CheckCircle2 className="w-6 h-6" /> : <Circle className="w-6 h-6 opacity-40" />}
+                    <div className="w-12 h-12 rounded-xl border flex items-center justify-center transition-all bg-surface-2 border-border text-text-muted">
+                        <Circle className="w-6 h-6 opacity-40" />
                     </div>
                 </div>
 
