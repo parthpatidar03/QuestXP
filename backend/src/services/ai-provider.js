@@ -30,13 +30,21 @@ class AIProvider {
         try {
             // 1. Primary: Gemini
             console.log('[AIProvider] Attempting Gemini JSON generation...');
-            const fullPrompt = `SYSTEM: ${systemPrompt}\n\nUSER: ${prompt}`;
-            const result = await this.geminiModel.generateContent(fullPrompt);
+            
+            const model = genAI.getGenerativeModel({ 
+                model: 'gemini-1.5-flash',
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+                generationConfig: {
+                    responseMimeType: "application/json",
+                }
+            });
+
+            const result = await model.generateContent(prompt);
             const response = await result.response;
             const text = response.text();
             return JSON.parse(this._sanitizeJSON(text));
         } catch (error) {
-            console.warn('[AIProvider] Gemini failed, falling back to OpenRouter:', error.message);
+            console.warn('[AIProvider] Gemini JSON failed, falling back to OpenRouter:', error.message);
             
             // 2. Fallback: OpenRouter
             return await this._generateOpenRouter(prompt, systemPrompt, true);
@@ -50,7 +58,10 @@ class AIProvider {
         try {
             // 1. Primary: Gemini
             console.log('[AIProvider] Attempting Gemini Chat generation...');
-            const geminiChatModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+            const geminiChatModel = genAI.getGenerativeModel({ 
+                model: "gemini-1.5-flash",
+                systemInstruction: { parts: [{ text: systemPrompt }] }
+            });
             
             const geminiHistory = history.slice(-10).map(msg => ({
                 role: msg.role === 'assistant' ? 'model' : 'user',
@@ -58,8 +69,7 @@ class AIProvider {
             }));
 
             const chat = geminiChatModel.startChat({
-                history: geminiHistory,
-                systemInstruction: systemPrompt
+                history: geminiHistory
             });
 
             const result = await chat.sendMessage(prompt);
@@ -86,14 +96,14 @@ class AIProvider {
 
         try {
             const response = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
-                model: 'meta-llama/llama-3.1-70b-instruct:free',
+                model: 'meta-llama/llama-3.1-8b-instruct:free',
                 messages: messages,
                 response_format: isJson ? { type: 'json_object' } : undefined,
                 temperature: 0.7
             }, {
                 headers: {
                     'Authorization': `Bearer ${this.openRouterKey}`,
-                    'HTTP-Referer': 'https://questxp.app',
+                    'HTTP-Referer': 'https://questxp.vercel.app',
                     'X-Title': 'QuestXP',
                     'Content-Type': 'application/json'
                 }
