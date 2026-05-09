@@ -17,7 +17,7 @@ import {
     Play
 } from 'lucide-react';
 import { format, differenceInDays } from 'date-fns';
-import { getCurrentRoadmap, adjustRoadmap } from '../services/roadmapApi';
+import { getCurrentRoadmap, adjustRoadmap, partialShiftRoadmap } from '../services/roadmapApi';
 import NavBar from '../components/NavBar';
 import { BGPattern } from '../components/ui/bg-pattern';
 import GenerateRoadmapModal from '../components/Roadmap/GenerateRoadmapModal';
@@ -89,7 +89,7 @@ const ProgressHeader = ({ roadmap, onShift }) => {
     );
 };
 
-const RoadmapPlaylistCard = ({ playlistId, days, allVideosCompleted }) => {
+const RoadmapPlaylistCard = ({ playlistId, days, roadmapId, courseId, onPartialShift }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     
     const playlistName = useMemo(() => {
@@ -156,17 +156,41 @@ const RoadmapPlaylistCard = ({ playlistId, days, allVideosCompleted }) => {
                                         Day {day.dayIndex + 1} — {format(new Date(day.date), 'EEEE, MMM dd')}
                                     </span>
                                 </div>
-                                <span className="text-[10px] font-bold text-text-muted bg-surface-3 px-2 py-0.5 rounded">
-                                    Target: {day.totalMinutes}m
-                                </span>
+                                <div className="flex items-center gap-2">
+                                    <div className="flex items-center bg-surface-2 rounded-lg border border-border mr-2">
+                                        <button 
+                                            onClick={() => onPartialShift(day.dayIndex, -1)}
+                                            className="p-1.5 hover:text-primary transition-colors border-r border-border"
+                                            title="Pull schedule back from here"
+                                        >
+                                            <Minus className="w-3 h-3" />
+                                        </button>
+                                        <button 
+                                            onClick={() => onPartialShift(day.dayIndex, 1)}
+                                            className="p-1.5 hover:text-primary transition-colors"
+                                            title="Push schedule forward from here"
+                                        >
+                                            <Plus className="w-3 h-3" />
+                                        </button>
+                                    </div>
+                                    <span className="text-[10px] font-bold text-text-muted bg-surface-3 px-2 py-0.5 rounded">
+                                        Target: {day.totalMinutes}m
+                                    </span>
+                                </div>
                             </div>
                             <div className="space-y-2">
                                 {day.plannedVideos.filter(v => v.playlistId === playlistId).map((vid, vIdx) => (
-                                    <div key={vIdx} className="flex items-center gap-3 p-2 rounded-lg hover:bg-surface-2 transition-colors group">
+                                    <Link 
+                                        key={vIdx} 
+                                        to={`/courses/${vid.playlistId}/${vid.videoId}`}
+                                        className="flex items-center gap-3 p-2 rounded-lg hover:bg-primary/10 transition-colors group"
+                                    >
                                         <Play className="w-3 h-3 text-primary fill-primary opacity-0 group-hover:opacity-100 transition-opacity" />
-                                        <span className="text-sm font-medium text-text-secondary flex-1 truncate">{vid.title}</span>
+                                        <span className="text-sm font-medium text-text-secondary flex-1 truncate group-hover:text-primary transition-colors underline decoration-transparent group-hover:decoration-primary/30">
+                                            {vid.title}
+                                        </span>
                                         <span className="text-[10px] font-bold text-text-muted">{vid.duration}m</span>
-                                    </div>
+                                    </Link>
                                 ))}
                             </div>
                         </div>
@@ -214,6 +238,19 @@ const Roadmap = () => {
             setRoadmap(updated);
         } catch (err) {
             console.error("Failed to shift roadmap", err);
+        } finally {
+            setAdjusting(false);
+        }
+    };
+
+    const handlePartialShift = async (fromDayIndex, shiftAmount) => {
+        if (!roadmap || adjusting) return;
+        setAdjusting(true);
+        try {
+            const updated = await partialShiftRoadmap(roadmap._id, fromDayIndex, shiftAmount);
+            setRoadmap(updated);
+        } catch (err) {
+            console.error("Failed to partially shift roadmap", err);
         } finally {
             setAdjusting(false);
         }
@@ -271,7 +308,9 @@ const Roadmap = () => {
                                     key={id} 
                                     playlistId={id} 
                                     days={roadmap.days}
-                                    allVideosCompleted={false} 
+                                    roadmapId={roadmap._id}
+                                    courseId={courseId}
+                                    onPartialShift={handlePartialShift}
                                 />
                             ))}
                         </div>

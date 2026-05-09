@@ -14,3 +14,8 @@ export const adjustRoadmap = async (roadmapId, daysToShift) => {
     const response = await api.patch('/roadmap/adjust', { roadmapId, daysToShift });
     return response.data;
 };
+
+export const partialShiftRoadmap = async (roadmapId, fromDayIndex, shiftAmount) => {
+    const response = await api.patch('/roadmap/shift-partial', { roadmapId, fromDayIndex, shiftAmount });
+    return response.data;
+};

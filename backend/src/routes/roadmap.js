@@ -135,4 +135,94 @@ router.patch('/adjust', auth, async (req, res) => {
     }
 });
 
+// @route   PATCH /api/roadmap/shift-partial
+// @desc    Shift roadmap from a specific day index onwards
+router.patch('/shift-partial', auth, async (req, res) => {
+    try {
+        const { roadmapId, fromDayIndex, shiftAmount } = req.body;
+        const roadmap = await Roadmap.findById(roadmapId);
+        if (!roadmap || roadmap.userId.toString() !== req.user.id) {
+            return res.status(404).json({ msg: 'Roadmap not found' });
+        }
+
+        // 1. Identify videos to keep (before the shift) and videos to move (at/after shift)
+        const daysToKeep = roadmap.days.slice(0, fromDayIndex);
+        const videosToMove = [];
+        for (let i = fromDayIndex; i < roadmap.days.length; i++) {
+            videosToMove.push(...roadmap.days[i].plannedVideos);
+        }
+
+        if (videosToMove.length === 0 && shiftAmount < 0) {
+            // Nothing to move back
+            return res.json(roadmap);
+        }
+
+        // 2. Calculate new start date for the moving block
+        // If fromDayIndex is 0, use the config startDate
+        let anchorDate;
+        if (fromDayIndex === 0) {
+            anchorDate = new Date(roadmap.config.startDate);
+        } else {
+            anchorDate = new Date(roadmap.days[fromDayIndex].date);
+        }
+        const newBlockStartDate = addDays(anchorDate, shiftAmount);
+
+        // 3. Re-fetch video details for the move block (algorithm needs duration, etc.)
+        // Optimization: Use the data already in the roadmap if full details exist
+        // or re-fetch for accuracy. Re-fetching is safer.
+        const playlists = await Course.find({ _id: { $in: roadmap.config.playlistIds } });
+        let videoMap = new Map();
+        playlists.forEach(pl => {
+            pl.sections.forEach(sec => {
+                sec.lectures.forEach(lec => {
+                    videoMap.set(lec._id.toString(), {
+                        _id: lec._id,
+                        title: lec.title,
+                        duration: lec.duration || 10,
+                        playlistId: pl._id,
+                        playlistName: pl.title
+                    });
+                });
+            });
+        });
+
+        const videosToProcess = videosToMove.map(v => videoMap.get(v.videoId.toString())).filter(Boolean);
+
+        // 4. Regenerate the partial roadmap
+        const weekdayHours = roadmap.config.weekdayHours || 2;
+        const weekendHours = roadmap.config.weekendHours || 4;
+        
+        const newPartialDays = generateRoadmapLogic(
+            videosToProcess, 
+            newBlockStartDate, 
+            weekdayHours, 
+            weekendHours, 
+            []
+        );
+
+        // 5. If shiftAmount was positive and we were shifting from the very first video,
+        // we should probably add an empty day at the shift point if it's a +1
+        // But the generator will handle dates correctly.
+        
+        // Update day indices
+        const startIdx = daysToKeep.length;
+        newPartialDays.forEach((day, i) => {
+            day.dayIndex = startIdx + i;
+        });
+
+        roadmap.days = [...daysToKeep, ...newPartialDays];
+        
+        // If we shifted the very first day, update config
+        if (fromDayIndex === 0) {
+            roadmap.config.startDate = newBlockStartDate;
+        }
+
+        await roadmap.save();
+        res.json(roadmap);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+});
+
 module.exports = router;
