@@ -45,6 +45,7 @@ const userResponse = (user) => ({
     unlockedFeatures: user.unlockedFeatures,
     username: user.username,
     usernameSet: user.usernameSet,
+    role: user.role,
 });
 
 const getRequestIp = (req) => {

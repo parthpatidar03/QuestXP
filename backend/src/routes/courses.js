@@ -1,5 +1,5 @@
 const express = require('express');
-const { body } = require('express-validator');
+const { body, param } = require('express-validator');
 const { 
     createCourse, getCourses, getCourseById, getCourseStatus, 
     addCourseSection, deleteCourse, updateCourse, updateSection 
@@ -23,27 +23,42 @@ router.post('/', [
 ], createCourse);
 
 router.get('/', getCourses);
-router.get('/:courseId', getCourseById);
-router.get('/:courseId/status', getCourseStatus);
-router.delete('/:courseId', deleteCourse);
+
+router.get('/:courseId', [
+    param('courseId').isMongoId().withMessage('Invalid course ID')
+], getCourseById);
+
+router.get('/:courseId/status', [
+    param('courseId').isMongoId().withMessage('Invalid course ID')
+], getCourseStatus);
+
+router.delete('/:courseId', [
+    param('courseId').isMongoId().withMessage('Invalid course ID')
+], deleteCourse);
 
 // T062 — Add a new section to an existing ready course
 router.patch('/:courseId/sections', [
+    param('courseId').isMongoId().withMessage('Invalid course ID'),
     body('title').notEmpty().withMessage('Section title is required'),
     body('playlistUrl')
         .matches(youtubePlaylistRegex).withMessage('Valid YouTube playlist URL is required'),
 ], addCourseSection);
 
 router.patch('/:courseId', [
+    param('courseId').isMongoId().withMessage('Invalid course ID'),
     body('title').notEmpty().withMessage('Course title is required'),
 ], updateCourse);
 
 router.patch('/:courseId/sections/:sectionId', [
+    param('courseId').isMongoId().withMessage('Invalid course ID'),
+    param('sectionId').isMongoId().withMessage('Invalid section ID'),
     body('title').notEmpty().withMessage('Section title is required'),
 ], updateSection);
 
 // T033: GET /api/courses/:courseId/progress
-router.get('/:courseId/progress', auth, async (req, res, next) => {
+router.get('/:courseId/progress', auth, [
+    param('courseId').isMongoId().withMessage('Invalid course ID')
+], async (req, res, next) => {
     try {
         const courseId = req.params.courseId;
         const course = await Course.findById(courseId);

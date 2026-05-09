@@ -1,5 +1,5 @@
 const express = require('express');
-const { body, validationResult } = require('express-validator');
+const { body, param, validationResult } = require('express-validator');
 const auth = require('../middleware/auth');
 const featureGate = require('../middleware/featureGate');
 const Notes = require('../models/Notes');
@@ -22,8 +22,13 @@ const LEVEL_NOTES_EDIT = 3;
 const LEVEL_QUIZ = 1;
 
 // T020: GET /api/lectures/:lectureId/notes
-router.get('/:lectureId/notes', async (req, res, next) => {
+router.get('/:lectureId/notes', [
+    param('lectureId').isMongoId().withMessage('Invalid lecture ID')
+], async (req, res, next) => {
     try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+
         // Apply inline featureGate-like logic since req.user is loaded
         if (req.user.level < LEVEL_NOTES_READ) {
             return res.status(403).json({
@@ -59,6 +64,7 @@ router.get('/:lectureId/notes', async (req, res, next) => {
 
 // T021: PATCH /api/lectures/:lectureId/notes/edit
 router.patch('/:lectureId/notes/edit', [
+    param('lectureId').isMongoId().withMessage('Invalid lecture ID'),
     body('content').notEmpty().withMessage('Content cannot be empty')
 ], async (req, res, next) => {
     try {
@@ -99,8 +105,12 @@ router.patch('/:lectureId/notes/edit', [
 });
 
 // T025: GET /api/lectures/:lectureId/topics
-router.get('/:lectureId/topics', async (req, res, next) => {
+router.get('/:lectureId/topics', [
+    param('lectureId').isMongoId().withMessage('Invalid lecture ID')
+], async (req, res, next) => {
     try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
         const lectureId = req.params.lectureId;
         
         const course = await Course.findOne(
@@ -132,8 +142,12 @@ router.get('/:lectureId/topics', async (req, res, next) => {
 });
 
 // T029: GET /api/lectures/:lectureId/quiz
-router.get('/:lectureId/quiz', async (req, res, next) => {
+router.get('/:lectureId/quiz', [
+    param('lectureId').isMongoId().withMessage('Invalid lecture ID')
+], async (req, res, next) => {
     try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
         if (req.user.level < LEVEL_QUIZ) {
             return res.status(403).json({
                 locked: true,
@@ -174,6 +188,7 @@ router.get('/:lectureId/quiz', async (req, res, next) => {
 
 // T030: POST /api/lectures/:lectureId/quiz/submit
 router.post('/:lectureId/quiz/submit', [
+    param('lectureId').isMongoId().withMessage('Invalid lecture ID'),
     body('answers').isArray().withMessage('Answers must be an array'),
     body('timeTakenSecs').isNumeric({ min: 0 }).withMessage('Valid time taken is required')
 ], async (req, res, next) => {
@@ -269,8 +284,12 @@ router.post('/:lectureId/quiz/submit', [
 });
 
 // T032: GET /api/lectures/:lectureId/ai-status
-router.get('/:lectureId/ai-status', async (req, res, next) => {
+router.get('/:lectureId/ai-status', [
+    param('lectureId').isMongoId().withMessage('Invalid lecture ID')
+], async (req, res, next) => {
     try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
         const lectureId = req.params.lectureId;
         const course = await Course.findOne(
             { "sections.lectures._id": lectureId },

@@ -8,10 +8,15 @@ const Notes = require('../models/Notes');
 const Transcript = require('../models/Transcript');
 const EmbeddingStatus = require('../models/EmbeddingStatus');
 
+const { param } = require('express-validator');
+const admin = require('../middleware/admin');
+
 const router = express.Router();
 
 // T017: Internal admin endpoint to manually trigger the transcription pipeline
-router.post('/lectures/:id/process', auth, async (req, res, next) => {
+router.post('/lectures/:id/process', auth, admin, [
+    param('id').isMongoId().withMessage('Invalid lecture ID')
+], async (req, res, next) => {
     try {
         const lectureId = req.params.id;
         
