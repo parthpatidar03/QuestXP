@@ -56,8 +56,11 @@ Convert any YouTube playlist URL into a structured course. The platform extracts
 ### RAG-Powered Doubt Resolution
 A contextual chatbot powered by Retrieval-Augmented Generation (RAG) using Pinecone. The system understands specific lecture contexts to provide precise answers, with an automatic fallback to Llama 3.2 via OpenRouter for 100% uptime.
 
-### Adaptive Study Planning
-A dynamic "Google Maps for Learning" scheduling engine. It generates personalized study roadmaps and automatically **recalculates** daily targets if progress falls behind, ensuring deadlines are met without manual adjustment.
+### Surgical Adaptive Study Planning
+A dynamic "Google Maps for Learning" scheduling engine. It generates personalized study roadmaps with **Granular +/- Day Controls**. 
+- **Missed a Day?** Click `+` on any video to push the rest of the schedule forward.
+- **Finished Early?** Click `-` to pull the plan back.
+The engine instantly **recalculates** the entire downstream pipeline based on your unique weekend/weekday capacity, keeping goals realistic without the guilt.
 
 ### AI-Powered Study Assets
 Automated generation of lecture summaries, key takeaways, and interactive quizzes using Gemini 1.5 Flash. Assessments test comprehension at the end of each module to award XP and unlock progression.

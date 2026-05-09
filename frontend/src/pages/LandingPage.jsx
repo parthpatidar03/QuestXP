@@ -144,11 +144,22 @@ const LandingPage = () => {
                                 Serious learning workspace, with light gamification.
                             </div>
 
-                            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-semibold text-text-primary leading-[1.08] tracking-tight max-w-[14ch]">
+                            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-text-primary leading-[1.05] tracking-[-0.04em] max-w-[14ch] font-display">
                                 Turn playlists into courses you can actually finish.
                             </h1>
 
-                            <p className="mt-5 text-base sm:text-lg text-text-secondary leading-relaxed max-w-[52ch]">
+                            <div className="mt-8 space-y-3">
+                                {keyPoints.map((point, i) => (
+                                    <div key={i} className="flex items-center gap-3 text-text-secondary">
+                                        <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                                            <CheckCircle2 className="w-3 h-3 text-primary" />
+                                        </div>
+                                        <span className="text-sm sm:text-base font-medium">{point}</span>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <p className="mt-8 text-base sm:text-lg text-text-secondary leading-relaxed max-w-[52ch]">
                                 Convert YouTube playlists into structured courses, continue where you left off,
                                 and stay consistent with progress tracking, AI notes, quizzes, and study plans.
                             </p>
@@ -237,7 +248,7 @@ const LandingPage = () => {
                         viewport={{ once: true }}
                         className="text-center"
                     >
-                        <span className="text-3xl sm:text-5xl md:text-6xl font-black italic tracking-normal text-transparent bg-clip-text bg-gradient-to-r from-primary via-gold to-primary uppercase pr-4">
+                        <span className="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-[-0.02em] text-transparent bg-clip-text bg-gradient-to-r from-primary via-gold to-primary pr-4 font-display">
                             # Multiple Playlists • Single Course
                         </span>
                     </motion.div>
@@ -306,13 +317,25 @@ const LandingPage = () => {
                             </p>
                         </article>
 
+                        <article className="glass-card p-6 sm:p-8 group hover:border-primary/50 transition-all border-primary/20 bg-primary/5">
+                            <div className="w-12 h-12 rounded-xl bg-primary text-white flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg shadow-primary/20">
+                                <Zap className="w-6 h-6" />
+                            </div>
+                            <h3 className="text-xl font-bold text-text-primary mb-3">Surgical Adaptive Planning</h3>
+                            <p className="text-sm text-text-secondary leading-relaxed">
+                                Life happens. Missed a day? Hit <span className="text-primary font-bold">+</span>. 
+                                Finished early? Hit <span className="text-primary font-bold">-</span>. 
+                                QuestXP instantly recalculates your entire roadmap in real-time to keep you on track.
+                            </p>
+                        </article>
+
                         <article className="glass-card p-6 sm:p-8 group hover:border-primary/50 transition-all">
                             <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                                 <Target className="w-6 h-6" />
                             </div>
-                            <h3 className="text-xl font-bold text-text-primary mb-3">Adaptive Study Plans</h3>
+                            <h3 className="text-xl font-bold text-text-primary mb-3">Deadline-Oriented Roadmaps</h3>
                             <p className="text-sm text-text-secondary leading-relaxed">
-                                Set your deadline and availability. QuestXP generates a personalized daily roadmap that adjusts based on your progress.
+                                Set your goals and availability. QuestXP generates a personalized daily roadmap that keeps you accountable to your own timeline.
                             </p>
                         </article>
 
