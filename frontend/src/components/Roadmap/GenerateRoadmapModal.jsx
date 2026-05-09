@@ -15,6 +15,7 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
     const [startDate, setStartDate] = useState(format(new Date(), 'yyyy-MM-dd'));
     const [loading, setLoading] = useState(false);
     const [fetching, setFetching] = useState(true);
+    const dateInputRef = React.useRef(null);
 
     useEffect(() => {
         if (isOpen) {
@@ -198,13 +199,14 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
 
                     <div className="space-y-2">
                         <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Start Date</label>
-                        <div className="relative">
-                            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+                        <div className="relative group cursor-pointer" onClick={() => dateInputRef.current?.showPicker()}>
+                            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted group-hover:text-primary transition-colors z-10" />
                             <input 
+                                ref={dateInputRef}
                                 type="date" 
                                 value={startDate}
                                 onChange={e => setStartDate(e.target.value)}
-                                className="w-full bg-surface-2 border border-border rounded-xl pl-10 pr-4 py-3 text-sm font-bold focus:border-primary outline-none transition-colors"
+                                className="w-full bg-surface-2 border border-border rounded-xl pl-10 pr-4 py-3 text-sm font-bold text-text-primary focus:border-primary outline-none transition-colors [color-scheme:dark]"
                             />
                         </div>
                     </div>
