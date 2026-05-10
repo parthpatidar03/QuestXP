@@ -46,7 +46,7 @@ const TOUR_STEPS = [
         target: '#tour-leaderboard',
         title: 'Global Rank',
         content: 'Compete with others! Climb the leaderboard by earning XP through daily consistent learning.',
-        position: 'left'
+        position: 'bottom'
     }
 ];
 

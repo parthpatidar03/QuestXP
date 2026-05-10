@@ -250,7 +250,7 @@ const NavBar = () => {
                     <Link id="tour-roadmap" to="/roadmap" className="px-3 py-1.5 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-lg transition-colors">
                         Roadmap
                     </Link>
-                    <Link to="/dashboard?open=leaderboard" className="px-3 py-1.5 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-lg transition-colors flex items-center gap-1.5">
+                    <Link id="tour-leaderboard" to="/dashboard?open=leaderboard" className="px-3 py-1.5 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-lg transition-colors flex items-center gap-1.5">
                         <Trophy className="w-3.5 h-3.5 text-gold" />
                         Leaderboard
                     </Link>
