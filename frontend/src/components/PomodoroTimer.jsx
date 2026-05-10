@@ -15,8 +15,40 @@ const PomodoroTimer = () => {
     const [isActive, setIsActive] = useState(false);
     const [showMusic, setShowMusic] = useState(false);
     
+    // T052: Music Logic
+    const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+    const [volume, setVolume] = useState(0.5);
+    const [selectedStation, setSelectedStation] = useState(0);
+
+    const STATIONS = [
+        { name: 'Lofi Focus', url: 'https://stream.zeno.fm/f3v5u8p7u8hvv', author: 'Lofi Girl' },
+        { name: 'Rainy Night', url: 'https://stream.zeno.fm/0r0xa792kwzuv', author: 'Ambient' },
+        { name: 'Coffee Shop', url: 'https://stream.zeno.fm/76u7z92kwzuv', author: 'Jazz' }
+    ];
+    
     const timerRef = useRef(null);
     const audioRef = useRef(new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg'));
+    const musicRef = useRef(new Audio(STATIONS[0].url));
+
+    useEffect(() => {
+        musicRef.current.volume = volume;
+        if (isMusicPlaying) {
+            musicRef.current.play().catch(err => {
+                console.error("Audio playback blocked", err);
+                setIsMusicPlaying(false);
+            });
+        } else {
+            musicRef.current.pause();
+        }
+    }, [isMusicPlaying, selectedStation, volume]);
+
+    const changeStation = (idx) => {
+        musicRef.current.pause();
+        setSelectedStation(idx);
+        musicRef.current = new Audio(STATIONS[idx].url);
+        musicRef.current.volume = volume;
+        if (isMusicPlaying) musicRef.current.play();
+    };
 
     useEffect(() => {
         if (isActive && timeLeft > 0) {
@@ -149,21 +181,48 @@ const PomodoroTimer = () => {
                             <motion.div 
                                 initial={{ height: 0, opacity: 0 }}
                                 animate={{ height: 'auto', opacity: 1 }}
-                                className="mt-4 pt-4 border-t border-border/40"
+                                className="mt-4 pt-4 border-t border-border/40 space-y-3"
                             >
-                                <div className="flex items-center justify-between p-3 rounded-lg bg-primary/5 border border-primary/20">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-md bg-primary/20 flex items-center justify-center animate-pulse">
-                                            <Music className="w-4 h-4 text-primary" />
-                                        </div>
-                                        <div>
-                                            <p className="text-[10px] font-black uppercase text-text-primary">Lofi Radio</p>
-                                            <p className="text-[9px] text-primary font-bold">Study Beats</p>
-                                        </div>
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className="text-[9px] font-black uppercase text-text-muted tracking-widest">Select Station</span>
+                                    <div className="flex items-center gap-2">
+                                        <Volume2 className="w-3 h-3 text-text-muted" />
+                                        <input 
+                                            type="range" 
+                                            min="0" max="1" step="0.1" 
+                                            value={volume}
+                                            onChange={(e) => setVolume(parseFloat(e.target.value))}
+                                            className="w-16 h-1 bg-surface-3 rounded-lg appearance-none cursor-pointer accent-primary"
+                                        />
                                     </div>
-                                    <button className="text-primary hover:scale-110 transition-transform">
-                                        <Volume2 className="w-4 h-4" />
-                                    </button>
+                                </div>
+
+                                <div className="grid grid-cols-1 gap-2">
+                                    {STATIONS.map((s, i) => (
+                                        <button
+                                            key={i}
+                                            onClick={() => {
+                                                if (selectedStation === i) setIsMusicPlaying(!isMusicPlaying);
+                                                else changeStation(i);
+                                            }}
+                                            className={`flex items-center justify-between p-2.5 rounded-xl border transition-all ${selectedStation === i ? 'bg-primary/10 border-primary/40' : 'bg-surface-2 border-border hover:border-text-muted'}`}
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${selectedStation === i && isMusicPlaying ? 'bg-primary text-white animate-spin-slow' : 'bg-surface text-text-muted'}`}>
+                                                    <Music className="w-4 h-4" />
+                                                </div>
+                                                <div className="text-left">
+                                                    <p className={`text-[10px] font-black uppercase ${selectedStation === i ? 'text-primary' : 'text-text-primary'}`}>{s.name}</p>
+                                                    <p className="text-[9px] text-text-muted font-bold">{s.author}</p>
+                                                </div>
+                                            </div>
+                                            {selectedStation === i && isMusicPlaying ? (
+                                                <Pause className="w-3.5 h-3.5 text-primary" />
+                                            ) : (
+                                                <Play className="w-3.5 h-3.5 text-text-muted" />
+                                            )}
+                                        </button>
+                                    ))}
                                 </div>
                             </motion.div>
                         )}

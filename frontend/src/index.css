@@ -357,13 +357,13 @@
   animation: ping-slow 2s ease-in-out infinite;
 }
 
-@keyframes blue-glow-pulse {
-  0%, 100% {
-    box-shadow: 0 0 5px rgba(59, 130, 246, 0.2);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
-  }
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 8s linear infinite;
 }
 
 .blue-glow-pulse {
