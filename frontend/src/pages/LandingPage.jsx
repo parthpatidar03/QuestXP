@@ -243,35 +243,37 @@ const LandingPage = () => {
                     </div>
                 </section>
 
-                <section className="py-16 relative overflow-hidden bg-black flex flex-col items-center justify-center border-y border-white/5">
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,180,255,0.08),transparent_70%)]" />
-                    
-                    <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        className="text-center relative z-10 space-y-2"
-                    >
-                        <span className="text-[9px] font-black uppercase tracking-[0.4em] text-white/40 block mb-4">Synergized Learning</span>
+                <section className="max-w-screen-xl mx-auto px-4 sm:px-6 py-12">
+                    <div className="relative overflow-hidden bg-black rounded-[2.5rem] border border-white/10 py-20 px-6 flex flex-col items-center justify-center shadow-2xl">
+                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,180,255,0.1),transparent_70%)]" />
                         
-                        <div className="flex flex-col items-center">
-                            <h2 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-[-0.06em] text-white leading-[0.9] font-display">
-                                MULTIPLE <span className="italic font-serif text-primary tracking-[-0.04em]">PLAYLISTS</span>
-                            </h2>
-                            <div className="flex items-center gap-3 my-4">
-                                <div className="h-[1px] w-8 sm:w-16 bg-white/10" />
-                                <span className="text-lg font-black text-white italic font-serif tracking-widest">•</span>
-                                <div className="h-[1px] w-8 sm:w-16 bg-white/10" />
+                        <motion.div
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            className="text-center relative z-10 space-y-2"
+                        >
+                            <span className="text-[9px] font-black uppercase tracking-[0.4em] text-white/40 block mb-4">Synergized Learning</span>
+                            
+                            <div className="flex flex-col items-center">
+                                <h2 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-[-0.06em] text-white leading-[0.9] font-display">
+                                    MULTIPLE <span className="italic font-serif text-primary tracking-[-0.04em]">PLAYLISTS</span>
+                                </h2>
+                                <div className="flex items-center gap-3 my-4">
+                                    <div className="h-[1px] w-8 sm:w-16 bg-white/10" />
+                                    <span className="text-lg font-black text-white italic font-serif tracking-widest">•</span>
+                                    <div className="h-[1px] w-8 sm:w-16 bg-white/10" />
+                                </div>
+                                <h2 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-[-0.06em] text-white leading-[0.9] font-display">
+                                    SINGLE COURSE
+                                </h2>
                             </div>
-                            <h2 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-[-0.06em] text-white leading-[0.9] font-display">
-                                SINGLE COURSE
-                            </h2>
-                        </div>
 
-                        <p className="text-[10px] font-bold text-white/40 tracking-[0.2em] uppercase mt-8">
-                            The definitive workspace for technical mastery.
-                        </p>
-                    </motion.div>
+                            <p className="text-[10px] font-bold text-white/40 tracking-[0.2em] uppercase mt-8">
+                                The definitive workspace for technical mastery.
+                            </p>
+                        </motion.div>
+                    </div>
                 </section>
 
                 <section id="why" className="max-w-screen-xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
