@@ -109,9 +109,12 @@ const UserTour = () => {
         setCurrentStep(-1);
         localStorage.setItem('questxp-tour-completed', 'true');
     };
+    const step = currentStep >= 0 ? TOUR_STEPS[currentStep] : null;
+    const [tooltipStyles, setTooltipStyles] = useState({ top: 0, left: 0, arrowPos: 'top' });
 
     useEffect(() => {
-        if (!targetRect) return;
+        if (!targetRect || !step) return;
+
         
         let top = 0;
         let left = 0;
@@ -139,11 +142,8 @@ const UserTour = () => {
         setTooltipStyles({ top, left, arrowPos });
     }, [targetRect, step.position]);
 
-    const [tooltipStyles, setTooltipStyles] = useState({ top: 0, left: 0, arrowPos: 'top' });
+    if (!isVisible || !targetRect || !step) return null;
 
-    if (!isVisible || !targetRect) return null;
-
-    const step = TOUR_STEPS[currentStep];
 
     return (
         <div className="fixed inset-0 z-[9999] pointer-events-none">
