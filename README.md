@@ -1,4 +1,10 @@
 <p align="center">
+  <a href="https://quest-xp-beta.vercel.app/">
+    <img src="https://img.shields.io/badge/LIVE_DEMO-QuestXP-green?style=for-the-badge&logo=vercel" alt="Live Demo">
+  </a>
+</p>
+
+<p align="center">
   <img src="frontend/public/logo.png" width="120" alt="QuestXP Logo">
 </p>
 
