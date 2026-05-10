@@ -9,8 +9,14 @@ const MODES = {
 };
 
 const PomodoroTimer = () => {
-    const [isOpen, setIsOpen] = useState(true);
-    const [isHidden, setIsHidden] = useState(false);
+    const [isOpen, setIsOpen] = useState(() => {
+        const saved = localStorage.getItem('pomodoro_isOpen');
+        return saved !== null ? JSON.parse(saved) : true;
+    });
+    const [isHidden, setIsHidden] = useState(() => {
+        const saved = localStorage.getItem('pomodoro_isHidden');
+        return saved !== null ? JSON.parse(saved) : false;
+    });
     const [mode, setMode] = useState('FOCUS');
     const [timeLeft, setTimeLeft] = useState(MODES.FOCUS.time);
     const [isActive, setIsActive] = useState(false);
@@ -32,6 +38,14 @@ const PomodoroTimer = () => {
         }
         return () => clearInterval(timerRef.current);
     }, [isActive, timeLeft]);
+
+    useEffect(() => {
+        localStorage.setItem('pomodoro_isOpen', JSON.stringify(isOpen));
+    }, [isOpen]);
+
+    useEffect(() => {
+        localStorage.setItem('pomodoro_isHidden', JSON.stringify(isHidden));
+    }, [isHidden]);
 
     const handleTimerComplete = () => {
         setIsActive(false);

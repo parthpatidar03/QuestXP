@@ -60,8 +60,9 @@ const AppContent = () => {
         );
     }
 
-    // Only show Pomodoro on dashboard when logged in
-    const showPomodoro = isAuthenticated && location.pathname === '/dashboard';
+    // Show Pomodoro on all pages except landing and auth when logged in
+    const isPublicPage = ['/', '/login', '/register'].includes(location.pathname);
+    const showPomodoro = isAuthenticated && !isPublicPage;
 
     return (
         <>
