@@ -366,6 +366,15 @@ const Dashboard = () => {
     useEffect(() => {
         const handleOpenLeaderboard = () => setShowLeaderboard(true);
         window.addEventListener('open-leaderboard', handleOpenLeaderboard);
+
+        // T051: Check for query param from NavBar link
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('open') === 'leaderboard') {
+            setShowLeaderboard(true);
+            // Clean up URL
+            window.history.replaceState({}, '', window.location.pathname);
+        }
+
         return () => window.removeEventListener('open-leaderboard', handleOpenLeaderboard);
     }, []);
 
@@ -616,17 +625,16 @@ const Dashboard = () => {
                     <div id="tour-mission">
                         <DailyMissionWidget />
                     </div>
-                    <div id="tour-leaderboard">
-                        <XPLeaderboardSidebar players={leaderboardData} />
-                    </div>
-
-                    
                     <div className="glass-card p-5">
                         <div className="flex items-center gap-2 mb-4">
                             <Flame className="w-4 h-4 text-warning" />
                             <h2 className="text-sm font-semibold tracking-wide text-text-primary">Study Streak</h2>
                         </div>
                         <StreakCalendar history={historyData} />
+                    </div>
+
+                    <div id="tour-leaderboard">
+                        <XPLeaderboardSidebar players={leaderboardData} />
                     </div>
 
                     <div className="glass-card p-5">

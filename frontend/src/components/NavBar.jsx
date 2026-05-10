@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Zap, Search, BookOpenCheck, Moon, Sun, BookOpen, X, Loader2, Star, Menu, Trophy } from 'lucide-react';
+import { Zap, Search, BookOpenCheck, Moon, Sun, BookOpen, X, Loader2, Star, Menu, Trophy, Layout } from 'lucide-react';
 import NotificationBell from './NotificationBell';
 import useAuthStore from '../store/useAuthStore';
 import useGamificationStore from '../store/useGamificationStore';
@@ -250,6 +250,10 @@ const NavBar = () => {
                     <Link id="tour-roadmap" to="/roadmap" className="px-3 py-1.5 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-lg transition-colors">
                         Roadmap
                     </Link>
+                    <Link to="/dashboard?open=leaderboard" className="px-3 py-1.5 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-lg transition-colors flex items-center gap-1.5">
+                        <Trophy className="w-3.5 h-3.5 text-gold" />
+                        Leaderboard
+                    </Link>
 
                 </nav>
 
@@ -334,6 +338,14 @@ const NavBar = () => {
                             >
                                 <Layout className="w-5 h-5 text-primary" />
                                 Roadmap
+                            </Link>
+                            <Link 
+                                to="/dashboard?open=leaderboard" 
+                                onClick={() => setMobileOpen(false)}
+                                className="flex items-center gap-3 p-3 rounded-xl bg-surface-2 border border-border text-sm font-semibold text-text-primary"
+                            >
+                                <Trophy className="w-5 h-5 text-gold" />
+                                Rankings
                             </Link>
                             <a 
                                 href="https://www.youtube.com/feed/playlists"
