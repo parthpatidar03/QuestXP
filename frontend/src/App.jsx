@@ -1,5 +1,5 @@
 import React, { useEffect, lazy, Suspense } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import useAuthStore from './store/useAuthStore';
 import GamificationOverlay from './components/Gamification/GamificationOverlay';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -35,8 +35,9 @@ const ProtectedRoute = ({ children }) => {
 
 import useHeartbeat from './hooks/useHeartbeat';
 
-const App = () => {
-    const { checkAuth, isLoading } = useAuthStore();
+const AppContent = () => {
+    const { checkAuth, isLoading, isAuthenticated } = useAuthStore();
+    const location = useLocation();
     useHeartbeat();
 
     useEffect(() => {
@@ -59,10 +60,13 @@ const App = () => {
         );
     }
 
+    // Only show Pomodoro on dashboard when logged in
+    const showPomodoro = isAuthenticated && location.pathname === '/dashboard';
+
     return (
-        <BrowserRouter>
+        <>
             <GamificationOverlay />
-            <PomodoroTimer />
+            {showPomodoro && <PomodoroTimer />}
             <Suspense fallback={<PageLoader />}>
                 <Routes>
                     <Route path="/" element={<LandingPage />} />
@@ -89,6 +93,14 @@ const App = () => {
                     <Route path="/share/:courseId" element={<SharePage />} />
                 </Routes>
             </Suspense>
+        </>
+    );
+};
+
+const App = () => {
+    return (
+        <BrowserRouter>
+            <AppContent />
         </BrowserRouter>
     );
 };
