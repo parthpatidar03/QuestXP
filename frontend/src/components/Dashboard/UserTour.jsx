@@ -140,7 +140,8 @@ const UserTour = () => {
         }
 
         setTooltipStyles({ top, left, arrowPos });
-    }, [targetRect, step.position]);
+    }, [targetRect, step?.position]);
+
 
     if (!isVisible || !targetRect || !step) return null;
 
