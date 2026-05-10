@@ -15,7 +15,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.5.0-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-1.6.0-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License">
   <img src="https://img.shields.io/badge/status-production-success.svg" alt="Status">
 </p>
@@ -128,9 +128,13 @@ QuestXP is built with a **Security-First** mindset to prevent common vulnerabili
 ### 4. In-House Feedback Engine
 QuestXP moved away from unreliable external mail-to links in favor of a robust, internal feedback ecosystem.
 - **Data Persistence**: Submissions are stored directly in MongoDB, ensuring no feedback is lost if a user's mail client isn't configured.
-- **Asynchronous Notifications**: Utilizes an "event-and-forget" pattern for email notifications (Resend/SMTP). The API responds instantly to the user while processing the email in the background to ensure high availability.
-- **Context Awareness**: Automatically attaches the current page route to the feedback submission, allowing developers to identify where UI bugs or UX friction points are occurring.
-- **Admin Command Center**: A restricted dashboard allows authorized users (admins) to review, analyze, and manage incoming feedback directly within the platform.
+- **Asynchronous Notifications**: Utilizes an "event-and-forget" pattern for email notifications (Resend/SMTP).
+- **Context Awareness**: Automatically attaches the current page route to the feedback submission.
+
+### 5. Surgical Worker Gating & Social Mastery
+- **State-Aware Generation**: The Roadmap engine now utilizes a **Surgical Gating** mechanism. It detects if a course is in `processing` status (active background workers) and blocks roadmap generation with a 10s countdown overlay to ensure metadata integrity.
+- **Progress-Isolated Sharing**: Implemented a **Social Mastery** system. Users can share a "Quest Replica" link. When a recipient accepts the quest, the system creates a clone of the course structure, but initializes a fresh, isolated `Progress` model for the new user, ensuring zero state-leakage between shared learners.
+- **Professional Social Formatting**: Share links generated for WhatsApp/Discord include structured markdown/bolding to trigger rich previews and professional branding on public domains.
 
 ---
 
@@ -146,6 +150,7 @@ QuestXP moved away from unreliable external mail-to links in favor of a robust, 
 | `PATCH` | `/api/roadmap/update` | Mutate downstream study schedule |
 | `POST` | `/api/feedback` | In-house feedback submission engine |
 | `GET` | `/api/feedback` | Admin-only feedback review dashboard |
+| `GET` | `/share/:id` | Generate isolated course replica for sharing |
 
 ---
 

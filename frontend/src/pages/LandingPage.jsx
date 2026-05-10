@@ -426,6 +426,16 @@ const LandingPage = () => {
 
                         <article className="glass-card p-6 sm:p-8 group hover:border-primary/50 transition-all">
                             <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                <Share2 className="w-6 h-6" />
+                            </div>
+                            <h3 className="text-xl font-bold text-text-primary mb-3">Seamless Social Sharing</h3>
+                            <p className="text-sm text-text-secondary leading-relaxed">
+                                Found a course that changed your life? Share a professional replica link. Your friends get their own isolated progress while you keep yours.
+                            </p>
+                        </article>
+
+                        <article className="glass-card p-6 sm:p-8 group hover:border-primary/50 transition-all">
+                            <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                                 <Play className="w-6 h-6" />
                             </div>
                             <h3 className="text-xl font-bold text-text-primary mb-3">Distraction-Free Player</h3>
