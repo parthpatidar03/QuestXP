@@ -59,6 +59,13 @@ const deliveryWorker = new Worker('notificationDeliveryQueue', async (job) => {
                     title: 'QuestXP',
                     body: text
                 },
+                data: {
+                    title: 'QuestXP',
+                    body: text,
+                    tone,
+                    url: appUrl,
+                    forceDisplay: forceDisplay ? 'true' : 'false'
+                },
                 webpush: {
                     headers: {
                         Urgency: 'high',
@@ -69,13 +76,9 @@ const deliveryWorker = new Worker('notificationDeliveryQueue', async (job) => {
                     },
                     notification: {
                         icon: `${appUrl}/favicon.png`,
-                        badge: `${appUrl}/favicon.png`
+                        badge: `${appUrl}/favicon.png`,
+                        click_action: appUrl
                     }
-                },
-                data: {
-                    tone,
-                    url: appUrl,
-                    forceDisplay: forceDisplay ? 'true' : 'false'
                 }
             });
             console.log(`[PUSH] Sent to ${userId} (${tone}): ${text}`);

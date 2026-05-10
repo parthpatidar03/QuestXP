@@ -11,32 +11,42 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
+// Handle background messages
 messaging.onBackgroundMessage((payload) => {
-    const title = payload?.notification?.title || 'QuestXP';
-    const body = payload?.notification?.body || 'You have a new update.';
-    const url = payload?.data?.url || self.location.origin;
+    console.log('[SW] Received background message:', payload);
+    
+    const title = payload.notification?.title || payload.data?.title || 'QuestXP';
+    const body = payload.notification?.body || payload.data?.body || 'You have a new update.';
+    const url = payload.data?.url || self.location.origin;
 
-    self.registration.showNotification(title, {
-        body,
+    const notificationOptions = {
+        body: body,
         icon: '/favicon.png',
         badge: '/favicon.png',
-        data: { url }
-    });
+        tag: 'questxp-notification', // Deduplicate notifications
+        renotify: true,
+        data: { url: url }
+    };
+
+    return self.registration.showNotification(title, notificationOptions);
 });
 
+// Handle notification clicks
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
     
-    const urlToOpen = event.notification.data?.url || self.location.origin;
+    const urlToOpen = event.notification.data?.url || '/';
 
     event.waitUntil(
         clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
+            // If a tab is already open, focus it
             for (let i = 0; i < windowClients.length; i++) {
                 const client = windowClients[i];
                 if (client.url.includes(urlToOpen) && 'focus' in client) {
                     return client.focus();
                 }
             }
+            // Otherwise, open a new window
             if (clients.openWindow) {
                 return clients.openWindow(urlToOpen);
             }
