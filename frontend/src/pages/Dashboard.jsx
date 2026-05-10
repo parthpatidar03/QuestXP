@@ -321,7 +321,7 @@ function CourseCard({ course, progress, onDelete, isDeleting }) {
             </div>
 
             <div className="p-4">
-                <h3 className="font-semibold text-text-primary text-sm leading-snug mb-2 group-hover:text-primary transition-colors line-clamp-2">{course.title}</h3>
+                <h3 className="font-serif font-bold text-text-primary text-base leading-tight mb-2 group-hover:text-primary transition-colors line-clamp-2">{course.title}</h3>
                 <div className="progress-bar mb-2">
                     <div className="progress-bar__fill" style={{ width: `${pct}%` }} />
                 </div>
@@ -500,7 +500,7 @@ const Dashboard = () => {
 
                             <div className="relative flex-1 min-w-0">
                                 <p className="text-xs font-semibold uppercase tracking-wide mb-1 text-primary">Continue studying</p>
-                                <h1 className="text-2xl sm:text-3xl font-semibold text-text-primary mb-1 leading-tight group-hover:text-primary transition-colors">
+                                <h1 className="text-2xl sm:text-4xl font-serif font-black text-text-primary mb-2 leading-none group-hover:text-primary transition-colors tracking-tight">
                                     {activeCourse.title}
                                 </h1>
                                 <div className="flex items-center gap-2 mb-3">
