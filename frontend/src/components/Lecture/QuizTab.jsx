@@ -233,17 +233,24 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
                 </p>
                 
                 {isInProgress && (
-                    <div className="w-full max-w-[260px] mb-6 animate-in fade-in zoom-in duration-500">
-                        <div className="flex items-center justify-between mb-2">
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted animate-pulse">{statusMessage}</span>
-                            <span className="text-[10px] font-bold text-[var(--color-primary)]">{Math.round(simulatedProgress)}%</span>
+                    <div className="w-full max-w-[300px] mb-8 animate-in fade-in zoom-in duration-500">
+                        <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-primary animate-ping" />
+                                <span className="text-xs font-black uppercase tracking-widest text-text-primary">{statusMessage} ⚡</span>
+                            </div>
+                            <span className="text-xs font-black text-primary">{Math.round(simulatedProgress)}%</span>
                         </div>
-                        <div className="progress-bar h-2 shadow-inner">
-                            <div 
-                                className="progress-bar__fill shadow-[0_0_12px_var(--color-primary)]" 
-                                style={{ width: `${simulatedProgress}%` }}
+                        <div className="progress-bar h-3 bg-surface-3 shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)] border border-white/5">
+                            <motion.div 
+                                initial={{ width: 0 }}
+                                animate={{ width: `${simulatedProgress}%` }}
+                                className="progress-bar__fill shadow-[0_0_20px_var(--color-primary)] bg-gradient-to-r from-primary/60 to-primary"
                             />
                         </div>
+                        <p className="text-[10px] font-bold text-text-muted mt-3 uppercase tracking-widest text-center animate-pulse">
+                            Our surgical AI is crafting your mission...
+                        </p>
                     </div>
                 )}
 

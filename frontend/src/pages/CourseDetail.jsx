@@ -238,6 +238,10 @@ const CourseDetail = () => {
             } catch (_) { setError('Failed to load.'); }
         };
         fetchAll();
+
+        // Refetch on focus to keep progress live
+        window.addEventListener('focus', fetchAll);
+        return () => window.removeEventListener('focus', fetchAll);
     }, [courseId]);
 
     // Poll status if processing
@@ -404,16 +408,16 @@ const CourseDetail = () => {
                             }}
                         >
                             <div className="relative z-10 p-7">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <span className="badge-epic">EPIC</span>
-                                    <span className="text-xs text-text-secondary">{allLectures.length} Missions · {totalDurMins} Minutes</span>
+                                <div className="flex items-center gap-3 mb-3">
+                                    <span className="badge-epic text-[10px] py-1 px-3">EPIC QUEST</span>
+                                    <span className="text-sm font-bold text-text-secondary">{allLectures.length} Missions · {totalDurMins} Minutes</span>
                                 </div>
-                                <h1 className="text-3xl sm:text-4xl font-black text-text-primary mb-4 leading-tight max-w-xl" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
+                                <h1 className="text-4xl sm:text-5xl font-black text-text-primary mb-5 leading-tight max-w-xl" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
                                     {course.title}
                                 </h1>
-                                <div className="flex items-center gap-3 flex-wrap mb-5">
-                                    <div className="xp-chip text-sm px-3 py-1"><Zap className="w-4 h-4" /> {totalXpPool} XP Available</div>
-                                    <div className="text-xs font-semibold text-success">{pct}% Complete</div>
+                                <div className="flex items-center gap-4 flex-wrap mb-6">
+                                    <div className="xp-chip text-base px-4 py-1.5"><Zap className="w-5 h-5" /> {totalXpPool} XP Available</div>
+                                    <div className="text-sm font-black text-success uppercase tracking-wider">🚀 {pct}% Complete</div>
                                 </div>
                                 {startLec && (
                                     <div className="flex gap-3 mt-4">
@@ -444,51 +448,67 @@ const CourseDetail = () => {
                         {/* Mission List */}
                         <div className="glass-card overflow-hidden" style={{ padding: 0 }}>
                             <div className="px-8 py-6 border-b border-border bg-surface/30">
-                                <div className="flex items-center justify-between mb-6">
+                                <div className="flex items-center justify-between mb-8">
                                     <div className="flex flex-col">
-                                        <h2 className="text-base font-black uppercase tracking-tight text-text-primary leading-none" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>Quest Journey</h2>
-                                        <p className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em] mt-1.5 opacity-80">Walking towards your goal</p>
+                                        <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tight text-text-primary leading-none flex items-center gap-2" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
+                                            🗺️ Quest Journey
+                                        </h2>
+                                        <p className="text-xs font-bold text-text-muted uppercase tracking-[0.15em] mt-2 opacity-80">
+                                            Path to Mastery
+                                        </p>
                                     </div>
                                     <div className="text-right">
-                                        <div className="text-lg font-black text-primary leading-none" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>{pct}%</div>
-                                        <div className="text-[9px] font-black text-text-muted uppercase tracking-widest mt-1.5">COMPLETED</div>
+                                        <div className="text-2xl font-black text-primary leading-none" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>{pct}%</div>
+                                        <div className="text-xs font-black text-text-muted uppercase tracking-widest mt-1.5">COMPLETED</div>
                                     </div>
                                 </div>
                                 
                                 {/* Elite Journey Progress Bar */}
-                                <div className="relative pt-4 pb-8">
+                                <div className="relative pt-6 pb-10">
                                     {/* Track */}
-                                    <div className="h-3 w-full bg-surface-2 rounded-full border border-border/50 relative overflow-visible shadow-inner">
+                                    <div className="h-4 w-full bg-surface-2 rounded-full border border-border/50 relative overflow-visible shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]">
                                         {/* Progress Fill */}
                                         <motion.div 
                                             initial={{ width: 0 }}
                                             animate={{ width: `${pct}%` }}
-                                            transition={{ duration: 1.2, ease: "circOut" }}
-                                            className="absolute top-0 left-0 h-full bg-primary rounded-full shadow-[0_0_15px_oklch(0.47_0.095_155_/_0.3)]"
+                                            transition={{ duration: 1.5, ease: "circOut" }}
+                                            className="absolute top-0 left-0 h-full bg-gradient-to-r from-primary/80 to-primary rounded-full shadow-[0_0_20px_var(--color-primary)]"
                                         >
                                             {/* Journey Thumb (The Runner) */}
-                                            <div className="absolute -right-2 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-white border-[3px] border-primary shadow-[0_0_12px_var(--color-primary)] z-10 flex items-center justify-center">
-                                                <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                                            <div className="absolute -right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white border-[4px] border-primary shadow-[0_0_15px_var(--color-primary)] z-10 flex items-center justify-center">
+                                                <span className="text-sm">🏃‍♂️</span>
                                             </div>
                                         </motion.div>
                                         
                                         {/* Goal Icon */}
-                                        <div className="absolute -right-1 -top-10 flex flex-col items-center">
-                                            <Trophy className={`w-6 h-6 ${pct === 100 ? 'text-gold animate-bounce' : 'text-text-muted opacity-30'}`} />
-                                            <div className="text-[9px] font-black text-text-muted mt-1 uppercase tracking-tighter">FINISH</div>
+                                        <div className="absolute -right-2 -top-12 flex flex-col items-center">
+                                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${pct === 100 ? 'bg-gold shadow-[0_0_20px_var(--color-gold)] scale-110' : 'bg-surface-3 opacity-30 grayscale'}`}>
+                                                <Trophy className={`w-6 h-6 ${pct === 100 ? 'text-white animate-bounce' : 'text-text-muted'}`} />
+                                            </div>
+                                            <div className="text-[10px] font-black text-text-muted mt-2 uppercase tracking-widest">FINISH</div>
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Done vs Remaining Stats */}
-                                <div className="flex items-center justify-between mt-4 px-8 py-5 border-t border-border/40">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-2.5 h-2.5 rounded-full bg-primary shadow-[0_0_8px_var(--color-primary)]" />
-                                        <span className="text-[11px] font-bold text-text-secondary uppercase tracking-wider">Done: <span className="text-text-primary">{completedCount} Missions</span></span>
+                                <div className="flex items-center justify-between mt-6 px-4 py-6 border-t border-border/40 bg-surface-2/20 rounded-2xl">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
+                                            <CheckCircle2 className="w-5 h-5 text-primary" />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <span className="text-[10px] font-black text-text-muted uppercase tracking-widest">Completed</span>
+                                            <span className="text-sm font-bold text-text-primary">{completedCount} Missions</span>
+                                        </div>
                                     </div>
-                                    <div className="flex items-center gap-3">
-                                        <span className="text-[11px] font-bold text-text-secondary uppercase tracking-wider">Remaining: <span className="text-text-primary">{allLectures.length - completedCount} Missions</span></span>
-                                        <div className="w-2.5 h-2.5 rounded-full bg-surface-3" />
+                                    <div className="flex items-center gap-4 text-right">
+                                        <div className="flex flex-col">
+                                            <span className="text-[10px] font-black text-text-muted uppercase tracking-widest">To Go</span>
+                                            <span className="text-sm font-bold text-text-primary">{allLectures.length - completedCount} Missions</span>
+                                        </div>
+                                        <div className="w-10 h-10 rounded-xl bg-surface-3 flex items-center justify-center border border-border">
+                                            <Flag className="w-5 h-5 text-text-muted" />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
