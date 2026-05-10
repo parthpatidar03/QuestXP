@@ -239,9 +239,16 @@ const CourseDetail = () => {
         };
         fetchAll();
 
-        // Refetch on focus to keep progress live
-        window.addEventListener('focus', fetchAll);
-        return () => window.removeEventListener('focus', fetchAll);
+        // Refetch on focus to keep progress live (with 30s throttle)
+        let lastFocusFetch = Date.now();
+        const handleFocus = () => {
+            if (Date.now() - lastFocusFetch > 30000) {
+                fetchAll();
+                lastFocusFetch = Date.now();
+            }
+        };
+        window.addEventListener('focus', handleFocus);
+        return () => window.removeEventListener('focus', handleFocus);
     }, [courseId]);
 
     // Poll status if processing
