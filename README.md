@@ -96,6 +96,10 @@ The backbone of the curriculum.
 - Stores calculated study dates for the adaptive planner.
 - Enables downstream recalculation without mutating the original Course model.
 
+### 5. Feedback Model
+- Persistent storage for user feedback and bug reports.
+- Captures `userName`, `userEmail`, `message`, and `contextPage` for granular debugging.
+
 ---
 
 ## 🧠 Deep Technical Insights
@@ -121,6 +125,13 @@ QuestXP is built with a **Security-First** mindset to prevent common vulnerabili
 - **Environment Safety**: Centralized error handling sanitizes error messages in production, preventing the leakage of stack traces or sensitive internal paths to the end user.
 - **Load Balancer Support**: configured with `trust proxy` to accurately track user IPs across reverse proxies like Railway and Vercel.
 
+### 4. In-House Feedback Engine
+QuestXP moved away from unreliable external mail-to links in favor of a robust, internal feedback ecosystem.
+- **Data Persistence**: Submissions are stored directly in MongoDB, ensuring no feedback is lost if a user's mail client isn't configured.
+- **Asynchronous Notifications**: Utilizes an "event-and-forget" pattern for email notifications (Resend/SMTP). The API responds instantly to the user while processing the email in the background to ensure high availability.
+- **Context Awareness**: Automatically attaches the current page route to the feedback submission, allowing developers to identify where UI bugs or UX friction points are occurring.
+- **Admin Command Center**: A restricted dashboard allows authorized users (admins) to review, analyze, and manage incoming feedback directly within the platform.
+
 ---
 
 ## 🚀 API Surface
@@ -133,6 +144,8 @@ QuestXP is built with a **Security-First** mindset to prevent common vulnerabili
 | `POST` | `/api/lectures/:id/quiz/submit` | Evaluate quiz & award XP |
 | `POST` | `/api/doubt/ask` | Contextual RAG-based query resolution |
 | `PATCH` | `/api/roadmap/update` | Mutate downstream study schedule |
+| `POST` | `/api/feedback` | In-house feedback submission engine |
+| `GET` | `/api/feedback` | Admin-only feedback review dashboard |
 
 ---
 
@@ -142,7 +155,7 @@ QuestXP is built with a **Security-First** mindset to prevent common vulnerabili
 - **Database**: MongoDB (Atlas) / Pinecone (Vector)
 - **Caching/Queue**: Redis / BullMQ
 - **AI Models**: Gemini 1.5 Flash, Llama 3.2
-- **Notification**: Firebase Cloud Messaging (FCM)
+- **Notification**: Firebase Cloud Messaging (FCM) / Resend (Email)
 - **Deployment**: Vercel (Frontend), Railway (Backend/Redis/Worker)
 
 ---
