@@ -14,11 +14,34 @@ const CourseCreationForm = ({ onSuccess }) => {
         setSections([...sections, { title: '', playlistUrl: '', order: sections.length }]);
     };
 
-    const updateSection = (index, field, value) => {
+    const updateSection = async (index, field, value) => {
         const newSections = [...sections];
         newSections[index][field] = value;
         setSections(newSections);
+
+        // Auto-fill logic
+        if (field === 'playlistUrl' && value.includes('list=')) {
+            try {
+                const { data } = await api.get(`/courses/playlist-info?url=${encodeURIComponent(value)}`);
+                if (data.title) {
+                    const updatedSections = [...newSections];
+                    // Only fill if section title is empty or default
+                    if (!updatedSections[index].title) {
+                        updatedSections[index].title = data.title;
+                    }
+                    setSections(updatedSections);
+
+                    // Also fill course title if empty
+                    if (!title) {
+                        setTitle(data.title);
+                    }
+                }
+            } catch (err) {
+                console.error('[AutoFill] Failed:', err);
+            }
+        }
     };
+
 
     const removeSection = (index) => {
         if (sections.length > 1) {

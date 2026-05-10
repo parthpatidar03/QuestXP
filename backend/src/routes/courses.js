@@ -2,8 +2,10 @@ const express = require('express');
 const { body, param } = require('express-validator');
 const { 
     createCourse, getCourses, getCourseById, getCourseStatus, 
-    addCourseSection, deleteCourse, updateCourse, updateSection 
+    addCourseSection, deleteCourse, updateCourse, updateSection,
+    getPlaylistInfo
 } = require('../controllers/courseController');
+
 const Course = require('../models/Course');
 const auth = require('../middleware/auth');
 
@@ -11,7 +13,10 @@ const router = express.Router();
 
 router.use(auth); // Protect all course routes
 
+router.get('/playlist-info', getPlaylistInfo);
+
 // Basic validation for playlistUrl pattern
+
 const youtubePlaylistRegex = /^.*(youtu.be\/|list=)([^#\&\?]*).*/;
 
 router.post('/', [

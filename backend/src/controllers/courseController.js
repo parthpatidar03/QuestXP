@@ -1,4 +1,6 @@
 const { validationResult } = require('express-validator');
+const axios = require('axios');
+
 const courseService = require('../services/courseService');
 const Course = require('../models/Course');
 const Progress = require('../models/Progress');
@@ -219,7 +221,40 @@ const updateSection = async (req, res, next) => {
     }
 };
 
+const getPlaylistInfo = async (req, res, next) => {
+    try {
+        const { url } = req.query;
+        if (!url) return res.status(400).json({ error: 'URL is required' });
+
+        const playlistId = url.includes('list=') 
+            ? url.split('list=')[1].split('&')[0]
+            : url;
+
+        const apiKey = process.env.YOUTUBE_API_KEY;
+        if (!apiKey) return res.status(500).json({ error: 'YouTube API key missing' });
+
+        const response = await axios.get('https://www.googleapis.com/youtube/v3/playlists', {
+            params: {
+                part: 'snippet',
+                id: playlistId,
+                key: apiKey
+            }
+        });
+
+        if (!response.data.items || response.data.items.length === 0) {
+            return res.status(404).json({ error: 'Playlist not found' });
+        }
+
+        const title = response.data.items[0].snippet.title;
+        res.json({ title });
+    } catch (error) {
+        console.error('[PlaylistInfo] Error:', error.message);
+        res.status(500).json({ error: 'Failed to fetch playlist info' });
+    }
+};
+
 module.exports = {
+
     createCourse,
     getCourses,
     getCourseById,
@@ -227,5 +262,7 @@ module.exports = {
     addCourseSection,
     deleteCourse,
     updateCourse,
-    updateSection
+    updateSection,
+    getPlaylistInfo
 };
+
