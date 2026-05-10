@@ -3,6 +3,7 @@ import { Play, CheckCircle2, XCircle, Trophy, RotateCcw, Award } from 'lucide-re
 import useAuthStore from '../../store/useAuthStore';
 import api from '../../services/api';
 import LockedFeature from '../LockedFeature';
+import { MAINTENANCE_CONFIG } from '../../constants/maintenance';
 
 const LEVEL_QUIZ = 1;
 
@@ -190,6 +191,27 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
                 <XCircle className="w-8 h-8 text-danger mx-auto mb-3" />
                 <h3 className="text-lg font-semibold text-text-primary mb-2">Quiz Generation Failed</h3>
                 <p className="text-sm">{errorReason || 'Lecture too short to generate a quiz.'}</p>
+            </div>
+        );
+    }
+
+    // Maintenance view
+    if (MAINTENANCE_CONFIG.AI_FEATURES_DOWN) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[300px] p-8 text-center">
+                <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4 bg-amber-500/10 border border-amber-500/20">
+                    <Trophy className="w-6 h-6 text-amber-500 opacity-50" />
+                </div>
+                <p className="text-base font-bold text-text-primary mb-2">Quiz Service Unavailable</p>
+                <div className="max-w-[280px] p-4 rounded-xl bg-surface-2 border border-border">
+                    <p className="text-sm text-text-secondary leading-relaxed">
+                        {MAINTENANCE_CONFIG.MESSAGE}
+                    </p>
+                </div>
+                <div className="mt-6 flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold bg-amber-500/5 border border-amber-500/20 text-amber-500">
+                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                    Maintenance Mode
+                </div>
             </div>
         );
     }
