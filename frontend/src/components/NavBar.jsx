@@ -217,7 +217,7 @@ const NavBar = () => {
             <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 flex items-center h-16 gap-4">
 
                 <Link to="/" className="flex items-center gap-2.5 shrink-0 mr-4">
-                    <img src="/logo.png" alt="QuestXP" className="w-9 h-9 object-contain" />
+                    <img src="/favicon.png" alt="QuestXP" className="w-9 h-9 object-contain rounded-lg" />
                     <span className="text-lg font-semibold tracking-tight text-text-primary">
                         QuestXP
                     </span>
