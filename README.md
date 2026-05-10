@@ -98,25 +98,28 @@ The backbone of the curriculum.
 
 ---
 
-## 🧠 Core Technical Logic
+## 🧠 Deep Technical Insights
 
-### AI Pipeline (Event-Driven)
-When a course is added, a job is enqueued in BullMQ:
-1.  **Metadata Extraction**: Fetches playlist data via YouTube Data API v3.
-2.  **Transcription**: Extracts raw captions or generates them via Whisper-equivalents.
-3.  **Refinement**: Gemini 1.5 Flash generates lecture notes, key takeaways, and quizzes.
-4.  **Vectorization**: Content is chunked and stored in **Pinecone** for RAG-based chat.
+### 1. Surgical Adaptive Roadmap Algorithm
+The core innovation of QuestXP is the **Linear Propagation Engine** for study scheduling. Unlike static calendars, this system treats a course as a linked-list of milestones.
+- **Propagation Logic**: When a user adjusts a date (e.g., shifts Day 5 forward by +1), the engine triggers a recursive update. All downstream lecture deadlines are recalculated using $O(n)$ complexity.
+- **Weekend Awareness**: The algorithm can be configured to respect user-defined "Rest Days," skipping them during propagation to keep the workload realistic.
+- **Data Integrity**: Schedule mutations are atomic. If a user completes a lecture early, the engine offers a "Pull Forward" option to compress the remaining timeline.
 
-### Surgical Adaptive Study Planner
-The `Roadmap.jsx` logic uses a **Linear Propagation Algorithm**:
-- **Forward Shift (+)**: Incrementing a date pushes all downstream lecture deadlines by `N` days, accounting for weekends/user capacity.
-- **Backward Shift (-)**: Compresses the schedule if a user finishes early.
-- **Dynamic Recalculation**: The entire downstream pipeline is updated in $O(n)$ time on each click.
+### 2. Scalable Global Leaderboard
+The **Global Hall of Fame** is built for high-concurrency read performance.
+- **Ranking Engine**: Calculates user rank based on total XP and Level using a high-performance MongoDB index on `{ totalXP: -1, level: -1 }`.
+- **Percentile Tracking**: Dynamically computes where a user stands (e.g., "Top 5% of learners") by comparing their XP against the total user count.
+- **Identity Protection**: To ensure privacy in a competitive space, QuestXP uses an **Anime-Themed Alias System**. Users are assigned random handles (e.g., *Kakashi_Mastery*) which they can "claim" or "cycle" through to maintain a professional yet private presence.
 
-### RAG-Powered Doubt Resolution
-- Uses **Cosine Similarity** to search the vector space (Pinecone) for relevant lecture context.
-- Augments the LLM prompt with retrieved chunks to ensure zero-hallucination answers.
-- **Fallback Logic**: Switches from Gemini to Llama 3.2 via OpenRouter if rate limits are hit.
+### 3. Production-Grade Security & Protection
+QuestXP is built with a **Security-First** mindset to prevent common vulnerabilities and ensure data integrity.
+- **Identity Management**: Uses JWT (JSON Web Tokens) with `HttpOnly` and `Secure` cookie flags. This completely mitigates XSS-based token theft.
+- **Rate Limiting**: Implemented `express-rate-limit` globally to prevent Brute Force and DoS attacks. Sensitive routes (Auth, AI Processing) have stricter buckets.
+- **Strict CORS Policy**: A rigorous whitelist-based CORS configuration ensures only authorized frontend origins (Vercel Production) can communicate with the backend.
+- **Data Sanitization**: Uses `express-validator` for schema-level input validation and Mongoose for type-safe query building, preventing NoSQL injection.
+- **Environment Safety**: Centralized error handling sanitizes error messages in production, preventing the leakage of stack traces or sensitive internal paths to the end user.
+- **Load Balancer Support**: configured with `trust proxy` to accurately track user IPs across reverse proxies like Railway and Vercel.
 
 ---
 
