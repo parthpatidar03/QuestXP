@@ -95,7 +95,7 @@ const LandingPage = () => {
                         <button onClick={openApp} className="px-3 py-2 rounded-lg text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors">
                             Enter App
                         </button>
-                        <button onClick={openApp} className="btn-primary text-sm px-4 py-2">
+                        <button onClick={openApp} className="btn-primary text-sm px-6 py-2.5">
                             Get Started
                         </button>
                     </div>
@@ -133,7 +133,7 @@ const LandingPage = () => {
             </header>
 
             <main className="relative z-10 flex-1">
-                <section className="max-w-screen-xl mx-auto px-4 sm:px-6 pt-10 sm:pt-14 pb-10 sm:pb-14">
+                <section id="how-it-works" className="max-w-screen-xl mx-auto px-4 sm:px-6 pt-10 sm:pt-14 pb-10 sm:pb-14">
                     <div className="grid gap-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] items-center">
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
@@ -167,13 +167,13 @@ const LandingPage = () => {
                             </p>
 
                             <div className="mt-7 flex flex-col sm:flex-row gap-3 sm:items-center">
-                                <button onClick={openApp} className="btn-primary inline-flex items-center justify-center gap-2 px-6 py-3 text-sm sm:text-base">
+                                <button onClick={openApp} className="btn-primary inline-flex items-center justify-center gap-2 px-8 py-3.5 text-sm sm:text-base">
                                     Start Learning
                                     <ChevronRight className="w-4 h-4" />
                                 </button>
                                 <button 
                                     onClick={() => setVideoOpen(true)}
-                                    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg border border-border bg-surface text-sm sm:text-base font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors"
+                                    className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-lg border border-border bg-surface text-sm sm:text-base font-bold text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-all blue-glow-pulse"
                                 >
                                     <Play className="w-4 h-4 fill-current" />
                                     Watch Demo
