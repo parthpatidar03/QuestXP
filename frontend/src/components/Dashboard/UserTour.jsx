@@ -81,10 +81,29 @@ const UserTour = () => {
     }, [currentStep]);
 
     useEffect(() => {
-        updateTargetRect();
+        const handleKeyDown = (e) => {
+            if (e.shiftKey && e.key === 'T') {
+                localStorage.removeItem('questxp-tour-completed');
+                setCurrentStep(0);
+                setIsVisible(true);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
+
+    useEffect(() => {
+        // Wait for scrolling to finish before updating rect
+        const timer = setTimeout(updateTargetRect, 300);
         window.addEventListener('resize', updateTargetRect);
-        return () => window.removeEventListener('resize', updateTargetRect);
+        window.addEventListener('scroll', updateTargetRect);
+        return () => {
+            clearTimeout(timer);
+            window.removeEventListener('resize', updateTargetRect);
+            window.removeEventListener('scroll', updateTargetRect);
+        };
     }, [currentStep, updateTargetRect]);
+
 
     const handleNext = () => {
         if (currentStep < TOUR_STEPS.length - 1) {
@@ -149,29 +168,28 @@ const UserTour = () => {
     return (
         <div className="fixed inset-0 z-[9999] pointer-events-none">
             {/* Spotlight Overlay */}
-            <svg className="absolute inset-0 w-full h-full pointer-events-auto">
-                <defs>
-                    <mask id="spotlight-mask">
-                        <rect width="100%" height="100%" fill="white" />
-                        <rect
-                            x={targetRect.left - 8}
-                            y={targetRect.top - 8}
-                            width={targetRect.width + 16}
-                            height={targetRect.height + 16}
-                            rx="12"
-                            fill="black"
-                        />
-                    </mask>
-                </defs>
-                <rect
-                    width="100%"
-                    height="100%"
-                    fill="rgba(0, 0, 0, 0.9)"
-                    mask="url(#spotlight-mask)"
-                    className="backdrop-blur-[4px]"
-                    onClick={skipTour}
-                />
-            </svg>
+            <div 
+                className="absolute inset-0 bg-black/90 backdrop-blur-[2px] pointer-events-auto transition-opacity duration-300"
+                onClick={skipTour}
+                style={{
+                    maskImage: `radial-gradient(circle at ${targetRect.left + targetRect.width / 2}px ${targetRect.top + targetRect.height / 2}px, transparent ${Math.max(targetRect.width, targetRect.height) / 2 + 20}px, black ${Math.max(targetRect.width, targetRect.height) / 2 + 21}px)`,
+                    WebkitMaskImage: `radial-gradient(circle at ${targetRect.left + targetRect.width / 2}px ${targetRect.top + targetRect.height / 2}px, transparent ${Math.max(targetRect.width, targetRect.height) / 2 + 20}px, black ${Math.max(targetRect.width, targetRect.height) / 2 + 21}px)`
+                }}
+            />
+
+            {/* Highlight Border */}
+            <motion.div
+                initial={false}
+                animate={{
+                    left: targetRect.left - 8,
+                    top: targetRect.top - 8,
+                    width: targetRect.width + 16,
+                    height: targetRect.height + 16,
+                    opacity: 1
+                }}
+                className="absolute border-2 border-white/50 rounded-xl shadow-[0_0_20px_rgba(255,255,255,0.3)] z-[10000]"
+            />
+
 
             {/* Tooltip */}
             <AnimatePresence mode="wait">
