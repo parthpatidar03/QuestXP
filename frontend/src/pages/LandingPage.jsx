@@ -372,7 +372,7 @@ const LandingPage = () => {
                         </p>
                     </div>
 
-                    <div className="grid gap-5 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid gap-5 sm:gap-6 md:grid-cols-2 lg:grid-cols-4">
                         <article className="glass-card p-6 sm:p-8 group hover:border-primary/50 transition-all">
                             <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                                 <BookOpen className="w-6 h-6" />
@@ -432,6 +432,16 @@ const LandingPage = () => {
                             <h3 className="text-xl font-bold text-text-primary mb-3">Seamless Social Sharing</h3>
                             <p className="text-sm text-text-secondary leading-relaxed">
                                 Found a course that changed your life? Share a professional replica link. Your friends get their own isolated progress while you keep yours.
+                            </p>
+                        </article>
+
+                        <article className="glass-card p-6 sm:p-8 group hover:border-primary/50 transition-all">
+                            <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                <Trophy className="w-6 h-6" />
+                            </div>
+                            <h3 className="text-xl font-bold text-text-primary mb-3">Global Hall of Fame</h3>
+                            <p className="text-sm text-text-secondary leading-relaxed">
+                                Compete with top learners worldwide. Earn XP, level up your anime-themed handle, and secure your spot on the leaderboard.
                             </p>
                         </article>
 
