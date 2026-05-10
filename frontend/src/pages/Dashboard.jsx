@@ -7,6 +7,8 @@ import api from '../services/api';
 import { getGamificationProfile, getXPHistory } from '../services/gamificationApi';
 import NavBar from '../components/NavBar';
 import DailyMissionWidget from '../components/Dashboard/DailyMissionWidget';
+import UserTour from '../components/Dashboard/UserTour';
+
 import XPLeaderboardSidebar from '../components/Dashboard/XPLeaderboardSidebar';
 import StreakCalendar from '../components/StreakCalendar';
 import CourseCreationForm from '../components/Course/CourseCreationForm';
@@ -377,7 +379,9 @@ const Dashboard = () => {
                 <div className="flex-1 min-w-0 space-y-8">
                     {activeCourse && (
                         <Link 
+                            id="tour-hero"
                             to={firstLecId ? `/courses/${activeCourse._id}/lectures/${firstLecId}` : `/courses/${activeCourse._id}`}
+
                             className="relative rounded-xl overflow-hidden p-7 flex flex-col sm:flex-row gap-6 items-start bg-surface border border-border shadow-card hover:border-primary/50 group transition-all"
                         >
                             {activeCourse.sections?.[0]?.lectures?.[0]?.thumbnailUrl && (
@@ -410,7 +414,8 @@ const Dashboard = () => {
                     )}
 
 
-                    <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <section id="tour-stats" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
                         {statsLoading ? (
                             Array(4).fill(0).map((_, i) => <StatCardSkeleton key={i} />)
                         ) : (
@@ -439,7 +444,8 @@ const Dashboard = () => {
                     <section>
                         <div className="flex items-center justify-between mb-4">
                             <h2 className="text-xl font-semibold tracking-tight text-text-primary">Active courses</h2>
-                            <button onClick={() => setShowCreate(v => !v)} className="btn-primary py-2 px-4 text-xs flex items-center gap-1">
+                            <button id="tour-new-course" onClick={() => setShowCreate(v => !v)} className="btn-primary py-2 px-4 text-xs flex items-center gap-1">
+
                                 <Plus className="w-3.5 h-3.5" />
                                 {showCreate ? 'Cancel' : 'New Course'}
                             </button>
@@ -501,8 +507,13 @@ const Dashboard = () => {
                 </div>
 
                 <aside className="flex flex-col w-full xl:w-72 shrink-0 space-y-4">
-                    <DailyMissionWidget />
-                    <XPLeaderboardSidebar players={leaderboardData} />
+                    <div id="tour-mission">
+                        <DailyMissionWidget />
+                    </div>
+                    <div id="tour-leaderboard">
+                        <XPLeaderboardSidebar players={leaderboardData} />
+                    </div>
+
                     
                     <div className="glass-card p-5">
                         <div className="flex items-center gap-2 mb-4">
@@ -574,7 +585,9 @@ const Dashboard = () => {
                     courseId={roadmapCourseId} 
                 />
             )}
+            <UserTour />
         </div>
+
     );
 };
 
