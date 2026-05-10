@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Flame, Zap, Trophy, Shield, BookOpen, Plus, ChevronRight, Star, Trash2, Target } from 'lucide-react';
+import { Flame, Zap, Trophy, Shield, BookOpen, Plus, ChevronRight, Star, Trash2, Target, MessageSquare } from 'lucide-react';
 import useAuthStore from '../store/useAuthStore';
 import useGamificationStore from '../store/useGamificationStore';
 import api from '../services/api';
@@ -449,6 +449,15 @@ const Dashboard = () => {
                                 <Plus className="w-3.5 h-3.5" />
                                 {showCreate ? 'Cancel' : 'New Course'}
                             </button>
+                            {user.role === 'admin' && (
+                                <Link 
+                                    to="/admin/feedback" 
+                                    className="px-4 py-2 rounded-lg border border-primary/20 bg-primary/5 text-primary text-xs font-semibold hover:bg-primary/10 transition-colors flex items-center gap-2"
+                                >
+                                    <MessageSquare className="w-3.5 h-3.5" />
+                                    Feedback Admin
+                                </Link>
+                            )}
                         </div>
                         {deleteError && (
                             <div className="mb-4 rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">

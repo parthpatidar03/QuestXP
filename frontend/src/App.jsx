@@ -8,6 +8,7 @@ import Player from './pages/Player';
 import LandingPage from './pages/LandingPage';
 import Profile from './pages/Profile';
 import Roadmap from './pages/Roadmap';
+import AdminFeedback from './pages/AdminFeedback';
 import GamificationOverlay from './components/Gamification/GamificationOverlay';
 import ErrorBoundary from './components/ErrorBoundary';
 
@@ -68,6 +69,9 @@ const App = () => {
                 } />
                 <Route path="/profile" element={
                     <ProtectedRoute><Profile /></ProtectedRoute>
+                } />
+                <Route path="/admin/feedback" element={
+                    <ProtectedRoute><AdminFeedback /></ProtectedRoute>
                 } />
             </Routes>
         </BrowserRouter>

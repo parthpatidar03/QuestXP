@@ -1,5 +1,8 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
+const Feedback = require('../models/Feedback');
+const auth = require('../middleware/auth');
+const admin = require('../middleware/admin');
 
 const router = express.Router();
 
@@ -24,7 +27,7 @@ const sendWithResend = async ({ to, from, subject, text }) => {
     }
 
     if (!from) {
-        throw new Error('RESEND_API_KEY is set but FEEDBACK_FROM_EMAIL is missing.');
+        return false; // Silent skip if from email is missing
     }
 
     const response = await fetch('https://api.resend.com/emails', {
@@ -77,13 +80,43 @@ const sendWithSmtp = async ({ to, from, subject, text }) => {
     return true;
 };
 
+// GET all feedback (Admin only)
+router.get('/', auth, admin, async (req, res, next) => {
+    try {
+        const feedbacks = await Feedback.find().sort({ createdAt: -1 });
+        res.json(feedbacks);
+    } catch (error) {
+        next(error);
+    }
+});
+
+// Middleware to optionally attach user info if logged in
+const optionalAuth = async (req, res, next) => {
+    try {
+        const User = require('../models/User');
+        const { ACCESS_TOKEN_COOKIE, verifyAccessToken } = require('../utils/authTokens');
+        const token = req.cookies[ACCESS_TOKEN_COOKIE];
+        if (token) {
+            const decoded = verifyAccessToken(token);
+            if (decoded && decoded.userId) {
+                const user = await User.findById(decoded.userId).select('name email');
+                if (user) req.user = user;
+            }
+        }
+    } catch (e) {
+        // Silent fail, proceed as guest
+    }
+    next();
+};
+
 router.post(
     '/',
+    optionalAuth,
     [
         body('message')
             .trim()
-            .isLength({ min: 10, max: 2000 })
-            .withMessage('Feedback must be between 10 and 2000 characters.'),
+            .isLength({ min: 5, max: 2000 })
+            .withMessage('Feedback must be between 5 and 2000 characters.'),
         body('contextPage')
             .optional()
             .trim()
@@ -97,13 +130,23 @@ router.post(
                 return res.status(400).json({ errors: errors.array() });
             }
 
+            const message = req.body.message;
+            const userName = req.user?.name || req.body.name?.trim() || req.body.userName?.trim() || 'Anonymous';
+            const userEmail = req.user?.email || req.body.email?.trim() || req.body.userEmail?.trim() || 'Not provided';
+            const contextPage = req.body.contextPage || 'unknown';
+
+            // 1. Save to Database (Reliable "In-House" solution)
+            const feedback = new Feedback({
+                userName,
+                userEmail,
+                message,
+                contextPage
+            });
+            await feedback.save();
+
+            // 2. Try sending email in background (Optional notification)
             const toEmail = process.env.FEEDBACK_TO_EMAIL || 'u1892911@gmail.com';
             const fromEmail = process.env.FEEDBACK_FROM_EMAIL || '';
-            const contextPage = req.body.contextPage || 'unknown';
-            const message = req.body.message;
-            const userName = req.body.name?.trim() || req.body.userName?.trim() || 'Anonymous';
-            const userEmail = req.body.email?.trim() || req.body.userEmail?.trim() || 'Not provided';
-
             const text = [
                 'New QuestXP Feedback',
                 `User: ${userName}`,
@@ -114,29 +157,30 @@ router.post(
                 message,
             ].join('\n');
 
-            try {
-                const sentViaResend = await sendWithResend({
-                    to: toEmail,
-                    from: fromEmail,
-                    subject: `[QuestXP Feedback] ${userName}`,
-                    text,
-                });
-
-                if (!sentViaResend) {
-                    await sendWithSmtp({
+            // We don't await email so we can respond quickly
+            (async () => {
+                try {
+                    const sentViaResend = await sendWithResend({
                         to: toEmail,
-                        from: process.env.SMTP_FROM || process.env.SMTP_USER,
+                        from: fromEmail,
                         subject: `[QuestXP Feedback] ${userName}`,
                         text,
                     });
-                }
-            } catch (sendError) {
-                return res.status(503).json({
-                    error: normalizeEmailError(sendError),
-                });
-            }
 
-            return res.json({ success: true });
+                    if (!sentViaResend) {
+                        await sendWithSmtp({
+                            to: toEmail,
+                            from: process.env.SMTP_FROM || process.env.SMTP_USER,
+                            subject: `[QuestXP Feedback] ${userName}`,
+                            text,
+                        });
+                    }
+                } catch (e) {
+                    console.error('[Feedback Email Error]', e.message);
+                }
+            })();
+
+            return res.json({ success: true, message: 'Feedback received' });
         } catch (error) {
             return next(error);
         }

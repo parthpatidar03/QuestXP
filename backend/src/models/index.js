@@ -5,5 +5,6 @@ module.exports = {
     Session: require('./Session'),
     EmbeddingStatus: require('./EmbeddingStatus'),
     DoubtQuery: require('./DoubtQuery'),
-    DoubtAnswer: require('./DoubtAnswer')
+    DoubtAnswer: require('./DoubtAnswer'),
+    Feedback: require('./Feedback')
 };
