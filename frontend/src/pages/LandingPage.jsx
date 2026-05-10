@@ -17,6 +17,7 @@ import {
     Zap,
     ShieldCheck,
     Bell,
+    Share2,
 } from 'lucide-react';
 import { BGPattern } from '../components/ui/bg-pattern';
 import FeedbackModal from '../components/FeedbackModal';
