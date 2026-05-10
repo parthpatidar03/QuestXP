@@ -2,7 +2,7 @@ const aiProvider = require('./ai-provider');
 const Transcript = require('../models/Transcript');
 const Notes = require('../models/Notes');
 const { validateNotes } = require('../schemas/notesSchema');
-const { ERROR_GPT_SCHEMA_INVALID } = require('../constants/aiPipeline');
+const { ERROR_GPT_SCHEMA_INVALID, ERROR_AI_PROVIDER_FAILED } = require('../constants/aiPipeline');
 
 const NOTES_SYSTEM_PROMPT = `
 You are an expert AI tutor creating high-quality, structured study notes.
@@ -37,7 +37,10 @@ class NotesService {
 
             raw = await aiProvider.generateJSON(prompt, NOTES_SYSTEM_PROMPT);
         } catch (error) {
-            console.error('[NotesService] AI Generation failed:', error);
+            console.error('[NotesService] AI Generation failed:', error.message);
+            if (error.message.includes('All AI providers failed')) {
+                throw new Error(ERROR_AI_PROVIDER_FAILED);
+            }
             throw new Error(ERROR_GPT_SCHEMA_INVALID);
         }
 

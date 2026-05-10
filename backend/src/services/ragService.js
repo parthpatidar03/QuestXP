@@ -29,11 +29,22 @@ exports.queryLecture = async (lectureId, questionText) => {
     const index = pc.Index(indexName);
 
     // 1. Embed Question
-    const embedRes = await embeddingModel.embedContent({
-        content: { parts: [{ text: questionText }] },
-        taskType: "RETRIEVAL_QUERY"
-    });
-    const queryEmbedding = embedRes.embedding.values;
+    let queryEmbedding;
+    try {
+        const embedRes = await embeddingModel.embedContent({
+            content: { parts: [{ text: questionText }] },
+            taskType: "RETRIEVAL_QUERY"
+        });
+        queryEmbedding = embedRes.embedding.values;
+    } catch (embedError) {
+        console.warn(`[RAG] Primary embedding model failed: ${embedError.message}. Trying fallback embedding-001.`);
+        const fallbackModel = genAI.getGenerativeModel({ model: "embedding-001" });
+        const fallbackRes = await fallbackModel.embedContent({
+            content: { parts: [{ text: questionText }] },
+            taskType: "RETRIEVAL_QUERY"
+        });
+        queryEmbedding = fallbackRes.embedding.values;
+    }
 
     // 2. Query Pinecone
     const topK = parseInt(process.env.RAG_TOP_K) || 5;

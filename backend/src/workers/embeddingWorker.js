@@ -81,14 +81,26 @@ const embeddingWorker = new Worker('embedding', async job => {
         for (let i = 0; i < chunkTexts.length; i += batchSize) {
             const batch = chunkTexts.slice(i, i + batchSize);
             
-            const batchEmbedResponse = await embeddingModel.batchEmbedContents({
-                requests: batch.map(t => ({
-                    content: { parts: [{ text: t }] },
-                    taskType: "RETRIEVAL_DOCUMENT"
-                }))
-            });
-
-            const batchEmbeddings = batchEmbedResponse.embeddings;
+            let batchEmbeddings;
+            try {
+                const batchEmbedResponse = await embeddingModel.batchEmbedContents({
+                    requests: batch.map(t => ({
+                        content: { parts: [{ text: t }] },
+                        taskType: "RETRIEVAL_DOCUMENT"
+                    }))
+                });
+                batchEmbeddings = batchEmbedResponse.embeddings;
+            } catch (embedError) {
+                console.warn(`[EmbeddingWorker] Primary embedding model failed: ${embedError.message}. Trying fallback embedding-001.`);
+                const fallbackModel = genAI.getGenerativeModel({ model: "embedding-001" });
+                const fallbackRes = await fallbackModel.batchEmbedContents({
+                    requests: batch.map(t => ({
+                        content: { parts: [{ text: t }] },
+                        taskType: "RETRIEVAL_DOCUMENT"
+                    }))
+                });
+                batchEmbeddings = fallbackRes.embeddings;
+            }
 
             // 5 & 6. Assemble vectors
             const batchVectors = batch.map((text, batchIndex) => {

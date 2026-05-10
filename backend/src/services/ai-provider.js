@@ -97,31 +97,49 @@ class AIProvider {
             { role: 'user', content: prompt }
         ];
 
-        try {
-            const response = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
-                model: 'meta-llama/llama-3.2-3b-instruct:free', // Using 3.2 3B Free (more stable endpoint)
-                messages: messages,
-                response_format: isJson ? { type: 'json_object' } : undefined,
-                temperature: 0.7
-            }, {
-                headers: {
-                    'Authorization': `Bearer ${this.openRouterKey}`,
-                    'HTTP-Referer': 'https://questxp.vercel.app',
-                    'X-Title': 'QuestXP',
-                    'Content-Type': 'application/json'
+        // T040 Fallback Model Rotation to bypass rate limits
+        const models = [
+            'google/gemini-flash-1.5-exp:free',
+            'meta-llama/llama-3.2-3b-instruct:free',
+            'meta-llama/llama-3.1-8b-instruct:free',
+            'google/gemini-flash-1.5-8b:free'
+        ];
+
+        let lastError;
+        for (const model of models) {
+            try {
+                console.log(`[AIProvider] Attempting OpenRouter fallback with model: ${model}`);
+                const response = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
+                    model: model,
+                    messages: messages,
+                    response_format: isJson ? { type: 'json_object' } : undefined,
+                    temperature: 0.7
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${this.openRouterKey}`,
+                        'HTTP-Referer': 'https://questxp.vercel.app',
+                        'X-Title': 'QuestXP',
+                        'Content-Type': 'application/json'
+                    },
+                    timeout: 30000 // 30s timeout
+                });
+
+                if (response.data.choices && response.data.choices.length > 0) {
+                    const content = response.data.choices[0].message.content;
+                    return isJson ? JSON.parse(this._sanitizeJSON(content)) : content;
                 }
-            });
-
-            if (!response.data.choices || response.data.choices.length === 0) {
-                throw new Error('OpenRouter returned no choices');
+            } catch (error) {
+                const status = error.response?.status;
+                const errorMsg = error.response?.data?.error?.message || error.message;
+                console.warn(`[AIProvider] OpenRouter model ${model} failed (Status ${status}):`, errorMsg);
+                lastError = errorMsg;
+                
+                // If it's a 429, continue to next model. If it's something else, maybe still continue.
+                if (status === 401 || status === 403) break; // Don't retry if auth fails
             }
-
-            const content = response.data.choices[0].message.content;
-            return isJson ? JSON.parse(this._sanitizeJSON(content)) : content;
-        } catch (error) {
-            console.error('[AIProvider] OpenRouter Fallback also failed:', error.response?.data || error.message);
-            throw new Error('All AI providers failed');
         }
+
+        throw new Error(`All AI providers failed. Last error: ${lastError}`);
     }
 
     _sanitizeJSON(text) {

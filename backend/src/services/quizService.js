@@ -5,7 +5,8 @@ const { validateQuiz } = require('../schemas/quizSchema');
 const {
     MIN_DURATION_FOR_QUIZ_SHORT,
     MIN_DURATION_FOR_QUIZ_FULL,
-    ERROR_GPT_SCHEMA_INVALID
+    ERROR_GPT_SCHEMA_INVALID,
+    ERROR_AI_PROVIDER_FAILED
 } = require('../constants/aiPipeline');
 
 class QuizService {
@@ -90,7 +91,10 @@ JSON Structure:
 
             return newQuiz;
         } catch (error) {
-            console.error('Gemini Quiz Generation Error:', error);
+            console.error('[QuizService] AI Generation failed:', error.message);
+            if (error.message.includes('All AI providers failed')) {
+                throw new Error(ERROR_AI_PROVIDER_FAILED);
+            }
             throw error;
         }
     }

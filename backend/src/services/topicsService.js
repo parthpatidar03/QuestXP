@@ -52,7 +52,11 @@ class TopicsService {
 
             raw = await aiProvider.generateJSON(prompt, TOPICS_SYSTEM_PROMPT);
         } catch (error) {
-            console.error('[TopicsService] AI Generation failed:', error);
+            console.error('[TopicsService] AI Generation failed:', error.message);
+            // If it's a provider failure, throw specific error for the worker to decide on retry
+            if (error.message.includes('All AI providers failed')) {
+                throw new Error(ERROR_AI_PROVIDER_FAILED);
+            }
             throw new Error(ERROR_GPT_SCHEMA_INVALID);
         }
 

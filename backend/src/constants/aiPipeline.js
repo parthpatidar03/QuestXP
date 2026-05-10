@@ -10,7 +10,8 @@ module.exports = {
     ERROR_STT_FAILED: 'Speech-to-text transcription failed.',
     ERROR_BOTH_FAILED: 'Both caption fetch and speech-to-text transcription failed.',
     ERROR_GPT_SCHEMA_INVALID: 'AI response did not match the expected schema. Retrying.',
-    ERROR_RESOURCE_EXHAUSTED: 'OpenAI API quota exceeded. Please try again later.',
+    ERROR_RESOURCE_EXHAUSTED: 'AI API quota exceeded. Please try again later.',
     ERROR_VIDEO_UNAVAILABLE: 'Video is private or unavailable.',
     ERROR_SERVICE_UNAVAILABLE: 'AI service temporarily unavailable. Retrying.',
+    ERROR_AI_PROVIDER_FAILED: 'All AI providers failed to generate a response.',
 };
