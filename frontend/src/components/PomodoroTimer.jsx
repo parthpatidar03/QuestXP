@@ -4,7 +4,7 @@ import { Play, Pause, RotateCcw, Coffee, Target, Brain, X, Maximize2, Minimize2,
 
 const MODES = {
     FOCUS: { label: 'Focus', time: 25 * 60, icon: Brain, color: 'var(--color-primary)' },
-    SHORT: { label: 'Short', time: 5 * 60, icon: Coffee, color: 'var(--color-success)' },
+    SHORT: { label: 'Break', time: 5 * 60, icon: Coffee, color: 'var(--color-success)' },
     LONG: { label: 'Long', time: 15 * 60, icon: Target, color: 'var(--color-gold)' }
 };
 
