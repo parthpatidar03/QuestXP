@@ -20,7 +20,8 @@ const StudyPlan = ({ courseId, onOpenSetup }) => {
     const fetchRoadmap = async () => {
         setLoading(true);
         try {
-            const data = await getCurrentRoadmap();
+            const data = await getCurrentRoadmap(courseId);
+
             setRoadmap(data);
         } catch (err) {
             console.error("No active roadmap found");

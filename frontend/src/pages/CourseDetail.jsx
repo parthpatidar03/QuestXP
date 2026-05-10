@@ -75,11 +75,12 @@ function MissionRow({ lecture, index, isCompleted, isActive, isLocked, courseId 
                     ? <img src={lecture.thumbnailUrl || `https://img.youtube.com/vi/${lecture.youtubeId}/mqdefault.jpg`} alt="" className="w-full h-full object-cover" />
                     : <PlayCircle className="w-6 h-6 m-auto mt-4 text-text-muted" />}
                 {!isLocked && (
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40">
-                        <div className="w-8 h-8 rounded-full bg-primary/90 flex items-center justify-center shadow-lg transform scale-75 group-hover:scale-100 transition-transform">
+                    <div className="absolute inset-0 flex items-center justify-center opacity-40 group-hover:opacity-100 transition-opacity bg-black/20 group-hover:bg-black/40">
+                        <div className="w-8 h-8 rounded-full bg-primary/90 flex items-center justify-center shadow-lg transform scale-90 group-hover:scale-100 transition-transform">
                             <PlayCircle className="w-5 h-5 text-white fill-white" />
                         </div>
                     </div>
+
                 )}
             </div>
 

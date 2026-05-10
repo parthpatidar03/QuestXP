@@ -202,10 +202,11 @@ const RoadmapPlaylistCard = ({ playlistId, days, roadmapId, courseId, onPartialS
                                         to={`/courses/${vid.playlistId}/lectures/${vid.videoId}`}
                                         className="flex items-center gap-3 py-1.5 px-3 rounded-lg hover:bg-white/5 transition-all group/item"
                                     >
-                                        <Play className="w-2.5 h-2.5 text-primary opacity-0 group-hover/item:opacity-100 transition-opacity" />
-                                        <span className="text-xs font-medium text-text-secondary flex-1 truncate group-hover/item:text-text-primary transition-colors">
+                                        <Play className="w-2.5 h-2.5 text-primary opacity-70 group-hover/item:opacity-100 group-hover/item:scale-110 transition-all" />
+                                        <span className="text-xs font-bold text-text-primary flex-1 truncate group-hover/item:text-primary transition-colors">
                                             {vid.title}
                                         </span>
+
                                         <span className="text-[11px] font-bold text-text-muted tabular-nums">{vid.duration}m</span>
                                     </Link>
                                 ))}
