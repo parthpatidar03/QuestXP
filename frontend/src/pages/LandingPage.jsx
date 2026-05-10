@@ -256,12 +256,9 @@ const LandingPage = () => {
                         
                         <div className="flex flex-col items-center">
                             <h2 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-[-0.06em] text-white leading-[0.9] font-display">
-                                MULTIPLE
+                                MULTIPLE <span className="italic font-serif text-primary tracking-[-0.04em]">PLAYLISTS</span>
                             </h2>
-                            <h2 className="text-4xl sm:text-6xl md:text-7xl font-black italic font-serif tracking-[-0.04em] text-primary leading-[0.9]">
-                                PLAYLISTS
-                            </h2>
-                            <div className="flex items-center gap-3 my-1">
+                            <div className="flex items-center gap-3 my-4">
                                 <div className="h-[1px] w-8 sm:w-16 bg-white/10" />
                                 <span className="text-lg font-black text-white italic font-serif tracking-widest">•</span>
                                 <div className="h-[1px] w-8 sm:w-16 bg-white/10" />
