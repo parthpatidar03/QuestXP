@@ -9,7 +9,6 @@ import NavBar from '../components/NavBar';
 import DailyMissionWidget from '../components/Dashboard/DailyMissionWidget';
 import UserTour from '../components/Dashboard/UserTour';
 
-import XPLeaderboardSidebar from '../components/Dashboard/XPLeaderboardSidebar';
 import StreakCalendar from '../components/StreakCalendar';
 import CourseCreationForm from '../components/Course/CourseCreationForm';
 import { BGPattern } from '../components/ui/bg-pattern';
@@ -634,9 +633,6 @@ const Dashboard = () => {
                         <StreakCalendar history={historyData} />
                     </div>
 
-                    <div id="tour-leaderboard">
-                        <XPLeaderboardSidebar players={leaderboardData} />
-                    </div>
 
                     <div className="glass-card p-5">
                         <div className="flex items-center gap-2 mb-4">
