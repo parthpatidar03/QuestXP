@@ -22,11 +22,17 @@ import {
 } from 'lucide-react';
 import { format, differenceInDays } from 'date-fns';
 
-const formatMinutes = (mins) => {
-    if (!mins || mins <= 0) return '0 min';
-    if (mins < 60) return `${mins} min`;
-    return `${(mins / 60).toFixed(1)} hr`;
+const formatTime = (seconds) => {
+    if (!seconds || seconds <= 0) return '0 min';
+    const s = parseInt(seconds);
+    if (s < 3600) {
+        const m = s / 60;
+        return `${m % 1 === 0 ? m : m.toFixed(1)} min`;
+    }
+    const h = s / 3600;
+    return `${h % 1 === 0 ? h : h.toFixed(1)} hr`;
 };
+
 
 import { getCurrentRoadmap, adjustRoadmap, partialShiftRoadmap } from '../services/roadmapApi';
 import NavBar from '../components/NavBar';
@@ -198,8 +204,9 @@ const RoadmapPlaylistCard = ({ playlistId, days, roadmapId, courseId, onPartialS
                                         </button>
                                     </div>
                                     <div className="px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/30">
-                                        <span className="text-[11px] font-black text-primary uppercase tracking-tight">Target: {formatMinutes(day.totalMinutes)}</span>
+                                        <span className="text-[11px] font-black text-primary uppercase tracking-tight">Target: {formatTime(day.totalMinutes)}</span>
                                     </div>
+
 
                                 </div>
                             </div>
@@ -215,7 +222,8 @@ const RoadmapPlaylistCard = ({ playlistId, days, roadmapId, courseId, onPartialS
                                             {vid.title}
                                         </span>
 
-                                        <span className="text-[11px] font-bold text-text-muted tabular-nums">{formatMinutes(vid.duration)}</span>
+                                        <span className="text-[11px] font-bold text-text-muted tabular-nums">{formatTime(vid.duration)}</span>
+
 
                                     </Link>
                                 ))}

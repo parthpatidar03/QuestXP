@@ -13,11 +13,17 @@ import {
 import { getCurrentRoadmap } from '../../services/roadmapApi';
 import { format, differenceInDays } from 'date-fns';
 
-const formatMinutes = (mins) => {
-    if (!mins || mins <= 0) return '0 min';
-    if (mins < 60) return `${mins} min`;
-    return `${(mins / 60).toFixed(1)} hr`;
+const formatTime = (seconds) => {
+    if (!seconds || seconds <= 0) return '0 min';
+    const s = parseInt(seconds);
+    if (s < 3600) {
+        const m = s / 60;
+        return `${m % 1 === 0 ? m : m.toFixed(1)} min`;
+    }
+    const h = s / 3600;
+    return `${h % 1 === 0 ? h : h.toFixed(1)} hr`;
 };
+
 
 
 const StudyPlan = ({ courseId, onOpenSetup }) => {
@@ -103,7 +109,8 @@ const StudyPlan = ({ courseId, onOpenSetup }) => {
                             </div>
                             <div>
                                 <p className="text-[9px] font-bold text-text-muted uppercase">Today's Load</p>
-                                <p className="text-xs font-black text-text-primary">{formatMinutes(activeDay?.totalMinutes)}</p>
+                                <p className="text-xs font-black text-text-primary">{formatTime(activeDay?.totalMinutes)}</p>
+
 
                             </div>
                         </div>

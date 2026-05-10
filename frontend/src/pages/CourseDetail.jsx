@@ -17,12 +17,15 @@ import { BGPattern } from '../components/ui/bg-pattern';
 /* ── helpers ────────────────────────────────────────────────────────── */
 const XP_PER_LECTURE = 50;
 const fmtDuration = (secs) => {
-    if (!secs) return '—';
+    if (!secs || secs <= 0) return '—';
     if (secs < 3600) {
-        return `${Math.ceil(secs / 60)} min`;
+        const m = secs / 60;
+        return `${m % 1 === 0 ? m : m.toFixed(1)} min`;
     }
-    return `${(secs / 3600).toFixed(1)} hr`;
+    const h = secs / 3600;
+    return `${h % 1 === 0 ? h : h.toFixed(1)} hr`;
 };
+
 
 
 /* ── Lecture Mission Row ────────────────────────────────────────────── */

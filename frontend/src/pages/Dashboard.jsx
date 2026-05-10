@@ -62,12 +62,13 @@ const formatTime = (seconds) => {
     if (!seconds || seconds <= 0) return '—';
     const s = parseInt(seconds);
     if (s < 3600) {
-        const mins = Math.ceil(s / 60);
-        return `${mins} min`;
+        const m = s / 60;
+        return `${m % 1 === 0 ? m : m.toFixed(1)} min`;
     }
-    const h = (s / 3600).toFixed(1);
-    return `${h} hr`;
+    const h = s / 3600;
+    return `${h % 1 === 0 ? h : h.toFixed(1)} hr`;
 };
+
 
 
 function LearningTimeCard({ totalSeconds, weeklySeconds, avgSecondsPerDay }) {
