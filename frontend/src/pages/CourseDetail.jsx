@@ -464,7 +464,7 @@ const CourseDetail = () => {
                                 </div>
                                 
                                 {/* Elite Journey Progress Bar */}
-                                <div className="relative pt-6 pb-10">
+                                <div className="relative pt-6 pb-12">
                                     {/* Track */}
                                     <div className="h-4 w-full bg-surface-2 rounded-full border border-border/50 relative overflow-visible shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]">
                                         {/* Progress Fill */}
@@ -475,17 +475,19 @@ const CourseDetail = () => {
                                             className="absolute top-0 left-0 h-full bg-gradient-to-r from-primary/80 to-primary rounded-full shadow-[0_0_20px_var(--color-primary)]"
                                         >
                                             {/* Journey Thumb (The Runner) */}
-                                            <div className="absolute -right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white border-[4px] border-primary shadow-[0_0_15px_var(--color-primary)] z-10 flex items-center justify-center">
-                                                <span className="text-sm">🏃‍♂️</span>
+                                            <div className="absolute -right-4 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white border-[4px] border-primary shadow-[0_0_15px_var(--color-primary)] z-10 flex items-center justify-center overflow-hidden">
+                                                <span className="text-xl transform scale-x-[-1] translate-x-[1px]">🏃</span>
                                             </div>
                                         </motion.div>
                                         
                                         {/* Goal Icon */}
-                                        <div className="absolute -right-2 -top-12 flex flex-col items-center">
-                                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${pct === 100 ? 'bg-gold shadow-[0_0_20px_var(--color-gold)] scale-110' : 'bg-surface-3 opacity-30 grayscale'}`}>
-                                                <Trophy className={`w-6 h-6 ${pct === 100 ? 'text-white animate-bounce' : 'text-text-muted'}`} />
+                                        <div className="absolute -right-1 -top-12 flex flex-col items-center">
+                                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${pct === 100 ? 'bg-danger shadow-[0_0_20px_var(--color-danger)] scale-110' : 'bg-surface-3 opacity-30 grayscale'}`}>
+                                                <span className={`text-xl ${pct === 100 ? 'animate-bounce' : ''}`}>🚩</span>
                                             </div>
-                                            <div className="text-[10px] font-black text-text-muted mt-2 uppercase tracking-widest">FINISH</div>
+                                            <div className="absolute top-14 text-[10px] font-black text-text-muted uppercase tracking-[0.2em] whitespace-nowrap">
+                                                Victory Goal
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
