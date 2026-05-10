@@ -632,6 +632,7 @@ const CourseDetail = () => {
             {showSetupModal && (
                 <GenerateRoadmapModal
                     isOpen={showSetupModal}
+                    courseId={courseId}
                     onClose={() => setShowSetupModal(false)}
                     onGenerated={() => {
                         window.location.reload();

@@ -35,6 +35,12 @@ router.post('/generate', auth, async (req, res) => {
         });
 
         if (allVideos.length === 0) {
+            console.log('Roadmap Generation Failed: No videos found.', {
+                playlistIds,
+                sectionIds,
+                playlistsFound: playlists.length,
+                courseTitles: playlists.map(p => p.title)
+            });
             return res.status(400).json({ msg: 'No videos found for selected content' });
         }
 
