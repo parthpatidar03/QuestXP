@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, RotateCcw, Coffee, Target, Brain, ChevronUp, ChevronDown, Music, Volume2, X, Maximize2, Minimize2 } from 'lucide-react';
+import { Play, Pause, RotateCcw, Coffee, Target, Brain, X, Maximize2, Minimize2, Edit3, Check } from 'lucide-react';
 
 const MODES = {
     FOCUS: { label: 'Focus', time: 25 * 60, icon: Brain, color: 'var(--color-primary)' },
@@ -13,49 +13,18 @@ const PomodoroTimer = () => {
     const [mode, setMode] = useState('FOCUS');
     const [timeLeft, setTimeLeft] = useState(MODES.FOCUS.time);
     const [isActive, setIsActive] = useState(false);
-    const [showMusic, setShowMusic] = useState(false);
-    
-    // T052: Music Logic
-    const [isMusicPlaying, setIsMusicPlaying] = useState(false);
-    const [volume, setVolume] = useState(0.5);
-    const [selectedStation, setSelectedStation] = useState(0);
-
-    const STATIONS = [
-        { name: 'Lofi Focus', url: 'https://stream.zeno.fm/f3v5u8p7u8hvv', author: 'Lofi Girl' },
-        { name: 'Rainy Night', url: 'https://stream.zeno.fm/0r0xa792kwzuv', author: 'Ambient' },
-        { name: 'Coffee Shop', url: 'https://stream.zeno.fm/76u7z92kwzuv', author: 'Jazz' }
-    ];
+    const [isEditing, setIsEditing] = useState(false);
+    const [customMins, setCustomMins] = useState('25');
     
     const timerRef = useRef(null);
     const audioRef = useRef(new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg'));
-    const musicRef = useRef(new Audio(STATIONS[0].url));
-
-    useEffect(() => {
-        musicRef.current.volume = volume;
-        if (isMusicPlaying) {
-            musicRef.current.play().catch(err => {
-                console.error("Audio playback blocked", err);
-                setIsMusicPlaying(false);
-            });
-        } else {
-            musicRef.current.pause();
-        }
-    }, [isMusicPlaying, selectedStation, volume]);
-
-    const changeStation = (idx) => {
-        musicRef.current.pause();
-        setSelectedStation(idx);
-        musicRef.current = new Audio(STATIONS[idx].url);
-        musicRef.current.volume = volume;
-        if (isMusicPlaying) musicRef.current.play();
-    };
 
     useEffect(() => {
         if (isActive && timeLeft > 0) {
             timerRef.current = setInterval(() => {
                 setTimeLeft(prev => prev - 1);
             }, 1000);
-        } else if (timeLeft === 0) {
+        } else if (timeLeft === 0 && isActive) {
             handleTimerComplete();
         } else {
             clearInterval(timerRef.current);
@@ -66,7 +35,6 @@ const PomodoroTimer = () => {
     const handleTimerComplete = () => {
         setIsActive(false);
         audioRef.current.play().catch(() => {});
-        // Optionally add notification here
         if (Notification.permission === 'granted') {
             new Notification('Session Complete!', {
                 body: mode === 'FOCUS' ? 'Time for a break!' : 'Ready to focus?',
@@ -86,6 +54,17 @@ const PomodoroTimer = () => {
         setMode(newMode);
         setTimeLeft(MODES[newMode].time);
         setIsActive(false);
+        setIsEditing(false);
+    };
+
+    const handleCustomSubmit = (e) => {
+        e.preventDefault();
+        const mins = parseInt(customMins);
+        if (!isNaN(mins) && mins > 0) {
+            setTimeLeft(mins * 60);
+            setIsEditing(false);
+            setIsActive(false);
+        }
     };
 
     const formatTime = (seconds) => {
@@ -94,7 +73,7 @@ const PomodoroTimer = () => {
         return `${m}:${s < 10 ? '0' : ''}${s}`;
     };
 
-    const progress = (timeLeft / MODES[mode].time) * 100;
+    const progress = (timeLeft / (parseInt(customMins || 25) * 60)) * 100;
     const ActiveIcon = MODES[mode].icon;
 
     return (
@@ -111,7 +90,7 @@ const PomodoroTimer = () => {
                         <div 
                             className="absolute bottom-0 left-0 h-1 transition-all duration-1000" 
                             style={{ 
-                                width: `${100 - progress}%`, 
+                                width: `${100 - (timeLeft / (parseInt(customMins || 25) * 60)) * 100}%`, 
                                 backgroundColor: MODES[mode].color,
                                 boxShadow: `0 0 20px ${MODES[mode].color}`
                             }} 
@@ -134,10 +113,32 @@ const PomodoroTimer = () => {
                             </button>
                         </div>
 
-                        <div className="text-center mb-8">
-                            <h2 className="text-5xl font-black text-text-primary tracking-tighter tabular-nums">
-                                {formatTime(timeLeft)}
-                            </h2>
+                        <div className="text-center mb-8 relative group">
+                            {isEditing ? (
+                                <form onSubmit={handleCustomSubmit} className="flex items-center justify-center gap-2">
+                                    <input 
+                                        autoFocus
+                                        type="number"
+                                        value={customMins}
+                                        onChange={(e) => setCustomMins(e.target.value)}
+                                        className="w-24 text-4xl font-black bg-surface-2 border border-primary rounded-lg text-center text-text-primary outline-none"
+                                        onBlur={handleCustomSubmit}
+                                    />
+                                    <span className="text-xl font-bold text-text-muted">min</span>
+                                </form>
+                            ) : (
+                                <div className="relative inline-block">
+                                    <h2 className="text-5xl font-black text-text-primary tracking-tighter tabular-nums">
+                                        {formatTime(timeLeft)}
+                                    </h2>
+                                    <button 
+                                        onClick={() => { setIsEditing(true); setIsActive(false); }}
+                                        className="absolute -top-2 -right-6 p-1.5 rounded-full bg-surface-2 border border-border opacity-0 group-hover:opacity-100 transition-all hover:text-primary"
+                                    >
+                                        <Edit3 className="w-3 h-3" />
+                                    </button>
+                                </div>
+                            )}
                             <p className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em] mt-2">
                                 {isActive ? 'Session Active' : 'Paused'}
                             </p>
@@ -152,16 +153,17 @@ const PomodoroTimer = () => {
                             </button>
                             <button 
                                 onClick={toggleTimer}
-                                className="w-14 h-14 rounded-full flex items-center justify-center text-white shadow-lg transition-all hover:scale-105 active:scale-95"
+                                className="w-14 h-14 rounded-full flex items-center justify-center text-white shadow-lg transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
+                                disabled={isEditing}
                                 style={{ backgroundColor: MODES[mode].color, boxShadow: `0 8px 24px ${MODES[mode].color}40` }}
                             >
                                 {isActive ? <Pause className="w-6 h-6 fill-current" /> : <Play className="w-6 h-6 fill-current ml-1" />}
                             </button>
                             <button 
-                                onClick={() => setShowMusic(!showMusic)}
-                                className={`p-3 rounded-full border transition-all active:scale-90 ${showMusic ? 'bg-primary/20 border-primary text-primary' : 'bg-surface-2 border-border text-text-secondary'}`}
+                                onClick={() => { setIsEditing(!isEditing); setIsActive(false); }}
+                                className={`p-3 rounded-full border transition-all active:scale-90 ${isEditing ? 'bg-primary/20 border-primary text-primary' : 'bg-surface-2 border-border text-text-secondary'}`}
                             >
-                                <Music className="w-5 h-5" />
+                                <Edit3 className="w-5 h-5" />
                             </button>
                         </div>
 
@@ -176,56 +178,6 @@ const PomodoroTimer = () => {
                                 </button>
                             ))}
                         </div>
-
-                        {showMusic && (
-                            <motion.div 
-                                initial={{ height: 0, opacity: 0 }}
-                                animate={{ height: 'auto', opacity: 1 }}
-                                className="mt-4 pt-4 border-t border-border/40 space-y-3"
-                            >
-                                <div className="flex items-center justify-between mb-2">
-                                    <span className="text-[9px] font-black uppercase text-text-muted tracking-widest">Select Station</span>
-                                    <div className="flex items-center gap-2">
-                                        <Volume2 className="w-3 h-3 text-text-muted" />
-                                        <input 
-                                            type="range" 
-                                            min="0" max="1" step="0.1" 
-                                            value={volume}
-                                            onChange={(e) => setVolume(parseFloat(e.target.value))}
-                                            className="w-16 h-1 bg-surface-3 rounded-lg appearance-none cursor-pointer accent-primary"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 gap-2">
-                                    {STATIONS.map((s, i) => (
-                                        <button
-                                            key={i}
-                                            onClick={() => {
-                                                if (selectedStation === i) setIsMusicPlaying(!isMusicPlaying);
-                                                else changeStation(i);
-                                            }}
-                                            className={`flex items-center justify-between p-2.5 rounded-xl border transition-all ${selectedStation === i ? 'bg-primary/10 border-primary/40' : 'bg-surface-2 border-border hover:border-text-muted'}`}
-                                        >
-                                            <div className="flex items-center gap-3">
-                                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${selectedStation === i && isMusicPlaying ? 'bg-primary text-white animate-spin-slow' : 'bg-surface text-text-muted'}`}>
-                                                    <Music className="w-4 h-4" />
-                                                </div>
-                                                <div className="text-left">
-                                                    <p className={`text-[10px] font-black uppercase ${selectedStation === i ? 'text-primary' : 'text-text-primary'}`}>{s.name}</p>
-                                                    <p className="text-[9px] text-text-muted font-bold">{s.author}</p>
-                                                </div>
-                                            </div>
-                                            {selectedStation === i && isMusicPlaying ? (
-                                                <Pause className="w-3.5 h-3.5 text-primary" />
-                                            ) : (
-                                                <Play className="w-3.5 h-3.5 text-text-muted" />
-                                            )}
-                                        </button>
-                                    ))}
-                                </div>
-                            </motion.div>
-                        )}
                     </motion.div>
                 )}
             </AnimatePresence>
