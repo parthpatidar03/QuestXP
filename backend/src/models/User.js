@@ -26,6 +26,7 @@ const userSchema = new Schema({
     username: { type: String, unique: true, sparse: true, trim: true, lowercase: true },
     usernameSet: { type: Boolean, default: false },
     role: { type: String, enum: ['user', 'admin'], default: 'user' },
+    tourCompleted: { type: Boolean, default: false },
     totalStudyTime: { type: Number, default: 0 }, // in seconds
 
     createdAt: { type: Date, default: Date.now },

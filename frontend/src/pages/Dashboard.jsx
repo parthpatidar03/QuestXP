@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Flame, Zap, Trophy, Shield, BookOpen, Plus, ChevronRight, Star, Trash2, Target, MessageSquare } from 'lucide-react';
+import { Flame, Zap, Trophy, Shield, BookOpen, Plus, ChevronRight, Star, Trash2, Target, MessageSquare, Share2, Copy, X } from 'lucide-react';
 import useAuthStore from '../store/useAuthStore';
 import useGamificationStore from '../store/useGamificationStore';
 import api from '../services/api';
@@ -149,6 +149,69 @@ function DeadlineCard({ deadline }) {
     );
 }
 
+/* ── Share Modal ─────────────────────────────────────────────────────── */
+function ShareModal({ isOpen, onClose, courseTitle, shareUrl }) {
+    if (!isOpen) return null;
+
+    const shareText = `*I found this awesome course "${courseTitle}" on QuestXP!* 🚀\n\nWould you like to level up? Check it out here:\n${shareUrl}`;
+
+    const copyMessage = () => {
+        navigator.clipboard.writeText(shareText);
+        alert('Message copied to clipboard!');
+    };
+
+    return (
+        <div className="fixed inset-0 z-[200] flex items-start justify-center p-4 pt-16 sm:pt-24 animate-in fade-in duration-200">
+            <div className="absolute inset-0 bg-bg/60 backdrop-blur-sm" onClick={onClose} />
+            <div className="relative w-full max-w-md bg-surface border border-border rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-top-4 duration-300">
+                <div className="p-5 border-b border-border bg-surface-2 flex items-center justify-between">
+                    <div className="flex items-center gap-3 text-primary">
+                        <Share2 className="w-5 h-5" />
+                        <span className="font-black uppercase tracking-widest text-sm">Share Quest</span>
+                    </div>
+                    <button onClick={onClose} className="p-2 hover:bg-surface-3 rounded-lg transition-colors">
+                        <X className="w-5 h-5 text-text-muted" />
+                    </button>
+                </div>
+                <div className="p-6 space-y-4">
+                    <div className="p-4 bg-surface-2 rounded-xl border border-border text-sm text-text-secondary italic leading-relaxed">
+                        "{shareText}"
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-3">
+                        <button 
+                            onClick={copyMessage}
+                            className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-primary text-white text-xs font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all"
+                        >
+                            <Copy className="w-4 h-4" />
+                            Copy Message
+                        </button>
+                        <a 
+                            href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#25D366] text-white text-xs font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all"
+                        >
+                            <MessageSquare className="w-4 h-4" />
+                            WhatsApp
+                        </a>
+                    </div>
+                    
+                    <div className="pt-4 border-t border-border">
+                        <div className="flex items-center justify-between text-[10px] font-black text-text-muted uppercase tracking-widest mb-2">
+                            <span>Direct Link</span>
+                            <span className="text-primary">Copied!</span>
+                        </div>
+                        <div className="flex items-center gap-2 p-3 bg-surface-3 rounded-lg border border-border text-xs font-mono text-text-muted truncate">
+                            {shareUrl}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 function ProductivityCard({ completionRate, completedCourses, totalEnrolled }) {
     return (
         <div className="glass-card p-5 relative overflow-hidden group hover:scale-[1.02] transition-all">
@@ -186,8 +249,27 @@ function CourseCard({ course, progress, onDelete, isDeleting }) {
         }
     }
     const resumeId = nextLecture?._id || course?.sections?.[0]?.lectures?.[0]?._id;
+    const [shareStatus, setShareStatus] = useState('');
+    const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+
+    const handleShare = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const shareUrl = `${window.location.origin}/share/${course._id}`;
+        navigator.clipboard.writeText(shareUrl);
+        setShareStatus('Copied!');
+        setIsShareModalOpen(true);
+        setTimeout(() => setShareStatus(''), 2000);
+    };
 
     return (
+        <>
+        <ShareModal 
+            isOpen={isShareModalOpen} 
+            onClose={() => setIsShareModalOpen(false)} 
+            courseTitle={course.title}
+            shareUrl={`${window.location.origin}/share/${course._id}`}
+        />
         <Link to={`/courses/${course._id}`} className="glass-card group block transition-all" style={{ padding: 0, overflow: 'hidden' }}>
             <div
                 className="relative w-full aspect-video overflow-hidden"
@@ -224,6 +306,16 @@ function CourseCard({ course, progress, onDelete, isDeleting }) {
                     <Trash2 className="w-3 h-3" />
                     {isDeleting ? 'Deleting...' : 'Delete'}
                 </button>
+                <button
+                    type="button"
+                    className="absolute top-2 left-[5.5rem] inline-flex items-center gap-1 rounded-full border border-indigo-500/50 bg-indigo-600 px-2.5 py-1 text-[11px] font-bold text-white transition-all hover:bg-indigo-700 hover:scale-105 shadow-lg shadow-indigo-500/20 disabled:cursor-not-allowed disabled:opacity-70"
+                    onClick={handleShare}
+                    aria-label={`Share ${course.title}`}
+                    title="Copy share link"
+                >
+                    <Share2 className="w-3 h-3" />
+                    {shareStatus || 'Share'}
+                </button>
                 <div className="absolute bottom-2 left-2 bg-surface/90 rounded-full px-2 py-0.5 text-xs font-semibold" style={{ color: pct === 100 ? 'var(--color-success)' : 'var(--color-primary)' }}>
                     {pct}%
                 </div>
@@ -247,6 +339,7 @@ function CourseCard({ course, progress, onDelete, isDeleting }) {
                 )}
             </div>
         </Link>
+        </>
     );
 }
 
@@ -316,6 +409,10 @@ const Dashboard = () => {
         queryFn: async () => {
             const { data } = await api.get('/courses');
             return data.courses || [];
+        },
+        refetchInterval: (data) => {
+            const hasProcessing = data?.state?.data?.some(c => c.status === 'processing');
+            return hasProcessing ? 3000 : false;
         }
     });
 
@@ -594,7 +691,7 @@ const Dashboard = () => {
                     courseId={roadmapCourseId} 
                 />
             )}
-            <UserTour />
+            {!showUsernameModal && <UserTour />}
         </div>
 
     );

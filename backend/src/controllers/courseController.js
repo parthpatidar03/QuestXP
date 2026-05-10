@@ -253,12 +253,117 @@ const getPlaylistInfo = async (req, res, next) => {
     }
 };
 
-module.exports = {
+const getSharedCourse = async (req, res, next) => {
+    try {
+        const course = await Course.findById(req.params.courseId)
+            .select('title totalLectures totalDuration sections.title sections.lectures.title sections.lectures.duration sections.lectures.thumbnailUrl')
+            .lean();
+        
+        if (!course) return res.status(404).json({ error: 'Course not found' });
+        
+        res.json({ course });
+    } catch (error) {
+        next(error);
+    }
+};
 
+const cloneCourse = async (req, res, next) => {
+    try {
+        const originalCourse = await Course.findById(req.params.courseId).lean();
+        if (!originalCourse) return res.status(404).json({ error: 'Course not found' });
+
+        // Create new course object
+        const newCourse = new Course({
+            owner: req.user._id,
+            title: `${originalCourse.title} (Shared)`,
+            status: originalCourse.status,
+            totalLectures: originalCourse.totalLectures,
+            totalDuration: originalCourse.totalDuration,
+            sections: originalCourse.sections.map(section => ({
+                title: section.title,
+                playlistUrl: section.playlistUrl,
+                order: section.order,
+                lectures: section.lectures.map(lecture => ({
+                    youtubeId: lecture.youtubeId,
+                    title: lecture.title,
+                    duration: lecture.duration,
+                    order: lecture.order,
+                    thumbnailUrl: lecture.thumbnailUrl,
+                    aiStatus: { ...lecture.aiStatus },
+                    topics: [...(lecture.topics || [])]
+                }))
+            }))
+        });
+
+        await newCourse.save();
+
+        // Map old lecture IDs to new ones for cloning associated data
+        const oldToNewLectureIds = {};
+        originalCourse.sections.forEach((oldSection, sIdx) => {
+            oldSection.lectures.forEach((oldLecture, lIdx) => {
+                const newLecture = newCourse.sections[sIdx].lectures[lIdx];
+                oldToNewLectureIds[oldLecture._id.toString()] = newLecture._id;
+            });
+        });
+
+        // Clone associated data: Transcripts, Notes, Quizzes
+        const oldLectureIds = Object.keys(oldToNewLectureIds);
+        
+        // 1. Transcripts
+        const transcripts = await Transcript.find({ lecture: { $in: oldLectureIds } }).lean();
+        if (transcripts.length > 0) {
+            const newTranscripts = transcripts.map(t => ({
+                ...t,
+                _id: undefined,
+                lecture: oldToNewLectureIds[t.lecture.toString()],
+                course: newCourse._id,
+                createdAt: new Date()
+            }));
+            await Transcript.insertMany(newTranscripts);
+        }
+
+        // 2. Notes
+        const notes = await Notes.find({ lecture: { $in: oldLectureIds } }).lean();
+        if (notes.length > 0) {
+            const newNotes = notes.map(n => ({
+                ...n,
+                _id: undefined,
+                lecture: oldToNewLectureIds[n.lecture.toString()],
+                userEdits: [],
+                generatedAt: new Date()
+            }));
+            await Notes.insertMany(newNotes);
+        }
+
+        // 3. Quizzes
+        const quizzes = await Quiz.find({ lecture: { $in: oldLectureIds } }).lean();
+        if (quizzes.length > 0) {
+            const newQuizzes = quizzes.map(q => ({
+                ...q,
+                _id: undefined,
+                lecture: oldToNewLectureIds[q.lecture.toString()],
+                course: newCourse._id,
+                generatedAt: new Date()
+            }));
+            await Quiz.insertMany(newQuizzes);
+        }
+
+        res.status(201).json({ 
+            message: 'Course cloned successfully', 
+            courseId: newCourse._id 
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+module.exports = {
     createCourse,
     getCourses,
     getCourseById,
     getCourseStatus,
+    getSharedCourse,
+    cloneCourse,
     addCourseSection,
     deleteCourse,
     updateCourse,

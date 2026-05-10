@@ -3,7 +3,7 @@ const { body, param } = require('express-validator');
 const { 
     createCourse, getCourses, getCourseById, getCourseStatus, 
     addCourseSection, deleteCourse, updateCourse, updateSection,
-    getPlaylistInfo
+    getPlaylistInfo, getSharedCourse, cloneCourse
 } = require('../controllers/courseController');
 
 const Course = require('../models/Course');
@@ -11,7 +11,13 @@ const auth = require('../middleware/auth');
 
 const router = express.Router();
 
-router.use(auth); // Protect all course routes
+router.get('/share/:courseId', getSharedCourse);
+
+router.use(auth); // Protect subsequent course routes
+
+router.post('/share/:courseId/clone', [
+    param('courseId').isMongoId().withMessage('Invalid course ID')
+], cloneCourse);
 
 router.get('/playlist-info', getPlaylistInfo);
 

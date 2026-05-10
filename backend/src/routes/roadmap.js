@@ -12,14 +12,28 @@ router.post('/generate', auth, async (req, res) => {
     try {
         const { playlistIds, sectionIds, weekdayHours = 2, weekendHours = 4, startDate, courseId = null } = req.body;
 
-        // 1. Fetch relevant courses
-        const playlists = await Course.find({ _id: { $in: playlistIds } });
+        // 1. Fetch relevant courses (securely)
+        const playlists = await Course.find({ _id: { $in: playlistIds }, owner: req.user.id });
         
+        if (playlists.length === 0) {
+            return res.status(404).json({ msg: 'Selected courses not found' });
+        }
+
+        // Check if any course is still processing
+        const processing = playlists.filter(p => p.status === 'processing');
+        if (processing.length > 0) {
+            return res.status(400).json({ 
+                msg: `Course "${processing[0].title}" is still processing. Please wait a few seconds and try again.`,
+                isProcessing: true 
+            });
+        }
+
         let allVideos = [];
         playlists.forEach(pl => {
             pl.sections.forEach(sec => {
+                const sectionIdStr = sec._id.toString();
                 // If sectionIds is provided, filter to only include those. Otherwise include all.
-                if (!sectionIds || sectionIds.length === 0 || sectionIds.includes(sec._id.toString())) {
+                if (!sectionIds || sectionIds.length === 0 || sectionIds.some(sid => sid.toString() === sectionIdStr)) {
                     sec.lectures.forEach(lec => {
                         allVideos.push({
                             _id: lec._id,
@@ -35,13 +49,7 @@ router.post('/generate', auth, async (req, res) => {
         });
 
         if (allVideos.length === 0) {
-            console.log('Roadmap Generation Failed: No videos found.', {
-                playlistIds,
-                sectionIds,
-                playlistsFound: playlists.length,
-                courseTitles: playlists.map(p => p.title)
-            });
-            return res.status(400).json({ msg: 'No videos found for selected content' });
+            return res.status(400).json({ msg: 'No videos found in selected playlists. Ensure your course generation is complete.' });
         }
 
         // 2. Run Algorithm

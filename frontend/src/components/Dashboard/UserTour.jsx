@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronRight, ChevronLeft, CheckCircle2, Sparkles } from 'lucide-react';
+import useAuthStore from '../../store/useAuthStore';
+import api from '../../services/api';
 
 const TOUR_STEPS = [
     {
@@ -49,12 +51,13 @@ const TOUR_STEPS = [
 ];
 
 const UserTour = () => {
+    const { user, setUser } = useAuthStore();
     const [currentStep, setCurrentStep] = useState(-1);
     const [isVisible, setIsVisible] = useState(false);
     const [targetRect, setTargetRect] = useState(null);
 
     const startTour = () => {
-        const completed = localStorage.getItem('questxp-tour-completed');
+        const completed = user?.tourCompleted;
         if (!completed) {
             setCurrentStep(0);
             setIsVisible(true);
@@ -83,7 +86,6 @@ const UserTour = () => {
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (e.shiftKey && e.key === 'T') {
-                localStorage.removeItem('questxp-tour-completed');
                 setCurrentStep(0);
                 setIsVisible(true);
             }
@@ -123,10 +125,15 @@ const UserTour = () => {
         completeTour();
     };
 
-    const completeTour = () => {
+    const completeTour = async () => {
         setIsVisible(false);
         setCurrentStep(-1);
-        localStorage.setItem('questxp-tour-completed', 'true');
+        try {
+            const { data } = await api.patch('/auth/tour-complete');
+            if (data.user) setUser(data.user);
+        } catch (err) {
+            console.error('Failed to mark tour as complete', err);
+        }
     };
     const step = currentStep >= 0 ? TOUR_STEPS[currentStep] : null;
     const [tooltipStyles, setTooltipStyles] = useState({ top: 0, left: 0, arrowPos: 'top' });

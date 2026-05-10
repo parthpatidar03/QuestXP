@@ -23,7 +23,13 @@ const Auth = () => {
             } else {
                 await register(name, email, password);
             }
-            navigate('/dashboard');
+            const redirect = localStorage.getItem('redirectAfterLogin');
+            if (redirect) {
+                localStorage.removeItem('redirectAfterLogin');
+                navigate(redirect);
+            } else {
+                navigate('/dashboard');
+            }
         } catch (err) {
             setError(err.response?.data?.error || err.response?.data?.errors?.[0]?.msg || 'Authentication failed');
         }
@@ -33,7 +39,13 @@ const Auth = () => {
         setError(null);
         try {
             await googleLogin(credentialResponse.credential);
-            navigate('/dashboard');
+            const redirect = localStorage.getItem('redirectAfterLogin');
+            if (redirect) {
+                localStorage.removeItem('redirectAfterLogin');
+                navigate(redirect);
+            } else {
+                navigate('/dashboard');
+            }
         } catch (err) {
             setError(err.response?.data?.error || 'Google Authentication failed');
         }

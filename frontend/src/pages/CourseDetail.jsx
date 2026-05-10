@@ -8,7 +8,7 @@ import GenerateRoadmapModal from '../components/Roadmap/GenerateRoadmapModal';
 import {
     ArrowLeft, PlayCircle, Loader2, AlertOctagon, Clock,
     BookOpen, Layers, Zap, Lock, CheckCircle2, ChevronRight,
-    MessageSquareText, StickyNote, BarChart3, ChevronDown, Trophy, Flag, HelpCircle, Edit2
+    MessageSquareText, StickyNote, BarChart3, ChevronDown, Trophy, Flag, HelpCircle, Edit2, Share2, Copy, Check, X
 } from 'lucide-react';
 
 
@@ -133,6 +133,70 @@ function MissionRow({ lecture, index, isCompleted, isActive, isLocked, courseId 
 /* ── CourseDetail ───────────────────────────────────────────────────── */import Footer from '../components/ui/Footer';
 
 
+/* ── Share Modal ─────────────────────────────────────────────────────── */
+function ShareModal({ isOpen, onClose, courseTitle, shareUrl }) {
+    if (!isOpen) return null;
+
+    const shareText = `*I found this awesome course "${courseTitle}" on QuestXP!* 🚀\n\nWould you like to level up? Check it out here:\n${shareUrl}`;
+
+    const copyMessage = () => {
+        navigator.clipboard.writeText(shareText);
+        alert('Message copied to clipboard!');
+    };
+
+    return (
+        <div className="fixed inset-0 z-[200] flex items-start justify-center p-4 pt-16 sm:pt-24 animate-in fade-in duration-200">
+            <div className="absolute inset-0 bg-bg/60 backdrop-blur-sm" onClick={onClose} />
+            <div className="relative w-full max-w-md bg-surface border border-border rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-top-4 duration-300">
+                <div className="p-5 border-b border-border bg-surface-2 flex items-center justify-between">
+                    <div className="flex items-center gap-3 text-primary">
+                        <Share2 className="w-5 h-5" />
+                        <span className="font-black uppercase tracking-widest text-sm">Share Quest</span>
+                    </div>
+                    <button onClick={onClose} className="p-2 hover:bg-surface-3 rounded-lg transition-colors">
+                        <X className="w-5 h-5 text-text-muted" />
+                    </button>
+                </div>
+                <div className="p-6 space-y-4">
+                    <div className="p-4 bg-surface-2 rounded-xl border border-border text-sm text-text-secondary italic leading-relaxed">
+                        "{shareText}"
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-3">
+                        <button 
+                            onClick={copyMessage}
+                            className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-primary text-white text-xs font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all"
+                        >
+                            <Copy className="w-4 h-4" />
+                            Copy Message
+                        </button>
+                        <a 
+                            href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#25D366] text-white text-xs font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all"
+                        >
+                            <MessageSquareText className="w-4 h-4" />
+                            WhatsApp
+                        </a>
+                    </div>
+                    
+                    <div className="pt-4 border-t border-border">
+                        <div className="flex items-center justify-between text-[10px] font-black text-text-muted uppercase tracking-widest mb-2">
+                            <span>Direct Link</span>
+                            <span className="text-primary">Copied!</span>
+                        </div>
+                        <div className="flex items-center gap-2 p-3 bg-surface-3 rounded-lg border border-border text-xs font-mono text-text-muted truncate">
+                            {shareUrl}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+
 const CourseDetail = () => {
     const { courseId } = useParams();
     const navigate = useNavigate();
@@ -151,6 +215,16 @@ const CourseDetail = () => {
     const [editSectionTitle, setEditSectionTitle] = useState('');
     const [isEditingCourse, setIsEditingCourse] = useState(false);
     const [editCourseTitle, setEditCourseTitle] = useState('');
+    const [shareStatus, setShareStatus] = useState('');
+    const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+
+    const handleShare = () => {
+        const shareUrl = `${window.location.origin}/share/${courseId}`;
+        navigator.clipboard.writeText(shareUrl);
+        setShareStatus('Copied!');
+        setIsShareModalOpen(true);
+        setTimeout(() => setShareStatus(''), 2000);
+    };
 
     const toggleSection = (idx) => {
         setCollapsedSections(prev => ({
@@ -448,6 +522,19 @@ const CourseDetail = () => {
                                             <Layers className="w-4 h-4 text-primary" />
                                             View Roadmap
                                         </Link>
+                                        <ShareModal 
+                                            isOpen={isShareModalOpen} 
+                                            onClose={() => setIsShareModalOpen(false)} 
+                                            courseTitle={course?.title}
+                                            shareUrl={`${window.location.origin}/share/${courseId}`}
+                                        />
+                                        <button 
+                                            onClick={handleShare}
+                                            className="btn-glass inline-flex items-center gap-2 px-5 py-2.5 bg-surface-2 hover:bg-surface-3 transition-colors rounded-lg text-sm font-bold text-text-primary border border-border"
+                                        >
+                                            <Share2 className="w-4 h-4 text-primary" />
+                                            {shareStatus || 'Share Quest'}
+                                        </button>
                                     </div>
                                 )}
                             </div>

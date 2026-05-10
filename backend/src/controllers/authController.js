@@ -46,6 +46,7 @@ const userResponse = (user) => ({
     username: user.username,
     usernameSet: user.usernameSet,
     role: user.role,
+    tourCompleted: user.tourCompleted,
 });
 
 const getRequestIp = (req) => {
@@ -317,4 +318,15 @@ const updateUsername = async (req, res, next) => {
     }
 };
 
-module.exports = { register, login, googleLogin, getMe, refresh, logout, logoutAll, updateUsername };
+const completeTour = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.user._id);
+        user.tourCompleted = true;
+        await user.save();
+        res.json({ success: true, user: userResponse(user) });
+    } catch (error) {
+        next(error);
+    }
+};
+
+module.exports = { register, login, googleLogin, getMe, refresh, logout, logoutAll, updateUsername, completeTour };

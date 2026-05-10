@@ -15,6 +15,7 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
     const [startDate, setStartDate] = useState(format(new Date(), 'yyyy-MM-dd'));
     const [loading, setLoading] = useState(false);
     const [fetching, setFetching] = useState(true);
+    const [countdown, setCountdown] = useState(10);
     const dateInputRef = React.useRef(null);
 
     useEffect(() => {
@@ -40,6 +41,28 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
                 });
         }
     }, [isOpen, courseId]);
+
+    const isProcessing = courses
+        .filter(c => selectedCourseIds.includes(c._id))
+        .some(c => c.status === 'processing');
+
+    useEffect(() => {
+        let timer;
+        if (isOpen && isProcessing && countdown > 0) {
+            timer = setInterval(() => setCountdown(prev => prev - 1), 1000);
+        }
+        return () => clearInterval(timer);
+    }, [isOpen, isProcessing, countdown]);
+
+    // Re-fetch courses if processing to see if they're done
+    useEffect(() => {
+        if (isOpen && isProcessing && countdown === 0) {
+            api.get('/courses').then(res => {
+                setCourses(res.data.courses || []);
+                setCountdown(10); // Reset for next check if still processing
+            });
+        }
+    }, [isOpen, isProcessing, countdown]);
 
     const toggleCourse = (id) => {
         setExpandedCourses(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
@@ -85,7 +108,8 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
             onClose();
         } catch (err) {
             console.error(err);
-            alert("Failed to generate roadmap.");
+            const msg = err.response?.data?.msg || "Failed to generate roadmap.";
+            alert(msg);
         } finally {
             setLoading(false);
         }
@@ -112,6 +136,29 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
                         <X className="w-5 h-5 text-text-muted" />
                     </button>
                 </div>
+
+                <div className="relative flex-1 flex flex-col min-h-0">
+                    {isProcessing && (
+                        <div className="absolute inset-0 z-50 bg-bg/90 backdrop-blur-md flex flex-col items-center justify-center p-8 text-center animate-in fade-in duration-300">
+                            <div className="w-20 h-20 mb-6 relative">
+                                <div className="absolute inset-0 border-4 border-primary/20 rounded-full" />
+                                <div className="absolute inset-0 border-4 border-primary rounded-full border-t-transparent animate-spin" />
+                                <div className="absolute inset-0 flex items-center justify-center font-black text-xl text-primary">
+                                    {countdown}s
+                                </div>
+                            </div>
+                            <h3 className="text-xl font-bold text-text-primary mb-2">Surgical Workers Active</h3>
+                            <p className="text-sm text-text-secondary max-w-xs mb-8">
+                                Our AI workers are currently deep-fetching the curriculum data. 
+                                Roadmap generation will be available in a few seconds.
+                            </p>
+                            <div className="flex gap-4">
+                                <button onClick={onClose} className="px-6 py-2 rounded-lg border border-border text-xs font-bold uppercase tracking-widest text-text-muted hover:text-text-primary transition-colors">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    )}
 
                 <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-6">
                     {/* How it works briefing */}
@@ -232,6 +279,7 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
                         </p>
                     </div>
                 </form>
+                </div>
 
                 <div className="p-6 border-t border-border bg-surface-2 flex gap-3">
                     <button onClick={onClose} type="button" className="flex-1 px-4 py-4 rounded-xl border border-border text-xs font-black uppercase tracking-widest text-text-primary hover:bg-surface-3 transition-all">

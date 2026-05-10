@@ -9,6 +9,7 @@ import LandingPage from './pages/LandingPage';
 import Profile from './pages/Profile';
 import Roadmap from './pages/Roadmap';
 import AdminFeedback from './pages/AdminFeedback';
+import SharePage from './pages/SharePage';
 import GamificationOverlay from './components/Gamification/GamificationOverlay';
 import ErrorBoundary from './components/ErrorBoundary';
 
@@ -73,6 +74,7 @@ const App = () => {
                 <Route path="/admin/feedback" element={
                     <ProtectedRoute><AdminFeedback /></ProtectedRoute>
                 } />
+                <Route path="/share/:courseId" element={<SharePage />} />
             </Routes>
         </BrowserRouter>
     );
