@@ -181,49 +181,53 @@ const DoubtChatbot = ({ lectureId, courseTitle = '', lectureTitle = '' }) => {
                                         {MAINTENANCE_CONFIG.MESSAGE}
                                     </p>
                                 </div>
-                            ) : messages.length === 0 && !loading && (
-                                <div className="flex flex-col items-center justify-center py-10 text-center">
-                                    <MessageSquare className="w-8 h-8 mb-3 text-text-muted" />
-                                    <p className="text-sm font-semibold text-text-primary mb-1">Ask Anything</p>
-                                    <p className="text-xs text-text-secondary">
-                                        I'm your AI tutor for this lecture. Ask me to explain concepts, solve problems, or clarify doubts.
-                                    </p>
-                                </div>
-                            )}
-
-                            {messages.map((msg, i) => (
-                                <div key={i} className={`flex gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                    {msg.role === 'bot' && (
-                                        <div className="w-6 h-6 rounded-full shrink-0 mt-1 flex items-center justify-center bg-primary/10 border border-primary/20">
-                                            <Bot className="w-3.5 h-3.5 text-primary" />
+                            ) : (
+                                <>
+                                    {messages.length === 0 && !loading && (
+                                        <div className="flex flex-col items-center justify-center py-10 text-center">
+                                            <MessageSquare className="w-8 h-8 mb-3 text-text-muted" />
+                                            <p className="text-sm font-semibold text-text-primary mb-1">Ask Anything</p>
+                                            <p className="text-xs text-text-secondary">
+                                                I'm your AI tutor for this lecture. Ask me to explain concepts, solve problems, or clarify doubts.
+                                            </p>
                                         </div>
                                     )}
-                                    <div
-                                        className={`max-w-[82%] px-3 py-2.5 rounded-2xl text-sm leading-relaxed ${
-                                            msg.role === 'user' 
-                                            ? 'bg-primary/10 border border-primary/20 text-text-primary rounded-br-sm' 
-                                            : 'bg-surface border border-border text-text-secondary rounded-bl-sm'
-                                        }`}
-                                    >
-                                        {msg.role === 'bot'
-                                            ? <MarkdownText text={msg.text} />
-                                            : msg.text
-                                        }
-                                    </div>
-                                </div>
-                            ))}
 
-                            {loading && (
-                                <div className="flex gap-2 items-center">
-                                    <div className="w-6 h-6 rounded-full shrink-0 flex items-center justify-center bg-primary/10">
-                                        <Bot className="w-3.5 h-3.5 text-primary" />
-                                    </div>
-                                    <div className="flex gap-1.5 px-4 py-3 rounded-2xl bg-surface border border-border">
-                                        {[0, 150, 300].map(d => (
-                                            <span key={d} className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: `${d}ms` }} />
-                                        ))}
-                                    </div>
-                                </div>
+                                    {messages.map((msg, i) => (
+                                        <div key={i} className={`flex gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                            {msg.role === 'bot' && (
+                                                <div className="w-6 h-6 rounded-full shrink-0 mt-1 flex items-center justify-center bg-primary/10 border border-primary/20">
+                                                    <Bot className="w-3.5 h-3.5 text-primary" />
+                                                </div>
+                                            )}
+                                            <div
+                                                className={`max-w-[82%] px-3 py-2.5 rounded-2xl text-sm leading-relaxed ${
+                                                    msg.role === 'user' 
+                                                    ? 'bg-primary/10 border border-primary/20 text-text-primary rounded-br-sm' 
+                                                    : 'bg-surface border border-border text-text-secondary rounded-bl-sm'
+                                                }`}
+                                            >
+                                                {msg.role === 'bot'
+                                                    ? <MarkdownText text={msg.text} />
+                                                    : msg.text
+                                                }
+                                            </div>
+                                        </div>
+                                    ))}
+
+                                    {loading && (
+                                        <div className="flex gap-2 items-center">
+                                            <div className="w-6 h-6 rounded-full shrink-0 flex items-center justify-center bg-primary/10">
+                                                <Bot className="w-3.5 h-3.5 text-primary" />
+                                            </div>
+                                            <div className="flex gap-1.5 px-4 py-3 rounded-2xl bg-surface border border-border">
+                                                {[0, 150, 300].map(d => (
+                                                    <span key={d} className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: `${d}ms` }} />
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </>
                             )}
                             <div ref={bottomRef} />
                         </div>

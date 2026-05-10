@@ -185,16 +185,6 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
         setStartTime(Date.now());
     };
 
-    if (quizStatus === 'failed' || transcriptionStatus === 'failed') {
-        return (
-            <div className="p-8 text-center text-text-muted">
-                <XCircle className="w-8 h-8 text-danger mx-auto mb-3" />
-                <h3 className="text-lg font-semibold text-text-primary mb-2">Quiz Generation Failed</h3>
-                <p className="text-sm">{errorReason || 'Lecture too short to generate a quiz.'}</p>
-            </div>
-        );
-    }
-
     // Maintenance view
     if (MAINTENANCE_CONFIG.AI_FEATURES_DOWN) {
         return (
@@ -212,6 +202,16 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
                     <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
                     Maintenance Mode
                 </div>
+            </div>
+        );
+    }
+
+    if (quizStatus === 'failed' || transcriptionStatus === 'failed') {
+        return (
+            <div className="p-8 text-center text-text-muted">
+                <XCircle className="w-8 h-8 text-danger mx-auto mb-3" />
+                <h3 className="text-lg font-semibold text-text-primary mb-2">Quiz Generation Failed</h3>
+                <p className="text-sm">{errorReason || 'Lecture too short to generate a quiz.'}</p>
             </div>
         );
     }
