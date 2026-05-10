@@ -79,16 +79,19 @@ const DailyMissionWidget = () => {
                 <div className="space-y-3 mb-5">
                     {todayMission.plannedVideos.length > 0 ? (
                         todayMission.plannedVideos.slice(0, 2).map((vid, i) => (
-                            <div key={i} className="flex items-center gap-3 p-2.5 rounded-xl bg-surface-3/50 border border-border/50 group-hover:border-primary/30 transition-all">
-                                <div className="w-6 h-6 rounded bg-primary/20 flex items-center justify-center shrink-0">
-                                    <Play className="w-3 h-3 text-primary fill-primary" />
+                            <Link 
+                                key={i} 
+                                to={`/courses/${vid.playlistId}/lectures/${vid.videoId}`}
+                                className="flex items-center gap-3 p-2.5 rounded-xl bg-surface-3/50 border border-border/50 hover:border-primary hover:bg-surface-3 transition-all group/item"
+                            >
+                                <div className="w-6 h-6 rounded bg-primary/20 flex items-center justify-center shrink-0 group-hover/item:bg-primary group-hover/item:text-white transition-colors">
+                                    <Play className="w-3 h-3 text-primary fill-primary group-hover/item:text-white group-hover/item:fill-white" />
                                 </div>
-                                <span className="text-[11px] font-bold text-text-primary truncate flex-1">{vid.title}</span>
+                                <span className="text-[11px] font-bold text-text-primary truncate flex-1 group-hover/item:text-primary transition-colors">{vid.title}</span>
                                 <span className="text-[10px] font-black text-text-muted">{formatTime(vid.duration)}</span>
-
-
-                            </div>
+                            </Link>
                         ))
+
                     ) : (
                         <div className="py-2 text-center">
                             <p className="text-[11px] text-success font-black uppercase italic">Rest Day - Recharge!</p>

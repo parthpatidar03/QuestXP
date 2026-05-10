@@ -376,18 +376,21 @@ const Dashboard = () => {
             <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 py-8 flex flex-col xl:flex-row gap-6">
                 <div className="flex-1 min-w-0 space-y-8">
                     {activeCourse && (
-                        <section className="relative rounded-xl overflow-hidden p-7 flex flex-col sm:flex-row gap-6 items-start bg-surface border border-border shadow-card">
+                        <Link 
+                            to={firstLecId ? `/courses/${activeCourse._id}/lectures/${firstLecId}` : `/courses/${activeCourse._id}`}
+                            className="relative rounded-xl overflow-hidden p-7 flex flex-col sm:flex-row gap-6 items-start bg-surface border border-border shadow-card hover:border-primary/50 group transition-all"
+                        >
                             {activeCourse.sections?.[0]?.lectures?.[0]?.thumbnailUrl && (
                                 <img
                                     src={activeCourse.sections[0].lectures[0].thumbnailUrl}
                                     alt="course"
-                                    className="w-32 h-20 sm:w-44 sm:h-28 object-cover rounded-lg shrink-0 border border-border"
+                                    className="w-32 h-20 sm:w-44 sm:h-28 object-cover rounded-lg shrink-0 border border-border group-hover:scale-105 transition-transform duration-500"
                                 />
                             )}
 
                             <div className="relative flex-1 min-w-0">
                                 <p className="text-xs font-semibold uppercase tracking-wide mb-1 text-primary">Continue studying</p>
-                                <h1 className="text-2xl sm:text-3xl font-semibold text-text-primary mb-1 leading-tight">
+                                <h1 className="text-2xl sm:text-3xl font-semibold text-text-primary mb-1 leading-tight group-hover:text-primary transition-colors">
                                     {activeCourse.title}
                                 </h1>
                                 <div className="flex items-center gap-2 mb-3">
@@ -397,18 +400,15 @@ const Dashboard = () => {
                                 <div className="progress-bar mb-4 max-w-xs">
                                     <div className="progress-bar__fill" style={{ width: `${activePct}%` }} />
                                 </div>
-                                {firstLecId && (
-                                    <Link
-                                        to={`/courses/${activeCourse._id}/lectures/${firstLecId}`}
-                                        className="btn-esports inline-flex items-center gap-2 text-sm"
-                                    >
-                                        <ChevronRight className="w-4 h-4" />
-                                        Resume Mission
-                                    </Link>
-                                )}
+                                
+                                <div className="btn-esports inline-flex items-center gap-2 text-sm group-hover:bg-primary-hover transition-colors">
+                                    <ChevronRight className="w-4 h-4" />
+                                    Resume Mission
+                                </div>
                             </div>
-                        </section>
+                        </Link>
                     )}
+
 
                     <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         {statsLoading ? (
