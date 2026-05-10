@@ -140,15 +140,14 @@ const LandingPage = () => {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5, ease: 'easeOut' }}
                         >
-                            <div className="flex flex-col gap-1 mb-8">
-                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">A New Digital Era of Expression</span>
-                                <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black text-text-primary leading-[0.9] tracking-[-0.06em] font-display">
-                                    QUEST<span className="italic font-serif text-primary">XP</span>
-                                </h1>
-                                <p className="text-xl sm:text-2xl font-bold text-text-secondary tracking-tight mt-2 italic font-serif">
-                                    Mastery through <span className="text-text-primary not-italic font-display font-black">curated intensity.</span>
-                                </p>
+                            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-surface mb-6 text-xs sm:text-sm text-text-secondary">
+                                <Flame className="w-4 h-4 text-primary" />
+                                Serious learning workspace, with light gamification.
                             </div>
+
+                            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-text-primary leading-[1.05] tracking-[-0.04em] max-w-[14ch] font-display">
+                                Turn playlists into courses you can actually finish.
+                            </h1>
 
                             <div className="mt-8 space-y-3">
                                 {keyPoints.map((point, i) => (
@@ -244,43 +243,38 @@ const LandingPage = () => {
                     </div>
                 </section>
 
-                <section className="py-24 relative overflow-hidden bg-black flex flex-col items-center justify-center border-y border-white/5">
+                <section className="py-16 relative overflow-hidden bg-black flex flex-col items-center justify-center border-y border-white/5">
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,180,255,0.08),transparent_70%)]" />
                     
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="text-center relative z-10 space-y-4"
+                        className="text-center relative z-10 space-y-2"
                     >
-                        <span className="text-[10px] font-black uppercase tracking-[0.6em] text-white/40 block mb-6">Synergized Learning</span>
+                        <span className="text-[9px] font-black uppercase tracking-[0.4em] text-white/40 block mb-4">Synergized Learning</span>
                         
                         <div className="flex flex-col items-center">
-                            <h2 className="text-5xl sm:text-8xl md:text-9xl font-black tracking-[-0.08em] text-white leading-[0.8] font-display">
+                            <h2 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-[-0.06em] text-white leading-[0.9] font-display">
                                 MULTIPLE
                             </h2>
-                            <h2 className="text-5xl sm:text-8xl md:text-9xl font-black italic font-serif tracking-[-0.04em] text-primary leading-[0.8]">
+                            <h2 className="text-4xl sm:text-6xl md:text-7xl font-black italic font-serif tracking-[-0.04em] text-primary leading-[0.9]">
                                 PLAYLISTS
                             </h2>
-                            <div className="flex items-center gap-4 mt-2">
-                                <div className="h-[2px] w-12 sm:w-24 bg-white/20" />
-                                <span className="text-xl sm:text-3xl font-black text-white italic font-serif tracking-widest">•</span>
-                                <div className="h-[2px] w-12 sm:w-24 bg-white/20" />
+                            <div className="flex items-center gap-3 my-1">
+                                <div className="h-[1px] w-8 sm:w-16 bg-white/10" />
+                                <span className="text-lg font-black text-white italic font-serif tracking-widest">•</span>
+                                <div className="h-[1px] w-8 sm:w-16 bg-white/10" />
                             </div>
-                            <h2 className="text-5xl sm:text-8xl md:text-9xl font-black tracking-[-0.08em] text-white leading-[0.8] font-display mt-2">
+                            <h2 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-[-0.06em] text-white leading-[0.9] font-display">
                                 SINGLE COURSE
                             </h2>
                         </div>
 
-                        <p className="text-xs sm:text-sm font-bold text-white/50 tracking-[0.3em] uppercase mt-12">
+                        <p className="text-[10px] font-bold text-white/40 tracking-[0.2em] uppercase mt-8">
                             The definitive workspace for technical mastery.
                         </p>
                     </motion.div>
-
-                    {/* Decorative elements */}
-                    <div className="absolute top-0 left-0 p-8 opacity-20 hidden lg:block">
-                        <div className="text-[10px] font-mono text-white tracking-widest vertical-text [writing-mode:vertical-lr]">QUESTXP // V2.0</div>
-                    </div>
                 </section>
 
                 <section id="why" className="max-w-screen-xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
