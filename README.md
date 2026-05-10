@@ -27,6 +27,35 @@ QuestXP is a full-stack learning management system designed to optimize the educ
 ### Live Instance
 Access the production environment: [https://quest-xp-beta.vercel.app/](https://quest-xp-beta.vercel.app/)
 
+## Interface Preview
+
+<table style="width: 100%;">
+  <tr>
+    <td align="center"><b>Landing Page</b></td>
+    <td align="center"><b>Productivity Dashboard</b></td>
+  </tr>
+  <tr>
+    <td><img src="frontend/public/screenshots/landing.png" alt="Landing Page"></td>
+    <td><img src="frontend/public/screenshots/dashboard.png" alt="Dashboard"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Adaptive Roadmap</b></td>
+    <td align="center"><b>Leaderboard (Hall of Fame)</b></td>
+  </tr>
+  <tr>
+    <td><img src="frontend/public/screenshots/roadmap.png" alt="Roadmap"></td>
+    <td><img src="frontend/public/screenshots/leaderboard.png" alt="Leaderboard"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Learning Analytics</b></td>
+    <td align="center"><b>Identity Management</b></td>
+  </tr>
+  <tr>
+    <td><img src="frontend/public/screenshots/streak.png" alt="Analytics"></td>
+    <td><img src="frontend/public/screenshots/profile.png" alt="Profile"></td>
+  </tr>
+</table>
+
 ### 📚 Technical Documentation
 - **[Backend Implementation Guide](./IMPLEMENTATION.md)**: Deep dive into the architecture, identity systems, and gamification logic. (Essential for learning/interviews).
 
