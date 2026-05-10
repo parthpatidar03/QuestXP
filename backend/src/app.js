@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+const compression = require('compression');
 // Rate limiting middleware removed
 
 require('dotenv').config();
@@ -60,6 +61,7 @@ app.use((req, res, next) => {
 app.use(limiter);
 app.use(express.json());
 app.use(cookieParser());
+app.use(compression());
 
 // 5. Routes
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
