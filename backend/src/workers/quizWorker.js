@@ -15,15 +15,8 @@ const quizWorker = new Worker('quiz', async job => {
             return { success: true, skipped: 'ALREADY_EXISTS' };
         }
 
-        // 2. Global Wallet Guard: 5 generations per 2 hours
-        const redis = connection;
-        const rateLimitKey = 'rate_limit:ai_gen:global'; 
-        const currentCount = await redis.get(rateLimitKey);
+        // Global Wallet Guard: Disabled per user request
 
-        if (currentCount && parseInt(currentCount) >= 5) {
-            const ttl = await redis.ttl(rateLimitKey);
-            throw new Error(`Global AI Limit Reached (5/2hrs). Wallet Protected. Try again in ${Math.ceil(ttl/60)} mins.`);
-        }
 
         // Set in_progress
         await Course.findOneAndUpdate(
@@ -35,12 +28,8 @@ const quizWorker = new Worker('quiz', async job => {
         // Generate Quiz
         await quizService.generate(lectureId);
 
-        // Increment Rate Limit counter (expires in 2 hours)
-        if (!currentCount) {
-            await redis.set(rateLimitKey, 1, 'EX', 7200); // 7200s = 2 hours
-        } else {
-            await redis.incr(rateLimitKey);
-        }
+        // Rate limit counter disabled
+
 
         // Mark complete
         await Course.findOneAndUpdate(

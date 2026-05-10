@@ -39,18 +39,8 @@ exports.query = async (req, res) => {
         const { questionText } = req.body;
         const courseId = req.courseId || "60d5ec49c71b3e0015b6d9e1";
 
-        // CHATBOT WALLET GUARD: 15 messages per hour
-        const redis = redisConnection;
-        const rateLimitKey = 'rate_limit:chatbot:global';
-        const currentCount = await redis.get(rateLimitKey);
+        // CHATBOT WALLET GUARD: Disabled per user request
 
-        if (currentCount && parseInt(currentCount) >= 15) {
-            const ttl = await redis.ttl(rateLimitKey);
-            return res.status(429).json({ 
-                error: 'RATE_LIMIT_REACHED', 
-                message: `Global Chatbot Limit Reached. Wallet Protected. Try again in ${Math.ceil(ttl/60)} mins.` 
-            });
-        }
 
         const doubtQuery = new DoubtQuery({
             userId: req.user.id,
@@ -62,12 +52,8 @@ exports.query = async (req, res) => {
 
         const answerData = await ragService.queryLecture(lectureId, questionText);
 
-        // Increment rate limit after successful generation
-        if (!currentCount) {
-            await redis.set(rateLimitKey, 1, 'EX', 3600); // 3600s = 1 hour
-        } else {
-            await redis.incr(rateLimitKey);
-        }
+        // Rate limit counter disabled
+
 
         const doubtAnswer = new DoubtAnswer({
             queryId: doubtQuery._id,

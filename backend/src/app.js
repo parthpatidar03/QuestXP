@@ -1,16 +1,13 @@
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const rateLimit = require('express-rate-limit');
+// Rate limiting middleware removed
+
 require('dotenv').config();
 
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 500, // Limit each IP to 500 requests per `window`
-    message: { error: 'Too many requests, please try again later.' },
-    standardHeaders: true,
-    legacyHeaders: false,
-});
+// Rate limiting disabled per user request
+const limiter = (req, res, next) => next();
+
 
 const authRoutes = require('./routes/auth');
 const courseRoutes = require('./routes/courses');
