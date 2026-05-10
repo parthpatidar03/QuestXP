@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useSearchParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { Flame, Zap, Trophy, Shield, BookOpen, Plus, ChevronRight, Star, Trash2, Target, MessageSquare, Share2, Copy, X } from 'lucide-react';
 import useAuthStore from '../store/useAuthStore';
 import useGamificationStore from '../store/useGamificationStore';
@@ -363,20 +363,21 @@ const Dashboard = () => {
         }
     }, [user]);
 
+    const [searchParams, setSearchParams] = useSearchParams();
+
     useEffect(() => {
         const handleOpenLeaderboard = () => setShowLeaderboard(true);
         window.addEventListener('open-leaderboard', handleOpenLeaderboard);
-
-        // T051: Check for query param from NavBar link
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('open') === 'leaderboard') {
-            setShowLeaderboard(true);
-            // Clean up URL
-            window.history.replaceState({}, '', window.location.pathname);
-        }
-
         return () => window.removeEventListener('open-leaderboard', handleOpenLeaderboard);
     }, []);
+
+    useEffect(() => {
+        if (searchParams.get('open') === 'leaderboard') {
+            setShowLeaderboard(true);
+            // Clear param without adding to history
+            setSearchParams({}, { replace: true });
+        }
+    }, [searchParams, setSearchParams]);
 
     const { data: stats, isLoading: statsLoading } = useQuery({
         queryKey: ['dashboard-stats'],
