@@ -481,12 +481,12 @@ const CourseDetail = () => {
                                         </motion.div>
                                         
                                         {/* Goal Icon */}
-                                        <div className="absolute -right-1 -top-12 flex flex-col items-center">
-                                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${pct === 100 ? 'bg-danger shadow-[0_0_20px_var(--color-danger)] scale-110' : 'bg-surface-3 opacity-30 grayscale'}`}>
-                                                <span className={`text-xl ${pct === 100 ? 'animate-bounce' : ''}`}>🚩</span>
-                                            </div>
-                                            <div className="absolute top-14 text-[10px] font-black text-text-muted uppercase tracking-[0.2em] whitespace-nowrap">
+                                        <div className="absolute -right-1 -top-14 flex flex-col items-center">
+                                            <div className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-2 whitespace-nowrap">
                                                 Victory Goal
+                                            </div>
+                                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${pct === 100 ? 'bg-danger shadow-[0_0_20px_var(--color-danger)] scale-110' : 'bg-surface-3 border border-border shadow-sm'}`}>
+                                                <span className={`text-xl ${pct === 100 ? 'animate-bounce' : 'opacity-60'}`}>🚩</span>
                                             </div>
                                         </div>
                                     </div>
