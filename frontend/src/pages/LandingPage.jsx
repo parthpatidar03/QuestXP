@@ -351,8 +351,8 @@ const LandingPage = () => {
                             
                             {/* Floating Badge */}
                             <div className="absolute -bottom-6 -right-6 bg-surface-3 border border-border p-4 rounded-2xl shadow-xl flex items-center gap-3 animate-bounce">
-                                <div className="w-8 h-8 rounded-full bg-success/20 flex items-center justify-center">
-                                    <Zap className="w-4 h-4 text-success" />
+                                <div className="w-8 h-8 rounded-full bg-success/20 flex items-center justify-center p-1.5">
+                                    <img src="/favicon.png" alt="" className="w-full h-full object-contain" />
                                 </div>
                                 <span className="text-xs font-black text-text-primary uppercase tracking-tighter">Focus Safeguard Active</span>
                             </div>
@@ -383,8 +383,8 @@ const LandingPage = () => {
                         </article>
 
                         <article className="glass-card p-6 sm:p-8 group hover:border-primary/50 transition-all border-primary/20 bg-primary/5">
-                            <div className="w-12 h-12 rounded-xl bg-primary text-white flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg shadow-primary/20">
-                                <Zap className="w-6 h-6" />
+                            <div className="w-12 h-12 rounded-xl bg-primary text-white flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg shadow-primary/20 p-2.5">
+                                <img src="/favicon.png" alt="" className="w-full h-full object-contain brightness-0 invert" />
                             </div>
                             <h3 className="text-xl font-bold text-text-primary mb-3">Surgical Adaptive Planning</h3>
                             <p className="text-sm text-text-secondary leading-relaxed">

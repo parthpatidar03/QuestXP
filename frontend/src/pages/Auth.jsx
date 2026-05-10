@@ -43,10 +43,8 @@ const Auth = () => {
         <div className="min-h-screen flex items-center justify-center bg-bg flex-col text-text-primary p-4 relative overflow-hidden">
             <BGPattern variant="grid" mask="fade-edges" fill="var(--color-text-muted)" className="opacity-20" />
             <div className="relative z-10 mb-8 flex flex-col items-center">
-                <div className="w-14 h-14 bg-primary rounded-xl flex items-center justify-center mb-4 shadow-card">
-                    <svg className="w-8 h-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-                    </svg>
+                <div className="w-16 h-16 bg-surface border border-border rounded-xl flex items-center justify-center mb-4 shadow-card">
+                    <img src="/favicon.png" alt="QuestXP Logo" className="w-10 h-10 object-contain" />
                 </div>
                 <h1 className="text-text-primary font-semibold text-3xl tracking-tight">QuestXP</h1>
                 <p className="text-text-secondary mt-2">Structured learning from YouTube playlists.</p>

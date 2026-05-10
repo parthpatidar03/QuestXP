@@ -299,7 +299,7 @@ const Player = () => {
                                     className="absolute top-3 sm:top-8 right-3 sm:right-8 flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-black text-sm sm:text-lg pointer-events-none"
                                     style={{ background: 'rgba(245,165,36,0.2)', border: '1px solid rgba(245,165,36,0.6)', color: '#f5a524', fontFamily: "'Barlow Condensed', sans-serif", boxShadow: '0 0 20px rgba(245,165,36,0.4)' }}
                                 >
-                                    <Zap className="w-4 h-4 sm:w-5 sm:h-5" /> +{xpEarned} XP
+                                    <img src="/favicon.png" alt="" className="w-4 h-4 sm:w-5 sm:h-5 object-contain" /> +{xpEarned} XP
                                 </motion.div>
                             )}
                         </AnimatePresence>

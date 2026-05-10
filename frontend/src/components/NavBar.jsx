@@ -254,8 +254,8 @@ const NavBar = () => {
                 </nav>
 
                 <div className="flex items-center gap-2">
-                    <div className="hidden sm:flex items-center gap-1.5 bg-surface-2 border border-border rounded-lg px-3 py-1.5">
-                        <Zap className="w-4 h-4 text-gold" />
+                    <div className="hidden sm:flex items-center gap-1.5 bg-surface-2 border border-border rounded-xl px-3 py-1.5">
+                        <img src="/favicon.png" alt="" className="w-4 h-4 object-contain" />
                         <span className="text-sm font-semibold text-text-primary">{(totalXP || user?.totalXP || 0).toLocaleString()} XP</span>
                     </div>
 
@@ -361,8 +361,8 @@ const NavBar = () => {
                                 <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Total Mastery</span>
                                 <span className="text-xl font-black text-text-primary">{(totalXP || user?.totalXP || 0).toLocaleString()} XP</span>
                             </div>
-                            <div className="w-10 h-10 rounded-full bg-gold/10 flex items-center justify-center text-gold border border-gold/20">
-                                <Zap className="w-5 h-5" />
+                            <div className="w-10 h-10 rounded-full bg-gold/10 flex items-center justify-center border border-gold/20 p-2">
+                                <img src="/favicon.png" alt="" className="w-full h-full object-contain" />
                             </div>
                         </div>
                     </div>

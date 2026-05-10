@@ -207,7 +207,7 @@ function CourseCard({ course, progress, onDelete, isDeleting }) {
                 <div className="absolute inset-0 bg-gradient-to-t from-bg via-transparent to-transparent opacity-60" />
 
                 <div className="absolute top-2 right-2 xp-chip">
-                    <Zap className="w-3 h-3" /> +{xpPool} XP
+                    <img src="/favicon.png" alt="" className="w-3 h-3 object-contain" /> +{xpPool} XP
                 </div>
                 <button
                     type="button"
@@ -398,7 +398,7 @@ const Dashboard = () => {
                                     {activeCourse.title}
                                 </h1>
                                 <div className="flex items-center gap-2 mb-3">
-                                    <span className="xp-chip"><Zap className="w-3 h-3" /> {Math.floor(activePct * (activeCourse.totalLectures * XP_PER_LECTURE) / 100)} / {activeCourse.totalLectures * XP_PER_LECTURE} XP</span>
+                                    <span className="xp-chip"><img src="/favicon.png" alt="" className="w-3 h-3 object-contain" /> {Math.floor(activePct * (activeCourse.totalLectures * XP_PER_LECTURE) / 100)} / {activeCourse.totalLectures * XP_PER_LECTURE} XP</span>
                                     <span className="text-xs text-text-muted">{activePct > 0 ? `${activePct}% complete` : 'Ready to begin'}</span>
                                 </div>
                                 <div className="progress-bar mb-4 max-w-xs">
@@ -543,8 +543,8 @@ const Dashboard = () => {
                                     <p className="text-sm font-medium text-text-primary group-hover:text-success transition-colors">Study for 15 minutes</p>
                                     <p className="text-xs text-text-secondary mt-0.5">Gain 50 XP</p>
                                 </div>
-                                <div className="w-8 h-8 rounded-full bg-surface border border-border flex items-center justify-center group-hover:bg-success/10 group-hover:border-success/30 transition-colors">
-                                    <Zap className="w-4 h-4 text-gold opacity-70 group-hover:opacity-100 transition-opacity" />
+                                <div className="w-8 h-8 rounded-full bg-surface border border-border flex items-center justify-center group-hover:bg-success/10 group-hover:border-success/30 transition-colors p-1.5">
+                                    <img src="/favicon.png" alt="" className="w-full h-full object-contain" />
                                 </div>
                             </div>
                             <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-surface-2 hover:border-success/50 transition-colors cursor-pointer group">
@@ -552,8 +552,8 @@ const Dashboard = () => {
                                     <p className="text-sm font-medium text-text-primary group-hover:text-success transition-colors">Complete a Quiz</p>
                                     <p className="text-xs text-text-secondary mt-0.5">Gain 100 XP</p>
                                 </div>
-                                <div className="w-8 h-8 rounded-full bg-surface border border-border flex items-center justify-center group-hover:bg-success/10 group-hover:border-success/30 transition-colors">
-                                    <Zap className="w-4 h-4 text-gold opacity-70 group-hover:opacity-100 transition-opacity" />
+                                <div className="w-8 h-8 rounded-full bg-surface border border-border flex items-center justify-center group-hover:bg-success/10 group-hover:border-success/30 transition-colors p-1.5">
+                                    <img src="/favicon.png" alt="" className="w-full h-full object-contain" />
                                 </div>
                             </div>
                         </div>

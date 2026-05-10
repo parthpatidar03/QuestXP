@@ -155,12 +155,12 @@ const Profile = () => {
                     {/* Quick stats */}
                     <div className="flex gap-6 sm:gap-10 shrink-0 bg-surface-2/50 p-6 rounded-3xl border border-border/40 backdrop-blur-sm">
                         {[
-                            { icon: <Zap className="w-5 h-5" />, val: (totalXP || 0).toLocaleString(), label: 'Total XP', color: 'var(--color-gold)' },
+                            { icon: <img src="/favicon.png" alt="" className="w-5 h-5 object-contain" />, val: (totalXP || 0).toLocaleString(), label: 'Total XP', color: 'var(--color-gold)' },
                             { icon: <Flame className="w-5 h-5" />, val: `${streak?.current ?? 0}d`, label: 'Streak', color: 'var(--color-warning)' },
                             { icon: <Trophy className="w-5 h-5" />, val: badges.filter(b => b.earned).length, label: 'Badges', color: 'var(--color-success)' },
                         ].map(s => (
                             <div key={s.label} className="flex flex-col items-center gap-2">
-                                <div className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-inner" style={{ background: `${s.color}20`, color: s.color, border: `1px solid ${s.color}30` }}>
+                                <div className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-inner" style={{ background: `${s.color}20`, color: s.color, border: `1px solid ${s.color}30`, padding: '10px' }}>
                                     {s.icon}
                                 </div>
                                 <span className="text-2xl font-black text-white tracking-tight">{s.val}</span>
@@ -228,7 +228,7 @@ const Profile = () => {
                                 <div key={day.date} className="flex items-center justify-between py-2 border-b border-border">
                                     <span className="text-sm text-text-secondary">{day.date}</span>
                                     <div className="flex items-center gap-1.5 xp-chip">
-                                        <Zap className="w-3 h-3" /> +{day.totalXP} XP
+                                        <img src="/favicon.png" alt="" className="w-3 h-3 object-contain" /> +{day.totalXP} XP
                                     </div>
                                 </div>
                             ))}
