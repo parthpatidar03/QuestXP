@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, RotateCcw, Coffee, Target, Brain, X, Maximize2, Minimize2, Edit3, Check } from 'lucide-react';
+import { Play, Pause, RotateCcw, Coffee, Target, Brain, X, Maximize2, Minimize2, Edit3, Check, ChevronRight, ChevronLeft } from 'lucide-react';
 
 const MODES = {
     FOCUS: { label: 'Focus', time: 25 * 60, icon: Brain, color: 'var(--color-primary)' },
@@ -9,7 +9,8 @@ const MODES = {
 };
 
 const PomodoroTimer = () => {
-    const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(true);
+    const [isHidden, setIsHidden] = useState(false);
     const [mode, setMode] = useState('FOCUS');
     const [timeLeft, setTimeLeft] = useState(MODES.FOCUS.time);
     const [isActive, setIsActive] = useState(false);
@@ -79,7 +80,7 @@ const PomodoroTimer = () => {
     return (
         <div className="fixed bottom-6 right-6 z-[100] flex flex-col items-end gap-3 pointer-events-none">
             <AnimatePresence>
-                {isOpen && (
+                {isOpen && !isHidden && (
                     <motion.div 
                         initial={{ opacity: 0, y: 20, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -105,12 +106,22 @@ const PomodoroTimer = () => {
                                     {MODES[mode].label}
                                 </span>
                             </div>
-                            <button 
-                                onClick={() => setIsOpen(false)}
-                                className="p-1.5 hover:bg-surface-2 rounded-lg transition-colors text-text-muted"
-                            >
-                                <Minimize2 className="w-4 h-4" />
-                            </button>
+                            <div className="flex items-center gap-1">
+                                <button 
+                                    onClick={() => setIsOpen(false)}
+                                    className="p-1.5 hover:bg-surface-2 rounded-lg transition-colors text-text-muted"
+                                    title="Minimize"
+                                >
+                                    <Minimize2 className="w-4 h-4" />
+                                </button>
+                                <button 
+                                    onClick={() => setIsHidden(true)}
+                                    className="p-1.5 hover:bg-surface-2 rounded-lg transition-colors text-text-muted"
+                                    title="Hide"
+                                >
+                                    <ChevronRight className="w-5 h-5" />
+                                </button>
+                            </div>
                         </div>
 
                         <div className="text-center mb-8 relative group">
@@ -182,28 +193,56 @@ const PomodoroTimer = () => {
                 )}
             </AnimatePresence>
 
-            {!isOpen && (
-                <motion.button
+            {!isOpen && !isHidden && (
+                <motion.div
                     layoutId="timer-pill"
-                    onClick={() => setIsOpen(true)}
-                    className="glass-card flex items-center gap-3 px-4 py-3 pointer-events-auto border-primary/30 shadow-xl group hover:border-primary transition-colors"
+                    className="flex items-center gap-2 pointer-events-auto"
                 >
-                    <div className={`p-2 rounded-lg ${isActive ? 'bg-primary text-white animate-pulse' : 'bg-surface-2 text-text-muted'}`}>
-                        <Brain className="w-4 h-4" />
-                    </div>
-                    <div className="text-left">
-                        <p className="text-lg font-black text-text-primary leading-none tabular-nums">
-                            {formatTime(timeLeft)}
-                        </p>
-                        <p className="text-[8px] font-bold text-text-muted uppercase tracking-widest mt-1">
-                            {isActive ? 'Keep Focusing' : 'Start Focus'}
-                        </p>
-                    </div>
-                    <div className="ml-2 p-1 rounded-md bg-surface-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Maximize2 className="w-3 h-3 text-text-muted" />
-                    </div>
-                </motion.button>
+                    <button
+                        onClick={() => setIsOpen(true)}
+                        className="glass-card flex items-center gap-3 px-4 py-3 border-primary/30 shadow-xl group hover:border-primary transition-colors"
+                    >
+                        <div className={`p-2 rounded-lg ${isActive ? 'bg-primary text-white animate-pulse' : 'bg-surface-2 text-text-muted'}`}>
+                            <Brain className="w-4 h-4" />
+                        </div>
+                        <div className="text-left">
+                            <p className="text-lg font-black text-text-primary leading-none tabular-nums">
+                                {formatTime(timeLeft)}
+                            </p>
+                            <p className="text-[8px] font-bold text-text-muted uppercase tracking-widest mt-1">
+                                {isActive ? 'Keep Focusing' : 'Start Focus'}
+                            </p>
+                        </div>
+                        <div className="ml-2 p-1 rounded-md bg-surface-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Maximize2 className="w-3 h-3 text-text-muted" />
+                        </div>
+                    </button>
+                    <button 
+                        onClick={() => setIsHidden(true)}
+                        className="glass-card p-3 border-primary/30 shadow-xl hover:border-primary transition-colors text-text-muted"
+                    >
+                        <ChevronRight className="w-5 h-5" />
+                    </button>
+                </motion.div>
             )}
+            <AnimatePresence>
+                {isHidden && (
+                    <motion.button
+                        initial={{ x: 50, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        exit={{ x: 50, opacity: 0 }}
+                        onClick={() => setIsHidden(false)}
+                        className="fixed bottom-10 right-0 z-[110] glass-card p-3 rounded-l-2xl rounded-r-none border-r-0 border-primary/40 pointer-events-auto hover:bg-primary/10 transition-colors group"
+                    >
+                        <div className="relative">
+                            <ChevronLeft className="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />
+                            {isActive && (
+                                <span className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full animate-ping" />
+                            )}
+                        </div>
+                    </motion.button>
+                )}
+            </AnimatePresence>
         </div>
     );
 };
