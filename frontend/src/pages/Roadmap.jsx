@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { motion } from 'framer-motion';
 import { useSearchParams, Link } from 'react-router-dom';
 import { 
     CheckCircle2, 
