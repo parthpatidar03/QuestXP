@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams, Link } from 'react-router-dom';
 import { 
     CheckCircle2, 
@@ -247,6 +247,12 @@ const Roadmap = () => {
     const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
     const [adjusting, setAdjusting] = useState(false);
     
+    // T050: Debounce & Accumulation Logic for responsive +/- buttons
+    const shiftTimeoutRef = useRef(null);
+    const pendingShiftRef = useRef(0);
+    const partialShiftTimeoutRef = useRef(null);
+    const pendingPartialShiftsRef = useRef(new Map()); // dayIndex -> totalShift
+    
     const { user } = useAuthStore();
 
     const fetchRoadmap = async () => {
@@ -265,30 +271,65 @@ const Roadmap = () => {
         fetchRoadmap();
     }, [courseId]);
 
-    const handleShift = async (days) => {
-        if (!roadmap || adjusting) return;
-        setAdjusting(true);
-        try {
-            const updated = await adjustRoadmap(roadmap._id, days);
-            setRoadmap(updated);
-        } catch (err) {
-            console.error("Failed to shift roadmap", err);
-        } finally {
-            setAdjusting(false);
-        }
-    };
+    const handleShift = (days) => {
+        if (!roadmap) return;
+        
+        // Accumulate shift amount
+        pendingShiftRef.current += days;
+        setAdjusting(true); // Show some "working" state if needed, but don't block
+        
+        // Clear previous timer
+        if (shiftTimeoutRef.current) clearTimeout(shiftTimeoutRef.current);
+        
+        // Debounce API call
+        shiftTimeoutRef.current = setTimeout(async () => {
+            const finalShift = pendingShiftRef.current;
+            pendingShiftRef.current = 0;
+            
+            if (finalShift === 0) {
+                setAdjusting(false);
+                return;
+            }
 
-    const handlePartialShift = async (fromDayIndex, shiftAmount) => {
-        if (!roadmap || adjusting) return;
+            try {
+                const updated = await adjustRoadmap(roadmap._id, finalShift);
+                setRoadmap(updated);
+            } catch (err) {
+                console.error("Failed to shift roadmap", err);
+            } finally {
+                setAdjusting(false);
+            }
+        }, 400); // 400ms burst window
+    };
+    
+    const handlePartialShift = (fromDayIndex, shiftAmount) => {
+        if (!roadmap) return;
+
+        // Accumulate per-index
+        const current = pendingPartialShiftsRef.current.get(fromDayIndex) || 0;
+        pendingPartialShiftsRef.current.set(fromDayIndex, current + shiftAmount);
         setAdjusting(true);
-        try {
-            const updated = await partialShiftRoadmap(roadmap._id, fromDayIndex, shiftAmount);
-            setRoadmap(updated);
-        } catch (err) {
-            console.error("Failed to partially shift roadmap", err);
-        } finally {
+
+        if (partialShiftTimeoutRef.current) clearTimeout(partialShiftTimeoutRef.current);
+
+        partialShiftTimeoutRef.current = setTimeout(async () => {
+            // Process all pending partial shifts
+            // For simplicity, we process one per flush, or we could aggregate. 
+            // Usually users focus on one section at a time.
+            const entries = Array.from(pendingPartialShiftsRef.current.entries());
+            pendingPartialShiftsRef.current.clear();
+
+            for (const [idx, amt] of entries) {
+                if (amt === 0) continue;
+                try {
+                    const updated = await partialShiftRoadmap(roadmap._id, idx, amt);
+                    setRoadmap(updated);
+                } catch (err) {
+                    console.error("Failed to partially shift roadmap", err);
+                }
+            }
             setAdjusting(false);
-        }
+        }, 400);
     };
 
     const playlistIds = useMemo(() => {

@@ -11,13 +11,13 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
  */
 class AIProvider {
     constructor() {
-        this.geminiModel = genAI.getGenerativeModel({ 
+        this.geminiModel = genAI.getGenerativeModel({
             model: 'gemini-1.5-flash',
             generationConfig: {
                 responseMimeType: "application/json",
             }
         });
-        
+
         this.openRouterKey = process.env.OPENROUTER_API_KEY;
     }
 
@@ -30,9 +30,9 @@ class AIProvider {
         try {
             // 1. Primary: Gemini
             console.log('[AIProvider] Attempting Gemini JSON generation...');
-            
+
             // Manual injection for max compatibility across SDK versions
-            const model = genAI.getGenerativeModel({ 
+            const model = genAI.getGenerativeModel({
                 model: 'gemini-1.5-flash',
                 generationConfig: {
                     responseMimeType: "application/json",
@@ -46,7 +46,7 @@ class AIProvider {
             return JSON.parse(this._sanitizeJSON(text));
         } catch (error) {
             console.warn('[AIProvider] Gemini JSON failed, falling back to OpenRouter:', error.message);
-            
+
             // 2. Fallback: OpenRouter
             return await this._generateOpenRouter(prompt, systemPrompt, true);
         }
@@ -60,7 +60,7 @@ class AIProvider {
             // 1. Primary: Gemini
             console.log('[AIProvider] Attempting Gemini Chat generation...');
             const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-            
+
             // Inject system prompt as the first message in history if history is empty
             // or prepend it to the current prompt for simplicity and compatibility
             const geminiHistory = history.slice(-10).map(msg => ({
@@ -80,7 +80,7 @@ class AIProvider {
             return response.text().trim();
         } catch (error) {
             console.warn('[AIProvider] Gemini Chat failed, falling back to OpenRouter:', error.message);
-            
+
             // 2. Fallback: OpenRouter
             return await this._generateOpenRouter(prompt, systemPrompt, false, history);
         }
@@ -133,7 +133,7 @@ class AIProvider {
                 const errorMsg = error.response?.data?.error?.message || error.message;
                 console.warn(`[AIProvider] OpenRouter model ${model} failed (Status ${status}):`, errorMsg);
                 lastError = errorMsg;
-                
+
                 // If it's a 429, continue to next model. If it's something else, maybe still continue.
                 if (status === 401 || status === 403) break; // Don't retry if auth fails
             }
