@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <img src="frontend/public/logo.png" width="120" alt="QuestXP Logo">
+  <img src="frontend/public/favicon.png" width="120" alt="QuestXP Logo">
 </p>
 
 <h1 align="center">QuestXP</h1>
