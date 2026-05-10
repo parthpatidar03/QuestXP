@@ -166,9 +166,9 @@ const UserTour = () => {
                 <rect
                     width="100%"
                     height="100%"
-                    fill="rgba(0, 0, 0, 0.85)"
+                    fill="rgba(0, 0, 0, 0.9)"
                     mask="url(#spotlight-mask)"
-                    className="backdrop-blur-[3px]"
+                    className="backdrop-blur-[4px]"
                     onClick={skipTour}
                 />
             </svg>
@@ -187,58 +187,58 @@ const UserTour = () => {
                     }}
                     exit={{ opacity: 0, scale: 0.9, y: 10 }}
                     transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                    className="absolute w-[300px] bg-white text-slate-900 border border-white shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-2xl p-6 pointer-events-auto"
+                    className="absolute w-[300px] bg-slate-900/90 backdrop-blur-md text-white border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.8)] rounded-2xl p-6 pointer-events-auto"
                     style={{ position: 'fixed' }}
                 >
                     <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                            <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white">
                                 <Sparkles className="w-4 h-4" />
                             </div>
-                            <span className="text-xs font-black text-primary uppercase tracking-widest">
-                                {currentStep + 1} / {TOUR_STEPS.length}
+                            <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.2em]">
+                                Step {currentStep + 1} of {TOUR_STEPS.length}
                             </span>
                         </div>
                         <button 
                             onClick={skipTour}
-                            className="text-slate-400 hover:text-slate-900 transition-colors p-1"
+                            className="text-white/40 hover:text-white transition-colors p-1"
                         >
                             <X className="w-4 h-4" />
                         </button>
                     </div>
 
-                    <h3 className="text-lg font-bold text-slate-900 mb-2 flex items-center gap-2">
+                    <h3 className="text-lg font-bold text-white mb-2">
                         {step.title}
                     </h3>
-                    <p className="text-sm text-slate-600 leading-relaxed mb-6">
+                    <p className="text-sm text-white/70 leading-relaxed mb-6">
                         {step.content}
                     </p>
 
                     <div className="flex items-center justify-between gap-3">
                         <button 
                             onClick={skipTour}
-                            className="text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors"
+                            className="text-xs font-bold text-white/40 hover:text-white transition-colors"
                         >
-                            Skip Tour
+                            Skip
                         </button>
                         
                         <div className="flex items-center gap-2">
                             {currentStep > 0 && (
                                 <button 
                                     onClick={handleBack}
-                                    className="p-2 rounded-lg border border-slate-200 bg-slate-50 text-slate-900 hover:bg-slate-100 transition-all"
+                                    className="p-2 rounded-lg border border-white/10 bg-white/5 text-white hover:bg-white/10 transition-all"
                                 >
                                     <ChevronLeft className="w-4 h-4" />
                                 </button>
                             )}
                             <button 
                                 onClick={handleNext}
-                                className="bg-primary text-white py-2.5 px-5 rounded-xl text-xs font-bold flex items-center gap-2 shadow-lg shadow-primary/30 hover:scale-105 active:scale-95 transition-all"
+                                className="bg-white text-slate-950 py-2.5 px-5 rounded-xl text-xs font-black flex items-center gap-2 shadow-xl shadow-white/10 hover:bg-slate-100 active:scale-95 transition-all"
                             >
                                 {currentStep === TOUR_STEPS.length - 1 ? (
-                                    <>Finish <CheckCircle2 className="w-3.5 h-3.5" /></>
+                                    <>FINISH <CheckCircle2 className="w-3.5 h-3.5" /></>
                                 ) : (
-                                    <>Next <ChevronRight className="w-3.5 h-3.5" /></>
+                                    <>NEXT <ChevronRight className="w-3.5 h-3.5" /></>
                                 )}
                             </button>
                         </div>
@@ -246,7 +246,7 @@ const UserTour = () => {
 
                     {/* Arrow */}
                     <div 
-                        className={`absolute w-3 h-3 bg-white border-l border-t border-white rotate-45 ${
+                        className={`absolute w-3 h-3 bg-slate-900/90 border-l border-t border-white/20 rotate-45 ${
                             tooltipStyles.arrowPos === 'top' ? '-top-1.5 left-1/2 -translate-x-1/2' :
                             tooltipStyles.arrowPos === 'bottom' ? '-bottom-1.5 left-1/2 -translate-x-1/2 rotate-[225deg]' :
                             tooltipStyles.arrowPos === 'right' ? 'top-1/2 -translate-y-1/2 -right-1.5 rotate-[135deg]' : ''
@@ -254,6 +254,7 @@ const UserTour = () => {
                     />
                 </motion.div>
             </AnimatePresence>
+
         </div>
 
     );
