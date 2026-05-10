@@ -217,9 +217,7 @@ const NavBar = () => {
             <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 flex items-center h-16 gap-4">
 
                 <Link to="/" className="flex items-center gap-2.5 shrink-0 mr-4">
-                    <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center">
-                        <BookOpenCheck className="w-4 h-4" />
-                    </div>
+                    <img src="/logo.png" alt="QuestXP" className="w-9 h-9 object-contain" />
                     <span className="text-lg font-semibold tracking-tight text-text-primary">
                         QuestXP
                     </span>
@@ -318,7 +316,7 @@ const NavBar = () => {
                                 onClick={() => setMobileOpen(false)}
                                 className="flex items-center gap-3 p-3 rounded-xl bg-surface-2 border border-border text-sm font-semibold text-text-primary"
                             >
-                                <BookOpenCheck className="w-5 h-5 text-primary" />
+                                <img src="/favicon.png" alt="" className="w-6 h-6 object-contain" />
                                 Home
                             </Link>
                             <Link 

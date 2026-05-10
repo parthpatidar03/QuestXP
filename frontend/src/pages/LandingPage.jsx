@@ -72,9 +72,7 @@ const LandingPage = () => {
             <header className="relative z-20 border-b border-border bg-surface/90 backdrop-blur">
                 <div className="max-w-screen-xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
                     <Link to="/" className="flex items-center gap-2.5 group cursor-pointer shrink-0">
-                        <div className="w-9 h-9 rounded-lg bg-primary text-white flex items-center justify-center transition-transform group-hover:scale-105">
-                            <BookOpen className="w-5 h-5" />
-                        </div>
+                        <img src="/logo.png" alt="QuestXP" className="w-10 h-10 object-contain transition-transform group-hover:scale-105" />
                         <span className="text-lg sm:text-xl font-semibold text-text-primary tracking-tight">QuestXP</span>
                     </Link>
 
