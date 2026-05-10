@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import useAuthStore from './store/useAuthStore';
 import GamificationOverlay from './components/Gamification/GamificationOverlay';
 import ErrorBoundary from './components/ErrorBoundary';
+import PomodoroTimer from './components/PomodoroTimer';
 
 // Lazy load pages for performance
 const Auth = lazy(() => import('./pages/Auth'));
@@ -61,6 +62,7 @@ const App = () => {
     return (
         <BrowserRouter>
             <GamificationOverlay />
+            <PomodoroTimer />
             <Suspense fallback={<PageLoader />}>
                 <Routes>
                     <Route path="/" element={<LandingPage />} />
