@@ -45,7 +45,7 @@ router.post('/generate', auth, async (req, res) => {
         }
 
         // 2. Run Algorithm
-        const roadmapDays = generateRoadmapLogic(allVideos, startDate || new Date(), weekdayHours, weekendHours, []);
+        const roadmapDays = generateRoadmapLogic(allVideos, startDate || new Date(), parseFloat(weekdayHours) || 2, parseFloat(weekendHours) || 4, []);
 
         // 3. Save to DB (Handle global vs course-specific)
         const filter = courseId ? { userId: req.user.id, courseId } : { userId: req.user.id, courseId: null };

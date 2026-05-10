@@ -42,14 +42,14 @@ const ProgressHeader = ({ roadmap, onShift }) => {
             </div>
             
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
-                <div className="space-y-1">
+                <div className="space-y-2">
                     <div className="flex items-center gap-2 text-primary">
-                        <Sparkles className="w-4 h-4" />
-                        <span className="text-[10px] font-black uppercase tracking-widest">Active Roadmap</span>
+                        <Sparkles className="w-5 h-5" />
+                        <span className="text-xs font-black uppercase tracking-widest">🗺️ Active Roadmap</span>
                     </div>
-                    <h2 className="text-2xl font-black text-text-primary tracking-tight">Your Mastery Journey</h2>
-                    <p className="text-sm text-text-muted font-medium">
-                        Targeting completion by <span className="text-text-primary">{format(new Date(roadmap.days[roadmap.days.length - 1].date), 'MMMM dd, yyyy')}</span>
+                    <h2 className="text-3xl font-black text-text-primary tracking-tight" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>Your Mastery Journey</h2>
+                    <p className="text-sm text-text-muted font-bold">
+                        Targeting completion by <span className="text-primary">{format(new Date(roadmap.days[roadmap.days.length - 1].date), 'MMMM dd, yyyy')}</span> 🎯
                     </p>
                 </div>
 
@@ -63,10 +63,9 @@ const ProgressHeader = ({ roadmap, onShift }) => {
                         >
                             <Minus className="w-4 h-4" />
                         </button>
-                        <div className="text-center min-w-[80px]">
-                            <span className="text-[9px] font-black text-text-muted uppercase tracking-widest block">Shift Plan</span>
-                            <Calendar className="w-3.5 h-3.5 inline mr-1 text-primary" />
-                            <span className="text-xs font-black text-text-primary">Adjust</span>
+                        <div className="text-center min-w-[100px]">
+                            <span className="text-[10px] font-black text-text-muted uppercase tracking-widest block mb-1">📅 Shift Plan</span>
+                            <span className="text-sm font-black text-text-primary">Adjust Schedule</span>
                         </div>
                         <button 
                             onClick={() => onShift(1)}
@@ -78,11 +77,15 @@ const ProgressHeader = ({ roadmap, onShift }) => {
                     </div>
 
                     <div className="text-right border-l border-border/50 pl-8">
-                        <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest block mb-1">Time Progress</span>
-                        <div className="flex items-center gap-3">
-                            <span className="text-2xl font-black text-text-primary italic">Day {Math.max(1, currentDayIndex)}/{totalDays}</span>
-                            <div className="w-24 h-2 rounded-full bg-surface-3 overflow-hidden border border-border">
-                                <div className="h-full bg-primary" style={{ width: `${progressPercent}%` }} />
+                        <span className="text-xs font-black text-text-muted uppercase tracking-widest block mb-2">🔥 Time Progress</span>
+                        <div className="flex items-center gap-4">
+                            <span className="text-3xl font-black text-text-primary italic" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>Day {Math.max(1, currentDayIndex)}/{totalDays}</span>
+                            <div className="w-32 h-3 rounded-full bg-surface-3 overflow-hidden border border-border relative">
+                                <motion.div 
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${progressPercent}%` }}
+                                    className="h-full bg-primary shadow-[0_0_10px_var(--color-primary)]" 
+                                />
                             </div>
                         </div>
                     </div>
@@ -121,34 +124,33 @@ const RoadmapPlaylistCard = ({ playlistId, days, roadmapId, courseId, onPartialS
         <div className="bg-surface/30 backdrop-blur-md mb-2 overflow-hidden border border-border/40 rounded-xl hover:border-primary/20 transition-all group">
             <div className="p-4 flex items-center justify-between gap-4">
                 {/* LEFT SIDE */}
-                <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <div className="shrink-0 w-5 h-5 rounded border border-border flex items-center justify-center bg-surface-2">
-                        {/* Mocking completion for now, can be wired to progress data */}
-                        <div className="w-2.5 h-2.5 rounded-sm bg-primary/20" />
+                <div className="flex items-center gap-4 flex-1 min-w-0">
+                    <div className="shrink-0 w-6 h-6 rounded-lg border border-primary/30 flex items-center justify-center bg-primary/10">
+                        <Zap className="w-3.5 h-3.5 text-primary" />
                     </div>
-                    <h3 className="text-sm font-bold text-text-primary tracking-tight truncate">
+                    <h3 className="text-base font-black text-text-primary tracking-tight truncate">
                         {playlistName} 
-                        <span className="text-[12px] font-medium text-text-muted ml-2">({totalVideos}/{totalVideos})</span>
+                        <span className="text-sm font-bold text-text-muted ml-3 opacity-60">({totalVideos} Missions)</span>
                     </h3>
                 </div>
 
                 {/* RIGHT SIDE */}
                 <div className="flex items-center gap-4 shrink-0">
-                    <div className="flex items-center gap-3 bg-black/30 px-4 py-2 rounded-xl border border-border/60">
+                    <div className="flex items-center gap-3 bg-black/40 px-5 py-2.5 rounded-xl border border-border/80 shadow-inner">
                         <button 
                             onClick={(e) => { e.stopPropagation(); onPartialShift(days[0].dayIndex, -1); }}
-                            className="text-text-muted hover:text-primary transition-colors p-0.5"
+                            className="text-text-muted hover:text-primary transition-all p-1 hover:scale-110 active:scale-90"
                         >
-                            <MinusCircle className="w-5 h-5" />
+                            <MinusCircle className="w-6 h-6" />
                         </button>
-                        <span className="text-[12px] font-black text-text-primary uppercase tracking-tight min-w-[110px] text-center">
+                        <span className="text-sm font-black text-text-primary uppercase tracking-tight min-w-[130px] text-center font-mono">
                             {dateRange}
                         </span>
                         <button 
                             onClick={(e) => { e.stopPropagation(); onPartialShift(days[0].dayIndex, 1); }}
-                            className="text-text-muted hover:text-primary transition-colors p-0.5"
+                            className="text-text-muted hover:text-primary transition-all p-1 hover:scale-110 active:scale-90"
                         >
-                            <PlusCircle className="w-5 h-5" />
+                            <PlusCircle className="w-6 h-6" />
                         </button>
                     </div>
 
