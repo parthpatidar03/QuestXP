@@ -13,6 +13,13 @@ import {
 import { getCurrentRoadmap } from '../../services/roadmapApi';
 import { format, differenceInDays } from 'date-fns';
 
+const formatMinutes = (mins) => {
+    if (!mins || mins <= 0) return '0 min';
+    if (mins < 60) return `${mins} min`;
+    return `${(mins / 60).toFixed(1)} hr`;
+};
+
+
 const StudyPlan = ({ courseId, onOpenSetup }) => {
     const [roadmap, setRoadmap] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -96,7 +103,8 @@ const StudyPlan = ({ courseId, onOpenSetup }) => {
                             </div>
                             <div>
                                 <p className="text-[9px] font-bold text-text-muted uppercase">Today's Load</p>
-                                <p className="text-xs font-black text-text-primary">{activeDay?.totalMinutes || 0}m</p>
+                                <p className="text-xs font-black text-text-primary">{formatMinutes(activeDay?.totalMinutes)}</p>
+
                             </div>
                         </div>
                         <div className="flex items-center gap-2">

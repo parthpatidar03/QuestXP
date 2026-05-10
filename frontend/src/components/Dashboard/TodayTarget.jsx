@@ -3,6 +3,13 @@ import { Link } from 'react-router-dom';
 import api from '../../services/api';
 import { Target, Lock, PlayCircle, Clock, CheckCircle } from 'lucide-react';
 
+const formatMinutes = (mins) => {
+    if (!mins || mins <= 0) return '0 min';
+    if (mins < 60) return `${mins} min`;
+    return `${(mins / 60).toFixed(1)} hr`;
+};
+
+
 const TodayTarget = () => {
     const [plan, setPlan] = useState(null);
     const [error, setError] = useState(null);
@@ -68,7 +75,8 @@ const TodayTarget = () => {
                     </div>
                     <div>
                         <h2 className="text-xl font-display font-bold text-text-primary leading-tight">Today's Target</h2>
-                        <p className="text-sm text-text-secondary">{plan.totalPlannedMinutes} mins targeted</p>
+                        <p className="text-sm text-text-secondary">{formatMinutes(plan.totalPlannedMinutes)} targeted</p>
+
                     </div>
                 </div>
             </div>
@@ -91,7 +99,8 @@ const TodayTarget = () => {
                         </div>
                         <div className="flex items-center gap-2 sm:flex-col sm:items-end sm:gap-0 flex-shrink-0 bg-surface sm:bg-transparent px-3 py-1.5 sm:p-0 rounded-md border border-border sm:border-transparent">
                             <Clock className="w-3.5 h-3.5 text-warning sm:hidden" />
-                            <span className="text-warning font-display font-bold text-sm">~{item.plannedMinutes}m</span>
+                            <span className="text-warning font-display font-bold text-sm">~{formatMinutes(item.plannedMinutes)}</span>
+
                             <span className="text-[10px] text-text-muted font-bold tracking-wider uppercase hidden sm:block mt-0.5">EST</span>
                         </div>
                     </Link>

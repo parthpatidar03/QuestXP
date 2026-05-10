@@ -21,6 +21,13 @@ import {
     Square
 } from 'lucide-react';
 import { format, differenceInDays } from 'date-fns';
+
+const formatMinutes = (mins) => {
+    if (!mins || mins <= 0) return '0 min';
+    if (mins < 60) return `${mins} min`;
+    return `${(mins / 60).toFixed(1)} hr`;
+};
+
 import { getCurrentRoadmap, adjustRoadmap, partialShiftRoadmap } from '../services/roadmapApi';
 import NavBar from '../components/NavBar';
 import { BGPattern } from '../components/ui/bg-pattern';
@@ -191,8 +198,9 @@ const RoadmapPlaylistCard = ({ playlistId, days, roadmapId, courseId, onPartialS
                                         </button>
                                     </div>
                                     <div className="px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/30">
-                                        <span className="text-[11px] font-black text-primary uppercase tracking-tight">Target: {day.totalMinutes}m</span>
+                                        <span className="text-[11px] font-black text-primary uppercase tracking-tight">Target: {formatMinutes(day.totalMinutes)}</span>
                                     </div>
+
                                 </div>
                             </div>
                             <div className="space-y-1.5 pl-4 border-l border-border/30 ml-0.5">
@@ -207,7 +215,8 @@ const RoadmapPlaylistCard = ({ playlistId, days, roadmapId, courseId, onPartialS
                                             {vid.title}
                                         </span>
 
-                                        <span className="text-[11px] font-bold text-text-muted tabular-nums">{vid.duration}m</span>
+                                        <span className="text-[11px] font-bold text-text-muted tabular-nums">{formatMinutes(vid.duration)}</span>
+
                                     </Link>
                                 ))}
                             </div>

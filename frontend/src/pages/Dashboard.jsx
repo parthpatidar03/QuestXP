@@ -63,11 +63,12 @@ const formatTime = (seconds) => {
     const s = parseInt(seconds);
     if (s < 3600) {
         const mins = Math.ceil(s / 60);
-        return `${mins}m`;
+        return `${mins} min`;
     }
     const h = (s / 3600).toFixed(1);
-    return `${h}h`;
+    return `${h} hr`;
 };
+
 
 function LearningTimeCard({ totalSeconds, weeklySeconds, avgSecondsPerDay }) {
     const hasActivity = totalSeconds > 0;

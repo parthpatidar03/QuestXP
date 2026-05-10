@@ -12,6 +12,13 @@ import {
 import { getCurrentRoadmap } from '../../services/roadmapApi';
 import { format, isSameDay } from 'date-fns';
 
+const formatMinutes = (mins) => {
+    if (!mins || mins <= 0) return '0 min';
+    if (mins < 60) return `${mins} min`;
+    return `${(mins / 60).toFixed(1)} hr`;
+};
+
+
 const DailyMissionWidget = () => {
     const [roadmap, setRoadmap] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -71,7 +78,8 @@ const DailyMissionWidget = () => {
                                     <Play className="w-3 h-3 text-primary fill-primary" />
                                 </div>
                                 <span className="text-[11px] font-bold text-text-primary truncate flex-1">{vid.title}</span>
-                                <span className="text-[10px] font-black text-text-muted">{vid.duration}m</span>
+                                <span className="text-[10px] font-black text-text-muted">{formatMinutes(vid.duration)}</span>
+
                             </div>
                         ))
                     ) : (
@@ -87,7 +95,8 @@ const DailyMissionWidget = () => {
                 <div className="grid grid-cols-2 gap-3 pt-2">
                     <div className="flex flex-col">
                         <span className="text-[9px] font-black text-text-muted uppercase tracking-tighter">Daily Target</span>
-                        <span className="text-sm font-black text-text-primary italic">{todayMission.totalMinutes} Mins</span>
+                        <span className="text-sm font-black text-text-primary italic">{formatMinutes(todayMission.totalMinutes)}</span>
+
                     </div>
                     <div className="flex flex-col items-end">
                         <span className="text-[9px] font-black text-text-muted uppercase tracking-tighter">Reward</span>

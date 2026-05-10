@@ -18,10 +18,12 @@ import { BGPattern } from '../components/ui/bg-pattern';
 const XP_PER_LECTURE = 50;
 const fmtDuration = (secs) => {
     if (!secs) return '—';
-    const m = Math.floor(secs / 60);
-    const s = String(secs % 60).padStart(2, '0');
-    return `${m}:${s}`;
+    if (secs < 3600) {
+        return `${Math.ceil(secs / 60)} min`;
+    }
+    return `${(secs / 3600).toFixed(1)} hr`;
 };
+
 
 /* ── Lecture Mission Row ────────────────────────────────────────────── */
 function MissionRow({ lecture, index, isCompleted, isActive, isLocked, courseId }) {
