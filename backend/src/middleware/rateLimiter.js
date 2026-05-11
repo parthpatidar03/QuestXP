@@ -33,7 +33,7 @@ const chatbotHourlyLimiter = rateLimit({
         if (!req.user) return 0;
         return (req.user.level || 0) <= 1 ? 3 : 7;
     },
-    keyGenerator: (req) => req.user?._id.toString() || req.ip,
+    keyGenerator: (req) => req.user._id.toString(),
     handler: (req, res) => {
         const resetTime = new Date(req.rateLimit.resetTime);
         const diff = Math.ceil((resetTime - Date.now()) / 60000);
@@ -57,7 +57,7 @@ const chatbotHourlyLimiter = rateLimit({
 const chatbotTwoHourLimiter = rateLimit({
     windowMs: 2 * 60 * 60 * 1000, // 2 hours
     max: 10,
-    keyGenerator: (req) => req.user?._id.toString() || req.ip,
+    keyGenerator: (req) => req.user._id.toString(),
     handler: (req, res) => {
         const resetTime = new Date(req.rateLimit.resetTime);
         const diff = Math.ceil((resetTime - Date.now()) / 60000);
@@ -80,7 +80,7 @@ const chatbotTwoHourLimiter = rateLimit({
 const quizLimiter = rateLimit({
     windowMs: 12 * 60 * 60 * 1000, 
     max: 5,
-    keyGenerator: (req) => req.user?._id.toString() || req.ip,
+    keyGenerator: (req) => req.user._id.toString(),
     handler: (req, res) => {
         const resetTime = new Date(req.rateLimit.resetTime);
         const diff = Math.ceil((resetTime - Date.now()) / 3600000);
@@ -103,7 +103,7 @@ const quizLimiter = rateLimit({
 const summaryLimiter = rateLimit({
     windowMs: 60 * 60 * 1000,
     max: 5,
-    keyGenerator: (req) => req.user?._id.toString() || req.ip,
+    keyGenerator: (req) => req.user._id.toString(),
     handler: (req, res) => {
         const resetTime = new Date(req.rateLimit.resetTime);
         const diff = Math.ceil((resetTime - Date.now()) / 60000);
