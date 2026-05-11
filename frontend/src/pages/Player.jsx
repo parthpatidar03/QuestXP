@@ -10,6 +10,7 @@ import DoubtChatbot from '../components/Lecture/DoubtChatbot';
 import useGamificationStore from '../store/useGamificationStore';
 import { ArrowLeft, CheckCircle2, ChevronRight, ChevronLeft, Zap } from 'lucide-react';
 import { BGPattern } from '../components/ui/bg-pattern';
+import { useLectureStatus } from '../hooks/useLectureStatus';
 
 const TABS = [
     { key: 'topics', label: 'Topics' },
@@ -115,29 +116,13 @@ const Player = () => {
         }
     }, [loading, shouldStartQuiz]);
 
+    const aiStatus = useLectureStatus(currentLecture?._id, activeTab === 'quiz' && ['pending', 'in_progress'].includes(currentAiStatus.quiz));
+
     useEffect(() => {
-        const quizStatus = currentAiStatus.quiz || 'pending';
-        if (activeTab !== 'quiz' || !currentLecture?._id || !['pending', 'in_progress'].includes(quizStatus)) {
-            return undefined;
+        if (aiStatus) {
+            setLectureAiStatus(aiStatus);
         }
-
-        let cancelled = false;
-        const fetchAiStatus = async () => {
-            try {
-                const { data } = await api.get(`/lectures/${currentLecture._id}/ai-status`);
-                if (!cancelled) setLectureAiStatus(data.aiStatus);
-            } catch (err) {
-                // Keep existing status; normal auth/network handling happens in api interceptor.
-            }
-        };
-
-        fetchAiStatus();
-        const interval = setInterval(fetchAiStatus, 3000);
-        return () => {
-            cancelled = true;
-            clearInterval(interval);
-        };
-    }, [activeTab, currentLecture?._id, currentAiStatus.quiz]);
+    }, [aiStatus]);
 
     useEffect(() => {
         const handleMissionComplete = (e) => {
@@ -173,24 +158,24 @@ const Player = () => {
         ? navigate(`/courses/${courseId}/lectures/${nextLecture._id}`)
         : navigate(`/courses/${courseId}`);
 
-    const theme = {
-        pageBg: 'var(--color-bg)',
-        panelBg: 'var(--color-surface)',
-        panelAlt: 'var(--color-surface-2)',
-        border: 'var(--color-border)',
-        muted: 'var(--color-text-muted)',
-        text: 'var(--color-text-primary)',
-        secondaryText: 'var(--color-text-secondary)',
-        patternFill: 'var(--color-primary)',
-        progressTrack: 'var(--color-surface-2)',
-        shadow: '0 8px 32px rgba(0, 255, 128, 0.1)',
-        completionBg: 'rgba(18, 21, 42, 0.95)',
-        completionBorder: '1px solid var(--color-primary)',
-        completionBtnBg: 'var(--color-surface-2)',
-        completionBtnBorder: 'var(--color-border)',
-        completionBtnText: 'var(--color-text-secondary)',
-        primary: 'var(--color-primary)', // #00FF80 style
-    };
+const PLAYER_THEME = {
+    pageBg: 'var(--color-bg)',
+    panelBg: 'var(--color-surface)',
+    panelAlt: 'var(--color-surface-2)',
+    border: 'var(--color-border)',
+    muted: 'var(--color-text-muted)',
+    text: 'var(--color-text-primary)',
+    secondaryText: 'var(--color-text-secondary)',
+    patternFill: 'var(--color-primary)',
+    progressTrack: 'var(--color-surface-2)',
+    shadow: '0 8px 32px rgba(0, 255, 128, 0.1)',
+    completionBg: 'rgba(18, 21, 42, 0.95)',
+    completionBorder: '1px solid var(--color-primary)',
+    completionBtnBg: 'var(--color-surface-2)',
+    completionBtnBorder: 'var(--color-border)',
+    completionBtnText: 'var(--color-text-secondary)',
+    primary: 'var(--color-primary)', // #00FF80 style
+};
 
 
     if (loading) return (
@@ -210,12 +195,12 @@ const Player = () => {
     return (
         <div
             className="h-dvh flex flex-col overflow-hidden relative"
-            style={{ background: theme.pageBg }}
+            style={{ background: PLAYER_THEME.pageBg }}
         >
-            <BGPattern variant="grid" mask="fade-edges" fill={theme.patternFill} className="opacity-10 z-0" />
+            <BGPattern variant="grid" mask="fade-edges" fill={PLAYER_THEME.patternFill} className="opacity-10 z-0" />
 
             {/* Top progress bar */}
-            <div className="fixed top-0 left-0 w-full h-[3px] z-50" style={{ background: theme.progressTrack }}>
+            <div className="fixed top-0 left-0 w-full h-[3px] z-50" style={{ background: PLAYER_THEME.progressTrack }}>
                 <div
                     className="h-full transition-all duration-500 shadow-[0_0_8px_var(--color-primary)]"
                     style={{ width: `${((currentLectureIndex + 1) / allLectures.length) * 100}%`, background: 'var(--color-primary)' }}
@@ -223,7 +208,7 @@ const Player = () => {
             </div>
 
             {/* Header */}
-            <header className="shrink-0 px-3 sm:px-6 py-3 sm:py-4 flex flex-col gap-3 border-b" style={{ borderColor: theme.border, background: theme.panelBg }}>
+            <header className="shrink-0 px-3 sm:px-6 py-3 sm:py-4 flex flex-col gap-3 border-b" style={{ borderColor: PLAYER_THEME.border, background: PLAYER_THEME.panelBg }}>
                 <div className="flex items-center justify-between gap-3">
                     <Link
                         to={`/courses/${courseId}`}
@@ -240,7 +225,7 @@ const Player = () => {
                 </div>
 
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 min-w-0">
-                    <h1 className="text-base sm:text-lg font-black tracking-tight line-clamp-1" style={{ color: theme.text, fontFamily: "'Barlow Condensed', sans-serif" }}>
+                    <h1 className="text-base sm:text-lg font-black tracking-tight line-clamp-1" style={{ color: PLAYER_THEME.text, fontFamily: "'Barlow Condensed', sans-serif" }}>
                         {currentLecture.title}
                     </h1>
                     
@@ -249,7 +234,7 @@ const Player = () => {
                             <button
                                 onClick={() => navigate(`/courses/${courseId}/lectures/${prevLecture._id}`)}
                                 className="flex items-center gap-2 px-4 sm:px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98]"
-                                style={{ background: theme.panelAlt, border: `1px solid ${theme.border}`, color: theme.secondaryText }}
+                                style={{ background: PLAYER_THEME.panelAlt, border: `1px solid ${PLAYER_THEME.border}`, color: PLAYER_THEME.secondaryText }}
                             >
                                 <ChevronLeft className="w-4 h-4" />
                                 <span>Prev</span>
@@ -274,9 +259,9 @@ const Player = () => {
 
                 {/* Video Area */}
                 {!shouldStartQuiz && (
-                    <div className="shrink-0 lg:flex-1 flex flex-col items-center lg:justify-center p-2 sm:p-4 lg:p-6 min-h-0 relative" style={{ background: theme.pageBg }}>
+                    <div className="shrink-0 lg:flex-1 flex flex-col items-center lg:justify-center p-2 sm:p-4 lg:p-6 min-h-0 relative" style={{ background: PLAYER_THEME.pageBg }}>
                         <div className="w-full max-w-5xl mx-auto aspect-video relative">
-                            <div className="w-full h-full rounded-xl overflow-hidden" style={{ border: '1px solid rgba(0,255,128,0.25)', boxShadow: theme.shadow }}>
+                            <div className="w-full h-full rounded-xl overflow-hidden" style={{ border: '1px solid rgba(0,255,128,0.25)', boxShadow: PLAYER_THEME.shadow }}>
                                 <VideoPlayer
                                     courseId={courseId}
                                     lectureId={lectureId}
@@ -313,18 +298,18 @@ const Player = () => {
                                     exit={{ y: 80, opacity: 0 }}
                                     transition={{ type: 'spring', damping: 20, stiffness: 300 }}
                                     className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 w-[94%] sm:w-[90%] max-w-md rounded-2xl p-4 sm:p-6 flex flex-col items-center text-center z-50 shadow-2xl"
-                                    style={{ background: theme.completionBg, border: theme.completionBorder, backdropFilter: 'blur(20px)' }}
+                                    style={{ background: PLAYER_THEME.completionBg, border: PLAYER_THEME.completionBorder, backdropFilter: 'blur(20px)' }}
                                 >
                                     <div className="w-14 h-14 rounded-full flex items-center justify-center mb-4" style={{ background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)' }}>
                                         <CheckCircle2 className="w-7 h-7 text-[#10B981]" />
                                     </div>
-                                    <h3 className="text-2xl font-black mb-1" style={{ color: theme.text, fontFamily: "'Barlow Condensed', sans-serif" }}>Mission Complete!</h3>
+                                    <h3 className="text-2xl font-black mb-1" style={{ color: PLAYER_THEME.text, fontFamily: "'Barlow Condensed', sans-serif" }}>Mission Complete!</h3>
                                     <p className="text-sm font-bold mb-6" style={{ color: '#f5a524' }}>+{xpEarned || 50} XP Earned</p>
                                     <div className="flex gap-3 w-full">
                                         <button
                                             onClick={() => navigate(`/courses/${courseId}`)}
                                             className="flex-1 py-3 px-4 rounded-xl text-sm font-semibold transition-colors"
-                                            style={{ background: theme.completionBtnBg, border: `1px solid ${theme.completionBtnBorder}`, color: theme.completionBtnText }}
+                                            style={{ background: PLAYER_THEME.completionBtnBg, border: `1px solid ${PLAYER_THEME.completionBtnBorder}`, color: PLAYER_THEME.completionBtnText }}
                                         >
                                             Overview
                                         </button>
@@ -342,10 +327,10 @@ const Player = () => {
                 )}
 
                 {/* Right Sidebar */}
-                <div ref={sidebarRef} className={`flex-1 w-full shrink-0 flex flex-col border-t lg:border-t-0 min-h-0 ${shouldStartQuiz ? '' : 'lg:flex-none lg:w-[380px] xl:w-[420px] lg:border-l'}`} style={{ borderColor: theme.border, background: theme.panelBg, height: '100%' }}>
+                <div ref={sidebarRef} className={`flex-1 w-full shrink-0 flex flex-col border-t lg:border-t-0 min-h-0 ${shouldStartQuiz ? '' : 'lg:flex-none lg:w-[380px] xl:w-[420px] lg:border-l'}`} style={{ borderColor: PLAYER_THEME.border, background: PLAYER_THEME.panelBg, height: '100%' }}>
 
                     {/* Tab Navigation */}
-                    <div className="flex border-b shrink-0" style={{ borderColor: theme.border }}>
+                    <div className="flex border-b shrink-0" style={{ borderColor: PLAYER_THEME.border }}>
                         {TABS.map(tab => (
                             <button
                                 key={tab.key}
@@ -353,7 +338,7 @@ const Player = () => {
                                 className="flex-1 py-2.5 sm:py-3 text-[11px] sm:text-xs font-bold transition-colors border-b-2"
                                 style={{
                                     borderBottomColor: activeTab === tab.key ? 'var(--color-primary)' : 'transparent',
-                                    color: activeTab === tab.key ? 'var(--color-primary)' : theme.muted,
+                                    color: activeTab === tab.key ? 'var(--color-primary)' : PLAYER_THEME.muted,
                                     background: activeTab === tab.key ? 'rgba(0,255,128,0.05)' : 'transparent'
                                 }}
                             >

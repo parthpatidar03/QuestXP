@@ -80,10 +80,36 @@ To maximize privacy and minimize user friction, the platform now treats the "Ide
 
 ---
 
+## 7. "Anti-Vibe" Production Refactor
+
+### The Problem
+Early-stage "vibe coding" (fast feature building) led to monolithic components, inline business logic, and "fat" controllers, making the codebase hard to maintain.
+
+### The Solution: production-grade refactoring
+
+- **Logic Gating via Hooks (`hooks/useLectureStatus.js`)**:
+  - **Pattern**: Polling logic was moved from `Player.jsx` into a dedicated custom hook.
+  - **Benefit**: Automates side-effect cleanup (clearInterval) and prevents memory leaks. Components stay "dumb" (UI-focused).
+
+- **Service Layer Orchestration (`services/courseService.js`)**:
+  - **Pattern**: Moved 30+ lines of course deletion logic (cleaning up Transcripts, Notes, Quizzes, Progress) into a service.
+  - **Benefit**: Controller is reduced to 5 lines. Logic is now reusable and can be tested in isolation from HTTP concerns.
+
+- **Atomic UI Extraction**:
+  - **Pattern**: Isolated `CourseSearch` from `NavBar.jsx`. 
+  - **Benefit**: Improves build-time performance via smaller chunks and allows for independent testing of the search engine.
+
+---
+
 ## Interview Questions Solved
+
 1. **How do you handle a unique field for existing users without a migration?**
    *Answer*: Use a Sparse Unique Index in MongoDB and Lazy-assignment logic in the API.
 2. **How do you optimize a leaderboard for performance?**
    *Answer*: Cap the limit (Top 50), use indexing on the sorting field (XP), and only fetch required fields (Projection).
 3. **How do you ensure UI consistency across different user states?**
    *Answer*: A `usernameSet` boolean flag that determines whether to show a "Claim Identity" prompt or the actual profile.
+4. **Why use a Service Layer in Express?**
+   *Answer*: To decouple business logic from transport logic. This makes the app easier to test, maintain, and adapt (e.g., if switching from Express to a different framework).
+5. **When should logic be moved to a Custom Hook?**
+   *Answer*: When logic involves complex side effects (polling, subscriptions) or is shared across multiple views. It keeps components declarative and clean.
