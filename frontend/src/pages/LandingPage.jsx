@@ -98,9 +98,12 @@ const LandingPage = () => {
                         >
                             {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
                         </button>
-                        <button onClick={() => navigate('/dashboard?demo=true')} className="px-3 py-2 rounded-lg text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors">
-                            Try Demo
-                        </button>
+                        <div className="flex flex-col items-center">
+                            <button onClick={() => navigate('/dashboard?demo=true')} className="px-3 py-1 rounded-lg text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors">
+                                Try Demo
+                            </button>
+                            <span className="text-[9px] text-text-muted uppercase tracking-tighter -mt-1 font-bold">No Sign-in</span>
+                        </div>
                         <button onClick={() => navigate('/login')} className="btn-blink bg-blue-600 text-sm px-6 py-2.5 rounded-lg text-white font-bold transition-all hover:bg-blue-700">
                             Sign in
                         </button>
@@ -144,15 +147,18 @@ const LandingPage = () => {
                             >
                                 Feedback
                             </button>
-                            <button 
-                                onClick={() => {
-                                    setMobileMenuOpen(false);
-                                    navigate('/dashboard?demo=true');
-                                }} 
-                                className="px-3 py-2 rounded-lg text-left text-sm text-text-secondary hover:bg-surface-2"
-                            >
-                                Try Demo
-                            </button>
+                            <div className="flex flex-col">
+                                <button 
+                                    onClick={() => {
+                                        setMobileMenuOpen(false);
+                                        navigate('/dashboard?demo=true');
+                                    }} 
+                                    className="px-3 py-2 rounded-lg text-left text-sm text-text-secondary hover:bg-surface-2"
+                                >
+                                    Try Demo
+                                </button>
+                                <span className="px-3 text-[9px] text-text-muted uppercase tracking-tighter -mt-1 font-bold">No Sign-in required</span>
+                            </div>
                             <button onClick={() => navigate('/login')} className="mt-2 w-full py-3 rounded-lg bg-blue-600 text-white font-bold text-center">Sign in</button>
                             <button onClick={openApp} className="mt-2 btn-primary w-full">Get Started</button>
                         </div>
