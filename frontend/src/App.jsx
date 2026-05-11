@@ -51,7 +51,11 @@ const AppContent = () => {
         }
     }, [checkAuth]);
 
-    if (isLoading) {
+    // Public pages shouldn't be blocked by global loading state
+    const isPublicPage = ['/', '/login', '/register'].includes(location.pathname) || location.pathname.startsWith('/share/');
+    const showPomodoro = isAuthenticated && !isPublicPage;
+
+    if (isLoading && !isPublicPage) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-bg">
                 <div className="w-12 h-12 rounded-full border-4 border-t-transparent animate-spin" style={{ borderColor: 'var(--color-primary)', borderTopColor: 'transparent' }} />
@@ -60,9 +64,6 @@ const AppContent = () => {
         );
     }
 
-    // Show Pomodoro on all pages except landing and auth when logged in
-    const isPublicPage = ['/', '/login', '/register'].includes(location.pathname);
-    const showPomodoro = isAuthenticated && !isPublicPage;
 
     return (
         <>
