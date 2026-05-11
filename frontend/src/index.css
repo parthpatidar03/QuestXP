@@ -373,9 +373,6 @@
   animation: spin-slow 8s linear infinite;
 }
 
-.blue-glow-pulse {
-  animation: blue-glow-pulse 2s infinite;
-}
 
 /* ── Hexagonal clip path for badges ─── */
 .hex-clip {

@@ -99,10 +99,12 @@ class AIProvider {
 
         // T040 Fallback Model Rotation to bypass rate limits
         const models = [
-            'google/gemini-flash-1.5-exp:free',
+            'google/gemini-flash-1.5-8b:free',
+            'google/gemini-flash-1.5:free',
             'meta-llama/llama-3.2-3b-instruct:free',
             'meta-llama/llama-3.1-8b-instruct:free',
-            'google/gemini-flash-1.5-8b:free'
+            'qwen/qwen-2-7b-instruct:free',
+            'mistralai/pixtral-12b:free'
         ];
 
         let lastError;

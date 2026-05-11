@@ -165,7 +165,7 @@ const LandingPage = () => {
                                 </button>
                                 <button 
                                     onClick={() => setVideoOpen(true)}
-                                    className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-lg border border-border bg-surface text-sm sm:text-base font-bold text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-all blue-glow-pulse"
+                                    className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-lg border border-border bg-surface text-sm sm:text-base font-bold text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-all"
                                 >
                                     <Play className="w-4 h-4 fill-current" />
                                     Watch Demo

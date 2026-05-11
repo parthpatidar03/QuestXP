@@ -4,7 +4,8 @@ const Course = require('../models/Course');
 const { validateTopics } = require('../schemas/topicsSchema');
 const { 
     MIN_DURATION_FOR_TOPICS,
-    ERROR_GPT_SCHEMA_INVALID 
+    ERROR_GPT_SCHEMA_INVALID,
+    ERROR_AI_PROVIDER_FAILED
 } = require('../constants/aiPipeline');
 
 const TOPICS_SYSTEM_PROMPT = `

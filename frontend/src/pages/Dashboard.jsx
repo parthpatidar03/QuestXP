@@ -749,17 +749,20 @@ const Dashboard = () => {
                         initial={{ y: 100, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         exit={{ y: 100, opacity: 0 }}
-                        className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-4 px-6 py-4 bg-surface-2 border border-border rounded-2xl shadow-2xl"
+                        className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-5 px-6 py-4 bg-surface-2 border-2 border-border rounded-2xl shadow-2xl backdrop-blur-xl"
                     >
-                        <div className="flex flex-col">
-                            <span className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em]">Deleting in {undoCountdown}s</span>
+                        <div className="flex items-center justify-center w-10 h-10 rounded-full border-2 border-primary text-primary font-black text-lg animate-pulse">
+                            {undoCountdown}
+                        </div>
+                        <div className="flex flex-col min-w-[120px]">
+                            <span className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em]">Course Deleting</span>
                             <span className="text-sm font-black text-text-primary line-clamp-1">{showUndo.title}</span>
                         </div>
                         <button 
                             onClick={handleUndoDelete}
-                            className="ml-4 px-4 py-2 bg-primary text-black text-xs font-black uppercase tracking-widest rounded-xl hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20"
+                            className="ml-2 px-6 py-2.5 bg-primary text-black text-xs font-black uppercase tracking-widest rounded-xl hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20"
                         >
-                            Undo Deletion
+                            Undo
                         </button>
                     </motion.div>
                 )}
