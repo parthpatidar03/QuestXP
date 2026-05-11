@@ -358,6 +358,7 @@ const Dashboard = () => {
     const [roadmapCourseId, setRoadmapCourseId] = useState(null);
     const [optimisticHiddenIds, setOptimisticHiddenIds] = useState(new Set());
     const [showUndo, setShowUndo] = useState(null); // { id, title, timer }
+    const [undoCountdown, setUndoCountdown] = useState(0);
 
     useEffect(() => {
         if (user && !user.usernameSet) {
@@ -457,25 +458,46 @@ const Dashboard = () => {
 
 
     const handleDeleteCourse = async (course) => {
+        // Cleanup previous undo if exists
+        if (showUndo) {
+            clearTimeout(showUndo.timer);
+            if (showUndo.interval) clearInterval(showUndo.interval);
+        }
+
         // Optimistic UI Removal
         setOptimisticHiddenIds(prev => new Set(prev).add(course._id));
+        setUndoCountdown(5);
         
         const timer = setTimeout(() => {
             deleteMutation.mutate(course._id, {
                 onSettled: () => {
                     setDeletingCourseId(null);
                     setShowUndo(null);
+                    setUndoCountdown(0);
                 }
             });
         }, 5000);
 
-        setShowUndo({ id: course._id, title: course.title, timer });
+        // Countdown interval
+        const interval = setInterval(() => {
+            setUndoCountdown(prev => {
+                if (prev <= 1) {
+                    clearInterval(interval);
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+
+        setShowUndo({ id: course._id, title: course.title, timer, interval });
         setDeletingCourseId(course._id);
     };
 
     const handleUndoDelete = () => {
         if (!showUndo) return;
         clearTimeout(showUndo.timer);
+        if (showUndo.interval) clearInterval(showUndo.interval);
+        
         setOptimisticHiddenIds(prev => {
             const next = new Set(prev);
             next.delete(showUndo.id);
@@ -483,6 +505,7 @@ const Dashboard = () => {
         });
         setDeletingCourseId(null);
         setShowUndo(null);
+        setUndoCountdown(0);
     };
 
 
@@ -729,7 +752,7 @@ const Dashboard = () => {
                         className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-4 px-6 py-4 bg-surface-2 border border-border rounded-2xl shadow-2xl"
                     >
                         <div className="flex flex-col">
-                            <span className="text-xs font-bold text-text-muted uppercase tracking-widest">Deleted Quest</span>
+                            <span className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em]">Deleting in {undoCountdown}s</span>
                             <span className="text-sm font-black text-text-primary line-clamp-1">{showUndo.title}</span>
                         </div>
                         <button 
