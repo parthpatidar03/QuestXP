@@ -10,6 +10,7 @@ import useAuthStore from '../store/useAuthStore';
  * @param {boolean} enabled - Whether to enable polling.
  * @returns {object} The current AI status of the lecture.
  */
+export const useLectureStatus = (lectureId, enabled = true) => {
     const { isAuthenticated } = useAuthStore();
     const [status, setStatus] = useState(null);
 
