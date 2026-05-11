@@ -80,6 +80,12 @@ const LandingPage = () => {
                     <nav className="hidden md:flex items-center gap-1 text-sm">
                         <a href="#features" className="px-3 py-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors">Features</a>
                         <a href="#how-it-works" className="px-3 py-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors">How it works</a>
+                        <button 
+                            onClick={() => setFeedbackOpen(true)}
+                            className="px-3 py-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors"
+                        >
+                            Feedback
+                        </button>
                     </nav>
 
                     <div className="hidden md:flex items-center gap-2">
@@ -126,6 +132,15 @@ const LandingPage = () => {
                         <div className="flex flex-col gap-2">
                             <a href="#features" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg text-sm text-text-secondary hover:bg-surface-2">Features</a>
                             <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg text-sm text-text-secondary hover:bg-surface-2">How it works</a>
+                            <button 
+                                onClick={() => {
+                                    setMobileMenuOpen(false);
+                                    setFeedbackOpen(true);
+                                }} 
+                                className="px-3 py-2 rounded-lg text-left text-sm text-text-secondary hover:bg-surface-2"
+                            >
+                                Feedback
+                            </button>
                             <button onClick={openApp} className="mt-2 btn-primary w-full">Get Started</button>
                         </div>
                     </div>
