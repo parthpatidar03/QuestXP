@@ -176,7 +176,7 @@ function ShareModal({ isOpen, onClose, courseTitle, shareUrl }) {
                             rel="noopener noreferrer"
                             className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#25D366] text-white text-xs font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all"
                         >
-                            <MessageSquareText className="w-4 h-4" />
+                            <img src="/whatsapp-icon.png" alt="WhatsApp" className="w-5 h-5 object-contain" />
                             WhatsApp
                         </a>
                     </div>

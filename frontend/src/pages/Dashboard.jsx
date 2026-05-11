@@ -36,8 +36,8 @@ function calcCourseProgress(course, progress) {
 function RankCard({ rank, percentile, trend }) {
     return (
         <div className="glass-card p-5 relative overflow-hidden group hover:scale-[1.02] transition-all">
-            <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-                <Trophy className="w-16 h-16" />
+            <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none">
+                <img src="/Trophy rank.png" alt="" className="w-24 h-24 object-contain" />
             </div>
             <div className="flex items-center gap-2 mb-3">
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-gold/10 text-gold border border-gold/20">
@@ -78,8 +78,8 @@ function LearningTimeCard({ totalSeconds, weeklySeconds, avgSecondsPerDay }) {
 
     return (
         <div className="glass-card p-5 relative overflow-hidden group hover:scale-[1.02] transition-all">
-            <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-                <Clock className="w-16 h-16" />
+            <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none">
+                <img src="/Learning time.png" alt="" className="w-24 h-24 object-contain" />
             </div>
             <div className="flex items-center gap-2 mb-3">
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-primary/10 text-primary border border-primary/20">
@@ -192,7 +192,7 @@ function ShareModal({ isOpen, onClose, courseTitle, shareUrl }) {
                             rel="noopener noreferrer"
                             className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#25D366] text-white text-xs font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all"
                         >
-                            <MessageSquare className="w-4 h-4" />
+                            <img src="/whatsapp-icon.png" alt="WhatsApp" className="w-5 h-5 object-contain" />
                             WhatsApp
                         </a>
                     </div>
@@ -215,8 +215,8 @@ function ShareModal({ isOpen, onClose, courseTitle, shareUrl }) {
 function ProductivityCard({ completionRate, completedCourses, totalEnrolled }) {
     return (
         <div className="glass-card p-5 relative overflow-hidden group hover:scale-[1.02] transition-all">
-            <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-                <BarChart3 className="w-16 h-16" />
+            <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none">
+                <img src="/Mastery level.png" alt="" className="w-24 h-24 object-contain" />
             </div>
             <div className="flex items-center gap-2 mb-3">
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-success/10 text-success border border-success/20">
