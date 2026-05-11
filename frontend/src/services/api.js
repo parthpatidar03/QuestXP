@@ -7,8 +7,31 @@ const api = axios.create({
     withCredentials: true,
 });
 
+// Helper to get tokens from localStorage
+const getLocalAccessToken = () => localStorage.getItem('accessToken');
+const getLocalRefreshToken = () => localStorage.getItem('refreshToken');
+
+// Request Interceptor: Attach Bearer token if available in LocalStorage
+api.interceptors.request.use(
+    (config) => {
+        const token = getLocalAccessToken();
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => Promise.reject(error)
+);
+
+// Response Interceptor: Handle Token Refresh and persistence
 api.interceptors.response.use(
-    (response) => response,
+    (response) => {
+        // T066: Capture and persist tokens from any JSON response (fallback for blocked cookies)
+        const { accessToken, refreshToken } = response.data || {};
+        if (accessToken) localStorage.setItem('accessToken', accessToken);
+        if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
+        return response;
+    },
     async (error) => {
         const originalRequest = error.config;
 
@@ -24,16 +47,28 @@ api.interceptors.response.use(
         ) {
             originalRequest._retry = true;
             try {
-                await api.post('/auth/refresh');
-                return api(originalRequest);
+                // T067: Try refreshing via header if cookies are blocked
+                const refreshToken = getLocalRefreshToken();
+                const { data } = await api.post('/auth/refresh', { refreshToken });
+                
+                if (data.accessToken) {
+                    localStorage.setItem('accessToken', data.accessToken);
+                    if (data.refreshToken) localStorage.setItem('refreshToken', data.refreshToken);
+                    
+                    // Retry original request with new token
+                    originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
+                    return api(originalRequest);
+                }
             } catch (refreshError) {
+                // Clear tokens if refresh fails
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('refreshToken');
                 return Promise.reject(refreshError);
             }
         }
 
         if (error.response && error.response.status === 401) {
             // Zustand useAuthStore will handle the state update and redirection via ProtectedRoute
-            // Hard redirect window.location.href kills the app state and can cause loops
             console.warn('[API] 401 Unauthorized detected');
         }
 

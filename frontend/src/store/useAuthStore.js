@@ -50,7 +50,13 @@ const useAuthStore = create((set) => ({
     },
 
     logout: async () => {
-        await api.post('/auth/logout');
+        try {
+            await api.post('/auth/logout');
+        } catch (err) {
+            console.error('[AuthStore] Logout request failed:', err);
+        }
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
         set({ user: null, isAuthenticated: false });
         window.location.href = '/login';
     },

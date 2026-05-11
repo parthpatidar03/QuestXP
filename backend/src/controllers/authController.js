@@ -70,7 +70,7 @@ const issueSession = async (req, res, user) => {
     await session.save();
 
     setAuthCookies(res, accessToken, refreshToken);
-    return session;
+    return { session, accessToken, refreshToken };
 };
 
 const register = async (req, res, next) => {
@@ -95,9 +95,15 @@ const register = async (req, res, next) => {
 
         await user.save();
 
-        await issueSession(req, res, user);
+        const { accessToken, refreshToken } = await issueSession(req, res, user);
 
-        res.status(201).json({ success: true, data: { user: userResponse(user) }, user: userResponse(user) });
+        res.status(201).json({ 
+            success: true, 
+            data: { user: userResponse(user), accessToken, refreshToken }, 
+            user: userResponse(user),
+            accessToken,
+            refreshToken
+        });
     } catch (error) {
         next(error);
     }
@@ -117,12 +123,20 @@ const login = async (req, res, next) => {
         const isMatch = await bcrypt.compare(password, user.passwordHash);
         if (!isMatch) return res.status(400).json({ error: 'Invalid credentials' });
 
-        await issueSession(req, res, user);
+        const { accessToken, refreshToken } = await issueSession(req, res, user);
 
-        // T040: Recalculate study plans on login
-        await triggerPlanRecalculation(user._id);
+        // T040: Recalculate study plans on login (Background - non-blocking)
+        triggerPlanRecalculation(user._id).catch(err => {
+            console.error('[Auth] Background plan recalculation failed:', err);
+        });
 
-        res.json({ success: true, data: { user: userResponse(user) }, user: userResponse(user) });
+        res.json({ 
+            success: true, 
+            data: { user: userResponse(user), accessToken, refreshToken }, 
+            user: userResponse(user),
+            accessToken,
+            refreshToken
+        });
     } catch (error) {
         next(error);
     }
@@ -154,7 +168,7 @@ const getMe = async (req, res, next) => {
 
 const refresh = async (req, res, next) => {
     try {
-        const token = req.cookies[REFRESH_TOKEN_COOKIE];
+        let token = req.cookies[REFRESH_TOKEN_COOKIE] || req.body.refreshToken;
         if (!token) return res.status(401).json({ error: 'Refresh token required' });
 
         const decoded = verifyRefreshToken(token);
@@ -196,7 +210,13 @@ const refresh = async (req, res, next) => {
         await session.save();
 
         setAuthCookies(res, accessToken, refreshToken);
-        res.json({ success: true, data: { user: userResponse(user) }, user: userResponse(user) });
+        res.json({ 
+            success: true, 
+            data: { user: userResponse(user), accessToken, refreshToken }, 
+            user: userResponse(user),
+            accessToken,
+            refreshToken
+        });
     } catch (error) {
         clearAuthCookies(res);
         res.status(401).json({ error: 'Invalid refresh token' });
@@ -280,12 +300,20 @@ const googleLogin = async (req, res, next) => {
             await user.save();
         }
 
-        await issueSession(req, res, user);
+        const { accessToken, refreshToken } = await issueSession(req, res, user);
 
-        // T040: Recalculate study plans on login
-        await triggerPlanRecalculation(user._id);
+        // T040: Recalculate study plans on login (Background - non-blocking)
+        triggerPlanRecalculation(user._id).catch(err => {
+            console.error('[Auth] Background plan recalculation failed:', err);
+        });
 
-        res.json({ success: true, data: { user: userResponse(user) }, user: userResponse(user) });
+        res.json({ 
+            success: true, 
+            data: { user: userResponse(user), accessToken, refreshToken }, 
+            user: userResponse(user),
+            accessToken,
+            refreshToken
+        });
     } catch (error) {
         next(error);
     }
