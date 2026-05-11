@@ -105,7 +105,7 @@ const LandingPage = () => {
                             <span className="text-sm font-bold text-text-secondary group-hover:text-text-primary leading-none">Try Demo</span>
                             <span className="text-[8px] text-text-muted uppercase tracking-tighter mt-1 font-black opacity-60">Without Sign-in</span>
                         </button>
-                        <button onClick={() => navigate('/login')} className="btn-blink bg-blue-600 text-sm px-6 py-2.5 rounded-lg text-white font-bold transition-all hover:bg-blue-700">
+                        <button onClick={() => navigate('/login')} className="btn-blink bg-red-600 text-sm px-6 py-2.5 rounded-lg text-white font-bold transition-all hover:bg-red-700">
                             Sign in
                         </button>
                         <button onClick={openApp} className="btn-blink btn-primary text-sm px-6 py-2.5">
@@ -158,7 +158,7 @@ const LandingPage = () => {
                                 <span className="text-sm font-bold text-text-secondary">Try Demo</span>
                                 <span className="text-[8px] text-text-muted uppercase tracking-tighter mt-0.5 font-black opacity-60">Without Sign-in</span>
                             </button>
-                            <button onClick={() => navigate('/login')} className="mt-2 w-full py-3 rounded-lg bg-blue-600 text-white font-bold text-center">Sign in</button>
+                            <button onClick={() => navigate('/login')} className="mt-2 w-full py-3 rounded-lg bg-red-600 text-white font-bold text-center hover:bg-red-700 transition-colors">Sign in</button>
                             <button onClick={openApp} className="mt-2 btn-primary w-full">Get Started</button>
                         </div>
                     </div>
