@@ -56,23 +56,23 @@ const ProgressHeader = ({ roadmap, onShift }) => {
                 <Trophy className="w-24 h-24" />
             </div>
             
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
                 <div className="space-y-2">
                     <div className="flex items-center gap-2 text-primary">
                         <Sparkles className="w-5 h-5" />
                         <span className="text-xs font-black uppercase tracking-widest">🗺️ Active Roadmap</span>
                     </div>
-                    <h2 className="text-3xl font-black text-text-primary tracking-tight" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>Your Mastery Journey</h2>
+                    <h2 className="text-2xl sm:text-3xl font-black text-text-primary tracking-tight leading-none" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>Your Mastery Journey</h2>
                     <p className="text-sm text-text-muted font-bold">
                         Targeting completion by <span className="text-primary">{format(new Date(roadmap.days[roadmap.days.length - 1].date), 'MMMM dd, yyyy')}</span> 🎯
                     </p>
                 </div>
 
-                <div className="flex items-center gap-8">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:gap-8">
                     {/* Schedule Adjuster */}
-                    <div className="flex items-center gap-3 bg-surface-2 p-2 rounded-xl border border-border relative">
+                    <div className="flex items-center gap-3 bg-surface-2 p-2 rounded-xl border border-border relative flex-1 sm:flex-none">
                         {onShift.adjusting && (
-                            <div className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap px-3 py-1 bg-primary/20 text-primary text-[10px] font-black rounded-full border border-primary/30 animate-pulse">
+                            <div className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap px-3 py-1 bg-primary/20 text-primary text-[10px] font-black rounded-full border border-primary/30 animate-pulse z-20">
                                 SYNCING...
                             </div>
                         )}
@@ -85,7 +85,7 @@ const ProgressHeader = ({ roadmap, onShift }) => {
                         >
                             <Minus className="w-4 h-4" />
                         </motion.button>
-                        <div className="text-center min-w-[100px]">
+                        <div className="text-center min-w-[100px] flex-1">
                             <span className="text-[10px] font-black text-text-muted uppercase tracking-widest block mb-1">📅 Shift Plan</span>
                             <span className="text-sm font-black text-text-primary">Adjust Schedule</span>
                         </div>
@@ -100,11 +100,11 @@ const ProgressHeader = ({ roadmap, onShift }) => {
                         </motion.button>
                     </div>
 
-                    <div className="text-right border-l border-border/50 pl-8">
+                    <div className="text-center sm:text-right sm:border-l sm:border-border/50 sm:pl-8 py-2">
                         <span className="text-xs font-black text-text-muted uppercase tracking-widest block mb-2">🔥 Time Progress</span>
-                        <div className="flex items-center gap-4">
-                            <span className="text-3xl font-black text-text-primary italic" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>Day {Math.max(1, currentDayIndex)}/{totalDays}</span>
-                            <div className="w-32 h-3 rounded-full bg-surface-3 overflow-hidden border border-border relative">
+                        <div className="flex flex-col sm:flex-row items-center gap-4">
+                            <span className="text-3xl font-black text-text-primary italic leading-none" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>Day {Math.max(1, currentDayIndex)}/{totalDays}</span>
+                            <div className="w-full sm:w-32 h-3 rounded-full bg-surface-3 overflow-hidden border border-border relative">
                                 <motion.div 
                                     initial={{ width: 0 }}
                                     animate={{ width: `${progressPercent}%` }}
