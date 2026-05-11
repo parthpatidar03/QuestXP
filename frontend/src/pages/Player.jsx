@@ -179,14 +179,14 @@ const PLAYER_THEME = {
 
 
     if (loading) return (
-        <div className="min-h-screen flex flex-col items-center justify-center" style={{ background: theme.pageBg }}>
+        <div className="min-h-screen flex flex-col items-center justify-center" style={{ background: PLAYER_THEME.pageBg }}>
             <div className="w-10 h-10 rounded-full border-2 border-[var(--color-primary)] border-t-transparent animate-spin mb-4" />
-            <p className="text-xs uppercase tracking-widest font-semibold" style={{ color: theme.muted }}>Loading Mission</p>
+            <p className="text-xs uppercase tracking-widest font-semibold" style={{ color: PLAYER_THEME.muted }}>Loading Mission</p>
         </div>
     );
 
     if (error || !currentLecture) return (
-        <div className="min-h-screen flex flex-col items-center justify-center p-8" style={{ background: theme.pageBg }}>
+        <div className="min-h-screen flex flex-col items-center justify-center p-8" style={{ background: PLAYER_THEME.pageBg }}>
             <p className="text-lg font-semibold mb-4" style={{ color: '#ef4444' }}>{error || 'Lecture not found'}</p>
             <Link to="/dashboard" className="btn-primary">Return to Dashboard</Link>
         </div>
