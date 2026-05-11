@@ -38,6 +38,9 @@ export default {
         mono: ["'JetBrains Mono'", 'monospace'],
         sans: ["'Outfit'", 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
+      screens: {
+        'xs': '400px',
+      },
       boxShadow: {
         'card': 'var(--shadow-card)',
       },

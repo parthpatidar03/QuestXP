@@ -49,7 +49,7 @@ function MissionRow({ lecture, index, isCompleted, isActive, isLocked, courseId 
         <div
             role="button"
             tabIndex={isLocked ? -1 : 0}
-            className={`flex items-center gap-6 px-6 py-5 border-b border-border transition-all group ${isLocked ? 'cursor-not-allowed opacity-50' : 'hover:bg-surface-2/60'}`}
+            className={`flex items-center gap-3 sm:gap-6 px-3 sm:px-6 py-4 sm:py-5 border-b border-border transition-all group ${isLocked ? 'cursor-not-allowed opacity-50' : 'hover:bg-surface-2/60'}`}
             onClick={openLecture}
             onKeyDown={(event) => {
                 if ((event.key === 'Enter' || event.key === ' ') && !isLocked) {
@@ -60,7 +60,7 @@ function MissionRow({ lecture, index, isCompleted, isActive, isLocked, courseId 
         >
             {/* Hex mission number */}
             <div
-                className="hex-clip w-10 h-10 flex items-center justify-center text-[11px] font-black shrink-0 shadow-sm transition-transform group-hover:scale-105"
+                className="hex-clip w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-[10px] sm:text-[11px] font-black shrink-0 shadow-sm transition-transform group-hover:scale-105"
                 style={{ 
                     background: isCompleted ? 'var(--color-success)' : isActive ? 'var(--color-primary)' : 'var(--color-surface-3)', 
                     color: isLocked 
@@ -68,38 +68,37 @@ function MissionRow({ lecture, index, isCompleted, isActive, isLocked, courseId 
                         : (isCompleted || isActive) 
                             ? '#fff' 
                             : 'var(--color-text-secondary)',
-                    border: isActive ? '2px solid rgba(255,255,255,0.2)' : 'none'
+                    border: isActive ? '1px solid rgba(255,255,255,0.2)' : 'none'
                 }}
             >
                 {isCompleted ? <CheckCircle2 className="w-5 h-5" /> : isLocked ? <Lock className="w-4 h-4" /> : index + 1}
             </div>
 
             {/* Thumbnail (small) */}
-            <div className="relative w-24 h-14 rounded-lg overflow-hidden shrink-0 bg-surface-3 border border-border shadow-sm group-hover:border-primary/50 transition-colors">
+            <div className="relative w-16 h-10 sm:w-24 sm:h-14 rounded-lg overflow-hidden shrink-0 bg-surface-3 border border-border shadow-sm group-hover:border-primary/50 transition-colors hidden xs:block">
                 {lecture.thumbnailUrl || lecture.youtubeId
                     ? <img src={lecture.thumbnailUrl || `https://img.youtube.com/vi/${lecture.youtubeId}/mqdefault.jpg`} alt="" className="w-full h-full object-cover" />
                     : <PlayCircle className="w-6 h-6 m-auto mt-4 text-text-muted" />}
                 {!isLocked && (
                     <div className="absolute inset-0 flex items-center justify-center opacity-40 group-hover:opacity-100 transition-opacity bg-black/20 group-hover:bg-black/40">
-                        <div className="w-8 h-8 rounded-full bg-primary/90 flex items-center justify-center shadow-lg transform scale-90 group-hover:scale-100 transition-transform">
-                            <PlayCircle className="w-5 h-5 text-white fill-white" />
+                        <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-primary/90 flex items-center justify-center shadow-lg transform scale-90 group-hover:scale-100 transition-transform">
+                            <PlayCircle className="w-4 h-4 sm:w-5 sm:h-5 text-white fill-white" />
                         </div>
                     </div>
-
                 )}
             </div>
 
             {/* Title + Duration */}
-            <div className="flex-1 min-w-0">
-                <p className={`text-[14px] font-bold leading-tight line-clamp-2 ${isActive ? 'text-primary' : 'text-text-primary'} group-hover:text-primary transition-colors`}>
+            <div className="flex-1 min-w-0 flex flex-col justify-center">
+                <p className={`text-[13px] sm:text-[14px] font-bold leading-tight line-clamp-2 ${isActive ? 'text-primary' : 'text-text-primary'} group-hover:text-primary transition-colors mb-1`}>
                     {lecture.title}
                 </p>
-                <div className="flex items-center gap-2.5 mt-1.5">
-                    <span className="flex items-center gap-1.5 text-xs font-medium text-text-muted">
-                        <Clock className="w-3.5 h-3.5" /> {fmtDuration(lecture.duration)}
+                <div className="flex items-center gap-2 flex-wrap">
+                    <span className="flex items-center gap-1 text-[10px] sm:text-xs font-bold text-text-muted uppercase tracking-wider">
+                        <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> {fmtDuration(lecture.duration)}
                     </span>
                     {isActive && (
-                        <span className="text-[9px] font-black tracking-[0.15em] px-2 py-0.5 rounded-full border border-primary/40 bg-primary/10 text-primary animate-pulse">
+                        <span className="text-[8px] font-black tracking-widest px-2 py-0.5 rounded border border-primary/40 bg-primary/10 text-primary animate-pulse">
                             ACTIVE
                         </span>
                     )}
@@ -107,22 +106,23 @@ function MissionRow({ lecture, index, isCompleted, isActive, isLocked, courseId 
             </div>
 
             {/* Quiz Fast-Track / Status */}
-            <div className="flex items-center gap-3 shrink-0 ml-auto">
+            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
                 {!isCompleted && !isLocked && (
                     <button
                         type="button"
-                        className="p-2 rounded-lg bg-surface-3 hover:bg-primary/20 text-text-muted hover:text-primary transition-all group/quiz flex flex-col items-center gap-1 border border-border"
+                        className="p-1.5 sm:p-2 rounded-lg bg-surface-3 hover:bg-primary/20 text-text-muted hover:text-primary transition-all group/quiz flex flex-col items-center gap-1 border border-border"
                         title="Take Quiz to Complete"
                         onClick={openQuiz}
                     >
-                        <MessageSquareText className="w-4 h-4" />
+                        <MessageSquareText className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                         <span className="text-[8px] font-black uppercase tracking-widest hidden sm:block">Test</span>
                     </button>
                 )}
 
                 {/* XP chip */}
-                <div className="xp-chip shrink-0 opacity-80 group-hover:opacity-100 transition-opacity">
-                    <img src="/favicon.png" alt="" className="w-3.5 h-3.5 object-contain" /> +{XP_PER_LECTURE}
+                <div className="xp-chip shrink-0 opacity-80 group-hover:opacity-100 transition-opacity px-2 py-1 sm:px-3 sm:py-1.5">
+                    <img src="/favicon.png" alt="" className="w-3 h-3 sm:w-3.5 sm:h-3.5 object-contain" /> 
+                    <span className="text-[10px] sm:text-xs font-black">+{XP_PER_LECTURE}</span>
                 </div>
             </div>
         </div>
