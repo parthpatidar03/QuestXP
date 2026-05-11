@@ -33,7 +33,7 @@ QuestXP utilizes a **Decoupled Monolith** architecture with an **Event-Driven AI
 ### Backend (Node.js/Express)
 - **Layered Pattern**: Strictly separates `Routes` -> `Middleware` -> `Services` (Business Logic) -> `Controllers` (Request Handling) -> `Models` (Data).
 - **Service Layer**: Orchestrates complex domain logic (e.g., recursive course deletion, AI pipeline gating) to keep controllers thin and testable.
-- **Identity & Security**: JWT-based authentication with HttpOnly cookies and RBAC (Role-Based Access Control).
+- **Identity & Security**: JWT-based authentication with a **Dual-Mode System** supporting both `HttpOnly` cookies and `Authorization: Bearer` headers for maximum reliability in cross-domain and incognito environments.
 - **Worker Tier**: BullMQ + Redis cluster for non-blocking execution of compute-intensive AI tasks (Transcription, Summarization).
 
 ### Frontend (React/Vite)
@@ -128,7 +128,7 @@ QuestXP is built with a **Security-First** mindset to prevent common vulnerabili
 - **Hardening**: Uses `helmet` for security headers and `hpp` to prevent HTTP Parameter Pollution.
 - **Strict CORS Policy**: A rigorous whitelist-based CORS configuration ensures only authorized frontend origins can communicate with the backend.
 - **Data Sanitization**: Uses `express-validator` for schema-level input validation and Mongoose for type-safe query building, preventing NoSQL injection.
-- **Environment Safety**: Centralized error handling sanitizes error messages in production, preventing the leakage of API keys or sensitive internal paths.
+- **Centralized Error Sanitization**: Advanced error middleware masks internal system details in production while maintaining granular logs for debugging.
 
 ### 4. Unified AI Orchestration
 QuestXP has migrated to a centralized AI architecture using **OpenAI**.
@@ -144,6 +144,12 @@ QuestXP moved away from unreliable external mail-to links in favor of a robust, 
 ### 6. Surgical Worker Gating & Social Mastery
 - **State-Aware Generation**: The Roadmap engine now utilizes a **Surgical Gating** mechanism. It detects if a course is in `processing` status and blocks roadmap generation with a 10s countdown overlay.
 - **Progress-Isolated Sharing**: Implemented a **Social Mastery** system. Users can share a "Quest Replica" link which initializes a fresh, isolated `Progress` model for the new user.
+
+### 7. Robust Error Handling & Observability
+QuestXP implements a multi-layered error handling architecture designed for production stability.
+- **Global Error Middleware**: A centralized hub in `app.js` that catches all unhandled exceptions, providing standardized JSON responses and detailed server-side logging (timestamps, request context, user IDs).
+- **AI-Provider Validation**: Proactive validation of third-party dependencies (e.g., OpenAI API keys) during lazy-initialization, ensuring configuration errors are caught early with descriptive feedback.
+- **Frontend Interceptor Logic**: Axios interceptors in `api.js` intelligently handle 401/403 errors, managing token refresh cycles and global UI feedback without hard-refreshing the application state.
 
 ---
 
