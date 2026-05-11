@@ -379,8 +379,10 @@ const Dashboard = () => {
     useEffect(() => {
         if (searchParams.get('open') === 'leaderboard') {
             setShowLeaderboard(true);
-            // Clear param without adding to history
-            setSearchParams({}, { replace: true });
+            // Clear 'open' param while preserving others (like 'demo')
+            const nextParams = new URLSearchParams(searchParams);
+            nextParams.delete('open');
+            setSearchParams(nextParams, { replace: true });
         }
     }, [searchParams, setSearchParams]);
 
@@ -390,7 +392,7 @@ const Dashboard = () => {
             const { data } = await api.get('/dashboard/stats');
             return data;
         },
-        enabled: !!user
+        enabled: !!user && !user.guest
     });
 
     const { data: leaderboardData = [] } = useQuery({
@@ -399,7 +401,7 @@ const Dashboard = () => {
             const { data } = await api.get('/gamification/leaderboard');
             return data;
         },
-        enabled: !!user
+        enabled: !!user && !user.guest
     });
     const [visibleCount, setVisibleCount] = useState(6);
 
@@ -411,12 +413,14 @@ const Dashboard = () => {
             const data = await getGamificationProfile();
             setProfile(data);
             return data;
-        }
+        },
+        enabled: !!user && !user.guest
     });
 
     const { data: historyData = [] } = useQuery({
         queryKey: ['xpHistory'],
-        queryFn: getXPHistory
+        queryFn: getXPHistory,
+        enabled: !!user && !user.guest
     });
 
     const { data: coursesData, isLoading: coursesLoading } = useQuery({

@@ -4,6 +4,9 @@ const axios = require('axios');
 const courseService = require('../services/courseService');
 const Course = require('../models/Course');
 const Progress = require('../models/Progress');
+const Transcript = require('../models/Transcript');
+const Notes = require('../models/Notes');
+const Quiz = require('../models/Quiz');
 const studyPlanService = require('../services/studyPlanService');
 
 const createCourse = async (req, res, next) => {
