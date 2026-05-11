@@ -36,12 +36,9 @@ function calcCourseProgress(course, progress) {
 function RankCard({ rank, percentile, trend }) {
     return (
         <div className="glass-card p-5 relative overflow-hidden group hover:scale-[1.02] transition-all">
-            <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none">
-                <img src="/Trophy rank.png" alt="" className="w-24 h-24 object-contain" />
-            </div>
             <div className="flex items-center gap-2 mb-3">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-gold/10 text-gold border border-gold/20">
-                    <Crown className="w-4 h-4" />
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-gold/10 border border-gold/20 overflow-hidden">
+                    <img src="/Trophy rank.png" alt="" className="w-5 h-5 object-contain" />
                 </div>
                 <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Rank Position</span>
             </div>
@@ -78,12 +75,9 @@ function LearningTimeCard({ totalSeconds, weeklySeconds, avgSecondsPerDay }) {
 
     return (
         <div className="glass-card p-5 relative overflow-hidden group hover:scale-[1.02] transition-all">
-            <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none">
-                <img src="/Learning time.png" alt="" className="w-24 h-24 object-contain" />
-            </div>
             <div className="flex items-center gap-2 mb-3">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-primary/10 text-primary border border-primary/20">
-                    <Clock className="w-4 h-4" />
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-primary/10 border border-primary/20 overflow-hidden">
+                    <img src="/Learning time.png" alt="" className="w-5 h-5 object-contain" />
                 </div>
                 <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Learning Time</span>
             </div>
@@ -215,12 +209,9 @@ function ShareModal({ isOpen, onClose, courseTitle, shareUrl }) {
 function ProductivityCard({ completionRate, completedCourses, totalEnrolled }) {
     return (
         <div className="glass-card p-5 relative overflow-hidden group hover:scale-[1.02] transition-all">
-            <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none">
-                <img src="/Mastery level.png" alt="" className="w-24 h-24 object-contain" />
-            </div>
             <div className="flex items-center gap-2 mb-3">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-success/10 text-success border border-success/20">
-                    <BarChart3 className="w-4 h-4" />
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-success/10 border border-success/20 overflow-hidden">
+                    <img src="/Mastery level.png" alt="" className="w-5 h-5 object-contain" />
                 </div>
                 <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Mastery Level</span>
             </div>
@@ -546,7 +537,8 @@ const Dashboard = () => {
                                 </h1>
                                 <div className="flex items-center gap-2 mb-3">
                                     <span className="xp-chip"><img src="/favicon.png" alt="" className="w-3 h-3 object-contain" /> {Math.floor(activePct * (activeCourse.totalLectures * XP_PER_LECTURE) / 100)} / {activeCourse.totalLectures * XP_PER_LECTURE} XP</span>
-                                    <span className="text-xs text-text-muted">{activePct > 0 ? `${activePct}% complete` : 'Ready to begin'}</span>
+                                    <span className="text-xs text-text-muted">{activePct > 0 ? `
+                                    ${activePct}% complete` : 'Ready to begin'}</span>
                                 </div>
                                 <div className="progress-bar mb-4 max-w-xs">
                                     <div className="progress-bar__fill" style={{ width: `${activePct}%` }} />
