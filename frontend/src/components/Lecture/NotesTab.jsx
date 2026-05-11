@@ -122,7 +122,13 @@ const NotesTab = ({ lectureId, courseId, onSeek, notesStatus, errorReason, aiSta
             <div className="p-6 text-center text-text-muted">
                 <AlertCircle className="w-8 h-8 text-danger mx-auto mb-3" />
                 <h3 className="text-lg font-semibold text-white mb-2">Summary Generation Failed</h3>
-                <p className="text-sm">{errorReason || 'An error occurred while generating summary.'}</p>
+                <p className="text-sm mb-6">{errorReason || 'An error occurred while generating summary.'}</p>
+                <button 
+                    onClick={handleManualStart}
+                    className="btn-esports text-sm"
+                >
+                    Retry Generation ⚡
+                </button>
             </div>
         );
     }

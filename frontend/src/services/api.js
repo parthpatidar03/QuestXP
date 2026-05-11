@@ -23,10 +23,24 @@ api.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+    failedQueue.forEach((prom) => {
+        if (error) {
+            prom.reject(error);
+        } else {
+            prom.resolve(token);
+        }
+    });
+    failedQueue = [];
+};
+
 // Response Interceptor: Handle Token Refresh and persistence
 api.interceptors.response.use(
     (response) => {
-        // T066: Capture and persist tokens from any JSON response (fallback for blocked cookies)
+        // Capture and persist tokens fallback
         const { accessToken, refreshToken } = response.data || {};
         if (accessToken) localStorage.setItem('accessToken', accessToken);
         if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
@@ -38,32 +52,45 @@ api.interceptors.response.use(
         if (
             error.response &&
             error.response.status === 401 &&
-            originalRequest &&
             !originalRequest._retry &&
-            originalRequest.url !== '/auth/login' &&
-            originalRequest.url !== '/auth/register' &&
-            originalRequest.url !== '/auth/signup' &&
-            originalRequest.url !== '/auth/refresh'
+            !originalRequest.url.includes('/auth/login') &&
+            !originalRequest.url.includes('/auth/register') &&
+            !originalRequest.url.includes('/auth/refresh')
         ) {
+            if (isRefreshing) {
+                return new Promise((resolve, reject) => {
+                    failedQueue.push({ resolve, reject });
+                })
+                    .then((token) => {
+                        originalRequest.headers.Authorization = `Bearer ${token}`;
+                        return api(originalRequest);
+                    })
+                    .catch((err) => Promise.reject(err));
+            }
+
             originalRequest._retry = true;
+            isRefreshing = true;
+
             try {
-                // T067: Try refreshing via header if cookies are blocked
-                const refreshToken = getLocalRefreshToken();
-                const { data } = await api.post('/auth/refresh', { refreshToken });
+                const rToken = getLocalRefreshToken();
+                const { data } = await api.post('/auth/refresh', { refreshToken: rToken });
                 
                 if (data.accessToken) {
                     localStorage.setItem('accessToken', data.accessToken);
                     if (data.refreshToken) localStorage.setItem('refreshToken', data.refreshToken);
                     
-                    // Retry original request with new token
+                    processQueue(null, data.accessToken);
+                    
                     originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
                     return api(originalRequest);
                 }
             } catch (refreshError) {
-                // Clear tokens if refresh fails
+                processQueue(refreshError, null);
                 localStorage.removeItem('accessToken');
                 localStorage.removeItem('refreshToken');
                 return Promise.reject(refreshError);
+            } finally {
+                isRefreshing = false;
             }
         }
 

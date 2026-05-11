@@ -185,12 +185,20 @@ const refresh = async (req, res, next) => {
         }
 
         if (session.refreshTokenHash !== hashToken(token)) {
-            await Session.updateMany(
-                { user: decoded.userId, revokedAt: null },
-                { revokedAt: new Date(), revokeReason: 'refresh_token_reuse_detected' }
-            );
-            clearAuthCookies(res);
-            return res.status(401).json({ error: 'Invalid refresh token' });
+            // T069: Allow a 30s grace period for the old token to handle network race conditions
+            const wasJustUsed = session.lastUsedAt && (Date.now() - session.lastUsedAt.getTime() < 30000);
+            
+            if (!wasJustUsed) {
+                await Session.updateMany(
+                    { user: decoded.userId, revokedAt: null },
+                    { revokedAt: new Date(), revokeReason: 'refresh_token_reuse_detected' }
+                );
+                clearAuthCookies(res);
+                return res.status(401).json({ error: 'Invalid refresh token' });
+            }
+            // If it was just used, we let it pass but don't rotate again (or rotate anyway)
+            // For simplicity, if it was just used, we'll still issue a new one 
+            // because the client might have missed the previous response.
         }
 
         const user = await User.findById(decoded.userId).select('-passwordHash');
