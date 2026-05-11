@@ -146,10 +146,13 @@ const RoadmapPlaylistCard = ({ playlistId, days, roadmapId, courseId, onPartialS
 
     return (
         <div className="bg-surface/30 backdrop-blur-md mb-2 overflow-hidden border border-border/40 rounded-xl hover:border-primary/20 transition-all group">
-            <div className="p-4 flex items-center justify-between gap-4">
+            <div 
+                className="p-4 flex items-center justify-between gap-4 cursor-pointer hover:bg-surface-2 transition-colors select-none"
+                onClick={() => setIsExpanded(!isExpanded)}
+            >
                 {/* LEFT SIDE */}
                 <div className="flex items-center gap-4 flex-1 min-w-0">
-                    <div className="shrink-0 w-6 h-6 rounded-lg border border-primary/30 flex items-center justify-center bg-primary/10">
+                    <div className="shrink-0 w-6 h-6 rounded-lg border border-primary/30 flex items-center justify-center bg-primary/10 group-hover:scale-110 transition-transform">
                         <Zap className="w-3.5 h-3.5 text-primary" />
                     </div>
                     <h3 className="text-base font-black text-text-primary tracking-tight truncate">
@@ -160,7 +163,10 @@ const RoadmapPlaylistCard = ({ playlistId, days, roadmapId, courseId, onPartialS
 
                 {/* RIGHT SIDE */}
                 <div className="flex items-center gap-4 shrink-0">
-                    <div className="flex items-center gap-3 bg-black/40 px-5 py-2.5 rounded-xl border border-border/80 shadow-inner">
+                    <div 
+                        className="flex items-center gap-3 bg-black/40 px-5 py-2.5 rounded-xl border border-border/80 shadow-inner"
+                        onClick={(e) => e.stopPropagation()}
+                    >
                         <motion.button 
                             whileTap={{ scale: 0.85 }}
                             onClick={(e) => { e.stopPropagation(); onPartialShift(days[0].dayIndex, -1); }}
@@ -182,12 +188,9 @@ const RoadmapPlaylistCard = ({ playlistId, days, roadmapId, courseId, onPartialS
                         </motion.button>
                     </div>
 
-                    <button 
-                        onClick={() => setIsExpanded(!isExpanded)}
-                        className="p-1.5 hover:bg-surface-3 rounded-lg transition-colors text-text-muted"
-                    >
-                        {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-                    </button>
+                    <div className="p-1.5 rounded-lg text-text-muted group-hover:text-primary transition-colors">
+                        {isExpanded ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
+                    </div>
                 </div>
             </div>
 
