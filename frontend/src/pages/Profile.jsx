@@ -170,83 +170,87 @@ const Profile = () => {
                     </div>
                 </section>
 
-                {/* ── Streak Calendar ── */}
-                <section className="glass-card p-6">
-                    <div className="flex items-center gap-2 mb-5">
-                        <Calendar className="w-4 h-4 text-primary" />
-                        <h2 className="text-xs font-semibold uppercase tracking-wide text-text-muted">Study streak</h2>
-                        <div className="ml-auto flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold" style={{ background: 'oklch(0.95 0.04 70)', border: '1px solid oklch(0.84 0.08 70)', color: 'var(--color-warning)' }}>
-                            <Flame className="w-3.5 h-3.5 streak-flame" /> {streak?.current ?? 0} Day Streak
+                {/* ── Badges & History Grid ── */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    
+                    {/* ── Badges / Achievements ── */}
+                    <section className="glass-card p-8 flex flex-col h-full">
+                        <div className="flex items-center gap-3 mb-8">
+                            <div className="w-10 h-10 rounded-2xl bg-gold/10 flex items-center justify-center border border-gold/20">
+                                <Shield className="w-5 h-5 text-gold" />
+                            </div>
+                            <div>
+                                <h2 className="text-xl font-black uppercase tracking-tight text-white" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>Achievements</h2>
+                                <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest">{badges.filter(b => b.earned).length} / {badges.length} unlocked</p>
+                            </div>
                         </div>
-                    </div>
-                    {loading ? (
-                        <div className="flex flex-wrap gap-1.5 justify-center">
-                            {[...Array(30)].map((_, i) => <div key={i} className="skeleton w-7 h-7 rounded-md" />)}
-                        </div>
-                    ) : (
-                        <StreakCalendar history={history} />
-                    )}
-                </section>
 
-                {/* ── Badges / Achievements ── */}
-                <section className="glass-card p-6">
-                    <div className="flex items-center gap-2 mb-6">
-                        <Shield className="w-4 h-4 text-gold" />
-                        <h2 className="text-xs font-semibold uppercase tracking-wide text-text-muted">Achievements</h2>
-                        <span className="ml-auto text-xs text-text-muted">{badges.filter(b => b.earned).length} / {badges.length} unlocked</span>
-                    </div>
-
-                    {badges.length === 0 ? (
-                        <div className="flex flex-wrap gap-6">
-                            {['First Quest', 'Speed Runner', 'React Master', '7-Day Streak', 'AI Explorer', 'Course Creator'].map(name => (
-                                <HexBadge key={name} name={name} earned={false} />
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="flex flex-wrap gap-6">
-                            {badges.map(b => (
-                                <HexBadge
-                                    key={b.id}
-                                    name={b.name}
-                                    earned={b.earned}
-                                    iconColor={b.earned ? 'var(--color-gold)' : 'var(--color-text-muted)'}
-                                />
-                            ))}
-                        </div>
-                    )}
-                </section>
-
-                {/* ── XP History Table ── */}
-                {history.length > 0 && (
-                    <section className="glass-card p-6">
-                        <div className="flex items-center gap-2 mb-4">
-                            <BarChart3 className="w-4 h-4 text-primary" />
-                            <h2 className="text-xs font-semibold uppercase tracking-wide text-text-muted">Recent XP activity</h2>
-                        </div>
-                        <div className="space-y-2">
-                            {history.slice(-10).reverse().map(day => (
-                                <div key={day.date} className="flex items-center justify-between py-2 border-b border-border">
-                                    <span className="text-sm text-text-secondary">{day.date}</span>
-                                    <div className="flex items-center gap-1.5 xp-chip">
-                                        <img src="/favicon.png" alt="" className="w-3 h-3 object-contain" /> +{day.totalXP} XP
-                                    </div>
-                                </div>
-                            ))}
+                        <div className="grid grid-cols-3 sm:grid-cols-4 gap-6 flex-1">
+                            {badges.length === 0 ? (
+                                ['First Quest', 'Speed Runner', 'React Master', '7-Day Streak'].map(name => (
+                                    <HexBadge key={name} name={name} earned={false} />
+                                ))
+                            ) : (
+                                badges.map(b => (
+                                    <HexBadge
+                                        key={b.id}
+                                        name={b.name}
+                                        earned={b.earned}
+                                        iconColor={b.earned ? 'var(--color-gold)' : 'var(--color-text-muted)'}
+                                    />
+                                ))
+                            )}
                         </div>
                     </section>
-                )}
+
+                    {/* ── XP History Table ── */}
+                    <section className="glass-card p-8 flex flex-col h-full">
+                        <div className="flex items-center gap-3 mb-8">
+                            <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
+                                <BarChart3 className="w-5 h-5 text-primary" />
+                            </div>
+                            <div>
+                                <h2 className="text-xl font-black uppercase tracking-tight text-white" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>XP Activity</h2>
+                                <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Recent performance</p>
+                            </div>
+                        </div>
+
+                        {history.length > 0 ? (
+                            <div className="space-y-4 flex-1">
+                                {history.slice(-6).reverse().map(day => (
+                                    <div key={day.date} className="flex items-center justify-between p-4 rounded-2xl bg-surface-2/40 border border-border/40 hover:border-primary/20 transition-all">
+                                        <div className="flex flex-col">
+                                            <span className="text-xs font-bold text-text-secondary">{new Date(day.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                                        </div>
+                                        <div className="px-3 py-1.5 rounded-xl bg-gold/10 border border-gold/20 flex items-center gap-2">
+                                            <img src="/favicon.png" alt="" className="w-3.5 h-3.5 object-contain" />
+                                            <span className="text-xs font-black text-gold">+{day.totalXP} XP</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="flex-1 flex items-center justify-center text-text-muted italic text-sm opacity-50">
+                                No recent activity found.
+                            </div>
+                        )}
+                    </section>
+                </div>
 
                 {/* Log Out Button (Standalone) */}
-                <div className="flex justify-center mt-6">
+                <div className="flex flex-col items-center justify-center gap-4 pt-8">
                     <button
                         type="button"
                         onClick={handleLogout}
                         disabled={isLoggingOut}
-                        className="inline-flex items-center justify-center gap-2 rounded-lg border border-red-500/20 bg-red-500/10 px-6 py-2.5 text-sm font-semibold text-red-400 transition-colors hover:bg-red-500/20 hover:border-red-500/30 disabled:cursor-not-allowed disabled:opacity-70"
+                        className="group flex items-center gap-3 rounded-2xl bg-red-500/10 px-8 py-4 text-xs font-black uppercase tracking-[0.2em] text-red-500 transition-all hover:bg-red-500 hover:text-white border border-red-500/20 shadow-lg shadow-red-500/5 active:scale-95 disabled:opacity-50"
                     >
-                        <LogOut className="w-4 h-4" />
-                        {isLoggingOut ? 'Logging out...' : 'Log out of QuestXP'}
+                        <LogOut className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+                        {isLoggingOut ? 'Terminating Session...' : 'Sign Out of QuestXP'}
                     </button>
+                    <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest opacity-40">
+                        Member since {joinDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                    </p>
                 </div>
                 {logoutError && (
                     <p className="text-center mt-2 text-xs text-red-400">{logoutError}</p>
