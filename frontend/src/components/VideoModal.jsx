@@ -31,16 +31,27 @@ const VideoModal = ({ isOpen, onClose, videoUrl }) => {
                         </button>
 
                         <div className="w-full h-full flex items-center justify-center">
-                            <video
-                                src={videoUrl}
-                                className="w-full h-full"
-                                controls
-                                autoPlay
-                                playsInline
-                                title="QuestXP Demo Video"
-                            >
-                                Your browser does not support the video tag.
-                            </video>
+                            {videoUrl.includes('vimeo.com') ? (
+                                <iframe
+                                    src={`https://player.vimeo.com/video/${videoUrl.split('/').pop().split('?')[0]}?autoplay=1`}
+                                    className="w-full h-full"
+                                    frameBorder="0"
+                                    allow="autoplay; fullscreen; picture-in-picture"
+                                    allowFullScreen
+                                    title="QuestXP Demo Video"
+                                ></iframe>
+                            ) : (
+                                <video
+                                    src={videoUrl}
+                                    className="w-full h-full"
+                                    controls
+                                    autoPlay
+                                    playsInline
+                                    title="QuestXP Demo Video"
+                                >
+                                    Your browser does not support the video tag.
+                                </video>
+                            )}
                         </div>
                     </motion.div>
                 </div>

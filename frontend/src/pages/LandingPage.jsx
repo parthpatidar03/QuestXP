@@ -448,7 +448,7 @@ const LandingPage = () => {
             <VideoModal 
                 isOpen={videoOpen} 
                 onClose={() => setVideoOpen(false)} 
-                videoUrl="https://res.cloudinary.com/dx7uo17cy/video/upload/q_auto/f_auto/v1777964684/Video_Project_zfs9vm.mp4" 
+                videoUrl="https://vimeo.com/1191279081?share=copy&fl=sv&fe=ci#t=0" 
             />
         </div>
     );
