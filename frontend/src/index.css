@@ -299,14 +299,22 @@
 }
 
 @keyframes glow-pulse {
-
-  0%,
-  100% {
+  0%, 100% {
     box-shadow: 0 0 8px rgba(0, 229, 255, 0.4);
   }
-
   50% {
     box-shadow: 0 0 24px rgba(0, 229, 255, 0.9);
+  }
+}
+
+@keyframes blink-blue {
+  0%, 100% { 
+    background-color: var(--color-primary); 
+    box-shadow: 0 0 0px rgba(59, 130, 246, 0);
+  }
+  50% { 
+    background-color: #2563eb; /* Strong blue */
+    box-shadow: 0 0 20px rgba(37, 99, 235, 0.6);
   }
 }
 
@@ -354,6 +362,10 @@
 
 .glow-pulse-anim {
   animation: glow-pulse 2s ease-in-out infinite;
+}
+
+.btn-blink {
+  animation: blink-blue 2s ease-in-out infinite;
 }
 
 .float-in {
