@@ -13,8 +13,10 @@ const admin = require('../middleware/admin');
 
 const router = express.Router();
 
-// T017: Internal admin endpoint to manually trigger the transcription pipeline
-router.post('/lectures/:id/process', auth, admin, [
+const { quizLimiter } = require('../middleware/rateLimiter');
+
+// T017: Endpoint to trigger the transcription pipeline (Rate limited)
+router.post('/lectures/:id/process', auth, quizLimiter, [
     param('id').isMongoId().withMessage('Invalid lecture ID')
 ], async (req, res, next) => {
     try {

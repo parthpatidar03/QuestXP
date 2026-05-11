@@ -312,7 +312,11 @@ const updateUsername = async (req, res, next) => {
         user.usernameSet = true;
         await user.save();
 
-        res.json({ success: true, user: userResponse(user) });
+        res.json({ 
+            success: true, 
+            data: { user: userResponse(user) },
+            user: userResponse(user) 
+        });
     } catch (error) {
         next(error);
     }

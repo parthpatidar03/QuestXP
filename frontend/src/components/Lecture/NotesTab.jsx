@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Play, Edit2, Check, X, AlertCircle } from 'lucide-react';
+import { Play, Edit2, Check, X, AlertCircle, Bot } from 'lucide-react';
+import { motion } from 'framer-motion';
 import useAuthStore from '../../store/useAuthStore';
 import api from '../../services/api';
 import LockedFeature from '../LockedFeature';
+import AILoadingState from './AILoadingState';
 
 const LEVEL_NOTES_EDIT = 3;
 
 /**
- * Renders the AI structured notes for a lecture
+ * Renders the AI structured summary for a lecture
  * @param {string} lectureId 
  * @param {string} courseId
  * @param {function} onSeek - (seconds) => void (to seek video playback)
  * @param {string} notesStatus - 'pending' | 'in_progress' | 'complete' | 'failed'
  */
-const NotesTab = ({ lectureId, courseId, onSeek, notesStatus, errorReason }) => {
+const NotesTab = ({ lectureId, courseId, onSeek, notesStatus, errorReason, aiStatus = {} }) => {
     const { user } = useAuthStore();
     const [triggered, setTriggered] = useState(false);
     const [notes, setNotes] = useState(null);
@@ -23,6 +25,13 @@ const NotesTab = ({ lectureId, courseId, onSeek, notesStatus, errorReason }) => 
     const [editContent, setEditContent] = useState('');
     const [saving, setSaving] = useState(false);
 
+    const [isTriggering, setIsTriggering] = useState(false);
+    const [simulatedProgress, setSimulatedProgress] = useState(0);
+    const [statusMessage, setStatusMessage] = useState('Analyzing Lecture');
+
+    const transcriptionStatus = aiStatus.transcription || 'pending';
+    const isInProgress = notesStatus === 'in_progress' || transcriptionStatus === 'in_progress' || isTriggering;
+
     const fetchNotes = async () => {
         if (notesStatus !== 'complete') return;
         try {
@@ -30,10 +39,12 @@ const NotesTab = ({ lectureId, courseId, onSeek, notesStatus, errorReason }) => 
             const { data } = await api.get(`/lectures/${lectureId}/notes`);
             setNotes(data.notes);
         } catch (err) {
-            if (err.response?.status === 403) {
-                setError('Level too low to access notes.');
+            if (err.response?.status === 429) {
+                setError('Summary limit reached. Please wait an hour.');
+            } else if (err.response?.status === 403) {
+                setError('Level too low to access summary.');
             } else {
-                setError('Failed to load notes.');
+                setError('Failed to load summary.');
             }
         } finally {
             setLoading(false);
@@ -45,45 +56,130 @@ const NotesTab = ({ lectureId, courseId, onSeek, notesStatus, errorReason }) => 
         fetchNotes();
     };
 
+    const handleManualStart = async () => {
+        try {
+            setIsTriggering(true);
+            setError(null);
+            await api.post(`/lectures/${lectureId}/summary/generate`);
+        } catch (err) {
+            const msg = err.response?.status === 429 
+                ? err.response.data.message 
+                : 'Failed to start summary generation.';
+            setError(msg);
+            setIsTriggering(false);
+        }
+    };
+
+    // Simulated progress effect
+    useEffect(() => {
+        let interval;
+        if (isInProgress) {
+            setSimulatedProgress(5);
+            setStatusMessage(transcriptionStatus === 'in_progress' ? 'Transcribing Video' : 'Analyzing Lecture');
+            
+            interval = setInterval(() => {
+                setSimulatedProgress(prev => {
+                    const next = prev + (Math.random() * 2 + 0.5);
+                    
+                    if (notesStatus === 'in_progress') {
+                        if (next > 80) setStatusMessage('Finalizing Summary');
+                        else setStatusMessage('Extracting Key Points');
+                    } else if (transcriptionStatus === 'in_progress') {
+                        if (next > 50) setStatusMessage('Processing Audio');
+                        else setStatusMessage('Transcribing Video');
+                    } else if (isTriggering) {
+                        setStatusMessage('Preparing AI...');
+                    }
+                    
+                    if (next >= 98) {
+                        clearInterval(interval);
+                        return 98;
+                    }
+                    return next;
+                });
+            }, 800);
+        } else if (notesStatus === 'complete') {
+            setSimulatedProgress(100);
+            setStatusMessage('Summary Ready!');
+        } else {
+            setSimulatedProgress(0);
+            setIsTriggering(false);
+        }
+        return () => clearInterval(interval);
+    }, [isInProgress, notesStatus, transcriptionStatus, isTriggering]);
+
     // Reset when lecture changes
     useEffect(() => {
         setTriggered(false);
         setNotes(null);
         setError(null);
         setLoading(false);
+        setIsTriggering(false);
     }, [lectureId]);
 
     if (notesStatus === 'failed') {
         return (
             <div className="p-6 text-center text-text-muted">
                 <AlertCircle className="w-8 h-8 text-danger mx-auto mb-3" />
-                <h3 className="text-lg font-semibold text-white mb-2">Notes Generation Failed</h3>
-                <p className="text-sm">{errorReason || 'An error occurred while generating notes.'}</p>
+                <h3 className="text-lg font-semibold text-white mb-2">Summary Generation Failed</h3>
+                <p className="text-sm">{errorReason || 'An error occurred while generating summary.'}</p>
             </div>
         );
     }
 
-    // Not yet triggered — show a generate button
+    if (isInProgress) {
+        return (
+            <AILoadingState 
+                progress={simulatedProgress}
+                status={statusMessage}
+                title="AI Smart Summary"
+                icon={<Bot className="w-10 h-10 text-[#00b4ff]" />}
+            />
+        );
+    }
+
+    // Trigger card
     if (!triggered) {
         const isReady = notesStatus === 'complete';
         return (
             <div className="flex flex-col items-center justify-center min-h-[300px] p-8 text-center">
-                <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4" style={{ background: 'rgba(0,180,255,0.10)', border: '1px solid rgba(0,180,255,0.3)' }}>
-                    <Play className="w-6 h-6 text-[#00b4ff]" />
-                </div>
-                <p className="text-base font-bold text-white mb-2">⚡ AI Smart Notes</p>
+                {!isReady && (
+                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4" style={{ background: 'rgba(0,180,255,0.10)', border: '1px solid rgba(0,180,255,0.3)' }}>
+                        <Bot className="w-6 h-6 text-[#00b4ff]" />
+                    </div>
+                )}
+                
+                {isReady && (
+                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4" style={{ background: 'rgba(0,180,255,0.10)', border: '1px solid rgba(0,180,255,0.3)' }}>
+                        <Play className="w-6 h-6 text-[#00b4ff]" />
+                    </div>
+                )}
+
+                <p className="text-base font-bold text-white mb-2">⚡ AI Smart Summary</p>
                 <p className="text-sm mb-6" style={{ color: '#8b9cc8' }}>
-                    {isReady ? 'AI has generated structured notes for this lesson.' : 'Notes are being generated in the background. Come back after watching more of this lecture.'}
+                    {isReady 
+                        ? 'AI has generated a structured summary for this lesson.' 
+                        : 'Summary not ready yet — watch more of the lecture first.'}
                 </p>
+
                 {isReady && (
                     <button onClick={handleGenerate} className="btn-esports text-sm">
-                        Load Notes
+                        View Summary
                     </button>
                 )}
+
                 {!isReady && (
-                    <div className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold" style={{ background: 'rgba(245,165,36,0.1)', border: '1px solid rgba(245,165,36,0.3)', color: '#f5a524' }}>
-                        <span className="w-2 h-2 rounded-full bg-[#f5a524] animate-pulse" />
-                        {notesStatus === 'in_progress' ? 'AI is generating notes…' : 'Notes not ready yet'}
+                    <div className="flex flex-col items-center gap-4">
+                        <div className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold" style={{ background: 'rgba(0,180,255,0.1)', border: '1px solid rgba(0,180,255,0.3)', color: '#00b4ff' }}>
+                            <span className="w-2 h-2 rounded-full bg-[#00b4ff] animate-pulse" />
+                            Ready to Generate
+                        </div>
+                        <button 
+                            onClick={handleManualStart}
+                            className="text-[10px] uppercase tracking-tighter font-bold text-text-muted hover:text-[var(--color-primary)] transition-colors underline underline-offset-4"
+                        >
+                            Generate Summary ⚡
+                        </button>
                     </div>
                 )}
             </div>
@@ -204,7 +300,7 @@ const NotesTab = ({ lectureId, courseId, onSeek, notesStatus, errorReason }) => 
             {/* User Community Edits (Level 3 Gated) */}
             <section className="pt-8 border-t border-border mt-12">
                 <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-lg font-bold text-white">Community Notes</h3>
+                    <h3 className="text-lg font-bold text-white">Community Summary</h3>
                     {!isEditing && user.level >= LEVEL_NOTES_EDIT && (
                         <button 
                             onClick={() => setIsEditing(true)}

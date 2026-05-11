@@ -122,22 +122,28 @@ The **Global Hall of Fame** is built for high-concurrency read performance.
 ### 3. Production-Grade Security & Protection
 QuestXP is built with a **Security-First** mindset to prevent common vulnerabilities and ensure data integrity.
 - **Identity Management**: Uses JWT (JSON Web Tokens) with `HttpOnly` and `Secure` cookie flags. This completely mitigates XSS-based token theft.
-- **Rate Limiting**: Implemented `express-rate-limit` globally to prevent Brute Force and DoS attacks. Sensitive routes (Auth, AI Processing) have stricter buckets.
-- **Strict CORS Policy**: A rigorous whitelist-based CORS configuration ensures only authorized frontend origins (Vercel Production) can communicate with the backend.
+- **Multi-Level Rate Limiting**: 
+  - **Global**: 1000 requests/15 mins IP-based protection using Redis.
+  - **Feature-Specific**: Granular hourly/window limits for expensive AI features (Chatbot: 3-7 req/hr, Quiz: 5 attempts/12hr).
+- **Hardening**: Uses `helmet` for security headers and `hpp` to prevent HTTP Parameter Pollution.
+- **Strict CORS Policy**: A rigorous whitelist-based CORS configuration ensures only authorized frontend origins can communicate with the backend.
 - **Data Sanitization**: Uses `express-validator` for schema-level input validation and Mongoose for type-safe query building, preventing NoSQL injection.
-- **Environment Safety**: Centralized error handling sanitizes error messages in production, preventing the leakage of stack traces or sensitive internal paths to the end user.
-- **Load Balancer Support**: configured with `trust proxy` to accurately track user IPs across reverse proxies like Railway and Vercel.
+- **Environment Safety**: Centralized error handling sanitizes error messages in production, preventing the leakage of API keys or sensitive internal paths.
 
-### 4. In-House Feedback Engine
+### 4. Unified AI Orchestration
+QuestXP has migrated to a centralized AI architecture using **OpenAI**.
+- **Engine**: Orchestrated via a unified `AIProvider` service that handles Chat (GPT-4o-mini), JSON generation, and Vector Embeddings.
+- **RAG (Retrieval-Augmented Generation)**: Uses `text-embedding-3-small` and Pinecone for contextual doubt resolution.
+- **Efficiency**: Implements lazy-initialization and centralized error handling for maximum uptime.
+
+### 5. In-House Feedback Engine
 QuestXP moved away from unreliable external mail-to links in favor of a robust, internal feedback ecosystem.
 - **Data Persistence**: Submissions are stored directly in MongoDB, ensuring no feedback is lost if a user's mail client isn't configured.
-- **Asynchronous Notifications**: Utilizes an "event-and-forget" pattern for email notifications (Resend/SMTP).
 - **Context Awareness**: Automatically attaches the current page route to the feedback submission.
 
-### 5. Surgical Worker Gating & Social Mastery
-- **State-Aware Generation**: The Roadmap engine now utilizes a **Surgical Gating** mechanism. It detects if a course is in `processing` status (active background workers) and blocks roadmap generation with a 10s countdown overlay to ensure metadata integrity.
-- **Progress-Isolated Sharing**: Implemented a **Social Mastery** system. Users can share a "Quest Replica" link. When a recipient accepts the quest, the system creates a clone of the course structure, but initializes a fresh, isolated `Progress` model for the new user, ensuring zero state-leakage between shared learners.
-- **Professional Social Formatting**: Share links generated for WhatsApp/Discord include structured markdown/bolding to trigger rich previews and professional branding on public domains.
+### 6. Surgical Worker Gating & Social Mastery
+- **State-Aware Generation**: The Roadmap engine now utilizes a **Surgical Gating** mechanism. It detects if a course is in `processing` status and blocks roadmap generation with a 10s countdown overlay.
+- **Progress-Isolated Sharing**: Implemented a **Social Mastery** system. Users can share a "Quest Replica" link which initializes a fresh, isolated `Progress` model for the new user.
 
 ---
 
@@ -162,7 +168,7 @@ QuestXP moved away from unreliable external mail-to links in favor of a robust, 
 - **Runtime**: Node.js v20+
 - **Database**: MongoDB (Atlas) / Pinecone (Vector)
 - **Caching/Queue**: Redis / BullMQ
-- **AI Models**: Gemini 1.5 Flash, Llama 3.2
+- **AI Models**: OpenAI (GPT-4o-mini, text-embedding-3-small)
 - **Notification**: Firebase Cloud Messaging (FCM) / Resend (Email)
 - **Deployment**: Vercel (Frontend), Railway (Backend/Redis/Worker)
 

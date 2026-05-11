@@ -5,6 +5,7 @@ import useAuthStore from '../../store/useAuthStore';
 import api from '../../services/api';
 import LockedFeature from '../LockedFeature';
 import { MAINTENANCE_CONFIG } from '../../constants/maintenance';
+import AILoadingState from './AILoadingState';
 
 const LEVEL_QUIZ = 1;
 
@@ -60,7 +61,10 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
             await api.post(`/internal/lectures/${lectureId}/process`);
             // Status will be updated via polling in Player.jsx
         } catch (err) {
-            setError('Failed to start quiz generation.');
+            const msg = err.response?.status === 429 
+                ? err.response.data.message 
+                : 'Failed to start quiz generation.';
+            setError(msg);
             setIsTriggering(false);
         }
     };
@@ -177,6 +181,11 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
             }
         } catch (err) {
             console.error('Failed to submit quiz', err);
+            if (err.response?.status === 429) {
+                setError(err.response.data.message);
+            } else {
+                setError('Failed to submit quiz. Please try again.');
+            }
         } finally {
             setSubmitting(false);
         }
@@ -219,6 +228,17 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
         );
     }
 
+    if (isInProgress) {
+        return (
+            <AILoadingState 
+                progress={simulatedProgress}
+                status={statusMessage}
+                title="AI Practice Quiz"
+                icon={<Trophy className="w-10 h-10 text-[#f5a524]" />}
+            />
+        );
+    }
+
     // Trigger card
     if (!triggered) {
         const isReady = quizStatus === 'complete';
@@ -232,47 +252,25 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
                 <p className="text-sm mb-6 text-text-secondary">
                     {isReady
                         ? 'Test your knowledge with AI-generated questions from this lesson.'
-                        : isInProgress ? 'AI is crafting your quiz…' : 'Quiz not ready yet — watch more of the lecture first.'}
+                        : 'Quiz not ready yet — watch more of the lecture first.'}
                 </p>
                 
-                {isInProgress && (
-                    <div className="w-full max-w-[300px] mb-8 animate-in fade-in zoom-in duration-500">
-                        <div className="flex items-center justify-between mb-3">
-                            <div className="flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full bg-primary animate-ping" />
-                                <span className="text-xs font-black uppercase tracking-widest text-text-primary">{statusMessage} ⚡</span>
-                            </div>
-                            <span className="text-xs font-black text-primary">{Math.round(simulatedProgress)}%</span>
-                        </div>
-                        <div className="progress-bar h-3 bg-surface-3 shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)] border border-white/5">
-                            <motion.div 
-                                initial={{ width: 0 }}
-                                animate={{ width: `${simulatedProgress}%` }}
-                                className="progress-bar__fill shadow-[0_0_20px_var(--color-primary)] bg-gradient-to-r from-primary/60 to-primary"
-                            />
-                        </div>
-                        <p className="text-[10px] font-bold text-text-muted mt-3 uppercase tracking-widest text-center animate-pulse">
-                            Our surgical AI is crafting your mission...
-                        </p>
-                    </div>
-                )}
-
                 {isReady && (
                     <button onClick={handleTrigger} className="btn-esports text-sm">
                         Start Quiz 🎮
                     </button>
                 )}
-                {!isReady && !isInProgress && (
+                {!isReady && (
                     <div className="flex flex-col items-center gap-4">
                         <div className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold" style={{ background: 'rgba(245,165,36,0.1)', border: '1px solid rgba(245,165,36,0.3)', color: '#f5a524' }}>
                             <span className="w-2 h-2 rounded-full bg-[#f5a524] animate-pulse" />
-                            Coming soon
+                            Ready to Generate
                         </div>
                         <button 
                             onClick={handleManualStart}
                             className="text-[10px] uppercase tracking-tighter font-bold text-text-muted hover:text-[var(--color-primary)] transition-colors underline underline-offset-4"
                         >
-                            Or Generate Now ⚡
+                            Generate Quiz Now ⚡
                         </button>
                     </div>
                 )}

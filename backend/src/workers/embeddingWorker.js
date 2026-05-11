@@ -2,15 +2,8 @@ const { Worker } = require('bullmq');
 const IORedis = require('ioredis');
 const { Pinecone } = require('@pinecone-database/pinecone');
 const { RecursiveCharacterTextSplitter } = require('@langchain/textsplitters');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
-// Optional: import mongoose model for Transcript if available, but spec says:
-// "fetch Transcript.content by lectureId" -> Assuming Transcript model is in ../models/Transcript
-let Transcript;
-try {
-    Transcript = require('../models/Transcript');
-} catch (e) {
-    // If not found, we handle it later or ignore depending on setup
-}
+const aiProvider = require('../services/ai-provider');
+const Transcript = require('../models/Transcript');
 const EmbeddingStatus = require('../models/EmbeddingStatus');
 const Course = require('../models/Course');
 
@@ -18,8 +11,6 @@ const connection = new IORedis(process.env.REDIS_URL || 'redis://localhost:6379'
     maxRetriesPerRequest: null,
 });
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const embeddingModel = genAI.getGenerativeModel({ model: "text-embedding-004" });
 const pc = new Pinecone({ apiKey: process.env.PINECONE_API_KEY });
 const indexName = process.env.PINECONE_INDEX_NAME || 'questxp';
 
@@ -83,29 +74,16 @@ const embeddingWorker = new Worker('embedding', async job => {
             
             let batchEmbeddings;
             try {
-                const batchEmbedResponse = await embeddingModel.batchEmbedContents({
-                    requests: batch.map(t => ({
-                        content: { parts: [{ text: t }] },
-                        taskType: "RETRIEVAL_DOCUMENT"
-                    }))
-                });
-                batchEmbeddings = batchEmbedResponse.embeddings;
+                batchEmbeddings = await aiProvider.generateBatchEmbeddings(batch);
             } catch (embedError) {
-                console.warn(`[EmbeddingWorker] Primary embedding model failed: ${embedError.message}. Trying fallback embedding-001.`);
-                const fallbackModel = genAI.getGenerativeModel({ model: "embedding-001" });
-                const fallbackRes = await fallbackModel.batchEmbedContents({
-                    requests: batch.map(t => ({
-                        content: { parts: [{ text: t }] },
-                        taskType: "RETRIEVAL_DOCUMENT"
-                    }))
-                });
-                batchEmbeddings = fallbackRes.embeddings;
+                console.error(`[EmbeddingWorker] OpenAI Embedding failed: ${embedError.message}`);
+                throw embedError;
             }
 
             // 5 & 6. Assemble vectors
             const batchVectors = batch.map((text, batchIndex) => {
                 const globalIndex = i + batchIndex;
-                const embedding = batchEmbeddings[batchIndex].values;
+                const embedding = batchEmbeddings[batchIndex];
                 
                 // Estimate timestamp if no exact match (simplified)
                 let startTimestamp = 0;

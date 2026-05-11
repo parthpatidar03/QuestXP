@@ -134,6 +134,14 @@ Implement **Optimistic Updates** across high-traffic interactions.
 3. **How do you ensure UI consistency across different user states?**
    *Answer*: A `usernameSet` boolean flag that determines whether to show a "Claim Identity" prompt or the actual profile.
 4. **Why use a Service Layer in Express?**
-   *Answer*: To decouple business logic from transport logic. This makes the app easier to test, maintain, and adapt (e.g., if switching from Express to a different framework).
-5. **When should logic be moved to a Custom Hook?**
-   *Answer*: When logic involves complex side effects (polling, subscriptions) or is shared across multiple views. It keeps components declarative and clean.
+   *Answer*: To decouple business logic from transport logic. This makes the app easier to test, maintain, and adapt.
+5. **How do you protect expensive AI features from spam?**
+   *Answer*: Use user-level rate limiting with Redis-backed state, tied to the user's level.
+
+---
+
+## 9. Unified AI Orchestration & RAG Protection
+**Centralized AIProvider Service**. All AI interactions route through `services/ai-provider.js`, allowing seamless provider swaps and feature-level rate limiting (3-7 req/hr).
+
+## 10. Security Infrastructure Hardening
+Integrated `helmet` and `hpp`. Global rate limiting (1000 req/15 min) is positioned *after* auth routes to prevent lockout.

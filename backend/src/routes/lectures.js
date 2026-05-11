@@ -21,8 +21,10 @@ const LEVEL_NOTES_READ = 2;
 const LEVEL_NOTES_EDIT = 3;
 const LEVEL_QUIZ = 1;
 
+const { quizLimiter, summaryLimiter } = require('../middleware/rateLimiter');
+
 // T020: GET /api/lectures/:lectureId/notes
-router.get('/:lectureId/notes', [
+router.get('/:lectureId/notes', summaryLimiter, [
     param('lectureId').isMongoId().withMessage('Invalid lecture ID')
 ], async (req, res, next) => {
     try {
@@ -186,8 +188,10 @@ router.get('/:lectureId/quiz', [
     }
 });
 
+
 // T030: POST /api/lectures/:lectureId/quiz/submit
 router.post('/:lectureId/quiz/submit', [
+    quizLimiter,
     param('lectureId').isMongoId().withMessage('Invalid lecture ID'),
     body('answers').isArray().withMessage('Answers must be an array'),
     body('timeTakenSecs').isNumeric({ min: 0 }).withMessage('Valid time taken is required')
@@ -300,6 +304,54 @@ router.get('/:lectureId/ai-status', [
         
         const lecture = course.sections[0].lectures.id(lectureId);
         res.json({ aiStatus: lecture.aiStatus });
+    } catch (error) {
+        next(error);
+    }
+});
+
+const notesQueue = require('../queues/notesQueue');
+const quizQueue = require('../queues/quizQueue');
+const jobOptions = require('../queues/jobOptions');
+
+// T033: POST /api/lectures/:lectureId/summary/generate
+router.post('/:lectureId/summary/generate', summaryLimiter, [
+    param('lectureId').isMongoId().withMessage('Invalid lecture ID')
+], async (req, res, next) => {
+    try {
+        const lectureId = req.params.lectureId;
+        const course = await Course.findOne({ 'sections.lectures._id': lectureId });
+        if (!course) return res.status(404).json({ error: 'Lecture not found' });
+
+        await Course.findOneAndUpdate(
+            { _id: course._id, 'sections.lectures._id': lectureId },
+            { $set: { 'sections.$[].lectures.$[lec].aiStatus.notes': 'pending' } },
+            { arrayFilters: [{ 'lec._id': lectureId }] }
+        );
+
+        await notesQueue.add('generate-notes', { lectureId, courseId: course._id.toString() }, jobOptions);
+        res.json({ message: 'Summary generation queued' });
+    } catch (error) {
+        next(error);
+    }
+});
+
+// T034: POST /api/lectures/:lectureId/quiz/generate
+router.post('/:lectureId/quiz/generate', quizLimiter, [
+    param('lectureId').isMongoId().withMessage('Invalid lecture ID')
+], async (req, res, next) => {
+    try {
+        const lectureId = req.params.lectureId;
+        const course = await Course.findOne({ 'sections.lectures._id': lectureId });
+        if (!course) return res.status(404).json({ error: 'Lecture not found' });
+
+        await Course.findOneAndUpdate(
+            { _id: course._id, 'sections.lectures._id': lectureId },
+            { $set: { 'sections.$[].lectures.$[lec].aiStatus.quiz': 'pending' } },
+            { arrayFilters: [{ 'lec._id': lectureId }] }
+        );
+
+        await quizQueue.add('generate-quiz', { lectureId, courseId: course._id.toString() }, jobOptions);
+        res.json({ message: 'Quiz generation queued' });
     } catch (error) {
         next(error);
     }

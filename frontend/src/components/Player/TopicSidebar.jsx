@@ -31,6 +31,13 @@ const TopicSidebar = ({ topics, currentTime, onTopicClick }) => {
                     <h3 className="text-base font-display font-bold text-text-primary leading-tight">Lecture Topics</h3>
                     <p className="text-xs text-text-muted mt-0.5">Jump to key moments</p>
                 </div>
+                <button 
+                    onClick={() => document.querySelector('button[key="notes"]')?.click() || window.dispatchEvent(new CustomEvent('switch-tab', { detail: 'notes' }))}
+                    className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary text-[10px] font-black uppercase tracking-widest border border-primary/20 transition-all"
+                >
+                    <Bot className="w-3.5 h-3.5" />
+                    Summarize
+                </button>
             </div>
             
             <div className="overflow-y-auto flex-grow divide-y divide-border/50 custom-scrollbar">

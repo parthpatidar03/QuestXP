@@ -11,8 +11,14 @@ const Auth = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
     
-    const { login, register, googleLogin } = useAuthStore();
+    const { login, register, googleLogin, isAuthenticated } = useAuthStore();
     const navigate = useNavigate();
+
+    React.useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/dashboard');
+        }
+    }, [isAuthenticated, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();

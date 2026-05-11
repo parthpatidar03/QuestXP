@@ -2,12 +2,13 @@ const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
-// Rate limiting middleware removed
+const helmet = require('helmet');
+const hpp = require('hpp');
 
 require('dotenv').config();
 
-// Rate limiting disabled per user request
-const limiter = (req, res, next) => next();
+const { globalLimiter } = require('./middleware/rateLimiter');
+const limiter = globalLimiter;
 
 
 const authRoutes = require('./routes/auth');
@@ -51,6 +52,9 @@ app.use(cors({
 // Handle Preflight for all routes
 app.options('*', cors());
 
+app.use(helmet());
+app.use(hpp());
+
 // 4. Security Headers & Rate Limiting
 app.use((req, res, next) => {
     res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
@@ -58,7 +62,6 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(limiter);
 app.use(express.json());
 app.use(cookieParser());
 app.use(compression());
@@ -67,6 +70,9 @@ app.use(compression());
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
 app.use('/api/auth', authRoutes);
+
+// Global limiter applies to all other routes
+app.use(limiter);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/gamification', gamificationRoutes);
 app.use('/api/courses', courseRoutes);

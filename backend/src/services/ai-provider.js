@@ -1,147 +1,112 @@
-const { GoogleGenerativeAI } = require('@google/generative-ai');
-const axios = require('axios');
-
-// Initialize Gemini
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const OpenAI = require('openai');
 
 /**
- * Unified AI Provider with fallback logic.
- * Primary: Gemini 1.5 Flash
- * Secondary: OpenRouter (Llama 3.1 70B Free)
+ * Unified AI Provider using OpenAI.
+ * Primary: GPT-4o-mini (Cost-effective and fast)
  */
 class AIProvider {
     constructor() {
-        this.geminiModel = genAI.getGenerativeModel({
-            model: 'gemini-1.5-flash',
-            generationConfig: {
-                responseMimeType: "application/json",
-            }
-        });
+        this._client = null;
+    }
 
-        this.openRouterKey = process.env.OPENROUTER_API_KEY;
+    get openai() {
+        if (!this._client) {
+            if (!process.env.OPENAI_API_KEY) {
+                console.warn('[AIProvider] OPENAI_API_KEY is not defined in environment!');
+            }
+            this._client = new OpenAI({
+                apiKey: process.env.OPENAI_API_KEY
+            });
+        }
+        return this._client;
     }
 
     /**
-     * Generate JSON response with fallback
+     * Generate JSON response
      * @param {string} prompt 
      * @param {string} systemPrompt 
      */
     async generateJSON(prompt, systemPrompt) {
         try {
-            // 1. Primary: Gemini
-            console.log('[AIProvider] Attempting Gemini JSON generation...');
+            console.log('[AIProvider] Attempting OpenAI JSON generation...');
 
-            // Manual injection for max compatibility across SDK versions
-            const model = genAI.getGenerativeModel({
-                model: 'gemini-1.5-flash',
-                generationConfig: {
-                    responseMimeType: "application/json",
-                }
+            const response = await this.openai.chat.completions.create({
+                model: 'gpt-4o-mini',
+                messages: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: prompt }
+                ],
+                response_format: { type: 'json_object' },
+                temperature: 0.1 // Lower temperature for more consistent JSON
             });
 
-            const combinedPrompt = `INSTRUCTIONS:\n${systemPrompt}\n\nINPUT:\n${prompt}\n\nReturn ONLY a valid JSON object.`;
-            const result = await model.generateContent(combinedPrompt);
-            const response = await result.response;
-            const text = response.text();
+            const text = response.choices[0].message.content;
             return JSON.parse(this._sanitizeJSON(text));
         } catch (error) {
-            console.warn('[AIProvider] Gemini JSON failed, falling back to OpenRouter:', error.message);
-
-            // 2. Fallback: OpenRouter
-            return await this._generateOpenRouter(prompt, systemPrompt, true);
+            console.error('[AIProvider] OpenAI JSON failed:', error.message);
+            throw error;
         }
     }
 
     /**
-     * Generate text/chat response with fallback
+     * Generate text/chat response
      */
     async generateChat(prompt, systemPrompt, history = []) {
         try {
-            // 1. Primary: Gemini
-            console.log('[AIProvider] Attempting Gemini Chat generation...');
-            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+            console.log('[AIProvider] Attempting OpenAI Chat generation...');
+            
+            const messages = [
+                { role: 'system', content: systemPrompt },
+                ...history.slice(-10).map(msg => ({
+                    role: msg.role === 'bot' || msg.role === 'assistant' ? 'assistant' : 'user',
+                    content: msg.content || msg.text
+                })),
+                { role: 'user', content: prompt }
+            ];
 
-            // Inject system prompt as the first message in history if history is empty
-            // or prepend it to the current prompt for simplicity and compatibility
-            const geminiHistory = history.slice(-10).map(msg => ({
-                role: msg.role === 'assistant' ? 'model' : 'user',
-                parts: [{ text: msg.content }]
-            }));
-
-            // Prepend system prompt to the current message if it's not already in history
-            const finalPrompt = `[SYSTEM INSTRUCTIONS: ${systemPrompt}]\n\nUser Question: ${prompt}`;
-
-            const chat = model.startChat({
-                history: geminiHistory
+            const response = await this.openai.chat.completions.create({
+                model: 'gpt-4o-mini',
+                messages: messages,
+                temperature: 0.7
             });
 
-            const result = await chat.sendMessage(finalPrompt);
-            const response = await result.response;
-            return response.text().trim();
+            return response.choices[0].message.content.trim();
         } catch (error) {
-            console.warn('[AIProvider] Gemini Chat failed, falling back to OpenRouter:', error.message);
-
-            // 2. Fallback: OpenRouter
-            return await this._generateOpenRouter(prompt, systemPrompt, false, history);
+            console.error('[AIProvider] OpenAI Chat failed:', error.message);
+            throw error;
         }
     }
 
-    async _generateOpenRouter(prompt, systemPrompt, isJson, history = []) {
-        if (!this.openRouterKey) {
-            throw new Error('OpenRouter API Key missing for fallback');
+    /**
+     * Generates a single embedding for a string.
+     */
+    async generateEmbedding(text) {
+        try {
+            const response = await this.openai.embeddings.create({
+                model: 'text-embedding-3-small',
+                input: text,
+            });
+            return response.data[0].embedding;
+        } catch (error) {
+            console.error('[AIProvider] OpenAI Embedding failed:', error.message);
+            throw error;
         }
+    }
 
-        const messages = [
-            { role: 'system', content: systemPrompt },
-            ...history.slice(-10).map(m => ({ role: m.role, content: m.content })),
-            { role: 'user', content: prompt }
-        ];
-
-        // T040 Fallback Model Rotation to bypass rate limits
-        const models = [
-            'google/gemini-flash-1.5-8b:free',
-            'google/gemini-flash-1.5:free',
-            'meta-llama/llama-3.2-3b-instruct:free',
-            'meta-llama/llama-3.1-8b-instruct:free',
-            'qwen/qwen-2-7b-instruct:free',
-            'mistralai/pixtral-12b:free'
-        ];
-
-        let lastError;
-        for (const model of models) {
-            try {
-                console.log(`[AIProvider] Attempting OpenRouter fallback with model: ${model}`);
-                const response = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
-                    model: model,
-                    messages: messages,
-                    response_format: isJson ? { type: 'json_object' } : undefined,
-                    temperature: 0.7
-                }, {
-                    headers: {
-                        'Authorization': `Bearer ${this.openRouterKey}`,
-                        'HTTP-Referer': 'https://questxp.vercel.app',
-                        'X-Title': 'QuestXP',
-                        'Content-Type': 'application/json'
-                    },
-                    timeout: 30000 // 30s timeout
-                });
-
-                if (response.data.choices && response.data.choices.length > 0) {
-                    const content = response.data.choices[0].message.content;
-                    return isJson ? JSON.parse(this._sanitizeJSON(content)) : content;
-                }
-            } catch (error) {
-                const status = error.response?.status;
-                const errorMsg = error.response?.data?.error?.message || error.message;
-                console.warn(`[AIProvider] OpenRouter model ${model} failed (Status ${status}):`, errorMsg);
-                lastError = errorMsg;
-
-                // If it's a 429, continue to next model. If it's something else, maybe still continue.
-                if (status === 401 || status === 403) break; // Don't retry if auth fails
-            }
+    /**
+     * Generates embeddings for a batch of strings.
+     */
+    async generateBatchEmbeddings(texts) {
+        try {
+            const response = await this.openai.embeddings.create({
+                model: 'text-embedding-3-small',
+                input: texts,
+            });
+            return response.data.map(item => item.embedding);
+        } catch (error) {
+            console.error('[AIProvider] OpenAI Batch Embedding failed:', error.message);
+            throw error;
         }
-
-        throw new Error(`All AI providers failed. Last error: ${lastError}`);
     }
 
     _sanitizeJSON(text) {
@@ -151,3 +116,4 @@ class AIProvider {
 }
 
 module.exports = new AIProvider();
+

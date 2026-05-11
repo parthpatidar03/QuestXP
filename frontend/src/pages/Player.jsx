@@ -14,7 +14,7 @@ import { useLectureStatus } from '../hooks/useLectureStatus';
 
 const TABS = [
     { key: 'topics', label: 'Topics' },
-    { key: 'notes',  label: 'Notes' },
+    { key: 'notes',  label: 'Summary' },
     { key: 'quiz',   label: 'Quiz' },
 ];
 
@@ -116,7 +116,10 @@ const Player = () => {
         }
     }, [loading, shouldStartQuiz]);
 
-    const aiStatus = useLectureStatus(currentLecture?._id, activeTab === 'quiz' && ['pending', 'in_progress'].includes(currentAiStatus.quiz));
+    const aiStatus = useLectureStatus(currentLecture?._id, 
+        (['pending', 'in_progress'].includes(currentAiStatus.quiz) && activeTab === 'quiz') ||
+        (['pending', 'in_progress'].includes(currentAiStatus.notes) && activeTab === 'notes')
+    );
 
     useEffect(() => {
         if (aiStatus) {
@@ -143,7 +146,12 @@ const Player = () => {
         };
 
         window.addEventListener('mission-completed', handleMissionComplete);
-        return () => window.removeEventListener('mission-completed', handleMissionComplete);
+        const handleSwitchTab = (e) => setActiveTab(e.detail);
+        window.addEventListener('switch-tab', handleSwitchTab);
+        return () => {
+            window.removeEventListener('mission-completed', handleMissionComplete);
+            window.removeEventListener('switch-tab', handleSwitchTab);
+        };
     }, []);
 
     const handleVideoEnd = () => {
@@ -361,8 +369,9 @@ const PLAYER_THEME = {
                                 lectureId={currentLecture._id}
                                 courseId={courseId}
                                 onSeek={handleTopicClick}
-                                notesStatus={currentLecture.aiStatus?.notes || 'pending'}
-                                errorReason={currentLecture.aiStatus?.errorReason}
+                                notesStatus={currentAiStatus.notes || 'pending'}
+                                errorReason={currentAiStatus.errorReason}
+                                aiStatus={currentAiStatus}
                             />
                         )}
                         {activeTab === 'quiz' && (

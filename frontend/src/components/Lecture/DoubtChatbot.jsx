@@ -103,7 +103,7 @@ const DoubtChatbot = ({ lectureId, courseTitle = '', lectureTitle = '' }) => {
             setMessages(prev => [...prev, { role: 'bot', text: res.data.answer || 'No response.' }]);
         } catch (err) {
             const msg = err.response?.status === 429
-                ? '⚠️ Too many requests — wait a moment before trying again.'
+                ? `⚠️ ${err.response.data.message || 'Rate limit reached — wait a moment before trying again.'}`
                 : '⚠️ Failed to get a response. Please try again.';
             setMessages(prev => [...prev, { role: 'bot', text: msg }]);
         } finally {

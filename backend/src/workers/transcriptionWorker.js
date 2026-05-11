@@ -53,9 +53,9 @@ const transcriptionWorker = new Worker('transcription', async job => {
             { arrayFilters: [{ 'lec._id': lectureId }] }
         );
 
-        // Fan-out to downstream queues
-        await notesQueue.add('generate-notes', { lectureId, courseId }, jobOptions);
-        await quizQueue.add('generate-quiz', { lectureId, courseId }, jobOptions);
+        // Fan-out to downstream queues (Manual trigger now required for Notes/Quiz)
+        // await notesQueue.add('generate-notes', { lectureId, courseId }, jobOptions);
+        // await quizQueue.add('generate-quiz', { lectureId, courseId }, jobOptions);
         await topicsQueue.add('generate-topics', { lectureId, courseId }, jobOptions);
         await embeddingQueue.add('embed', { lectureId, courseId }, jobOptions);
 
