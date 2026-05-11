@@ -38,6 +38,7 @@ QuestXP utilizes a **Decoupled Monolith** architecture with an **Event-Driven AI
 
 ### Frontend (React/Vite)
 - **State Management**: Zustand for global UI/Auth state; TanStack Query for declarative server-state synchronization.
+- **Optimistic UI Updates**: High-frequency interactions (e.g., roadmap shifts, progress marking) utilize an "Update-First, Sync-Later" pattern to ensure zero-latency perception.
 - **Hook-Based Logic**: Business logic is encapsulated in custom hooks (e.g., `useLectureStatus`) to prevent component bloat and enable auto-cleanup of side effects like polling.
 - **Design System**: Atomic-based Tailwind configuration with a custom glassmorphic aesthetic.
 - **Performance**: Code-splitting, optimized re-render cycles, and modular component extraction (e.g., `CourseSearch` isolated from `NavBar`).

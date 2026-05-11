@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link, useNavigate, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Flame, Zap, Trophy, Shield, BookOpen, Plus, ChevronRight, Star, Trash2, Target, MessageSquare, Share2, Copy, X } from 'lucide-react';
 import useAuthStore from '../store/useAuthStore';
 import useGamificationStore from '../store/useGamificationStore';
@@ -355,6 +356,8 @@ const Dashboard = () => {
     const [showUsernameModal, setShowUsernameModal] = useState(false);
     const [showLeaderboard, setShowLeaderboard] = useState(false);
     const [roadmapCourseId, setRoadmapCourseId] = useState(null);
+    const [optimisticHiddenIds, setOptimisticHiddenIds] = useState(new Set());
+    const [showUndo, setShowUndo] = useState(null); // { id, title, timer }
 
     useEffect(() => {
         if (user && !user.usernameSet) {
@@ -454,17 +457,32 @@ const Dashboard = () => {
 
 
     const handleDeleteCourse = async (course) => {
-        const isSure = window.confirm(`Are you sure you want to permanently delete "${course.title}"? This action cannot be undone.`);
-        if (!isSure) return;
+        // Optimistic UI Removal
+        setOptimisticHiddenIds(prev => new Set(prev).add(course._id));
+        
+        const timer = setTimeout(() => {
+            deleteMutation.mutate(course._id, {
+                onSettled: () => {
+                    setDeletingCourseId(null);
+                    setShowUndo(null);
+                }
+            });
+        }, 5000);
 
-        const verification = window.prompt('To confirm permanent deletion, type DELETE and click OK.');
-        if ((verification || '').trim().toUpperCase() !== 'DELETE') return;
-
-        setDeleteError('');
+        setShowUndo({ id: course._id, title: course.title, timer });
         setDeletingCourseId(course._id);
-        deleteMutation.mutate(course._id, {
-            onSettled: () => setDeletingCourseId(null)
+    };
+
+    const handleUndoDelete = () => {
+        if (!showUndo) return;
+        clearTimeout(showUndo.timer);
+        setOptimisticHiddenIds(prev => {
+            const next = new Set(prev);
+            next.delete(showUndo.id);
+            return next;
         });
+        setDeletingCourseId(null);
+        setShowUndo(null);
     };
 
 
@@ -593,15 +611,18 @@ const Dashboard = () => {
                         ) : (
                             <div className="space-y-6">
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                                    {courses.slice(0, visibleCount).map(c => (
-                                        <CourseCard
-                                            key={c._id}
-                                            course={c}
-                                            progress={progressMap[c._id]}
-                                            onDelete={handleDeleteCourse}
-                                            isDeleting={deletingCourseId === c._id}
-                                        />
-                                    ))}
+                                    {courses
+                                        .filter(c => !optimisticHiddenIds.has(c._id))
+                                        .slice(0, visibleCount)
+                                        .map(c => (
+                                            <CourseCard
+                                                key={c._id}
+                                                course={c}
+                                                progress={progressMap[c._id]}
+                                                onDelete={handleDeleteCourse}
+                                                isDeleting={deletingCourseId === c._id}
+                                            />
+                                        ))}
                                 </div>
                                 {visibleCount < courses.length && (
                                     <div className="flex justify-center pt-4">
@@ -697,6 +718,29 @@ const Dashboard = () => {
                 />
             )}
             {!showUsernameModal && <UserTour />}
+
+            {/* Undo Toast */}
+            <AnimatePresence>
+                {showUndo && (
+                    <motion.div 
+                        initial={{ y: 100, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: 100, opacity: 0 }}
+                        className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-4 px-6 py-4 bg-surface-2 border border-border rounded-2xl shadow-2xl"
+                    >
+                        <div className="flex flex-col">
+                            <span className="text-xs font-bold text-text-muted uppercase tracking-widest">Deleted Quest</span>
+                            <span className="text-sm font-black text-text-primary line-clamp-1">{showUndo.title}</span>
+                        </div>
+                        <button 
+                            onClick={handleUndoDelete}
+                            className="ml-4 px-4 py-2 bg-primary text-black text-xs font-black uppercase tracking-widest rounded-xl hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20"
+                        >
+                            Undo Deletion
+                        </button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
 
     );

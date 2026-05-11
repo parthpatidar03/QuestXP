@@ -101,6 +101,30 @@ Early-stage "vibe coding" (fast feature building) led to monolithic components, 
 
 ---
 
+## 8. Optimistic UI & Zero-Latency Design
+
+### The Problem
+API round-trips for state mutations (like shifting a schedule or marking progress) create a "janky" experience where the user waits for a spinner before seeing their action reflected.
+
+### The Solution
+Implement **Optimistic Updates** across high-traffic interactions.
+
+- **Implementation Strategy**:
+  1. **Mutate State Immediately**: Update local state/Zustand store the instant the user clicks.
+  2. **Background Sync**: Fire the API call with a debounce (to handle rapid clicks).
+  3. **Silent Reconciliation**: When the server responds, overwrite the local state with the ground truth.
+  4. **Error Handling**: If the API fails, trigger a "Revert & Sync" to keep data consistent.
+
+- **Current Use Cases**:
+  - **Roadmap Schedule**: Plus/Minus buttons shift dates instantly while the generator runs in the background.
+
+- **Future Roadmap for Optimistic UI**:
+  - **Lecture Completion**: Update progress bars and XP totals before the DB write finishes.
+  - **Doubt Chatbot**: Push user messages to the UI stack instantly before the LLM streaming starts.
+  - **Course Deletion**: Remove from dashboard list immediately with a "Undo/Canceling" window.
+
+---
+
 ## Interview Questions Solved
 
 1. **How do you handle a unique field for existing users without a migration?**

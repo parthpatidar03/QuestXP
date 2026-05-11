@@ -80,6 +80,8 @@ const DoubtChatbot = ({ lectureId, courseTitle = '', lectureTitle = '' }) => {
         if (!input.trim() || loading) return;
         const question = input.trim();
         setInput('');
+        
+        // Optimistic: Pop the user message in with zero delay
         const userMsg = { role: 'user', text: question };
         setMessages(prev => [...prev, userMsg]);
         setLoading(true);
@@ -194,7 +196,13 @@ const DoubtChatbot = ({ lectureId, courseTitle = '', lectureTitle = '' }) => {
                                     )}
 
                                     {messages.map((msg, i) => (
-                                        <div key={i} className={`flex gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                        <motion.div 
+                                            key={i} 
+                                            initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                                            transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+                                            className={`flex gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                                        >
                                             {msg.role === 'bot' && (
                                                 <div className="w-6 h-6 rounded-full shrink-0 mt-1 flex items-center justify-center bg-primary/10 border border-primary/20">
                                                     <Bot className="w-3.5 h-3.5 text-primary" />
@@ -212,7 +220,7 @@ const DoubtChatbot = ({ lectureId, courseTitle = '', lectureTitle = '' }) => {
                                                     : msg.text
                                                 }
                                             </div>
-                                        </div>
+                                        </motion.div>
                                     ))}
 
                                     {loading && (

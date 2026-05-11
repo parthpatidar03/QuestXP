@@ -14,15 +14,27 @@ const UsernameModal = ({ isOpen, onClose }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const oldUser = { ...user };
+        const newUsername = username;
+
         setError('');
         setIsLoading(true);
 
+        // Optimistic Update
+        useAuthStore.setState({ user: { ...user, username: newUsername, usernameSet: true } });
+        onClose();
+
         try {
-            await api.patch('/auth/username', { username });
-            await checkAuth(); // Refresh user state
-            onClose();
+            await api.patch('/auth/username', { username: newUsername });
+            // checkAuth() call removed to avoid redundant re-render if successful
         } catch (err) {
+            // Revert on error
+            useAuthStore.setState({ user: oldUser });
             setError(err.response?.data?.error || 'Failed to set username.');
+            // Re-open modal if it was closed
+            // Since this component is managed by parent visibility, 
+            // we might need a toast instead or just let the user try again from Profile.
+            alert(err.response?.data?.error || 'Failed to set username. Reverting...');
         } finally {
             setIsLoading(false);
         }

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Play, CheckCircle2, XCircle, Trophy, RotateCcw, Award } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import useAuthStore from '../../store/useAuthStore';
 import api from '../../services/api';
 import LockedFeature from '../LockedFeature';
@@ -157,6 +158,9 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
             setSubmitting(true);
             const timeTakenSecs = Math.floor((Date.now() - startTime) / 1000);
             
+            // Add a small artificial delay to make the "AI Grading" feel substantive and high-tech
+            await new Promise(resolve => setTimeout(resolve, 1200));
+
             const { data } = await api.post(`/lectures/${lectureId}/quiz/submit`, {
                 answers,
                 timeTakenSecs
@@ -167,7 +171,6 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
             // Celebration Logic
             if (data.progress?.success || data.progress?.alreadyCompleted) {
                 const xp = data.progress?.xpAwarded || 50;
-                // We'll use window dispatch to tell Player to show completion
                 window.dispatchEvent(new CustomEvent('mission-completed', { 
                     detail: { xpEarned: xp } 
                 }));
