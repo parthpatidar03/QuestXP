@@ -101,7 +101,7 @@ const LandingPage = () => {
                         <button onClick={() => navigate('/dashboard?demo=true')} className="px-3 py-2 rounded-lg text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors">
                             Try Demo
                         </button>
-                        <button onClick={() => navigate('/login')} className="btn-blink text-sm px-6 py-2.5 rounded-lg text-white font-bold">
+                        <button onClick={() => navigate('/login')} className="btn-blink bg-blue-600 text-sm px-6 py-2.5 rounded-lg text-white font-bold transition-all hover:bg-blue-700">
                             Sign in
                         </button>
                         <button onClick={openApp} className="btn-blink btn-primary text-sm px-6 py-2.5">
@@ -153,8 +153,8 @@ const LandingPage = () => {
                             >
                                 Try Demo
                             </button>
-                            <button onClick={() => navigate('/login')} className="mt-2 btn-blink w-full py-3 rounded-lg text-white font-bold text-center">Sign in</button>
-                            <button onClick={openApp} className="mt-2 btn-blink btn-primary w-full">Get Started</button>
+                            <button onClick={() => navigate('/login')} className="mt-2 w-full py-3 rounded-lg bg-blue-600 text-white font-bold text-center">Sign in</button>
+                            <button onClick={openApp} className="mt-2 btn-primary w-full">Get Started</button>
                         </div>
                     </div>
                 )}
@@ -187,7 +187,7 @@ const LandingPage = () => {
                             </p>
 
                             <div className="mt-7 flex flex-col sm:flex-row gap-3 sm:items-center">
-                                <button onClick={openApp} className="btn-blink btn-primary inline-flex items-center justify-center gap-2 px-8 py-3.5 text-sm sm:text-base">
+                                <button onClick={openApp} className="btn-primary inline-flex items-center justify-center gap-2 px-8 py-3.5 text-sm sm:text-base">
                                     Start Learning
                                     <ChevronRight className="w-4 h-4" />
                                 </button>

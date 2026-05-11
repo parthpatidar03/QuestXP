@@ -369,7 +369,6 @@ const Dashboard = () => {
         }
     }, [user]);
 
-    const [searchParams, setSearchParams] = useSearchParams();
 
     useEffect(() => {
         const handleOpenLeaderboard = () => setShowLeaderboard(true);
@@ -728,7 +727,7 @@ const Dashboard = () => {
                         <p className="text-xs text-text-secondary leading-relaxed mb-6">
                             Sign in to unlock AI Roadmaps, Progress Tracking, Daily Missions, and the Global Leaderboard.
                         </p>
-                        <Link to="/register" className="btn-blink btn-primary w-full py-3 text-xs uppercase tracking-widest font-black">
+                        <Link to="/register" className="bg-blue-600 hover:bg-blue-700 text-white w-full py-3 text-xs uppercase tracking-widest font-black text-center rounded-lg">
                             Create Account
                         </Link>
                     </div>
