@@ -8,7 +8,7 @@ const { addDays } = require('date-fns');
 
 // @route   POST /api/roadmap/generate
 // @desc    Generate a new roadmap
-router.post('/generate', auth, async (req, res) => {
+router.post('/generate', auth, async (req, res, next) => {
     try {
         const { playlistIds, sectionIds, weekdayHours = 2, weekendHours = 4, startDate, courseId = null } = req.body;
 
@@ -75,14 +75,13 @@ router.post('/generate', auth, async (req, res) => {
         await newRoadmap.save();
         res.json(newRoadmap);
     } catch (err) {
-        console.error(err);
-        res.status(500).send('Server Error');
+        next(err);
     }
 });
 
 // @route   GET /api/roadmap/current
 // @desc    Get active roadmap (optional courseId param)
-router.get('/current', auth, async (req, res) => {
+router.get('/current', auth, async (req, res, next) => {
     try {
         const { courseId } = req.query;
         const filter = { userId: req.user.id, status: 'active' };
@@ -95,14 +94,13 @@ router.get('/current', auth, async (req, res) => {
         }
         res.json(roadmap);
     } catch (err) {
-        console.error(err);
-        res.status(500).send('Server Error');
+        next(err);
     }
 });
 
 // @route   PATCH /api/roadmap/adjust
 // @desc    Shift roadmap start date (Fixes +/- buttons)
-router.patch('/adjust', auth, async (req, res) => {
+router.patch('/adjust', auth, async (req, res, next) => {
     try {
         const { roadmapId, daysToShift } = req.body;
         const roadmap = await Roadmap.findById(roadmapId);
@@ -144,14 +142,13 @@ router.patch('/adjust', auth, async (req, res) => {
 
         res.json(roadmap);
     } catch (err) {
-        console.error(err);
-        res.status(500).send('Server Error');
+        next(err);
     }
 });
 
 // @route   PATCH /api/roadmap/shift-partial
 // @desc    Shift roadmap from a specific day index onwards
-router.patch('/shift-partial', auth, async (req, res) => {
+router.patch('/shift-partial', auth, async (req, res, next) => {
     try {
         const { roadmapId, fromDayIndex, shiftAmount } = req.body;
         const roadmap = await Roadmap.findById(roadmapId);
@@ -172,7 +169,6 @@ router.patch('/shift-partial', auth, async (req, res) => {
         }
 
         // 2. Calculate new start date for the moving block
-        // If fromDayIndex is 0, use the config startDate
         let anchorDate;
         if (fromDayIndex === 0) {
             anchorDate = new Date(roadmap.config.startDate);
@@ -181,9 +177,7 @@ router.patch('/shift-partial', auth, async (req, res) => {
         }
         const newBlockStartDate = addDays(anchorDate, shiftAmount);
 
-        // 3. Re-fetch video details for the move block (algorithm needs duration, etc.)
-        // Optimization: Use the data already in the roadmap if full details exist
-        // or re-fetch for accuracy. Re-fetching is safer.
+        // 3. Re-fetch video details
         const playlists = await Course.find({ _id: { $in: roadmap.config.playlistIds } });
         let videoMap = new Map();
         playlists.forEach(pl => {
@@ -214,10 +208,6 @@ router.patch('/shift-partial', auth, async (req, res) => {
             []
         );
 
-        // 5. If shiftAmount was positive and we were shifting from the very first video,
-        // we should probably add an empty day at the shift point if it's a +1
-        // But the generator will handle dates correctly.
-        
         // Update day indices
         const startIdx = daysToKeep.length;
         newPartialDays.forEach((day, i) => {
@@ -234,8 +224,7 @@ router.patch('/shift-partial', auth, async (req, res) => {
         await roadmap.save();
         res.json(roadmap);
     } catch (err) {
-        console.error(err);
-        res.status(500).send('Server Error');
+        next(err);
     }
 });
 

@@ -90,11 +90,33 @@ app.use((req, res) => {
     res.status(404).json({ error: `Route ${req.method} ${req.path} not found` });
 });
 
-// Central error handler
+// Central robust error handler
 app.use((err, req, res, next) => {
-    console.error('[Error]', err.message, process.env.NODE_ENV !== 'production' ? err.stack : '');
-    res.status(err.status || 500).json({
-        error: process.env.NODE_ENV === 'production' ? 'Internal Server Error' : (err.message || 'Internal Server Error')
+    const status = err.status || err.statusCode || 500;
+    const isProd = process.env.NODE_ENV === 'production';
+
+    // Detailed logging
+    console.error(`[${new Date().toISOString()}] ${req.method} ${req.path} - Error ${status}:`, {
+        message: err.message,
+        stack: !isProd ? err.stack : undefined,
+        user: req.user?._id,
+        body: req.body
+    });
+
+    // Specific handling for Validation Errors (Express Validator)
+    if (err.array && typeof err.array === 'function') {
+        return res.status(400).json({
+            error: 'VALIDATION_ERROR',
+            message: 'Invalid input data',
+            details: err.array()
+        });
+    }
+
+    // Default Error Response
+    res.status(status).json({
+        error: err.name || 'INTERNAL_SERVER_ERROR',
+        message: isProd && status === 500 ? 'An unexpected error occurred' : err.message,
+        details: !isProd ? err.stack : undefined
     });
 });
 

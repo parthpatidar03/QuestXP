@@ -30,13 +30,39 @@ Keep answers focused and under 200 words unless a detailed explanation is truly 
 
         const answer = await aiProvider.generateChat(questionText, systemPrompt, history);
 
+        if (!answer) {
+            throw new Error('AI provider returned empty response');
+        }
+
         return res.json({ answer, questionText });
 
     } catch (error) {
-        console.error('[SimpleChatController] Error:', error.message);
-        if (error.status === 429) {
-            return res.status(429).json({ error: 'RATE_LIMITED', message: 'Too many requests. Please wait a moment.' });
+        console.error('[SimpleChatController] Critical Error:', {
+            message: error.message,
+            stack: error.stack,
+            body: req.body,
+            user: req.user?._id
+        });
+
+        // T105 — Handle specific OpenAI error codes
+        if (error.code === 'insufficient_quota') {
+            return res.status(402).json({ 
+                error: 'PAYMENT_REQUIRED', 
+                message: 'AI service quota exceeded. Please contact support.' 
+            });
         }
-        return res.status(500).json({ error: 'INTERNAL_ERROR', message: 'Chatbot temporarily unavailable.' });
+
+        if (error.status === 429) {
+            return res.status(429).json({ 
+                error: 'RATE_LIMITED', 
+                message: 'Too many requests to the AI. Please wait a minute.' 
+            });
+        }
+
+        return res.status(500).json({ 
+            error: 'INTERNAL_ERROR', 
+            message: 'Chatbot temporarily unavailable.',
+            details: process.env.NODE_ENV !== 'production' ? error.message : undefined
+        });
     }
 };

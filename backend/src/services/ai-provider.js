@@ -11,12 +11,12 @@ class AIProvider {
 
     get openai() {
         if (!this._client) {
-            if (!process.env.OPENAI_API_KEY) {
-                console.warn('[AIProvider] OPENAI_API_KEY is not defined in environment!');
+            const apiKey = process.env.OPENAI_API_KEY;
+            if (!apiKey) {
+                console.error('[AIProvider] CRITICAL: OPENAI_API_KEY is missing!');
+                throw new Error('AI configuration missing: OPENAI_API_KEY is not set');
             }
-            this._client = new OpenAI({
-                apiKey: process.env.OPENAI_API_KEY
-            });
+            this._client = new OpenAI({ apiKey });
         }
         return this._client;
     }
