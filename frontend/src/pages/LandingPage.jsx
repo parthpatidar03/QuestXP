@@ -61,9 +61,9 @@ const LandingPage = () => {
     };
 
     const keyPoints = [
-        'Convert any YouTube playlist into a structured course',
-        'Track completion, XP, streaks, and milestones in one flow',
-        'Generate notes, quizzes, and study plans from lecture content',
+        'Curate your own technical mastery',
+        'Built-in focus guardian',
+        'Surgical study plan adjustments',
     ];
 
     return (
@@ -146,24 +146,16 @@ const LandingPage = () => {
                             </div>
 
                             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-text-primary leading-[1.05] tracking-[-0.04em] max-w-[14ch] font-display">
-                                Turn playlists into courses you can actually finish.
+                                Turn 
+                                <img src="/yt-icon.png" alt="YouTube" className="inline-block w-[1.1em] h-[1.1em] mx-2 -mt-1 vertical-middle align-middle" /> 
+                                playlists into courses you can actually finish.
                             </h1>
 
-                            <div className="mt-8 space-y-3">
-                                {keyPoints.map((point, i) => (
-                                    <div key={i} className="flex items-center gap-3 text-text-secondary">
-                                        <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                                            <CheckCircle2 className="w-3 h-3 text-primary" />
-                                        </div>
-                                        <span className="text-sm sm:text-base font-medium">{point}</span>
-                                    </div>
-                                ))}
-                            </div>
-
-                            <p className="mt-8 text-base sm:text-lg text-text-secondary leading-relaxed max-w-[52ch]">
-                                <strong>Life happens. Missed a day?</strong> Shift your plan with one click. 
-                                QuestXP's surgical engine instantly recalculates your entire study roadmap 
-                                in real-time, keeping your goals within reach without the guilt.
+                            <p className="mt-8 text-lg sm:text-xl text-text-primary font-medium leading-snug max-w-[45ch]">
+                                We buy expensive courses but end up on YouTube. It has the content, but lacks the 
+                                <span className="text-primary italic"> structure, gamification, and personalization </span> 
+                                you need to finish. 
+                                <span className="text-primary block mt-2">QuestXP gives free content the structure it lacks.</span>
                             </p>
 
                             <div className="mt-7 flex flex-col sm:flex-row gap-3 sm:items-center">
@@ -276,17 +268,7 @@ const LandingPage = () => {
                     </div>
                 </section>
 
-                <section id="why" className="max-w-screen-xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-                    <div className="rounded-2xl border border-border bg-surface-2 dark:bg-primary/5 dark:border-primary/20 p-6 sm:p-10 text-center max-w-4xl mx-auto shadow-sm">
-                        <h2 className="text-2xl sm:text-3xl font-semibold text-text-primary mb-4">Why we built QuestXP</h2>
-                        <p className="text-sm sm:text-base text-text-secondary leading-relaxed mb-6">
-                            No single YouTube channel is perfect. You might love <span className="text-text-primary font-medium">Photography tips</span> from one creator, and <span className="text-text-primary font-medium">Personal Finance</span> from another. But jumping between channels means scattered playlists, lost progress, and endless YouTube distractions.
-                        </p>
-                        <p className="text-sm sm:text-base text-text-primary font-medium leading-relaxed">
-                            QuestXP brings all your favorite playlists from different creators into <span className="text-primary">one unified workspace</span>. Build your custom learning path, track everything in one place, and focus without the noise.
-                        </p>
-                    </div>
-                </section>
+
 
                 <section className="max-w-screen-xl mx-auto px-4 sm:px-6 py-16">
                     <div className="text-center mb-16">
@@ -392,86 +374,35 @@ const LandingPage = () => {
                         </p>
                     </div>
 
-                    <div className="grid gap-5 sm:gap-6 md:grid-cols-2 lg:grid-cols-4">
-                        <article className="glass-card p-6 sm:p-8 group hover:border-primary/50 transition-all">
-                            <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                                <BookOpen className="w-6 h-6" />
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        <article className="glass-card p-6 group border-primary/20 bg-primary/5">
+                            <div className="w-10 h-10 rounded-lg bg-primary text-white flex items-center justify-center mb-4">
+                                <Sparkles className="w-5 h-5" />
                             </div>
-                            <h3 className="text-xl font-bold text-text-primary mb-3">AI Course Roadmaps</h3>
+                            <h3 className="text-lg font-bold text-text-primary mb-2">AI Adaptive Roadmaps</h3>
                             <p className="text-sm text-text-secondary leading-relaxed">
-                                Transform multiple YouTube playlists from different creators into a single, cohesive learning platform.
+                                Missed a day? Hit <span className="font-bold text-primary">+</span>. 
+                                QuestXP instantly recalculates your entire study path in real-time.
                             </p>
                         </article>
 
-                        <article className="glass-card p-6 sm:p-8 group hover:border-primary/50 transition-all border-primary/20 bg-primary/5">
-                            <div className="w-12 h-12 rounded-xl bg-primary text-white flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg shadow-primary/20 p-2.5">
-                                <img src="/favicon.png" alt="" className="w-full h-full object-contain brightness-0 invert" />
+                        <article className="glass-card p-6 group">
+                            <div className="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-4">
+                                <ShieldCheck className="w-5 h-5" />
                             </div>
-                            <h3 className="text-xl font-bold text-text-primary mb-3">Surgical Adaptive Planning</h3>
+                            <h3 className="text-lg font-bold text-text-primary mb-2">Focus Guardian</h3>
                             <p className="text-sm text-text-secondary leading-relaxed">
-                                Life happens. Missed a day? Hit <span className="text-primary font-bold">+</span>. 
-                                Finished early? Hit <span className="text-primary font-bold">-</span>. 
-                                QuestXP instantly recalculates your entire roadmap in real-time to keep you on track.
+                                Specialized player with zero ads or recommendations. Keeps you in the flow.
                             </p>
                         </article>
 
-                        <article className="glass-card p-6 sm:p-8 group hover:border-primary/50 transition-all">
-                            <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                                <Sparkles className="w-6 h-6" />
+                        <article className="glass-card p-6 group">
+                            <div className="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-4">
+                                <Trophy className="w-5 h-5" />
                             </div>
-                            <h3 className="text-xl font-bold text-text-primary mb-3">Contextual AI Chatbot</h3>
+                            <h3 className="text-lg font-bold text-text-primary mb-2">Gamified Mastery</h3>
                             <p className="text-sm text-text-secondary leading-relaxed">
-                                Chat with an AI that knows your course inside out. Get precise answers based specifically on the lecture content.
-                            </p>
-                        </article>
-
-                        <article className="glass-card p-6 sm:p-8 group hover:border-primary/50 transition-all">
-                            <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                                <CheckCircle2 className="w-6 h-6" />
-                            </div>
-                            <h3 className="text-xl font-bold text-text-primary mb-3">Automated Assets</h3>
-                            <p className="text-sm text-text-secondary leading-relaxed">
-                                Generate lecture summaries, key takeaways, and practice quizzes instantly. Focus on learning while we handle the notes.
-                            </p>
-                        </article>
-
-                        <article className="glass-card p-6 sm:p-8 group hover:border-primary/50 transition-all">
-                            <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                                <Flame className="w-6 h-6" />
-                            </div>
-                            <h3 className="text-xl font-bold text-text-primary mb-3">Productivity Analytics</h3>
-                            <p className="text-sm text-text-secondary leading-relaxed">
-                                Track your rank, learning time, and streaks. Compete on the leaderboard and maintain consistency with deep analytics.
-                            </p>
-                        </article>
-
-                        <article className="glass-card p-6 sm:p-8 group hover:border-primary/50 transition-all">
-                            <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                                <Share2 className="w-6 h-6" />
-                            </div>
-                            <h3 className="text-xl font-bold text-text-primary mb-3">Seamless Social Sharing</h3>
-                            <p className="text-sm text-text-secondary leading-relaxed">
-                                Found a course that changed your life? Share a professional replica link. Your friends get their own isolated progress while you keep yours.
-                            </p>
-                        </article>
-
-                        <article className="glass-card p-6 sm:p-8 group hover:border-primary/50 transition-all">
-                            <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                                <Trophy className="w-6 h-6" />
-                            </div>
-                            <h3 className="text-xl font-bold text-text-primary mb-3">Global Hall of Fame</h3>
-                            <p className="text-sm text-text-secondary leading-relaxed">
-                                Compete with top learners worldwide. Earn XP, level up your anime-themed handle, and secure your spot on the leaderboard.
-                            </p>
-                        </article>
-
-                        <article className="glass-card p-6 sm:p-8 group hover:border-primary/50 transition-all">
-                            <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                                <Play className="w-6 h-6" />
-                            </div>
-                            <h3 className="text-xl font-bold text-text-primary mb-3">Distraction-Free Player</h3>
-                            <p className="text-sm text-text-secondary leading-relaxed">
-                                A specialized player designed for focus. No ads, no recommendations—just your course content and learning tools.
+                                Earn XP, maintain streaks, and climb the Global Hall of Fame as you learn.
                             </p>
                         </article>
                     </div>
