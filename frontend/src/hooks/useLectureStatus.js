@@ -20,10 +20,11 @@ export const useLectureStatus = (lectureId, enabled = true) => {
             try {
                 const { data } = await api.get(`/lectures/${lectureId}/ai-status`);
                 if (!cancelled) {
-                    setStatus(data.aiStatus);
+                    const aiStatus = data.aiStatus || {};
+                    setStatus(aiStatus);
                     
                     // Stop polling if all AI tasks are finished
-                    const isFinished = Object.values(data.aiStatus).every(s => 
+                    const isFinished = Object.values(aiStatus).every(s => 
                         s === 'completed' || s === 'failed' || s === 'ready'
                     );
                     

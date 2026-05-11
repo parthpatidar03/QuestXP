@@ -16,7 +16,7 @@ const router = express.Router();
 const { quizLimiter } = require('../middleware/rateLimiter');
 
 // T017: Endpoint to trigger the transcription pipeline (Rate limited)
-router.post('/lectures/:id/process', auth, quizLimiter, [
+router.post('/lectures/:id/process', auth, admin, quizLimiter, [
     param('id').isMongoId().withMessage('Invalid lecture ID')
 ], async (req, res, next) => {
     try {

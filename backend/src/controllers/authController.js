@@ -130,8 +130,10 @@ const login = async (req, res, next) => {
 
 const getMe = async (req, res, next) => {
     try {
-        // T040: Recalculate study plans on app load
-        await triggerPlanRecalculation(req.user._id);
+        // T040: Recalculate study plans on app load (Background - non-blocking)
+        triggerPlanRecalculation(req.user._id).catch(err => {
+            console.error('[Auth] Background plan recalculation failed:', err);
+        });
 
         const sessions = await Session.countDocuments({
             user: req.user._id,
@@ -318,6 +320,9 @@ const updateUsername = async (req, res, next) => {
             user: userResponse(user) 
         });
     } catch (error) {
+        if (error.code === 11000) {
+            return res.status(400).json({ error: 'Username already taken' });
+        }
         next(error);
     }
 };

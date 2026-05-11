@@ -32,9 +32,9 @@ api.interceptors.response.use(
         }
 
         if (error.response && error.response.status === 401) {
-            if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
-                window.location.href = '/login';
-            }
+            // Zustand useAuthStore will handle the state update and redirection via ProtectedRoute
+            // Hard redirect window.location.href kills the app state and can cause loops
+            console.warn('[API] 401 Unauthorized detected');
         }
 
         // T061 — Emit a custom event on 403 so LockedFeature can react globally

@@ -47,7 +47,9 @@ const createRefreshToken = (user, sessionId) => jwt.sign(
     { expiresIn: REFRESH_TOKEN_TTL }
 );
 
-const isProd = process.env.NODE_ENV === 'production' || (process.env.FRONTEND_URL && process.env.FRONTEND_URL.includes('https'));
+const isProd = process.env.NODE_ENV === 'production' || 
+               process.env.RAILWAY_ENVIRONMENT || 
+               (process.env.FRONTEND_URL && process.env.FRONTEND_URL.includes('https'));
 
 const cookieOptions = (maxAge) => ({
     httpOnly: true,
