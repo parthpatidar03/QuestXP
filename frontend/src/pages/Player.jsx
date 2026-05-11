@@ -41,6 +41,18 @@ const Player = () => {
 
     useEffect(() => {
         const fetchCourse = async () => {
+            if (courseId?.startsWith('demo-')) {
+                const local = localStorage.getItem('questxp_demo_course');
+                if (local) {
+                    const parsed = JSON.parse(local);
+                    setCourse(parsed);
+                } else {
+                    setError('Demo course not found.');
+                }
+                setLoading(false);
+                return;
+            }
+
             try {
                 const { data } = await api.get(`/courses/${courseId}`);
                 setCourse(data.course);
@@ -76,7 +88,7 @@ const Player = () => {
     // Auto-save position every 30s
     useEffect(() => {
         positionTimerRef.current = setInterval(() => {
-            if (currentTime > 5) {
+            if (currentTime > 5 && !courseId?.startsWith('demo-')) {
                 api.patch(`/progress/${courseId}/lectures/${lectureId}/position`, {
                     position: Math.floor(currentTime),
                     watchedSeconds: Math.floor(currentTime)

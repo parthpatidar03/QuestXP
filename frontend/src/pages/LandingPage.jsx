@@ -98,8 +98,8 @@ const LandingPage = () => {
                         >
                             {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
                         </button>
-                        <button onClick={openApp} className="px-3 py-2 rounded-lg text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors">
-                            Enter App
+                        <button onClick={() => navigate('/dashboard?demo=true')} className="px-3 py-2 rounded-lg text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors">
+                            Try Demo
                         </button>
                         <button onClick={openApp} className="btn-primary text-sm px-6 py-2.5">
                             Get Started
@@ -140,6 +140,15 @@ const LandingPage = () => {
                                 className="px-3 py-2 rounded-lg text-left text-sm text-text-secondary hover:bg-surface-2"
                             >
                                 Feedback
+                            </button>
+                            <button 
+                                onClick={() => {
+                                    setMobileMenuOpen(false);
+                                    navigate('/dashboard?demo=true');
+                                }} 
+                                className="px-3 py-2 rounded-lg text-left text-sm text-text-secondary hover:bg-surface-2"
+                            >
+                                Try Demo
                             </button>
                             <button onClick={openApp} className="mt-2 btn-primary w-full">Get Started</button>
                         </div>

@@ -336,7 +336,19 @@ function CourseCard({ course, progress, onDelete, isDeleting }) {
 
 /* ── Dashboard ──────────────────────────────────────────────────────── */
 const Dashboard = () => {
-    const { user } = useAuthStore();
+    const { user: authUser } = useAuthStore();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const isDemo = searchParams.get('demo') === 'true';
+    
+    // Mock user for demo mode
+    const user = authUser || (isDemo ? { 
+        name: 'Guest Explorer', 
+        role: 'guest', 
+        level: 1, 
+        usernameSet: true,
+        guest: true 
+    } : null);
+
     const { totalXP, level, levelTitle, streak, xpProgress, xpToNextLevel, setProfile } = useGamificationStore();
     const queryClient = useQueryClient();
 
@@ -409,12 +421,17 @@ const Dashboard = () => {
     });
 
     const { data: coursesData, isLoading: coursesLoading } = useQuery({
-        queryKey: ['courses'],
+        queryKey: ['courses', user?.guest],
         queryFn: async () => {
+            if (user?.guest) {
+                const local = localStorage.getItem('questxp_demo_course');
+                return local ? [JSON.parse(local)] : [];
+            }
             const { data } = await api.get('/courses');
             return data.courses || [];
         },
         refetchInterval: (data) => {
+            if (user?.guest) return false;
             const hasProcessing = data?.state?.data?.some(c => c.status === 'processing');
             return hasProcessing ? 3000 : false;
         }
@@ -501,6 +518,8 @@ const Dashboard = () => {
 
 
     if (!user) return null;
+
+    const isGuest = user.guest;
 
     const courses = coursesData || [];
     const activeCourse = courses[0];
@@ -620,7 +639,11 @@ const Dashboard = () => {
                             <div className="glass-card flex flex-col items-center justify-center py-20 text-center border-dashed">
                                 <BookOpen className="w-12 h-12 mb-4 text-text-muted" />
                                 <h3 className="text-lg font-semibold text-text-primary mb-2">No courses yet</h3>
-                                <p className="text-sm mb-6 text-text-secondary">Paste a YouTube playlist to generate your first course.</p>
+                                <p className="text-sm mb-6 text-text-secondary">
+                                    {isGuest 
+                                        ? "Try creating your first course to see how it works!" 
+                                        : "Paste a YouTube playlist to generate your first course."}
+                                </p>
                                 <button onClick={() => setShowCreate(true)} className="btn-esports">Create your first course</button>
                             </div>
                         ) : (
@@ -697,23 +720,38 @@ const Dashboard = () => {
                         </div>
                     </div>
 
-                    <Link to="/profile" className="glass-card block transition-all p-4">
-                        <div className="flex items-center gap-3 mb-3">
-                            <div className="w-10 h-10 rounded-full border border-border flex items-center justify-center font-semibold text-sm bg-primary text-white">
-                                {user.name?.charAt(0)?.toUpperCase()}
-                            </div>
-                            <div>
-                                <p className="text-sm font-semibold text-text-primary">{user.name}</p>
-                                <p className="text-xs text-text-secondary">{levelTitle || 'Explorer'} · Level {level || user?.level}</p>
-                            </div>
+                    <div className="glass-card p-6 flex flex-col items-center text-center">
+                        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                            <Crown className="w-6 h-6 text-primary" />
                         </div>
-                        <div className="progress-bar mb-1">
-                            <div className="progress-bar__fill" style={{ width: `${xpProgress}%` }} />
-                        </div>
-                        <p className="text-xs text-right text-text-muted uppercase tracking-widest font-bold">
-                            {xpToNextLevel} XP to Level {level + 1}
+                        <h3 className="text-sm font-bold text-text-primary mb-2 uppercase tracking-widest">Premium Features</h3>
+                        <p className="text-xs text-text-secondary leading-relaxed mb-6">
+                            Sign in to unlock AI Roadmaps, Progress Tracking, Daily Missions, and the Global Leaderboard.
                         </p>
-                    </Link>
+                        <Link to="/register" className="btn-primary w-full py-3 text-xs uppercase tracking-widest font-black">
+                            Create Account
+                        </Link>
+                    </div>
+
+                    {!isGuest && (
+                        <Link to="/profile" className="glass-card block transition-all p-4">
+                            <div className="flex items-center gap-3 mb-3">
+                                <div className="w-10 h-10 rounded-full border border-border flex items-center justify-center font-semibold text-sm bg-primary text-white">
+                                    {user.name?.charAt(0)?.toUpperCase()}
+                                </div>
+                                <div>
+                                    <p className="text-sm font-semibold text-text-primary">{user.name}</p>
+                                    <p className="text-xs text-text-secondary">{levelTitle || 'Explorer'} · Level {level || user?.level}</p>
+                                </div>
+                            </div>
+                            <div className="progress-bar mb-1">
+                                <div className="progress-bar__fill" style={{ width: `${xpProgress}%` }} />
+                            </div>
+                            <p className="text-xs text-right text-text-muted uppercase tracking-widest font-bold">
+                                {xpToNextLevel} XP to Level {level + 1}
+                            </p>
+                        </Link>
+                    )}
                 </aside>
             </div>
 

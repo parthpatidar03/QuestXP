@@ -306,6 +306,19 @@ const CourseDetail = () => {
 
     useEffect(() => {
         const fetchAll = async () => {
+            if (courseId?.startsWith('demo-')) {
+                const local = localStorage.getItem('questxp_demo_course');
+                if (local) {
+                    const parsed = JSON.parse(local);
+                    setCourse(parsed);
+                    // Mock progress for demo
+                    setProgress({ completedLectures: [], totalMinutes: 0 });
+                } else {
+                    setError('Demo course not found.');
+                }
+                return;
+            }
+
             try {
                 const [cRes, pRes] = await Promise.allSettled([
                     api.get(`/courses/${courseId}`),
@@ -333,7 +346,7 @@ const CourseDetail = () => {
 
     // Poll status if processing
     useEffect(() => {
-        if (!course || course.status === 'ready' || course.status === 'error') return;
+        if (!course || course.status === 'ready' || course.status === 'error' || courseId?.startsWith('demo-')) return;
         const iv = setInterval(async () => {
             try {
                 const { data } = await api.get(`/courses/${courseId}/status`);
@@ -542,7 +555,13 @@ const CourseDetail = () => {
 
                         {/* 4-Week Study Plan */}
                         <div className="mb-6">
-                            <StudyPlan courseId={courseId} onOpenSetup={() => setShowSetupModal(true)} />
+                            {!courseId?.startsWith('demo-') ? (
+                                <StudyPlan courseId={courseId} onOpenSetup={() => setShowSetupModal(true)} />
+                            ) : (
+                                <div className="glass-card p-6 border-dashed opacity-75">
+                                    <p className="text-sm text-text-muted text-center italic">Study Plans are available for registered users.</p>
+                                </div>
+                            )}
                         </div>
 
                         {/* Mission List */}

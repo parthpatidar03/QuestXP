@@ -9,6 +9,9 @@ const CourseCreationForm = ({ onSuccess }) => {
     const [error, setError] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const navigate = useNavigate();
+    
+    // Check if we are in demo/guest mode
+    const isGuest = !localStorage.getItem('accessToken') && window.location.search.includes('demo=true');
 
     const addSection = () => {
         setSections([...sections, { title: '', playlistUrl: '', order: sections.length }]);
@@ -54,6 +57,38 @@ const CourseCreationForm = ({ onSuccess }) => {
         e.preventDefault();
         setError(null);
         setIsSubmitting(true);
+
+        if (isGuest) {
+            // Simulate creation for guest
+            setTimeout(() => {
+                const mockCourse = {
+                    _id: 'demo-' + Date.now(),
+                    title: title || 'Demo Course',
+                    status: 'ready',
+                    totalLectures: sections.reduce((acc, s) => acc + 5, 0), // Mock 5 lectures per section
+                    createdAt: new Date().toISOString(),
+                    sections: sections.map((s, i) => ({
+                        _id: 'sec-' + i,
+                        title: s.title || `Section ${i + 1}`,
+                        playlistUrl: s.playlistUrl,
+                        order: i,
+                        lectures: Array(5).fill(0).map((_, li) => ({
+                            _id: `lec-${i}-${li}`,
+                            title: `Lesson ${li + 1}: Getting Started`,
+                            duration: 600,
+                            thumbnailUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&q=80',
+                            aiStatus: { transcription: 'complete', notes: 'complete', quiz: 'complete', topics: 'complete' }
+                        }))
+                    }))
+                };
+                localStorage.setItem('questxp_demo_course', JSON.stringify(mockCourse));
+                setIsSubmitting(false);
+                if (onSuccess) onSuccess(mockCourse._id);
+                else navigate(`/courses/${mockCourse._id}?demo=true`);
+            }, 2000);
+            return;
+        }
+
         try {
             const { data } = await api.post('/courses', { title, sections });
             if (onSuccess) {

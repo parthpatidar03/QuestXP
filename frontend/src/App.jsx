@@ -25,12 +25,18 @@ const PageLoader = () => (
 
 const ProtectedRoute = ({ children }) => {
     const { isAuthenticated, isLoading } = useAuthStore();
+    const location = useLocation();
+    const isDemo = new URLSearchParams(location.search).get('demo') === 'true';
+
     if (isLoading) return (
         <div className="min-h-screen flex items-center justify-center bg-bg">
             <div className="w-10 h-10 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: 'var(--color-primary)', borderTopColor: 'transparent' }} />
         </div>
     );
-    return isAuthenticated ? children : <Navigate to="/login" replace />;
+    
+    if (isAuthenticated || isDemo) return children;
+    
+    return <Navigate to="/login" replace />;
 };
 
 import useHeartbeat from './hooks/useHeartbeat';

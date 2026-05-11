@@ -73,6 +73,10 @@ api.interceptors.response.use(
 
             try {
                 const rToken = getLocalRefreshToken();
+                if (!rToken) {
+                    throw new Error('No refresh token available');
+                }
+
                 const { data } = await api.post('/auth/refresh', { refreshToken: rToken });
                 
                 if (data.accessToken) {
