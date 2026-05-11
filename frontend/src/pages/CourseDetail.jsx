@@ -512,28 +512,33 @@ const CourseDetail = () => {
                                     <span className="badge-epic text-[10px] py-1 px-3">EPIC QUEST</span>
                                     <span className="text-sm font-bold text-text-secondary">{allLectures.length} Missions · {totalDurMins} Minutes</span>
                                 </div>
-                                <h1 className="text-4xl sm:text-5xl font-black text-text-primary mb-5 leading-tight max-w-xl" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
+                                <h1 className="text-2xl sm:text-5xl font-black text-text-primary mb-5 leading-[1.1] max-w-xl" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
                                     {course.title}
                                 </h1>
-                                <div className="flex items-center gap-4 flex-wrap mb-6">
-                                    <div className="xp-chip text-base px-4 py-1.5"><img src="/favicon.png" alt="" className="w-5 h-5 object-contain" /> {totalXpPool} XP Available</div>
-                                    <div className="text-sm font-black text-success uppercase tracking-wider">🚀 {pct}% Complete</div>
+                                <div className="flex items-center gap-3 sm:gap-4 flex-wrap mb-6">
+                                    <div className="xp-chip text-sm sm:text-base px-3 sm:px-4 py-1 sm:py-1.5 shrink-0">
+                                        <img src="/favicon.png" alt="" className="w-4 h-4 sm:w-5 sm:h-5 object-contain" /> 
+                                        {totalXpPool} XP Available
+                                    </div>
+                                    <div className="text-[10px] sm:text-sm font-black text-success uppercase tracking-wider bg-success/10 px-3 py-1 rounded-full border border-success/20">
+                                        🚀 {pct}% Complete
+                                    </div>
                                 </div>
                                 {startLec && (
-                                    <div className="flex gap-3 mt-4">
+                                    <div className="flex items-center gap-2 sm:gap-3 mt-4 flex-wrap">
                                         <Link
                                             to={`/courses/${courseId}/lectures/${startLec._id}`}
-                                            className="btn-esports inline-flex items-center gap-2"
+                                            className="btn-esports inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:px-6 sm:py-3 text-xs sm:text-sm flex-1 sm:flex-none"
                                         >
                                             <PlayCircle className="w-4 h-4" />
-                                            {completedCount > 0 ? 'Resume Mission' : 'Start Quest'}
+                                            <span className="whitespace-nowrap">{completedCount > 0 ? 'Resume' : 'Start Quest'}</span>
                                         </Link>
                                         <Link 
                                             to={`/roadmap?courseId=${courseId}`} 
-                                            className="btn-glass inline-flex items-center gap-2 px-5 py-2.5 bg-surface-2 hover:bg-surface-3 transition-colors rounded-lg text-sm font-bold text-text-primary border border-border"
+                                            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:px-5 sm:py-2.5 bg-surface-2 hover:bg-surface-3 transition-colors rounded-lg text-[10px] sm:text-sm font-bold text-text-primary border border-border flex-1 sm:flex-none"
                                         >
-                                            <Layers className="w-4 h-4 text-primary" />
-                                            View Roadmap
+                                            <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
+                                            <span className="whitespace-nowrap">Roadmap</span>
                                         </Link>
                                         <ShareModal 
                                             isOpen={isShareModalOpen} 
@@ -543,10 +548,10 @@ const CourseDetail = () => {
                                         />
                                         <button 
                                             onClick={handleShare}
-                                            className="btn-glass inline-flex items-center gap-2 px-5 py-2.5 bg-surface-2 hover:bg-surface-3 transition-colors rounded-lg text-sm font-bold text-text-primary border border-border"
+                                            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:px-5 sm:py-2.5 bg-surface-2 hover:bg-surface-3 transition-colors rounded-lg text-[10px] sm:text-sm font-bold text-text-primary border border-border flex-1 sm:flex-none"
                                         >
-                                            <Share2 className="w-4 h-4 text-primary" />
-                                            {shareStatus || 'Share Quest'}
+                                            <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
+                                            <span className="whitespace-nowrap">{shareStatus || 'Share'}</span>
                                         </button>
                                     </div>
                                 )}
