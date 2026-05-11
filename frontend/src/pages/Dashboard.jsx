@@ -719,18 +719,20 @@ const Dashboard = () => {
                         </div>
                     </div>
 
-                    <div className="glass-card p-6 flex flex-col items-center text-center">
-                        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                            <Crown className="w-6 h-6 text-primary" />
+                    {isDemo && (
+                        <div className="glass-card p-6 flex flex-col items-center text-center">
+                            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                                <Crown className="w-6 h-6 text-primary" />
+                            </div>
+                            <h3 className="text-sm font-bold text-text-primary mb-2 uppercase tracking-widest">Premium Features</h3>
+                            <p className="text-xs text-text-secondary leading-relaxed mb-6">
+                                Sign in to unlock AI Roadmaps, Progress Tracking, Daily Missions, and the Global Leaderboard.
+                            </p>
+                            <Link to="/register" className="bg-blue-600 hover:bg-blue-700 text-white w-full py-3 text-xs uppercase tracking-widest font-black text-center rounded-lg">
+                                Create Account
+                            </Link>
                         </div>
-                        <h3 className="text-sm font-bold text-text-primary mb-2 uppercase tracking-widest">Premium Features</h3>
-                        <p className="text-xs text-text-secondary leading-relaxed mb-6">
-                            Sign in to unlock AI Roadmaps, Progress Tracking, Daily Missions, and the Global Leaderboard.
-                        </p>
-                        <Link to="/register" className="bg-blue-600 hover:bg-blue-700 text-white w-full py-3 text-xs uppercase tracking-widest font-black text-center rounded-lg">
-                            Create Account
-                        </Link>
-                    </div>
+                    )}
 
                     {!isGuest && (
                         <Link to="/profile" className="glass-card block transition-all p-4">
