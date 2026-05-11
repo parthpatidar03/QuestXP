@@ -71,7 +71,7 @@ function MissionRow({ lecture, index, isCompleted, isActive, isLocked, courseId 
                     border: isActive ? '1px solid rgba(255,255,255,0.2)' : 'none'
                 }}
             >
-                {isCompleted ? <CheckCircle2 className="w-5 h-5" /> : isLocked ? <Lock className="w-4 h-4" /> : index + 1}
+                {isCompleted ? <CheckCircle2 className="w-4 h-4 sm:w-5 h-5" /> : isLocked ? <Lock className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : index + 1}
             </div>
 
             {/* Thumbnail (small) */}
