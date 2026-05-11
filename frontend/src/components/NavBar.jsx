@@ -17,6 +17,8 @@ const NavBar = () => {
     const { totalXP, level, setProfile } = useGamificationStore();
     const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
     const [mobileOpen, setMobileOpen] = useState(false);
+    const isDemo = new URLSearchParams(window.location.search).get('demo') === 'true' || user?.guest;
+    const demoQuery = isDemo ? '?demo=true' : '';
 
 
     useEffect(() => {
@@ -48,14 +50,14 @@ const NavBar = () => {
                     </span>
                 </Link>
 
-                {/* Live search */}
-                <div className="flex flex-1 items-center gap-2">
+                {/* Live search - hidden on mobile header, shown in mobile menu */}
+                <div className="hidden md:flex flex-1 items-center gap-2">
                     <CourseSearch />
                     <a 
                         href="https://www.youtube.com/feed/playlists"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="btn-glass hidden sm:flex items-center gap-2 px-4 h-10 rounded-lg text-sm font-bold transition-all hover:bg-surface-3 group border border-border whitespace-nowrap"
+                        className="btn-glass flex items-center gap-2 px-4 h-10 rounded-lg text-sm font-bold transition-all hover:bg-surface-3 group border border-border whitespace-nowrap"
                     >
                         <Star className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
                         <span className="hidden lg:inline">Explore more courses</span>
@@ -63,27 +65,27 @@ const NavBar = () => {
                     </a>
                 </div>
 
-                <div className="flex-1" />
+                <div className="flex-1 md:hidden" />
 
                 <nav className="hidden md:flex items-center gap-1 mr-2">
                     <Link to="/" className="px-3 py-1.5 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-lg transition-colors">
                         Home
                     </Link>
-                    <Link to="/dashboard" className="px-3 py-1.5 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-lg transition-colors">
+                    <Link to={`/dashboard${demoQuery}`} className="px-3 py-1.5 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-lg transition-colors">
                         My Courses
                     </Link>
-                    <Link id="tour-roadmap" to="/roadmap" className="px-3 py-1.5 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-lg transition-colors">
+                    <Link id="tour-roadmap" to={`/roadmap${demoQuery}`} className="px-3 py-1.5 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-lg transition-colors">
                         Roadmap
                     </Link>
-                    <Link id="tour-leaderboard" to="/dashboard?open=leaderboard" className="px-3 py-1.5 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-lg transition-colors flex items-center gap-1.5">
+                    <Link id="tour-leaderboard" to={`/dashboard${demoQuery}&open=leaderboard`} className="px-3 py-1.5 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-lg transition-colors flex items-center gap-1.5">
                         <Trophy className="w-3.5 h-3.5 text-gold" />
                         Leaderboard
                     </Link>
 
                 </nav>
 
-                <div className="flex items-center gap-2">
-                    <div className="hidden sm:flex items-center gap-1.5 bg-surface-2 border border-border rounded-xl px-3 py-1.5">
+                <div className="hidden sm:flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 bg-surface-2 border border-border rounded-xl px-3 py-1.5">
                         <img src="/favicon.png" alt="" className="w-4 h-4 object-contain" />
                         <span className="text-sm font-semibold text-text-primary">{(totalXP || user?.totalXP || 0).toLocaleString()} XP</span>
                     </div>
@@ -103,7 +105,7 @@ const NavBar = () => {
                 </div>
 
 
-                <Link to="/profile" className="relative flex items-center gap-2 group">
+                <Link to={`/profile${demoQuery}`} className="hidden sm:flex relative items-center gap-2 group">
                     <div className="relative">
                         <div className="w-9 h-9 rounded-full border border-border p-0.5 bg-surface">
                             <div className="w-full h-full rounded-full bg-primary flex items-center justify-center text-white font-semibold text-xs">
@@ -149,7 +151,7 @@ const NavBar = () => {
                                 Home
                             </Link>
                             <Link 
-                                to="/dashboard" 
+                                to={`/dashboard${demoQuery}`} 
                                 onClick={() => setMobileOpen(false)}
                                 className="flex items-center gap-3 p-3 rounded-xl bg-surface-2 border border-border text-sm font-semibold text-text-primary"
                             >
@@ -157,7 +159,7 @@ const NavBar = () => {
                                 Courses
                             </Link>
                             <Link 
-                                to="/roadmap" 
+                                to={`/roadmap${demoQuery}`} 
                                 onClick={() => setMobileOpen(false)}
                                 className="flex items-center gap-3 p-3 rounded-xl bg-surface-2 border border-border text-sm font-semibold text-text-primary"
                             >
@@ -165,7 +167,7 @@ const NavBar = () => {
                                 Roadmap
                             </Link>
                             <Link 
-                                to="/dashboard?open=leaderboard" 
+                                to={`/dashboard${demoQuery}${isDemo ? '&' : '?'}open=leaderboard`} 
                                 onClick={() => setMobileOpen(false)}
                                 className="flex items-center gap-3 p-3 rounded-xl bg-surface-2 border border-border text-sm font-semibold text-text-primary"
                             >
@@ -193,14 +195,41 @@ const NavBar = () => {
                         </div>
 
                         {/* Mobile Stats Summary */}
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="p-4 rounded-xl bg-surface-2 border border-border flex items-center justify-between">
+                                <div className="flex flex-col">
+                                    <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Mastery</span>
+                                    <span className="text-lg font-black text-text-primary">{(totalXP || user?.totalXP || 0).toLocaleString()} XP</span>
+                                </div>
+                            </div>
+                            <div className="p-4 rounded-xl bg-surface-2 border border-border flex items-center justify-between">
+                                <div className="flex flex-col">
+                                    <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Theme</span>
+                                    <button onClick={toggleTheme} className="text-sm font-bold text-text-primary flex items-center gap-2 mt-1">
+                                        {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                                        {isDark ? 'Light' : 'Dark'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
                         <div className="p-4 rounded-xl bg-surface-2 border border-border flex items-center justify-between">
-                            <div className="flex flex-col">
-                                <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Total Mastery</span>
-                                <span className="text-xl font-black text-text-primary">{(totalXP || user?.totalXP || 0).toLocaleString()} XP</span>
-                            </div>
-                            <div className="w-10 h-10 rounded-full bg-gold/10 flex items-center justify-center border border-gold/20 p-2">
-                                <img src="/favicon.png" alt="" className="w-full h-full object-contain" />
-                            </div>
+                             <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold text-sm">
+                                    {(user?.username || user?.name)?.charAt(0).toUpperCase()}
+                                </div>
+                                <div>
+                                    <p className="text-sm font-bold text-text-primary">{user?.username || user?.name}</p>
+                                    <p className="text-xs text-text-muted">Level {level || 1}</p>
+                                </div>
+                             </div>
+                             <Link 
+                                to={`/profile${demoQuery}`} 
+                                onClick={() => setMobileOpen(false)}
+                                className="px-4 py-2 rounded-lg bg-surface-3 text-xs font-bold text-text-primary"
+                             >
+                                Edit Profile
+                             </Link>
                         </div>
                     </div>
                 </div>

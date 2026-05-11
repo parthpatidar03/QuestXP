@@ -106,7 +106,7 @@ const Profile = () => {
 
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center flex-wrap gap-3 mb-2">
-                            <h1 className="text-4xl sm:text-5xl font-black uppercase tracking-tight text-white" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
+                            <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-white leading-none" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
                                 {user.username || user.name}
                             </h1>
                             {!user.usernameSet && (
@@ -153,18 +153,18 @@ const Profile = () => {
                     </div>
 
                     {/* Quick stats */}
-                    <div className="flex gap-6 sm:gap-10 shrink-0 bg-surface-2/50 p-6 rounded-3xl border border-border/40 backdrop-blur-sm">
+                    <div className="grid grid-cols-3 gap-4 sm:flex sm:gap-10 shrink-0 bg-surface-2/50 p-4 sm:p-6 rounded-3xl border border-border/40 backdrop-blur-sm w-full sm:w-auto">
                         {[
-                            { icon: <img src="/favicon.png" alt="" className="w-5 h-5 object-contain" />, val: (totalXP || 0).toLocaleString(), label: 'Total XP', color: 'var(--color-gold)' },
-                            { icon: <Flame className="w-5 h-5" />, val: `${streak?.current ?? 0}d`, label: 'Streak', color: 'var(--color-warning)' },
-                            { icon: <Trophy className="w-5 h-5" />, val: badges.filter(b => b.earned).length, label: 'Badges', color: 'var(--color-success)' },
+                            { icon: <img src="/favicon.png" alt="" className="w-4 h-4 sm:w-5 sm:h-5 object-contain" />, val: (totalXP || 0).toLocaleString(), label: 'XP', color: 'var(--color-gold)' },
+                            { icon: <Flame className="w-4 h-4 sm:w-5 sm:h-5" />, val: `${streak?.current ?? 0}d`, label: 'Streak', color: 'var(--color-warning)' },
+                            { icon: <Trophy className="w-4 h-4 sm:w-5 sm:h-5" />, val: badges.filter(b => b.earned).length, label: 'Badges', color: 'var(--color-success)' },
                         ].map(s => (
-                            <div key={s.label} className="flex flex-col items-center gap-2">
-                                <div className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-inner" style={{ background: `${s.color}20`, color: s.color, border: `1px solid ${s.color}30`, padding: '10px' }}>
+                            <div key={s.label} className="flex flex-col items-center gap-1 sm:gap-2">
+                                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-inner" style={{ background: `${s.color}20`, color: s.color, border: `1px solid ${s.color}30`, padding: '8px sm:10px' }}>
                                     {s.icon}
                                 </div>
-                                <span className="text-2xl font-black text-white tracking-tight">{s.val}</span>
-                                <span className="text-[11px] font-bold uppercase tracking-widest text-text-muted">{s.label}</span>
+                                <span className="text-lg sm:text-2xl font-black text-white tracking-tight">{s.val}</span>
+                                <span className="text-[9px] sm:text-[11px] font-bold uppercase tracking-widest text-text-muted">{s.label}</span>
                             </div>
                         ))}
                     </div>

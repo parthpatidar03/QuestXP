@@ -102,7 +102,7 @@ function CourseSearch() {
     useEffect(() => () => clearTimeout(debounceRef.current), []);
 
     return (
-        <div id="tour-search" ref={containerRef} className="relative flex-1 max-w-md hidden md:block">
+        <div id="tour-search" ref={containerRef} className="relative flex-1 max-w-md">
             <div className={`flex items-center gap-2 bg-surface-2 border rounded-lg px-3 h-10 text-sm transition-colors ${focused ? 'border-primary' : 'border-border hover:border-text-muted'}`}>
                 {isFetching
                     ? <Loader2 className="w-4 h-4 shrink-0 text-primary animate-spin" />

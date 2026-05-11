@@ -599,22 +599,23 @@ const Dashboard = () => {
 
 
                     <section>
-                        <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-xl font-semibold tracking-tight text-text-primary">Active courses</h2>
-                            <button id="tour-new-course" onClick={() => setShowCreate(v => !v)} className="btn-primary py-2 px-4 text-xs flex items-center gap-1">
-
-                                <Plus className="w-3.5 h-3.5" />
-                                {showCreate ? 'Cancel' : 'New Course'}
-                            </button>
-                            {user.role === 'admin' && (
-                                <Link 
-                                    to="/admin/feedback" 
-                                    className="px-4 py-2 rounded-lg border border-primary/20 bg-primary/5 text-primary text-xs font-semibold hover:bg-primary/10 transition-colors flex items-center gap-2"
-                                >
-                                    <MessageSquare className="w-3.5 h-3.5" />
-                                    Feedback Admin
-                                </Link>
-                            )}
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                            <h2 className="text-xl font-bold tracking-tight text-text-primary uppercase" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>Active missions</h2>
+                            <div className="flex items-center gap-2">
+                                <button id="tour-new-course" onClick={() => setShowCreate(v => !v)} className="btn-primary py-2.5 px-5 text-[10px] font-black uppercase tracking-widest flex items-center gap-2 flex-1 sm:flex-none justify-center">
+                                    {showCreate ? <X className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
+                                    {showCreate ? 'Cancel' : 'New Mission'}
+                                </button>
+                                {user.role === 'admin' && (
+                                    <Link 
+                                        to="/admin/feedback" 
+                                        className="px-4 py-2.5 rounded-lg border border-primary/20 bg-primary/5 text-primary text-[10px] font-black uppercase tracking-widest hover:bg-primary/10 transition-colors flex items-center gap-2"
+                                    >
+                                        <MessageSquare className="w-3.5 h-3.5" />
+                                        Feedback
+                                    </Link>
+                                )}
+                            </div>
                         </div>
                         {deleteError && (
                             <div className="mb-4 rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">

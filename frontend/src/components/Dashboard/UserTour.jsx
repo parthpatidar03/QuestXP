@@ -141,27 +141,32 @@ const UserTour = () => {
     useEffect(() => {
         if (!targetRect || !step) return;
 
-        
         let top = 0;
         let left = 0;
         let arrowPos = 'top';
 
+        const isMobile = window.innerWidth < 640;
+
         if (step.position === 'bottom') {
             top = targetRect.bottom + 20;
-            left = Math.max(20, Math.min(window.innerWidth - 320, targetRect.left + (targetRect.width / 2) - 150));
+            left = Math.max(10, Math.min(window.innerWidth - (isMobile ? 280 : 320), targetRect.left + (targetRect.width / 2) - 150));
             arrowPos = 'top';
             
-            // Flip to top if it hits the bottom of the screen
             if (top + 250 > window.innerHeight) {
-                top = targetRect.top - 280;
+                top = targetRect.top - (isMobile ? 220 : 280);
                 arrowPos = 'bottom';
             }
         } else if (step.position === 'left') {
-            top = targetRect.top + (targetRect.height / 2) - 100;
-            left = targetRect.left - 320;
-            arrowPos = 'right';
-
-            // Ensure it doesn't go above or below
+            if (isMobile) {
+                // On mobile, just put it below
+                top = targetRect.bottom + 20;
+                left = Math.max(10, window.innerWidth - 290);
+                arrowPos = 'top';
+            } else {
+                top = targetRect.top + (targetRect.height / 2) - 100;
+                left = targetRect.left - 320;
+                arrowPos = 'right';
+            }
             top = Math.max(20, Math.min(window.innerHeight - 250, top));
         }
 
@@ -176,11 +181,11 @@ const UserTour = () => {
         <div className="fixed inset-0 z-[9999] pointer-events-none">
             {/* Spotlight Overlay */}
             <div 
-                className="absolute inset-0 bg-black/90 backdrop-blur-[2px] pointer-events-auto transition-opacity duration-300"
+                className="absolute inset-0 bg-black/80 backdrop-blur-[1px] pointer-events-auto transition-opacity duration-300"
                 onClick={skipTour}
                 style={{
-                    maskImage: `radial-gradient(circle at ${targetRect.left + targetRect.width / 2}px ${targetRect.top + targetRect.height / 2}px, transparent ${Math.max(targetRect.width, targetRect.height) / 2 + 20}px, black ${Math.max(targetRect.width, targetRect.height) / 2 + 21}px)`,
-                    WebkitMaskImage: `radial-gradient(circle at ${targetRect.left + targetRect.width / 2}px ${targetRect.top + targetRect.height / 2}px, transparent ${Math.max(targetRect.width, targetRect.height) / 2 + 20}px, black ${Math.max(targetRect.width, targetRect.height) / 2 + 21}px)`
+                    maskImage: `radial-gradient(circle at ${targetRect.left + targetRect.width / 2}px ${targetRect.top + targetRect.height / 2}px, transparent ${Math.min(100, Math.max(targetRect.width, targetRect.height) / 2 + 10)}px, black ${Math.min(100, Math.max(targetRect.width, targetRect.height) / 2 + 11)}px)`,
+                    WebkitMaskImage: `radial-gradient(circle at ${targetRect.left + targetRect.width / 2}px ${targetRect.top + targetRect.height / 2}px, transparent ${Math.min(100, Math.max(targetRect.width, targetRect.height) / 2 + 10)}px, black ${Math.min(100, Math.max(targetRect.width, targetRect.height) / 2 + 11)}px)`
                 }}
             />
 
@@ -212,7 +217,7 @@ const UserTour = () => {
                     }}
                     exit={{ opacity: 0, scale: 0.9, y: 10 }}
                     transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                    className="absolute w-[300px] bg-slate-900/90 backdrop-blur-md text-white border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.8)] rounded-2xl p-6 pointer-events-auto"
+                    className="absolute w-[280px] sm:w-[300px] bg-slate-900/95 backdrop-blur-md text-white border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.8)] rounded-2xl p-5 sm:p-6 pointer-events-auto"
                     style={{ position: 'fixed' }}
                 >
                     <div className="flex items-center justify-between mb-3">

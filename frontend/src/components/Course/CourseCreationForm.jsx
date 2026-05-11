@@ -131,13 +131,17 @@ const CourseCreationForm = ({ onSuccess }) => {
                     <div className="space-y-4">
                         {sections.map((section, index) => (
                             <div key={index} className="p-5 bg-surface-2 rounded-xl border border-border relative group">
-                                {sections.length > 1 && (
-                                    <button type="button" onClick={() => removeSection(index)} className="absolute top-3 right-3 text-text-muted hover:text-danger hover:bg-danger/10 p-1 rounded-md transition-colors" title="Remove Section">
-                                        <X className="w-5 h-5" />
-                                    </button>
-                                )}
+                                <div className="flex items-center justify-between mb-4 border-b border-border/50 pb-3">
+                                    <h3 className="text-xs font-bold text-text-primary uppercase tracking-widest">Section {index + 1}</h3>
+                                    {sections.length > 1 && (
+                                        <button type="button" onClick={() => removeSection(index)} className="text-text-muted hover:text-danger hover:bg-danger/10 p-1.5 rounded-lg transition-colors flex items-center gap-1.5 text-[10px] font-bold" title="Remove Section">
+                                            <X className="w-4 h-4" />
+                                            REMOVE
+                                        </button>
+                                    )}
+                                </div>
                                 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pr-8">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                     <div>
                                         <label className="block text-xs font-semibold text-text-muted mb-1.5">Section title</label>
                                         <input 
