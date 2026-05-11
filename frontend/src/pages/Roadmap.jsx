@@ -18,9 +18,10 @@ import {
     Play,
     MinusCircle,
     PlusCircle,
-    Square
+    Square,
+    Loader2
 } from 'lucide-react';
-import { format, differenceInDays } from 'date-fns';
+import { format, differenceInDays, addDays } from 'date-fns';
 
 const formatTime = (seconds) => {
     if (!seconds || seconds <= 0) return '0 min';
@@ -69,25 +70,34 @@ const ProgressHeader = ({ roadmap, onShift }) => {
 
                 <div className="flex items-center gap-8">
                     {/* Schedule Adjuster */}
-                    <div className="flex items-center gap-3 bg-surface-2 p-2 rounded-xl border border-border">
-                        <button 
+                    <div className="flex items-center gap-3 bg-surface-2 p-2 rounded-xl border border-border relative">
+                        {onShift.adjusting && (
+                            <div className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap px-3 py-1 bg-primary/20 text-primary text-[10px] font-black rounded-full border border-primary/30 animate-pulse">
+                                SYNCING...
+                            </div>
+                        )}
+                        <motion.button 
+                            whileTap={{ scale: 0.9 }}
                             onClick={() => onShift(-1)}
-                            className="p-2 hover:bg-surface-3 rounded-lg text-text-muted hover:text-primary transition-colors"
+                            className="p-2 hover:bg-surface-3 rounded-lg text-text-muted hover:text-primary transition-colors disabled:opacity-50"
                             title="Subtract 1 day"
+                            disabled={onShift.adjusting}
                         >
                             <Minus className="w-4 h-4" />
-                        </button>
+                        </motion.button>
                         <div className="text-center min-w-[100px]">
                             <span className="text-[10px] font-black text-text-muted uppercase tracking-widest block mb-1">📅 Shift Plan</span>
                             <span className="text-sm font-black text-text-primary">Adjust Schedule</span>
                         </div>
-                        <button 
+                        <motion.button 
+                            whileTap={{ scale: 0.9 }}
                             onClick={() => onShift(1)}
-                            className="p-2 hover:bg-surface-3 rounded-lg text-text-muted hover:text-primary transition-colors"
+                            className="p-2 hover:bg-surface-3 rounded-lg text-text-muted hover:text-primary transition-colors disabled:opacity-50"
                             title="Add 1 day"
+                            disabled={onShift.adjusting}
                         >
                             <Plus className="w-4 h-4" />
-                        </button>
+                        </motion.button>
                     </div>
 
                     <div className="text-right border-l border-border/50 pl-8">
@@ -151,21 +161,25 @@ const RoadmapPlaylistCard = ({ playlistId, days, roadmapId, courseId, onPartialS
                 {/* RIGHT SIDE */}
                 <div className="flex items-center gap-4 shrink-0">
                     <div className="flex items-center gap-3 bg-black/40 px-5 py-2.5 rounded-xl border border-border/80 shadow-inner">
-                        <button 
+                        <motion.button 
+                            whileTap={{ scale: 0.85 }}
                             onClick={(e) => { e.stopPropagation(); onPartialShift(days[0].dayIndex, -1); }}
-                            className="text-text-muted hover:text-primary transition-all p-1 hover:scale-110 active:scale-90"
+                            className="text-text-muted hover:text-primary transition-all p-1 disabled:opacity-30"
+                            disabled={onPartialShift.adjusting}
                         >
-                            <MinusCircle className="w-6 h-6" />
-                        </button>
+                            {onPartialShift.adjusting ? <Loader2 className="w-6 h-6 animate-spin opacity-50" /> : <MinusCircle className="w-6 h-6" />}
+                        </motion.button>
                         <span className="text-sm font-black text-text-primary uppercase tracking-tight min-w-[130px] text-center font-mono">
                             {dateRange}
                         </span>
-                        <button 
+                        <motion.button 
+                            whileTap={{ scale: 0.85 }}
                             onClick={(e) => { e.stopPropagation(); onPartialShift(days[0].dayIndex, 1); }}
-                            className="text-text-muted hover:text-primary transition-all p-1 hover:scale-110 active:scale-90"
+                            className="text-text-muted hover:text-primary transition-all p-1 disabled:opacity-30"
+                            disabled={onPartialShift.adjusting}
                         >
-                            <PlusCircle className="w-6 h-6" />
-                        </button>
+                            {onPartialShift.adjusting ? <Loader2 className="w-6 h-6 animate-spin opacity-50" /> : <PlusCircle className="w-6 h-6" />}
+                        </motion.button>
                     </div>
 
                     <button 
@@ -190,18 +204,22 @@ const RoadmapPlaylistCard = ({ playlistId, days, roadmapId, courseId, onPartialS
                                 </div>
                                 <div className="flex items-center gap-3">
                                     <div className="flex items-center bg-surface-2 rounded-xl border border-border overflow-hidden">
-                                        <button 
+                                        <motion.button 
+                                            whileTap={{ scale: 0.9 }}
                                             onClick={() => onPartialShift(day.dayIndex, -1)}
-                                            className="p-2.5 hover:bg-surface-3 text-text-muted hover:text-primary transition-colors border-r border-border"
+                                            className="p-2.5 hover:bg-surface-3 text-text-muted hover:text-primary transition-colors border-r border-border disabled:opacity-50"
+                                            disabled={onPartialShift.adjusting}
                                         >
                                             <Minus className="w-4 h-4" />
-                                        </button>
-                                        <button 
+                                        </motion.button>
+                                        <motion.button 
+                                            whileTap={{ scale: 0.9 }}
                                             onClick={() => onPartialShift(day.dayIndex, 1)}
-                                            className="p-2.5 hover:bg-surface-3 text-text-muted hover:text-primary transition-colors"
+                                            className="p-2.5 hover:bg-surface-3 text-text-muted hover:text-primary transition-colors disabled:opacity-50"
+                                            disabled={onPartialShift.adjusting}
                                         >
                                             <Plus className="w-4 h-4" />
-                                        </button>
+                                        </motion.button>
                                     </div>
                                     <div className="px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/30">
                                         <span className="text-[11px] font-black text-primary uppercase tracking-tight">Target: {formatTime(day.totalMinutes)}</span>
@@ -274,14 +292,28 @@ const Roadmap = () => {
     const handleShift = (days) => {
         if (!roadmap) return;
         
-        // Accumulate shift amount
+        // Optimistic UI Update
+        setRoadmap(prev => {
+            if (!prev) return prev;
+            return {
+                ...prev,
+                days: prev.days.map(day => ({
+                    ...day,
+                    date: addDays(new Date(day.date), days).toISOString()
+                })),
+                config: {
+                    ...prev.config,
+                    startDate: addDays(new Date(prev.config.startDate), days).toISOString()
+                }
+            };
+        });
+
+        // Accumulate shift amount for API
         pendingShiftRef.current += days;
-        setAdjusting(true); // Show some "working" state if needed, but don't block
+        setAdjusting(true);
         
-        // Clear previous timer
         if (shiftTimeoutRef.current) clearTimeout(shiftTimeoutRef.current);
         
-        // Debounce API call
         shiftTimeoutRef.current = setTimeout(async () => {
             const finalShift = pendingShiftRef.current;
             pendingShiftRef.current = 0;
@@ -296,16 +328,39 @@ const Roadmap = () => {
                 setRoadmap(updated);
             } catch (err) {
                 console.error("Failed to shift roadmap", err);
+                // In a real app, you'd revert the optimistic update here
+                // but since it's a "vibe" refactor, we'll keep it simple
+                // maybe just re-fetch the roadmap
+                fetchRoadmap();
             } finally {
                 setAdjusting(false);
             }
-        }, 400); // 400ms burst window
+        }, 400);
     };
     
     const handlePartialShift = (fromDayIndex, shiftAmount) => {
         if (!roadmap) return;
 
-        // Accumulate per-index
+        // Optimistic UI Update
+        setRoadmap(prev => {
+            if (!prev) return prev;
+            const newDays = prev.days.map((day, idx) => {
+                if (idx >= fromDayIndex) {
+                    return {
+                        ...day,
+                        date: addDays(new Date(day.date), shiftAmount).toISOString()
+                    };
+                }
+                return day;
+            });
+            const newConfig = fromDayIndex === 0 ? {
+                ...prev.config,
+                startDate: addDays(new Date(prev.config.startDate), shiftAmount).toISOString()
+            } : prev.config;
+            return { ...prev, days: newDays, config: newConfig };
+        });
+
+        // Accumulate for API
         const current = pendingPartialShiftsRef.current.get(fromDayIndex) || 0;
         pendingPartialShiftsRef.current.set(fromDayIndex, current + shiftAmount);
         setAdjusting(true);
@@ -313,9 +368,6 @@ const Roadmap = () => {
         if (partialShiftTimeoutRef.current) clearTimeout(partialShiftTimeoutRef.current);
 
         partialShiftTimeoutRef.current = setTimeout(async () => {
-            // Process all pending partial shifts
-            // For simplicity, we process one per flush, or we could aggregate. 
-            // Usually users focus on one section at a time.
             const entries = Array.from(pendingPartialShiftsRef.current.entries());
             pendingPartialShiftsRef.current.clear();
 
@@ -326,11 +378,16 @@ const Roadmap = () => {
                     setRoadmap(updated);
                 } catch (err) {
                     console.error("Failed to partially shift roadmap", err);
+                    fetchRoadmap();
                 }
             }
             setAdjusting(false);
         }, 400);
     };
+
+    // Attach adjusting state to handlers for sub-components
+    handleShift.adjusting = adjusting;
+    handlePartialShift.adjusting = adjusting;
 
     const playlistIds = useMemo(() => {
         if (!roadmap) return [];
