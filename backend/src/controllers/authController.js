@@ -176,12 +176,10 @@ const refresh = async (req, res, next) => {
 
         const session = await Session.findById(decoded.sessionId);
         if (!session || session.revokedAt || session.expiresAt <= new Date()) {
-            await Session.updateMany(
-                { user: decoded.userId, revokedAt: null },
-                { revokedAt: new Date(), revokeReason: 'refresh_reuse_or_invalid_session' }
-            );
+            // T071: Don't revoke ALL sessions just because ONE expired or was manually revoked.
+            // Only reuse (token hash mismatch) should trigger the security panic.
             clearAuthCookies(res);
-            return res.status(401).json({ error: 'Invalid refresh token' });
+            return res.status(401).json({ error: 'Session expired' });
         }
 
         if (session.refreshTokenHash !== hashToken(token)) {

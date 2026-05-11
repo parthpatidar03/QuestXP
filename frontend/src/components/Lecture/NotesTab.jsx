@@ -211,7 +211,15 @@ const NotesTab = ({ lectureId, courseId, onSeek, notesStatus, errorReason, aiSta
         <div className="p-6 space-y-8 max-w-4xl mx-auto">
             
             {/* Summary Layer */}
-            <section className="bg-surface-2 p-6 rounded-2xl border border-border">
+            <section className="bg-surface-2 p-6 rounded-2xl border border-border relative overflow-hidden">
+                {notes.transcriptSource === 'metadata_fallback' && (
+                    <div className="mb-4 p-3 rounded-xl bg-danger/10 border border-danger/20 flex items-center gap-3">
+                        <AlertCircle className="w-5 h-5 text-danger shrink-0" />
+                        <p className="text-[11px] font-bold text-danger uppercase tracking-wider">
+                            Low Quality Warning: Video captions were unavailable. Summary is based on video title only.
+                        </p>
+                    </div>
+                )}
                 <h2 className="text-xl font-display font-bold text-white mb-3">Summary</h2>
                 <p className="text-text-secondary leading-relaxed">{notes.summary}</p>
             </section>

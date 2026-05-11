@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
+import useAuthStore from '../store/useAuthStore';
 
 /**
  * useLectureStatus hook polls for AI processing status of a specific lecture.
@@ -9,11 +10,11 @@ import api from '../services/api';
  * @param {boolean} enabled - Whether to enable polling.
  * @returns {object} The current AI status of the lecture.
  */
-export const useLectureStatus = (lectureId, enabled = true) => {
+    const { isAuthenticated } = useAuthStore();
     const [status, setStatus] = useState(null);
 
     useEffect(() => {
-        if (!lectureId || !enabled) return;
+        if (!lectureId || !enabled || !isAuthenticated) return;
 
         let cancelled = false;
         const fetchStatus = async () => {

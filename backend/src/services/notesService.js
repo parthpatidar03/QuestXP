@@ -73,7 +73,8 @@ class NotesService {
                 formulas: raw.formulas || [],
                 codeSnippets: raw.codeSnippets || [],
                 commonMistakes: raw.commonMistakes || [],
-                highPriority: raw.highPriority || []
+                highPriority: raw.highPriority || [],
+                transcriptSource: transcript.source
             },
             { upsert: true, new: true }
         );

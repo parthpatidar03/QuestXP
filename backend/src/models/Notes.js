@@ -22,6 +22,7 @@ const notesSchema = new Schema({
     }],
     commonMistakes: [{ type: String }],
     highPriority: [{ type: String }],
+    transcriptSource: { type: String, enum: ['platform_captions', 'local_stt', 'metadata_fallback'], default: 'platform_captions' },
     userEdits: [{
         userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
         content: { type: String, required: true },
