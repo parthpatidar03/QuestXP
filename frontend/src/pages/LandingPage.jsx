@@ -295,25 +295,67 @@ const LandingPage = () => {
                     </div>
                 </section>
 
-                <section className="border-y border-border bg-surface/50 backdrop-blur-sm">
-                    <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-12">
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center text-center">
-                            <div className="space-y-1">
-                                <p className="text-3xl sm:text-4xl font-black text-primary font-display">{formatMetric(stats.learners)}</p>
-                                <p className="text-xs sm:text-sm font-bold text-text-secondary uppercase tracking-widest">Active Learners</p>
-                            </div>
-                            <div className="space-y-1">
-                                <p className="text-3xl sm:text-4xl font-black text-text-primary font-display">{formatMetric(stats.quizzes)}</p>
-                                <p className="text-xs sm:text-sm font-bold text-text-secondary uppercase tracking-widest">Quizzes Conquered</p>
-                            </div>
-                            <div className="space-y-1">
-                                <p className="text-3xl sm:text-4xl font-black text-text-primary font-display">{formatMetric(stats.missions)}</p>
-                                <p className="text-xs sm:text-sm font-bold text-text-secondary uppercase tracking-widest">Missions Finished</p>
-                            </div>
-                            <div className="space-y-1">
-                                <p className="text-3xl sm:text-4xl font-black text-text-primary font-display">{formatMetric(stats.xp)}</p>
-                                <p className="text-xs sm:text-sm font-bold text-text-secondary uppercase tracking-widest">Knowledge XP</p>
-                            </div>
+                <section className="py-20 relative overflow-hidden">
+                    <div className="max-w-4xl mx-auto px-4 sm:px-6">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+                            <motion.div 
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                whileInView={{ opacity: 1, scale: 1 }}
+                                viewport={{ once: true }}
+                                className="aspect-square flex flex-col items-center justify-center p-6 rounded-2xl border border-border bg-surface/50 backdrop-blur-sm shadow-xl hover:border-primary/50 transition-colors group"
+                            >
+                                <p className="text-3xl sm:text-4xl font-black text-primary font-display group-hover:scale-110 transition-transform">
+                                    {formatMetric(stats.learners)}
+                                </p>
+                                <p className="text-[10px] sm:text-xs font-bold text-text-secondary uppercase tracking-[0.2em] mt-3 text-center leading-tight">
+                                    Active <br/> Learners
+                                </p>
+                            </motion.div>
+
+                            <motion.div 
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                whileInView={{ opacity: 1, scale: 1 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.1 }}
+                                className="aspect-square flex flex-col items-center justify-center p-6 rounded-2xl border border-border bg-surface/50 backdrop-blur-sm shadow-xl hover:border-primary/50 transition-colors group"
+                            >
+                                <p className="text-3xl sm:text-4xl font-black text-text-primary font-display group-hover:scale-110 transition-transform">
+                                    {formatMetric(stats.missions)}
+                                </p>
+                                <p className="text-[10px] sm:text-xs font-bold text-text-secondary uppercase tracking-[0.2em] mt-3 text-center leading-tight">
+                                    Missions <br/> Finished
+                                </p>
+                            </motion.div>
+
+                            <motion.div 
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                whileInView={{ opacity: 1, scale: 1 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.2 }}
+                                className="aspect-square flex flex-col items-center justify-center p-6 rounded-2xl border border-border bg-surface/50 backdrop-blur-sm shadow-xl hover:border-primary/50 transition-colors group"
+                            >
+                                <p className="text-3xl sm:text-4xl font-black text-text-primary font-display group-hover:scale-110 transition-transform">
+                                    {formatMetric(stats.xp)}
+                                </p>
+                                <p className="text-[10px] sm:text-xs font-bold text-text-secondary uppercase tracking-[0.2em] mt-3 text-center leading-tight">
+                                    Knowledge <br/> XP Distributed
+                                </p>
+                            </motion.div>
+
+                            <motion.div 
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                whileInView={{ opacity: 1, scale: 1 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.3 }}
+                                className="aspect-square flex flex-col items-center justify-center p-6 rounded-2xl border border-border bg-surface/50 backdrop-blur-sm shadow-xl hover:border-primary/50 transition-colors group"
+                            >
+                                <p className="text-3xl sm:text-4xl font-black text-text-primary font-display group-hover:scale-110 transition-transform">
+                                    {formatMetric(stats.visits || 1200)}
+                                </p>
+                                <p className="text-[10px] sm:text-xs font-bold text-text-secondary uppercase tracking-[0.2em] mt-3 text-center leading-tight">
+                                    Global <br/> Interactions
+                                </p>
+                            </motion.div>
                         </div>
                     </div>
                 </section>

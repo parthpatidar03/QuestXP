@@ -7,16 +7,22 @@ const redis = require('../queues/redisConnection');
 
 const CACHE_KEY = 'public:stats';
 const CACHE_TTL = 600; // 10 minutes
+const VISITS_KEY = 'public:total_visits';
 
 // Helper to round up to nearest interval
 const roundUp = (num, interval) => Math.ceil(num / interval) * interval;
 
 router.get('/stats', async (req, res) => {
     try {
+        // Increment visit counter on every hit (freshness)
+        const visits = await redis.incr(VISITS_KEY);
+
         // Try to get from Redis first
         const cached = await redis.get(CACHE_KEY);
         if (cached) {
-            return res.json(JSON.parse(cached));
+            const data = JSON.parse(cached);
+            data.visits = roundUp(visits + 1000, 100); // Add buffered visits to cached data
+            return res.json(data);
         }
 
         // Parallel DB queries
@@ -40,10 +46,11 @@ router.get('/stats', async (req, res) => {
             learners: roundUp(userCount + 20, 10),
             quizzes: roundUp(quizCount + 150, 50),
             missions: roundUp(actualMissions + 500, 100),
-            xp: roundUp(actualXP + 50000, 1000)
+            xp: roundUp(actualXP + 50000, 1000),
+            visits: roundUp(visits + 1000, 100)
         };
 
-        // Cache in Redis
+        // Cache in Redis (except visits which is handled separately for real-time)
         await redis.setex(CACHE_KEY, CACHE_TTL, JSON.stringify(stats));
 
         res.json(stats);
