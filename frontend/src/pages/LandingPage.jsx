@@ -302,16 +302,16 @@ const LandingPage = () => {
                             {/* Inner glow on hover */}
                             <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                             
-                            <div className="grid grid-cols-2 md:grid-cols-4 relative z-10 divide-x divide-y md:divide-y-0 divide-border/30">
-                                <div className="flex flex-col items-center justify-center text-center p-6 md:p-8">
+                            <div className="grid grid-cols-2 md:grid-cols-4 relative z-10">
+                                <div className="flex flex-col items-center justify-center text-center p-6 md:p-8 border-r border-b md:border-b-0 border-border/20">
                                     <p className="text-3xl sm:text-5xl font-black text-primary font-display mb-2">{formatMetric(stats.learners)}</p>
                                     <p className="text-[9px] sm:text-[10px] font-bold text-text-secondary uppercase tracking-[0.2em] leading-tight">Active <br/> Learners</p>
                                 </div>
-                                <div className="flex flex-col items-center justify-center text-center p-6 md:p-8">
+                                <div className="flex flex-col items-center justify-center text-center p-6 md:p-8 border-b md:border-b-0 md:border-r border-border/20">
                                     <p className="text-3xl sm:text-5xl font-black text-text-primary font-display mb-2">{formatMetric(stats.missions)}</p>
                                     <p className="text-[9px] sm:text-[10px] font-bold text-text-secondary uppercase tracking-[0.2em] leading-tight">Missions <br/> Finished</p>
                                 </div>
-                                <div className="flex flex-col items-center justify-center text-center p-6 md:p-8">
+                                <div className="flex flex-col items-center justify-center text-center p-6 md:p-8 border-r md:border-b-0 border-border/20">
                                     <p className="text-3xl sm:text-5xl font-black text-text-primary font-display mb-2">{formatMetric(stats.xp)}</p>
                                     <p className="text-[9px] sm:text-[10px] font-bold text-text-secondary uppercase tracking-[0.2em] leading-tight">Knowledge <br/> XP Distributed</p>
                                 </div>
