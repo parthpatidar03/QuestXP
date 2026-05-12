@@ -79,7 +79,7 @@ function MissionRow({ lecture, index, isCompleted, isActive, isLocked, courseId 
                     boxShadow: isCompleted ? '0 0 15px var(--color-success)' : 'none'
                 }}
             >
-                {isCompleted ? <CheckCircle2 className="w-4 h-4 sm:w-5 h-5" /> : isLocked ? <Lock className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : index + 1}
+                {isCompleted ? <Check className="w-5 h-5 sm:w-6 h-6 stroke-[3]" /> : isLocked ? <Lock className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : index + 1}
             </div>
 
             {/* Thumbnail (small) */}
@@ -642,10 +642,10 @@ const CourseDetail = () => {
                                             initial={{ width: 0 }}
                                             animate={{ width: `${pct}%` }}
                                             transition={{ duration: 1.5, ease: "circOut" }}
-                                            className="absolute top-0 left-0 h-full bg-gradient-to-r from-primary/80 to-primary rounded-full shadow-[0_0_20px_var(--color-primary)]"
+                                            className="absolute top-0 left-0 h-full bg-gradient-to-r from-success/80 to-success rounded-full shadow-[0_0_20px_var(--color-success)]"
                                         >
                                             {/* Journey Thumb (The Runner) */}
-                                            <div className="absolute -right-4 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white border-[4px] border-primary shadow-[0_0_15px_var(--color-primary)] z-10 flex items-center justify-center overflow-hidden">
+                                            <div className="absolute -right-4 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white border-[4px] border-success shadow-[0_0_15px_var(--color-success)] z-10 flex items-center justify-center overflow-hidden">
                                                 <span className="text-xl transform scale-x-[-1] translate-x-[1px]">🏃</span>
                                             </div>
                                         </motion.div>

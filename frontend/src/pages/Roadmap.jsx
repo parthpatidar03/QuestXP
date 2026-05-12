@@ -170,7 +170,7 @@ const ProgressHeader = React.memo(({ roadmap, onShift, totalCalendarDays, onUpda
                                     <motion.div 
                                         initial={{ width: 0 }}
                                         animate={{ width: `${learningStats.percent}%` }}
-                                        className="h-full bg-primary shadow-[0_0_10px_var(--color-primary)]" 
+                                        className="h-full bg-success shadow-[0_0_10px_var(--color-success)]" 
                                     />
                                 </div>
                             </div>
@@ -336,12 +336,12 @@ const RoadmapPlaylistCard = React.memo(({ playlistId, days, dayLabelsMap, totalC
                                             }}
                                             className={`flex items-center gap-2 p-1.5 rounded-lg border transition-all ${
                                                 vid.completed 
-                                                    ? 'bg-primary border-primary text-white shadow-[0_0_10px_rgba(var(--color-primary-rgb),0.3)]' 
+                                                    ? 'bg-success border-success text-white shadow-[0_0_10px_var(--color-success)]' 
                                                     : 'bg-surface-3 border-border text-text-muted hover:border-primary/50 hover:text-primary'
                                             }`}
                                             title={vid.completed ? "Mark Incomplete" : "Mark as Done"}
                                         >
-                                            {vid.completed ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
+                                            {vid.completed ? <Check className="w-4 h-4 stroke-[3]" /> : <Square className="w-4 h-4" />}
                                             <span className="text-[10px] font-black uppercase tracking-tighter px-1">
                                                 {vid.completed ? 'Done' : 'Mark'}
                                             </span>
