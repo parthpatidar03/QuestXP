@@ -59,9 +59,12 @@ router.post('/generate', auth, async (req, res, next) => {
         const filter = courseId ? { userId: req.user.id, courseId } : { userId: req.user.id, courseId: null };
         await Roadmap.deleteMany(filter);
 
+        const roadmapTitle = courseId ? playlists[0].title : "Universal Study Plan";
+
         const newRoadmap = new Roadmap({
             userId: req.user.id,
             courseId: courseId || null,
+            title: roadmapTitle,
             config: {
                 playlistIds,
                 sectionIds: sectionIds || [],
@@ -221,6 +224,33 @@ router.patch('/shift-partial', auth, async (req, res, next) => {
             roadmap.config.startDate = newBlockStartDate;
         }
 
+        await roadmap.save();
+        res.json(roadmap);
+    } catch (err) {
+        next(err);
+    }
+});
+
+// @route   GET /api/roadmap/all
+// @desc    Get all active roadmaps for user
+router.get('/all', auth, async (req, res, next) => {
+    try {
+        const roadmaps = await Roadmap.find({ userId: req.user.id, status: 'active' }).sort({ updatedAt: -1 });
+        res.json(roadmaps);
+    } catch (err) {
+        next(err);
+    }
+});
+
+// @route   PATCH /api/roadmap/:roadmapId/title
+// @desc    Update roadmap title
+router.patch('/:roadmapId/title', auth, async (req, res, next) => {
+    try {
+        const { title } = req.body;
+        const roadmap = await Roadmap.findOne({ _id: req.params.roadmapId, userId: req.user.id });
+        if (!roadmap) return res.status(404).json({ msg: 'Roadmap not found' });
+
+        roadmap.title = title;
         await roadmap.save();
         res.json(roadmap);
     } catch (err) {

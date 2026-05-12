@@ -322,13 +322,22 @@ function CourseCard({ course, progress, onDelete, isDeleting }) {
                     <span>{course.totalLectures} missions</span>
                     <span>{pct}% complete</span>
                 </div>
-                {resumeId && (
-                    <div className="mt-2 text-xs font-semibold text-primary">
-                        <span className="flex items-center gap-1 hover:underline">
-                            Resume Mission <ChevronRight className="w-3 h-3" />
-                        </span>
-                    </div>
-                )}
+                <div className="mt-2 flex items-center justify-between">
+                    {resumeId && (
+                        <div className="text-xs font-semibold text-primary">
+                            <span className="flex items-center gap-1 hover:underline">
+                                Resume Mission <ChevronRight className="w-3 h-3" />
+                            </span>
+                        </div>
+                    )}
+                    <Link 
+                        to={`/roadmap?courseId=${course._id}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-text-muted hover:text-primary transition-colors"
+                    >
+                        <Layout className="w-3 h-3" /> Roadmap
+                    </Link>
+                </div>
             </div>
         </Link>
         </>

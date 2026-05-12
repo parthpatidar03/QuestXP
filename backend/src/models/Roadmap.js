@@ -6,6 +6,7 @@ const RoadmapSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
+    title: { type: String },
     config: {
         startDate: { type: Date, default: Date.now },
         targetDate: Date,

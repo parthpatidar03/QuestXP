@@ -36,7 +36,7 @@ const formatTime = (seconds) => {
 };
 
 
-import { getCurrentRoadmap, adjustRoadmap, partialShiftRoadmap, toggleVideoCompletion } from '../services/roadmapApi';
+import { getCurrentRoadmap, adjustRoadmap, partialShiftRoadmap, toggleVideoCompletion, getAllRoadmaps, updateRoadmapTitle } from '../services/roadmapApi';
 import { shootConfetti } from '../utils/confetti';
 import NavBar from '../components/NavBar';
 import { BGPattern } from '../components/ui/bg-pattern';
@@ -44,9 +44,16 @@ import GenerateRoadmapModal from '../components/Roadmap/GenerateRoadmapModal';
 import useAuthStore from '../store/useAuthStore';
 
 /* ── Components ──────────────────────────────────────────────────────── */
+const ProgressHeader = ({ roadmap, onShift, totalCalendarDays, onUpdateTitle }) => {
+    const [isEditing, setIsEditing] = useState(false);
+    const [tempTitle, setTempTitle] = useState(roadmap?.title || "Your Mastery Journey");
 
-const ProgressHeader = ({ roadmap, onShift, totalCalendarDays }) => {
     if (!roadmap) return null;
+
+    const handleTitleSave = () => {
+        onUpdateTitle(tempTitle);
+        setIsEditing(false);
+    };
     
     const currentDayIndex = differenceInDays(new Date(), new Date(roadmap.config.startDate)) + 1;
     const progressPercent = Math.min(100, Math.max(0, (currentDayIndex / totalCalendarDays) * 100));
@@ -59,11 +66,30 @@ const ProgressHeader = ({ roadmap, onShift, totalCalendarDays }) => {
             
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
                 <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-primary">
-                        <Sparkles className="w-5 h-5" />
-                        <span className="text-xs font-black uppercase tracking-widest">🗺️ Active Roadmap</span>
+                    <div className="flex items-center gap-3">
+                        {isEditing ? (
+                            <div className="flex items-center gap-2">
+                                <input 
+                                    type="text" 
+                                    value={tempTitle}
+                                    onChange={(e) => setTempTitle(e.target.value)}
+                                    onKeyDown={(e) => e.key === 'Enter' && handleTitleSave()}
+                                    className="bg-surface-3 border border-primary/50 text-text-primary px-3 py-1 rounded-lg font-black text-2xl focus:outline-none focus:ring-2 ring-primary/20"
+                                    autoFocus
+                                />
+                                <button onClick={handleTitleSave} className="bg-primary p-2 rounded-lg text-white"><CheckSquare className="w-5 h-5" /></button>
+                            </div>
+                        ) : (
+                            <h2 
+                                onClick={() => setIsEditing(true)}
+                                className="text-2xl sm:text-3xl font-black text-text-primary tracking-tight leading-none cursor-pointer hover:text-primary transition-colors flex items-center gap-2" 
+                                style={{ fontFamily: "'Barlow Condensed', sans-serif" }}
+                            >
+                                {roadmap.title || "Your Mastery Journey"}
+                                <Sparkles className="w-4 h-4 opacity-0 group-hover:opacity-40" />
+                            </h2>
+                        )}
                     </div>
-                    <h2 className="text-2xl sm:text-3xl font-black text-text-primary tracking-tight leading-none" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>Your Mastery Journey</h2>
                     {roadmap.days && roadmap.days.length > 0 && (
                         <p className="text-sm text-text-muted font-bold">
                             Targeting completion by <span className="text-primary">{format(new Date(roadmap.days[roadmap.days.length - 1].date), 'MMMM dd, yyyy')}</span> 🎯
@@ -281,6 +307,47 @@ const RoadmapPlaylistCard = ({ playlistId, days, dayLabelsMap, totalCalendarDays
     );
 };
 
+const UniversalRoadmapCard = ({ roadmap }) => {
+    const totalVideos = useMemo(() => {
+        return roadmap.days.reduce((sum, day) => sum + (day.plannedVideos?.length || 0), 0);
+    }, [roadmap]);
+
+    const totalMinutes = useMemo(() => {
+        return roadmap.days.reduce((sum, day) => sum + (day.totalMinutes || 0), 0);
+    }, [roadmap]);
+
+    const dateRange = useMemo(() => {
+        if (!roadmap.days || roadmap.days.length === 0) return "Not started";
+        const start = format(new Date(roadmap.days[0].date), 'MMM dd');
+        const end = format(new Date(roadmap.days[roadmap.days.length - 1].date), 'MMM dd');
+        return `${start} — ${end}`;
+    }, [roadmap]);
+
+    return (
+        <Link 
+            to={roadmap.courseId ? `/roadmap?courseId=${roadmap.courseId}` : `/roadmap`}
+            className="glass-card p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group hover:border-primary/40 transition-all hover:scale-[1.01]"
+        >
+            <div className="flex items-center gap-4 sm:gap-6">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                    <Calendar className="w-6 h-6 sm:w-7 h-7" />
+                </div>
+                <div>
+                    <h4 className="text-base sm:text-lg font-black text-text-primary mb-1 line-clamp-1">{roadmap.title || "Untitled Roadmap"}</h4>
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] sm:text-xs font-bold text-text-muted">
+                        <span className="flex items-center gap-1"><Play className="w-3 h-3" /> {totalVideos} Videos</span>
+                        <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {Math.round(totalMinutes)} mins</span>
+                        <span className="flex items-center gap-1 text-primary/70">{dateRange}</span>
+                    </div>
+                </div>
+            </div>
+            <div className="self-end sm:self-center w-10 h-10 rounded-xl bg-surface-3 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
+                <ChevronRight className="w-5 h-5" />
+            </div>
+        </Link>
+    );
+};
+
 /* ── Main Page ───────────────────────────────────────────────────────── */
 
 const Roadmap = () => {
@@ -288,6 +355,7 @@ const Roadmap = () => {
     const courseId = searchParams.get('courseId');
     
     const [roadmap, setRoadmap] = useState(null);
+    const [allRoadmaps, setAllRoadmaps] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
     const [modalCourseId, setModalCourseId] = useState(courseId);
@@ -302,12 +370,20 @@ const Roadmap = () => {
     const { user } = useAuthStore();
 
     const fetchRoadmap = async () => {
+        setLoading(true);
         try {
-            const data = await getCurrentRoadmap(courseId);
-            setRoadmap(data);
+            if (courseId) {
+                const data = await getCurrentRoadmap(courseId);
+                setRoadmap(data);
+            } else {
+                const data = await getAllRoadmaps();
+                setAllRoadmaps(data);
+                setRoadmap(null);
+            }
         } catch (err) {
             console.error("No active roadmap found");
             setRoadmap(null);
+            setAllRoadmaps([]);
         } finally {
             setLoading(false);
         }
@@ -445,6 +521,16 @@ const Roadmap = () => {
         }
     };
 
+    const handleUpdateTitle = async (newTitle) => {
+        if (!roadmap) return;
+        setRoadmap(prev => ({ ...prev, title: newTitle }));
+        try {
+            await updateRoadmapTitle(roadmap._id, newTitle);
+        } catch (err) {
+            console.error("Failed to update title", err);
+        }
+    };
+
     // Attach adjusting state to handlers for sub-components
     handleShift.adjusting = adjusting;
     handlePartialShift.adjusting = adjusting;
@@ -528,6 +614,7 @@ const Roadmap = () => {
                             roadmap={roadmap} 
                             onShift={handleShift} 
                             totalCalendarDays={totalCalendarDays}
+                            onUpdateTitle={handleUpdateTitle}
                         />
                         
                         <div className="mb-6 flex items-center justify-between">
@@ -559,6 +646,27 @@ const Roadmap = () => {
                             ))}
                         </div>
                     </>
+                ) : !courseId ? (
+                    <div className="space-y-6">
+                        <div className="flex items-center justify-between mb-8">
+                            <div>
+                                <h2 className="text-3xl font-black text-text-primary tracking-tight" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>Universal Roadmap</h2>
+                                <p className="text-sm text-text-muted font-bold">Access all your active study plans from one place.</p>
+                            </div>
+                        </div>
+                        
+                        {allRoadmaps.length > 0 ? (
+                            <div className="grid grid-cols-1 gap-4">
+                                {allRoadmaps.map(rm => (
+                                    <UniversalRoadmapCard key={rm._id} roadmap={rm} />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="glass-card p-12 text-center">
+                                <p className="text-text-muted font-bold">No roadmaps found. Start by creating one for any course!</p>
+                            </div>
+                        )}
+                    </div>
                 ) : (
                     <div className="glass-card p-12 flex flex-col items-center justify-center text-center max-w-2xl mx-auto mt-12">
                         <div className="w-20 h-20 rounded-3xl bg-primary/10 text-primary flex items-center justify-center mb-6">

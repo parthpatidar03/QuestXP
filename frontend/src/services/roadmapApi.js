@@ -23,3 +23,11 @@ export const toggleVideoCompletion = async (roadmapId, videoId, completed) => {
     const response = await api.patch(`/roadmap/${roadmapId}/video/${videoId}/complete`, { completed });
     return response.data;
 };
+export const getAllRoadmaps = async () => {
+    const response = await api.get('/roadmap/all');
+    return response.data;
+};
+export const updateRoadmapTitle = async (roadmapId, title) => {
+    const response = await api.patch(`/roadmap/${roadmapId}/title`, { title });
+    return response.data;
+};
