@@ -195,7 +195,7 @@ const LandingPage = () => {
             </header>
 
             <main className="relative z-10 flex-1">
-                <section id="how-it-works" className="max-w-screen-xl mx-auto px-4 sm:px-6 pt-10 sm:pt-14 pb-10 sm:pb-14">
+                <section id="how-it-works" className="max-w-screen-xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8 pb-8 sm:pb-10">
                     <div className="grid gap-10 lg:grid-cols-2 items-center">
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
@@ -280,9 +280,9 @@ const LandingPage = () => {
                     </div>
                 </section>
 
-                <section className="py-12 relative overflow-hidden">
+                <section className="py-8 relative overflow-hidden">
                     <div className="max-w-5xl mx-auto px-4 sm:px-6">
-                        <div className="bg-surface/40 backdrop-blur-md border border-border rounded-[2.5rem] p-12 shadow-2xl relative group overflow-hidden">
+                        <div className="bg-surface/40 backdrop-blur-md border border-border rounded-[2.5rem] p-8 shadow-2xl relative group overflow-hidden">
                             {/* Inner glow on hover */}
                             <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                             
@@ -308,8 +308,8 @@ const LandingPage = () => {
                     </div>
                 </section>
 
-                <section className="max-w-screen-xl mx-auto px-4 sm:px-6 py-12">
-                    <div className="relative overflow-hidden bg-black rounded-[2.5rem] border border-white/10 py-20 px-6 flex flex-col items-center justify-center shadow-2xl">
+                <section className="max-w-screen-xl mx-auto px-4 sm:px-6 py-8">
+                                <div className="relative overflow-hidden bg-black rounded-[2.5rem] border border-white/10 py-12 px-6 flex flex-col items-center justify-center shadow-2xl">
                         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,180,255,0.1),transparent_70%)]" />
                         
                         <motion.div
@@ -343,8 +343,8 @@ const LandingPage = () => {
 
 
 
-                <section className="max-w-screen-xl mx-auto px-4 sm:px-6 py-16">
-                    <div className="text-center mb-16">
+                <section className="max-w-screen-xl mx-auto px-4 sm:px-6 py-12">
+                    <div className="text-center mb-10">
                         <h2 className="text-3xl sm:text-4xl font-bold text-text-primary tracking-tight mb-4">
                             Global Hall of Fame
                         </h2>
@@ -374,7 +374,7 @@ const LandingPage = () => {
 
 
                 {/* New Feature: Dynamic Roadmap */}
-                <section className="max-w-screen-xl mx-auto px-4 sm:px-6 py-20">
+                <section className="max-w-screen-xl mx-auto px-4 sm:px-6 py-12">
                     <div className="grid md:grid-cols-2 gap-16 items-center">
                         <motion.div
                             initial={{ opacity: 0, x: -30 }}
@@ -436,7 +436,7 @@ const LandingPage = () => {
                     </div>
                 </section>
 
-                <section className="max-w-screen-xl mx-auto px-4 sm:px-6 py-20">
+                <section className="max-w-screen-xl mx-auto px-4 sm:px-6 py-12">
                     <div className="grid md:grid-cols-2 gap-16 items-center">
                         <motion.div
                             initial={{ opacity: 0, x: -30 }}
@@ -543,7 +543,7 @@ const LandingPage = () => {
                     </div>
                 </section>
 
-                <section className="py-24 bg-surface/30 overflow-hidden group/testimonial">
+                <section className="py-16 bg-surface/30 overflow-hidden group/testimonial">
                     <div className="max-w-screen-xl mx-auto px-4 sm:px-6 mb-12">
                         <div className="flex flex-col items-center text-center space-y-4">
                             <span className="text-primary font-black text-[10px] uppercase tracking-[0.3em]">Wall of Love</span>
