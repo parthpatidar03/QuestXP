@@ -24,6 +24,23 @@
    QuestXP is a high-performance Learning Management System (LMS) designed to solve "Playlist Fatigue." It converts unstructured YouTube content—including massive 10+ hour "one-shot" lectures—into structured, modular curricula using AI orchestration, vector-based RAG, and an adaptive scheduling engine.
 </p>
 
+<p align="center">
+  <img src="https://github.com/parthpatidar03/QuestXP/actions/workflows/ci.yml/badge.svg" alt="CI/CD Status">
+</p>
+
+---
+
+## 🚀 CI/CD & Security First
+QuestXP implements an automated **CI/CD Pipeline** via GitHub Actions to maintain production standards:
+- **Automated Testing**: Comprehensive backend integration tests and frontend smoke tests run on every push.
+- **Security Audits**: Continuous dependency scanning with `npm audit` to block high-risk vulnerabilities.
+- **Linting & Quality**: Automated ESLint checks to enforce consistent code standards.
+- **Identity Security**: Verified JWT token rotation and session revocation logic (checked in CI).
+
+[Read full CI/CD Documentation →](docs/CI_CD.md)
+
+---
+
 ---
 
 ## 🏗️ System Architecture
