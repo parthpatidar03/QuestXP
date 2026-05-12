@@ -53,6 +53,10 @@ QuestXP.pdf
 query
 DESIGN.md
 PRODUCT.md
+docs/
+HACKATHON.md
+IMPLEMENTATION.md
+DEVPOST_STORY.md
 
 # Local MongoDB data directory
 backend/data/
