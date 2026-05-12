@@ -213,9 +213,9 @@ const LandingPage = () => {
                                 playlists into courses you can actually finish.
                             </h1>
 
-                            <p className="mt-8 text-lg sm:text-xl text-text-primary font-medium leading-snug max-w-[48ch]">
+                            <p className="mt-8 text-lg sm:text-xl text-text-primary font-medium leading-snug max-w-[50ch]">
                                 We buy expensive courses but end up on <span className="text-primary italic">YouTube</span>. 
-                                Why pay when you can study for free with <span className="text-primary font-bold">gamified structure</span>?
+                                Master any subject with <span className="text-primary font-bold">your favorite creators</span>—zero content restrictions.
                             </p>
 
                             <div className="mt-7 flex flex-col sm:flex-row gap-3 sm:items-center">
