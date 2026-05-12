@@ -80,12 +80,12 @@ const ProgressHeader = React.memo(({ roadmap, onShift, totalCalendarDays, onUpda
     }, [roadmap]);
 
     return (
-        <div className="glass-card p-8 mb-8 relative overflow-hidden group">
+        <div className="glass-card p-5 mb-5 relative overflow-hidden group">
             <div className="absolute top-1/2 -right-8 -translate-y-1/2 p-4 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity pointer-events-none">
                 <Trophy className="w-64 h-64 rotate-12" />
             </div>
             
-            <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-8 relative z-10">
+            <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 relative z-10">
                 <div className="flex-1 min-w-0">
                     <div className="flex flex-col gap-1">
                         {isEditing ? (
@@ -126,7 +126,7 @@ const ProgressHeader = React.memo(({ roadmap, onShift, totalCalendarDays, onUpda
                 </div>
 
                 <div className="flex items-center gap-6 xl:gap-10">
-                    <div className="h-16 w-px bg-border/40 hidden xl:block" />
+                    <div className="h-12 w-px bg-border/40 hidden xl:block" />
 
                     {/* Schedule Adjuster */}
                     <div className="flex flex-col items-center gap-2 bg-surface-2/50 p-3 rounded-2xl border border-border/50 relative shrink-0 min-w-[160px]">
@@ -161,7 +161,7 @@ const ProgressHeader = React.memo(({ roadmap, onShift, totalCalendarDays, onUpda
                         </div>
                     </div>
 
-                    <div className="h-16 w-px bg-border/40 hidden xl:block" />
+                    <div className="h-12 w-px bg-border/40 hidden xl:block" />
 
                     {/* Stats Section */}
                     <div className="flex items-center relative">

@@ -376,7 +376,8 @@ QuestXP implements a multi-layered error handling architecture designed for prod
 - **🎉 Gamified Celebrations**: Immersive `confetti` and `fireworks` bursts triggered via `canvas-confetti` on signup, course creation, and mission completion to drive user dopamine and retention. [Read more →](docs/GAMIFICATION.md)
 - **🗺️ Universal Roadmap Tab**: A centralized hub that aggregates all active study plans. Users can now manage, rename, and track multiple course-specific or combined roadmaps from a single, unified interface. [Read more →](docs/012-universal-roadmap-tab.md)
 - **🗺️ Roadmap ID-Based Routing**: Transitioned to unique roadmap ID routing (`?id=...`) to ensure every study plan is directly accessible and fixed navigation collisions. [Read more →](docs/015-fixing-roadmap-navigation.md)
-- **⚡ Roadmap Performance Optimization**: Implementation of React.memo and stable callbacks to ensure "instant" mission toggles and zero-lag date shifting. [Read more →](docs/016-roadmap-performance-optimization.md)
+- **🗺️ Roadmap Performance Optimization**: Implementation of React.memo and stable callbacks to ensure "instant" mission toggles and zero-lag date shifting. [Read more →](docs/016-roadmap-performance-optimization.md)
+- **🎨 UI Density Refinement**: Optimized vertical whitespace and element sizing in Quest Journey and Roadmap headers for a more compact, high-density professional aesthetic. [Read more →](docs/019-ui-density-refinement.md)
 
 ---
 

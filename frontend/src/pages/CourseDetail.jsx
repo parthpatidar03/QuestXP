@@ -618,7 +618,7 @@ const CourseDetail = () => {
                         {/* Mission List */}
                         <div className="glass-card overflow-hidden" style={{ padding: 0 }}>
                             <div className="px-8 py-6 border-b border-border bg-surface/30">
-                                <div className="flex items-center justify-between mb-8">
+                                <div className="flex items-center justify-between mb-4">
                                     <div className="flex flex-col">
                                         <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tight text-text-primary leading-none flex items-center gap-2" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
                                             🗺️ Quest Journey
@@ -634,7 +634,7 @@ const CourseDetail = () => {
                                 </div>
                                 
                                 {/* Elite Journey Progress Bar */}
-                                <div className="relative pt-6 pb-12">
+                                <div className="relative pt-2 pb-8">
                                     {/* Track */}
                                     <div className="h-5 w-full bg-surface-2 rounded-full border border-border/50 relative overflow-visible shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]">
                                         {/* Progress Fill */}
@@ -645,8 +645,8 @@ const CourseDetail = () => {
                                             className="absolute top-0 left-0 h-full bg-success rounded-full shadow-[0_0_25px_var(--color-success)]"
                                         >
                                             {/* Journey Thumb (The Runner) */}
-                                            <div className="absolute -right-5 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white border-[4px] border-success shadow-[0_0_15px_var(--color-success)] z-10 flex items-center justify-center overflow-hidden">
-                                                <span className="text-2xl transform scale-x-[-1] translate-x-[1px]">🏃</span>
+                                            <div className="absolute -right-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white border-[3px] border-success shadow-[0_0_12px_var(--color-success)] z-10 flex items-center justify-center overflow-hidden">
+                                                <span className="text-xl transform scale-x-[-1] translate-x-[1px]">🏃</span>
                                             </div>
                                         </motion.div>
                                         
@@ -661,7 +661,7 @@ const CourseDetail = () => {
                                 </div>
 
                                 {/* Done vs Remaining Stats */}
-                                <div className="flex items-center justify-between mt-6 px-4 py-6 border-t border-border/40 bg-surface-2/20 rounded-2xl">
+                                <div className="flex items-center justify-between mt-2 px-4 py-3 border-t border-border/40 bg-surface-2/20 rounded-2xl">
                                     <div className="flex items-center gap-4">
                                         <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
                                             <CheckCircle2 className="w-5 h-5 text-primary" />
