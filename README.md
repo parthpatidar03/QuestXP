@@ -375,37 +375,10 @@ QuestXP implements a multi-layered error handling architecture designed for prod
 - **🛡️ Focus Guardian**: Real-time activity monitoring that detects digital "looping" behavior and triggers high-friction alerts to protect deep work.
 - **🎉 Gamified Celebrations**: Immersive `confetti` and `fireworks` bursts triggered via `canvas-confetti` on signup, course creation, and mission completion to drive user dopamine and retention. [Read more →](docs/GAMIFICATION.md)
 - **🗺️ Universal Roadmap Tab**: A centralized hub that aggregates all active study plans. Users can now manage, rename, and track multiple course-specific or combined roadmaps from a single, unified interface. [Read more →](docs/012-universal-roadmap-tab.md)
+- **🗺️ Roadmap ID-Based Routing**: Transitioned to unique roadmap ID routing (`?id=...`) to ensure every study plan is directly accessible and fixed navigation collisions. [Read more →](docs/015-fixing-roadmap-navigation.md)
+- **⚡ Roadmap Performance Optimization**: Implementation of React.memo and stable callbacks to ensure "instant" mission toggles and zero-lag date shifting. [Read more →](docs/016-roadmap-performance-optimization.md)
 
 ---
-
-## 🚀 API Surface
-
-| Method | Route | Description |
-|--------|-------|-------------|
-| `POST` | `/api/auth/google` | OAuth 2.0 Identity Resolution |
-| `POST` | `/api/courses/add` | Enqueue course processing job |
-| `GET` | `/api/lectures/:id/notes` | Fetch AI-generated lecture summary |
-| `POST` | `/api/lectures/:id/quiz/submit` | Evaluate quiz & award XP |
-| `POST` | `/api/doubt/ask` | Contextual RAG-based query resolution |
-| `PATCH` | `/api/roadmap/update` | Mutate downstream study schedule |
-| `POST` | `/api/feedback` | In-house feedback submission engine |
-| `GET` | `/api/feedback` | Admin-only feedback review dashboard |
-| `GET` | `/share/:id` | Generate isolated course replica for sharing |
-
----
-
-## 🛠️ Technical Stack
-
-- **Runtime**: Node.js v20+
-- **Database**: MongoDB (Atlas) / Pinecone (Vector)
-- **Caching/Queue**: Redis / BullMQ
-- **AI Models**: OpenAI (GPT-4o-mini, text-embedding-3-small)
-- **Notification**: Firebase Cloud Messaging (FCM) / Resend (Email)
-- **Deployment**: Vercel (Frontend), Railway (Backend/Redis/Worker)
-
----
-
-## 🔧 Installation
 
 ```bash
 # 1. Clone & Install
