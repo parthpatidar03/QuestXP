@@ -15,7 +15,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.8.0-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-1.9.0-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License">
   <img src="https://img.shields.io/badge/status-production-success.svg" alt="Status">
 </p>
@@ -179,6 +179,7 @@ QuestXP implements a multi-layered error handling architecture designed for prod
 - **✨ Global Interactive FX**: Immersive mouse-tracking green glow and click-ripple animations pervasive across the entire application for a premium feel.
 - **🛡️ Focus Guardian**: Real-time activity monitoring that detects digital "looping" behavior and triggers high-friction alerts to protect deep work.
 - **🎉 Gamified Celebrations**: Immersive `confetti` and `fireworks` bursts triggered via `canvas-confetti` on signup, course creation, and mission completion to drive user dopamine and retention. [Read more →](docs/GAMIFICATION.md)
+- **🗺️ Universal Roadmap Tab**: A centralized hub that aggregates all active study plans. Users can now manage, rename, and track multiple course-specific or combined roadmaps from a single, unified interface. [Read more →](docs/012-universal-roadmap-tab.md)
 
 ---
 
@@ -230,6 +231,7 @@ QuestXP's roadmap engine is designed for realism, not perfection.
 - **75% Efficiency Rule**: If you commit to 4 hours, the system only schedules 3 hours of video. The remaining 25% is reserved for active note-taking and practice.
 - **Granular Scheduling**: Every video is an individual entry. Use the `+` and `-` buttons to shift specific videos forward or backward without breaking the rest of your plan.
 - **Global & Unified Plans**: Create one roadmap that combines multiple courses or specific playlists from across the platform using the global `+ New Roadmap` feature.
+- **Personalized Naming**: Give your study plans custom titles (e.g., "AI Engineering - Fast Track") to keep your dashboard organized.
 
 ---
 
