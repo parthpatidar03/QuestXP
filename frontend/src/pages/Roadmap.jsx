@@ -39,14 +39,14 @@ const formatTime = (seconds) => {
 
 
 import { getCurrentRoadmap, adjustRoadmap, partialShiftRoadmap, toggleVideoCompletion, getAllRoadmaps, updateRoadmapTitle, deleteRoadmap } from '../services/roadmapApi';
-import { shootConfetti } from '../utils/confetti';
+import { shootConfetti, shootLighterConfetti } from '../utils/confetti';
 import NavBar from '../components/NavBar';
 import { BGPattern } from '../components/ui/bg-pattern';
 import GenerateRoadmapModal from '../components/Roadmap/GenerateRoadmapModal';
 import useAuthStore from '../store/useAuthStore';
 
 /* ── Components ──────────────────────────────────────────────────────── */
-const ProgressHeader = ({ roadmap, onShift, totalCalendarDays, onUpdateTitle }) => {
+const ProgressHeader = React.memo(({ roadmap, onShift, totalCalendarDays, onUpdateTitle }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [tempTitle, setTempTitle] = useState(roadmap?.title || "Your Mastery Journey");
 
@@ -152,9 +152,9 @@ const ProgressHeader = ({ roadmap, onShift, totalCalendarDays, onUpdateTitle }) 
             </div>
         </div>
     );
-};
+});
 
-const RoadmapPlaylistCard = ({ playlistId, days, dayLabelsMap, totalCalendarDays, roadmapId, courseId, onPartialShift, onToggleCompletion }) => {
+const RoadmapPlaylistCard = React.memo(({ playlistId, days, dayLabelsMap, totalCalendarDays, roadmapId, courseId, onPartialShift, onToggleCompletion }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     
     const playlistName = useMemo(() => {
@@ -311,9 +311,10 @@ const RoadmapPlaylistCard = ({ playlistId, days, dayLabelsMap, totalCalendarDays
             )}
         </div>
     );
-};
+});
 
-const UniversalRoadmapCard = ({ roadmap, onDelete }) => {
+// Memoized to prevent re-rendering all cards when one roadmap changes
+const UniversalRoadmapCard = React.memo(({ roadmap, onDelete }) => {
     const totalVideos = useMemo(() => {
         return (roadmap.days || []).reduce((sum, day) => sum + (day.plannedVideos?.length || 0), 0);
     }, [roadmap]);
@@ -373,7 +374,7 @@ const UniversalRoadmapCard = ({ roadmap, onDelete }) => {
             </button>
         </div>
     );
-};
+});
 
 /* ── Main Page ───────────────────────────────────────────────────────── */
 
@@ -461,9 +462,6 @@ const Roadmap = () => {
                 setRoadmap(updated);
             } catch (err) {
                 console.error("Failed to shift roadmap", err);
-                // In a real app, you'd revert the optimistic update here
-                // but since it's a "vibe" refactor, we'll keep it simple
-                // maybe just re-fetch the roadmap
                 fetchRoadmap();
             } finally {
                 setAdjusting(false);
@@ -471,7 +469,7 @@ const Roadmap = () => {
         }, 400);
     };
     
-    const handlePartialShift = (fromDayIndex, shiftAmount) => {
+    const handlePartialShift = useCallback((fromDayIndex, shiftAmount) => {
         if (!roadmap) return;
 
         // Optimistic UI Update
@@ -516,17 +514,17 @@ const Roadmap = () => {
             }
             setAdjusting(false);
         }, 400);
-    };
+    }, [roadmap, roadmap?._id]);
 
-    const handleToggleCompletion = async (videoId, completed) => {
+    const handleToggleCompletion = useCallback(async (videoId, completed) => {
         if (!roadmap) return;
 
-        // Play confetti if marking as completed
+        // Play light confetti if marking as completed
         if (completed) {
-            shootConfetti();
+            shootLighterConfetti();
         }
 
-        // Optimistic UI Update
+        // Optimistic UI Update (Functional to avoid closure issues)
         setRoadmap(prev => {
             if (!prev) return prev;
             return {
@@ -534,7 +532,7 @@ const Roadmap = () => {
                 days: prev.days.map(day => ({
                     ...day,
                     plannedVideos: day.plannedVideos.map(vid => 
-                        vid.videoId === videoId ? { ...vid, completed } : vid
+                        vid.videoId?.toString() === videoId?.toString() ? { ...vid, completed } : vid
                     )
                 }))
             };
@@ -548,9 +546,9 @@ const Roadmap = () => {
             // Re-fetch on error
             fetchRoadmap();
         }
-    };
+    }, [roadmap, roadmap?._id]);
 
-    const handleUpdateTitle = async (newTitle) => {
+    const handleUpdateTitle = useCallback(async (newTitle) => {
         if (!roadmap) return;
         setRoadmap(prev => ({ ...prev, title: newTitle }));
         try {
@@ -558,7 +556,7 @@ const Roadmap = () => {
         } catch (err) {
             console.error("Failed to update title", err);
         }
-    };
+    }, [roadmap, roadmap?._id]);
 
     const handleDeleteRoadmap = async (roadmapId) => {
         try {

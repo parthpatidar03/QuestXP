@@ -21,6 +21,15 @@ export const shootConfetti = (origin) => {
   fire(0.1, { spread: 120, startVelocity: 45 });
 };
 
+export const shootLighterConfetti = () => {
+  confetti({
+    particleCount: 40,
+    spread: 70,
+    origin: { y: 0.6 },
+    colors: ['#a786ff', '#fd8bbc', '#eca184']
+  });
+};
+
 export const shootFireworks = () => {
   const duration = 1 * 1000;
   const end = Date.now() + duration;
