@@ -213,9 +213,9 @@ const LandingPage = () => {
                                 playlists into courses you can actually finish.
                             </h1>
 
-                            <p className="mt-8 text-lg sm:text-xl text-text-primary font-medium leading-snug max-w-[45ch]">
-                                Ditch expensive courses. QuestXP turns <span className="text-primary italic">YouTube</span> into a 
-                                <span className="text-primary font-bold">structured, gamified</span> workspace you'll actually finish.
+                            <p className="mt-8 text-lg sm:text-xl text-text-primary font-medium leading-snug max-w-[48ch]">
+                                We buy expensive courses but end up on <span className="text-primary italic">YouTube</span>. 
+                                Why pay when you can study for free with <span className="text-primary font-bold">gamified structure</span>?
                             </p>
 
                             <div className="mt-7 flex flex-col sm:flex-row gap-3 sm:items-center">
