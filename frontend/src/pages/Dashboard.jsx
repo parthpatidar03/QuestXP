@@ -19,7 +19,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { StatCardSkeleton, CourseCardSkeleton } from '../components/ui/Skeleton';
 import Footer from '../components/ui/Footer';
 import UsernameModal from '../components/Dashboard/UsernameModal';
-import { BarChart3, Clock, Calendar, ArrowUpRight, TrendingUp, Crown } from 'lucide-react';
+import { BarChart3, Clock, Calendar, ArrowUpRight, TrendingUp, Crown, Layout } from 'lucide-react';
 import GlobalLeaderboardModal from '../components/Dashboard/GlobalLeaderboardModal';
 import GenerateRoadmapModal from '../components/Roadmap/GenerateRoadmapModal';
 

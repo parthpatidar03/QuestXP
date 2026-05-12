@@ -309,11 +309,11 @@ const RoadmapPlaylistCard = ({ playlistId, days, dayLabelsMap, totalCalendarDays
 
 const UniversalRoadmapCard = ({ roadmap }) => {
     const totalVideos = useMemo(() => {
-        return roadmap.days.reduce((sum, day) => sum + (day.plannedVideos?.length || 0), 0);
+        return (roadmap.days || []).reduce((sum, day) => sum + (day.plannedVideos?.length || 0), 0);
     }, [roadmap]);
 
     const totalMinutes = useMemo(() => {
-        return roadmap.days.reduce((sum, day) => sum + (day.totalMinutes || 0), 0);
+        return (roadmap.days || []).reduce((sum, day) => sum + (day.totalMinutes || 0), 0);
     }, [roadmap]);
 
     const dateRange = useMemo(() => {
