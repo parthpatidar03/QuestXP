@@ -426,6 +426,7 @@ QuestXP's roadmap engine is designed for realism, not perfection.
 - **75% Efficiency Rule**: If you commit to 4 hours, the system only schedules 3 hours of video. The remaining 25% is reserved for active note-taking and practice.
 - **Granular Scheduling**: Every video is an individual entry. Use the `+` and `-` buttons to shift specific videos forward or backward without breaking the rest of your plan.
 - **Universal Roadmap Hub**: Accessible via `/roadmap`, displaying all study plans.
+- **ID-Based Routing**: Transitioned to unique roadmap ID routing (`?id=...`) to ensure every study plan is directly accessible and fixed navigation collisions.
 - **Roadmap Lifecycle**: Rename and delete study plans with optimistic UI updates.
 - **Dashboard Hub**: Rebranded from "My Courses" to provide a centralized learning command center.
 - **Roadmap Management**: Delete unwanted or completed roadmaps to keep your hub organized.

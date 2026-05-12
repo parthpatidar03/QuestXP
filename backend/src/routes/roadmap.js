@@ -83,13 +83,19 @@ router.post('/generate', auth, async (req, res, next) => {
 });
 
 // @route   GET /api/roadmap/current
-// @desc    Get active roadmap (optional courseId param)
+// @desc    Get active roadmap (optional courseId or roadmapId param)
 router.get('/current', auth, async (req, res, next) => {
     try {
-        const { courseId } = req.query;
-        const filter = { userId: req.user.id, status: 'active' };
-        if (courseId) filter.courseId = courseId;
-        else filter.courseId = null; // Get global one if no courseId
+        const { courseId, roadmapId } = req.query;
+        let filter = { userId: req.user.id, status: 'active' };
+        
+        if (roadmapId) {
+            filter._id = roadmapId;
+        } else if (courseId) {
+            filter.courseId = courseId;
+        } else {
+            filter.courseId = null; // Get global one if no courseId
+        }
 
         const roadmap = await Roadmap.findOne(filter).sort({ createdAt: -1 });
         if (!roadmap) {

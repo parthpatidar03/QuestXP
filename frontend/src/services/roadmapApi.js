@@ -5,8 +5,8 @@ export const generateRoadmap = async (config) => {
     return response.data;
 };
 
-export const getCurrentRoadmap = async (courseId = null) => {
-    const response = await api.get('/roadmap/current', { params: { courseId } });
+export const getCurrentRoadmap = async (courseId = null, roadmapId = null) => {
+    const response = await api.get('/roadmap/current', { params: { courseId, roadmapId } });
     return response.data;
 };
 

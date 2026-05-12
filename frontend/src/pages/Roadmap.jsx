@@ -332,7 +332,7 @@ const UniversalRoadmapCard = ({ roadmap, onDelete }) => {
     return (
         <div className="relative group/card">
             <Link 
-                to={roadmap.courseId ? `/roadmap?courseId=${roadmap.courseId}` : `/roadmap`}
+                to={`/roadmap?id=${roadmap._id}`}
                 className="glass-card p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group hover:border-primary/40 transition-all hover:scale-[1.01]"
             >
                 <div className="flex items-center gap-4 sm:gap-6">
@@ -380,6 +380,7 @@ const UniversalRoadmapCard = ({ roadmap, onDelete }) => {
 const Roadmap = () => {
     const [searchParams] = useSearchParams();
     const courseId = searchParams.get('courseId');
+    const roadmapId = searchParams.get('id');
     
     const [roadmap, setRoadmap] = useState(null);
     const [allRoadmaps, setAllRoadmaps] = useState([]);
@@ -399,8 +400,8 @@ const Roadmap = () => {
     const fetchRoadmap = async () => {
         setLoading(true);
         try {
-            if (courseId) {
-                const data = await getCurrentRoadmap(courseId);
+            if (roadmapId || courseId) {
+                const data = await getCurrentRoadmap(courseId, roadmapId);
                 setRoadmap(data);
             } else {
                 const data = await getAllRoadmaps();
@@ -418,7 +419,7 @@ const Roadmap = () => {
 
     useEffect(() => {
         fetchRoadmap();
-    }, [courseId]);
+    }, [courseId, roadmapId]);
 
     const handleShift = (days) => {
         if (!roadmap) return;
