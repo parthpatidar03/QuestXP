@@ -41,6 +41,24 @@ const LandingPage = () => {
         xp: 75000,
         visits: 1200
     });
+    const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+    const [isClicked, setIsClicked] = useState(false);
+
+    useEffect(() => {
+        const handleMouseMove = (e) => setMousePos({ x: e.clientX, y: e.clientY });
+        const handleMouseDown = () => setIsClicked(true);
+        const handleMouseUp = () => setIsClicked(false);
+        
+        window.addEventListener('mousemove', handleMouseMove);
+        window.addEventListener('mousedown', handleMouseDown);
+        window.addEventListener('mouseup', handleMouseUp);
+        
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mousedown', handleMouseDown);
+            window.removeEventListener('mouseup', handleMouseUp);
+        };
+    }, []);
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -97,6 +115,14 @@ const LandingPage = () => {
 
     return (
         <div className="min-h-screen bg-bg relative overflow-hidden flex flex-col">
+            {/* Interactive Spotlight */}
+            <motion.div 
+                className="pointer-events-none fixed inset-0 z-[1] overflow-hidden"
+                animate={{ 
+                    background: `radial-gradient(600px at ${mousePos.x}px ${mousePos.y}px, rgba(34, 197, 94, ${isClicked ? 0.08 : 0.035}), transparent 80%)` 
+                }}
+                transition={{ type: "tween", ease: "backOut", duration: 0.5 }}
+            />
             <BGPattern variant="grid" mask="fade-edges" fill="var(--color-text-muted)" className="opacity-20 z-0" />
 
             <header className="relative z-20 border-b border-border bg-surface/90 backdrop-blur">
