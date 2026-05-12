@@ -5,9 +5,17 @@ const Course = require('../models/Course');
  * Deterministic Roadmap Generation Algorithm
  * Supports separate capacities for Weekdays and Weekends
  */
+/**
+ * Deterministic Roadmap Generation Algorithm
+ * Supports separate capacities for Weekdays and Weekends
+ * Implements 75% efficiency rule (e.g. 4h goal -> 3h content)
+ * Each video is a separate entry to allow granular shifting
+ */
 const generateRoadmapLogic = (videos, startDate, weekdayHours = 2, weekendHours = 4, excludedDays = []) => {
-    const weekdayMinutes = weekdayHours * 60;
-    const weekendMinutes = weekendHours * 60;
+    // 75% efficiency target: 1 hour of goal = 45 mins of raw content
+    const EFFICIENCY = 0.75;
+    const weekdayMinutes = weekdayHours * 60 * EFFICIENCY;
+    const weekendMinutes = weekendHours * 60 * EFFICIENCY;
     
     const roadmap = [];
     let currentDay = new Date(startDate);
@@ -25,58 +33,60 @@ const generateRoadmapLogic = (videos, startDate, weekdayHours = 2, weekendHours 
         if (excludedDays.includes(dayOfWeek)) {
             roadmap.push({
                 date: new Date(currentDay),
-                dayIndex: dayCounter,
+                dayIndex: dayCounter++,
                 plannedVideos: [],
                 totalMinutes: 0,
                 isRestDay: true
             });
             currentDay.setDate(currentDay.getDate() + 1);
-            dayCounter++;
             continue;
         }
 
         let minutesAllocatedToday = 0;
-        const dayVideos = [];
+        let dayHasVideos = false;
 
         while (videoIndex < videos.length) {
             const video = videos[videoIndex];
-            const duration = video.duration || video.durationMinutes || 0;
+            // duration is stored in seconds in DB
+            const durationSeconds = video.duration || video.durationMinutes || 0;
+            const durationMinutes = durationSeconds / 60;
 
             // Allocation Rule:
-            // 1. Add video if it fits in remaining time.
-            // 2. If it's the FIRST video of the day, add it regardless (to prevent blockages).
-            // 3. Otherwise, carry over to next day.
-            if (dayVideos.length === 0 || (minutesAllocatedToday + duration <= dailyMinutes)) {
-                dayVideos.push({
-                    videoId: video._id,
-                    title: video.title,
-                    duration: duration,
-                    playlistId: video.playlistId,
-                    playlistName: video.playlistName
+            // 1. Add video if it fits in remaining capacity.
+            // 2. If it's the FIRST video of the day, add it regardless.
+            // 3. Each video gets its OWN entry in roadmap array to support granular +/- shifting
+            if (!dayHasVideos || (minutesAllocatedToday + durationMinutes <= dailyMinutes)) {
+                roadmap.push({
+                    date: new Date(currentDay),
+                    dayIndex: dayCounter++,
+                    plannedVideos: [{
+                        videoId: video._id,
+                        title: video.title,
+                        duration: durationSeconds,
+                        playlistId: video.playlistId,
+                        playlistName: video.playlistName,
+                        sectionId: video.sectionId
+                    }],
+                    totalMinutes: durationSeconds,
+                    isRestDay: false
                 });
-                minutesAllocatedToday += duration;
-                videoIndex++;
                 
-                // Break if we've reached the capacity (approx)
+                minutesAllocatedToday += durationMinutes;
+                videoIndex++;
+                dayHasVideos = true;
+                
+                // Break if we've reached the capacity
                 if (minutesAllocatedToday >= dailyMinutes) break;
             } else {
+                // Doesn't fit, move to next calendar day
                 break;
             }
         }
 
-        roadmap.push({
-            date: new Date(currentDay),
-            dayIndex: dayCounter,
-            plannedVideos: dayVideos,
-            totalMinutes: minutesAllocatedToday,
-            isRestDay: false
-        });
-
         currentDay.setDate(currentDay.getDate() + 1);
-        dayCounter++;
         
-        // Safety break
-        if (dayCounter > 365) break; 
+        // Safety break (approx 3 years)
+        if (dayCounter > 1000) break; 
     }
 
     return roadmap;

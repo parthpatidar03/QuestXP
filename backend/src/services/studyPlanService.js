@@ -34,6 +34,9 @@ const BUFFER_DAY_RULES = [
 // If totalAllocMins > capacityMins * (1 + HEAVY_DAY_TOLERANCE) → isHeavyDay
 const HEAVY_DAY_TOLERANCE = 0.10; // 10%
 
+// T001: 75% Efficiency Factor (e.g. 4h study block -> 3h video content)
+const EFFICIENCY_FACTOR = 0.75;
+
 const MAX_RECALC_LOG_ENTRIES = 20;
 
 // ─── Private Helpers ─────────────────────────────────────────────────────────
@@ -433,8 +436,8 @@ const generatePlan = async (userId, courseId, {
     const dailyAllocations = _greedyAllocate(
         allLectures,
         studyDays,
-        weekdayCapacityMins,
-        weekendCapacityMins
+        weekdayCapacityMins * EFFICIENCY_FACTOR,
+        weekendCapacityMins * EFFICIENCY_FACTOR
     );
 
     // Feasibility check

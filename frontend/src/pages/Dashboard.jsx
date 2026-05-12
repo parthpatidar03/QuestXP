@@ -374,6 +374,13 @@ const Dashboard = () => {
                 localStorage.setItem('seenFeatures', JSON.stringify(seenFeatures));
             }, 5000);
         }
+        if (!seenFeatures.includes('smart_roadmap_v2')) {
+            setTimeout(() => {
+                addBadgeToast('New: Smart Roadmaps!', 'Achieve more with 75% efficiency and granular shifting!', 'target');
+                seenFeatures.push('smart_roadmap_v2');
+                localStorage.setItem('seenFeatures', JSON.stringify(seenFeatures));
+            }, 8000);
+        }
     }, [addBadgeToast]);
     const queryClient = useQueryClient();
 

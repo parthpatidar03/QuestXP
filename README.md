@@ -15,7 +15,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.7.0-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-1.7.1-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License">
   <img src="https://img.shields.io/badge/status-production-success.svg" alt="Status">
 </p>
@@ -124,11 +124,12 @@ The backbone of the curriculum.
 
 ## 🧠 Deep Technical Insights
 
-### 1. Surgical Adaptive Roadmap Algorithm
-The core innovation of QuestXP is the **Linear Propagation Engine** for study scheduling. Unlike static calendars, this system treats a course as a linked-list of milestones.
-- **Propagation Logic**: When a user adjusts a date (e.g., shifts Day 5 forward by +1), the engine triggers a recursive update. All downstream lecture deadlines are recalculated using $O(n)$ complexity.
-- **Weekend Awareness**: The algorithm can be configured to respect user-defined "Rest Days," skipping them during propagation to keep the workload realistic.
-- **Data Integrity**: Schedule mutations are atomic. If a user completes a lecture early, the engine offers a "Pull Forward" option to compress the remaining timeline.
+### 1. Surgical Adaptive Roadmap Algorithm (V2)
+The core innovation of QuestXP is the **Linear Propagation Engine** for study scheduling. 
+- **75% Efficiency Factor**: Implements a realistic allocation logic where $1 \text{ hour of study time} = 45 \text{ minutes of video content}$. This accounts for note-taking, pauses, and practice, ensuring plans are achievable.
+- **Granular Video Mapping**: Unlike traditional planners that group videos into "days," QuestXP maps every video to an individual roadmap entry. This enables **Surgical Shifting** where users can adjust the schedule of a single video using `+`/`-` buttons without disrupting the internal logic of the day's block.
+- **Propagation Logic**: When a user adjusts a date, the engine triggers a recursive update. All downstream lecture deadlines are recalculated using $O(n)$ complexity.
+- **Weekend Awareness**: The algorithm respects user-defined "Rest Days" and varying weekday/weekend capacities.
 
 ### 2. Scalable Global Leaderboard
 The **Global Hall of Fame** is built for high-concurrency read performance and real-time scaling.
