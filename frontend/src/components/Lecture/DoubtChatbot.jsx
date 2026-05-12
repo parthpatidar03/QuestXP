@@ -64,6 +64,7 @@ const DoubtChatbot = ({ lectureId, courseTitle = '', lectureTitle = '' }) => {
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
     const bottomRef = useRef(null);
+    const constraintsRef = useRef(null);
 
     // Auto-scroll to bottom on new messages
     useEffect(() => {
@@ -116,31 +117,37 @@ const DoubtChatbot = ({ lectureId, courseTitle = '', lectureTitle = '' }) => {
     };
 
     return (
-        <>
-            {/* FAB Button */}
-            <button
+        <div ref={constraintsRef} className="fixed inset-0 pointer-events-none z-50">
+            {/* FAB Button - Draggable */}
+            <motion.button
+                drag
+                dragConstraints={constraintsRef}
+                dragMomentum={false}
                 onClick={() => setOpen(o => !o)}
-                className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full flex items-center justify-center bg-primary text-white shadow-[0_0_16px_rgba(var(--color-primary),0.5)] transition-transform hover:scale-105"
+                className="pointer-events-auto fixed bottom-6 right-6 w-14 h-14 rounded-full flex items-center justify-center bg-primary text-white shadow-[0_0_16px_rgba(var(--color-primary),0.5)] transition-shadow hover:shadow-[0_0_24px_rgba(var(--color-primary),0.6)] z-50"
                 style={{
                     animation: open ? 'none' : 'glow-pulse 2.5s ease-in-out infinite'
                 }}
-                title="Ask Doubt Bot"
+                title="Ask Doubt Bot (Drag to move)"
             >
                 {open
                     ? <Minimize2 className="w-5 h-5" />
                     : <Bot className="w-6 h-6" />
                 }
-            </button>
+            </motion.button>
 
-            {/* Panel */}
+            {/* Panel - Draggable */}
             <AnimatePresence>
                 {open && (
                     <motion.div
+                        drag
+                        dragConstraints={constraintsRef}
+                        dragMomentum={false}
                         initial={{ opacity: 0, y: 28, scale: 0.94 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 28, scale: 0.94 }}
                         transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                        className="fixed bottom-24 right-6 z-40 flex flex-col rounded-2xl overflow-hidden shadow-2xl border border-border bg-surface-2/95 backdrop-blur-md"
+                        className="pointer-events-auto fixed bottom-24 right-6 flex flex-col rounded-2xl overflow-hidden shadow-2xl border border-border bg-surface-2/95 backdrop-blur-md z-40"
                         style={{
                             width: 'min(380px, calc(100vw - 2rem))',
                             maxHeight: '72vh',

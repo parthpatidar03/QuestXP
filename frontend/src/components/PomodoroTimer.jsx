@@ -246,7 +246,7 @@ const PomodoroTimer = () => {
                         animate={{ x: 0, opacity: 1 }}
                         exit={{ x: 50, opacity: 0 }}
                         onClick={() => setIsHidden(false)}
-                        className="fixed bottom-10 right-0 z-[110] glass-card p-3 rounded-l-2xl rounded-r-none border-r-0 border-primary/40 pointer-events-auto hover:bg-primary/10 transition-colors group"
+                        className="fixed bottom-48 right-0 z-[110] glass-card p-3 rounded-l-2xl rounded-r-none border-r-0 border-primary/40 pointer-events-auto hover:bg-primary/10 transition-colors group"
                     >
                         <div className="relative">
                             <ChevronLeft className="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />
