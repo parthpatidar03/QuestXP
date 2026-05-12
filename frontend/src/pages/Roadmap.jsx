@@ -336,7 +336,12 @@ const UniversalRoadmapCard = ({ roadmap }) => {
                     <h4 className="text-base sm:text-lg font-black text-text-primary mb-1 line-clamp-1">{roadmap.title || "Untitled Roadmap"}</h4>
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] sm:text-xs font-bold text-text-muted">
                         <span className="flex items-center gap-1"><Play className="w-3 h-3" /> {totalVideos} Videos</span>
-                        <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {Math.round(totalMinutes)} mins</span>
+                        <span className="flex items-center gap-1">
+                            <Clock className="w-3 h-3" /> 
+                            {totalMinutes >= 60 
+                                ? `${(totalMinutes / 60).toFixed(1)} hrs` 
+                                : `${Math.round(totalMinutes)} mins`}
+                        </span>
                         <span className="flex items-center gap-1 text-primary/70">{dateRange}</span>
                     </div>
                 </div>
