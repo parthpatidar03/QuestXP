@@ -403,6 +403,7 @@ QuestXP's roadmap engine is designed for realism, not perfection.
 - **Roadmap Lifecycle**: Rename and delete study plans with optimistic UI updates.
 - **Dashboard Hub**: Rebranded from "My Courses" to provide a centralized learning command center.
 - **Roadmap Management**: Delete unwanted or completed roadmaps to keep your hub organized.
+- **🔄 Live Progress Sync**: Bi-directional synchronization between the Course Player and Roadmap Hub. Completing a video in one view instantaneously updates the other via a real-time focus-refresh mechanism. [Read more →](docs/011-progress-sync.md)
 
 ---
 
