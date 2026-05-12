@@ -636,17 +636,17 @@ const CourseDetail = () => {
                                 {/* Elite Journey Progress Bar */}
                                 <div className="relative pt-6 pb-12">
                                     {/* Track */}
-                                    <div className="h-4 w-full bg-surface-2 rounded-full border border-border/50 relative overflow-visible shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]">
+                                    <div className="h-5 w-full bg-surface-2 rounded-full border border-border/50 relative overflow-visible shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]">
                                         {/* Progress Fill */}
                                         <motion.div 
                                             initial={{ width: 0 }}
                                             animate={{ width: `${pct}%` }}
                                             transition={{ duration: 1.5, ease: "circOut" }}
-                                            className="absolute top-0 left-0 h-full bg-success rounded-full shadow-[0_0_20px_var(--color-success)]"
+                                            className="absolute top-0 left-0 h-full bg-success rounded-full shadow-[0_0_25px_var(--color-success)]"
                                         >
                                             {/* Journey Thumb (The Runner) */}
-                                            <div className="absolute -right-4 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white border-[4px] border-success shadow-[0_0_15px_var(--color-success)] z-10 flex items-center justify-center overflow-hidden">
-                                                <span className="text-xl transform scale-x-[-1] translate-x-[1px]">🏃</span>
+                                            <div className="absolute -right-5 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white border-[4px] border-success shadow-[0_0_15px_var(--color-success)] z-10 flex items-center justify-center overflow-hidden">
+                                                <span className="text-2xl transform scale-x-[-1] translate-x-[1px]">🏃</span>
                                             </div>
                                         </motion.div>
                                         

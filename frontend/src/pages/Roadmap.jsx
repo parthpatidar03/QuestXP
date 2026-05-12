@@ -166,11 +166,11 @@ const ProgressHeader = React.memo(({ roadmap, onShift, totalCalendarDays, onUpda
                             <span className="text-[10px] font-black text-text-muted uppercase tracking-widest block mb-2">🚀 Learning Progress</span>
                             <div className="flex items-center gap-4">
                                 <span className="text-3xl font-black text-text-primary italic leading-none" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>{learningStats.percent}%</span>
-                                <div className="w-24 h-3 rounded-full bg-surface-3 overflow-hidden border border-border relative">
+                                <div className="w-32 sm:w-48 h-2.5 rounded-full bg-surface-3 overflow-hidden border border-border relative">
                                     <motion.div 
                                         initial={{ width: 0 }}
                                         animate={{ width: `${learningStats.percent}%` }}
-                                        className="h-full bg-success shadow-[0_0_10px_var(--color-success)]" 
+                                        className="h-full bg-success shadow-[0_0_15px_var(--color-success)]" 
                                     />
                                 </div>
                             </div>
@@ -182,11 +182,11 @@ const ProgressHeader = React.memo(({ roadmap, onShift, totalCalendarDays, onUpda
                             <span className="text-[10px] font-black text-text-muted uppercase tracking-widest block mb-2">🔥 Time Progress</span>
                             <div className="flex items-center gap-4">
                                 <span className="text-3xl font-black text-text-primary italic leading-none" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>Day {Math.max(1, currentDayIndex)}/{totalCalendarDays}</span>
-                                <div className="w-24 h-3 rounded-full bg-surface-3 overflow-hidden border border-border relative">
+                                <div className="w-32 sm:w-48 h-2.5 rounded-full bg-surface-3 overflow-hidden border border-border relative">
                                     <motion.div 
                                         initial={{ width: 0 }}
                                         animate={{ width: `${timeProgressPercent}%` }}
-                                        className="h-full bg-primary/40 shadow-[0_0_10px_rgba(var(--color-primary-rgb),0.2)]" 
+                                        className="h-full bg-primary shadow-[0_0_15px_var(--color-primary)]" 
                                     />
                                 </div>
                             </div>
