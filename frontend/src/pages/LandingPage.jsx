@@ -478,7 +478,7 @@ const LandingPage = () => {
                     </div>
                 </section>
 
-                <section className="py-24 bg-surface/30 overflow-hidden">
+                <section className="py-24 bg-surface/30 overflow-hidden group/testimonial">
                     <div className="max-w-screen-xl mx-auto px-4 sm:px-6 mb-12">
                         <div className="flex flex-col items-center text-center space-y-4">
                             <span className="text-primary font-black text-[10px] uppercase tracking-[0.3em]">Wall of Love</span>
@@ -487,32 +487,60 @@ const LandingPage = () => {
                     </div>
 
                     <div className="relative">
-                        <div className="flex animate-scroll hover:[animation-play-state:paused] gap-6 px-4 w-max">
-                            {[
-                                { name: 'krish_dev', role: 'Full Stack Learner', text: 'QuestXP completely changed how I use YouTube. No more falling into the recommendation trap!' },
-                                { name: 'shadow_01', role: 'CS Student', text: 'The AI auto-splitting is magic. Long lectures now feel like achievable missions.' },
-                                { name: 'priyanka_tech', role: 'UI Designer', text: 'Finally a platform that gives me structure without charging me hundreds of dollars.' },
-                                { name: 'aditya_codes', role: 'Backend Engineer', text: 'XP and streaks keep me coming back every day. It feels like a game but I am actually learning.' },
-                                { name: 'sarah_f', role: 'Self Taught', text: 'The focus guardian alert is exactly what I needed. It keeps me honest while studying.' },
-                                { name: 'the_viking', role: 'Go Enthusiast', text: 'Turned a 40-hour playlist into a 30-day plan in seconds. Insane productivity tool.' },
-                                { name: 'krish_dev', role: 'Full Stack Learner', text: 'QuestXP completely changed how I use YouTube. No more falling into the recommendation trap!' },
-                                { name: 'shadow_01', role: 'CS Student', text: 'The AI auto-splitting is magic. Long lectures now feel like achievable missions.' },
-                                { name: 'priyanka_tech', role: 'UI Designer', text: 'Finally a platform that gives me structure without charging me hundreds of dollars.' },
-                            ].map((t, i) => (
-                                <div key={i} className="w-[300px] sm:w-[350px] p-6 rounded-2xl border border-border bg-surface-2 flex flex-col justify-between shadow-lg">
-                                    <p className="text-text-secondary text-sm italic leading-relaxed mb-6">"{t.text}"</p>
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center font-bold text-primary">
-                                            {t.name[0].toUpperCase()}
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-bold text-text-primary">{t.name}</p>
-                                            <p className="text-[10px] font-medium text-text-muted uppercase tracking-wider">{t.role}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
+                        {/* Glow effect around container */}
+                        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-full w-full bg-primary/5 blur-[120px] rounded-full opacity-0 group-hover/testimonial:opacity-100 transition-opacity duration-1000" />
+                        
+                        <div className="flex overflow-hidden relative">
+                            <motion.div 
+                                className="flex gap-6 py-4 px-3"
+                                animate={{ x: ["0%", "-50%"] }}
+                                transition={{ 
+                                    duration: 35, 
+                                    repeat: Infinity, 
+                                    ease: "linear" 
+                                }}
+                                whileHover={{ animationPlayState: "paused" }}
+                            >
+                                {[...Array(2)].map((_, i) => (
+                                    <React.Fragment key={i}>
+                                        {[
+                                            { name: 'krish_dev', role: 'Full Stack Learner', text: 'QuestXP completely changed how I use YouTube. No more falling into the recommendation trap!' },
+                                            { name: 'shadow_01', role: 'CS Student', text: 'The AI auto-splitting is magic. Long lectures now feel like achievable missions.' },
+                                            { name: 'priyanka_tech', role: 'UI Designer', text: 'Finally a platform that gives me structure without charging me hundreds of dollars.' },
+                                            { name: 'aditya_codes', role: 'Backend Engineer', text: 'XP and streaks keep me coming back every day. It feels like a game but I am actually learning.' },
+                                            { name: 'sarah_f', role: 'Self Taught', text: 'The focus guardian alert is exactly what I needed. It keeps me honest while studying.' },
+                                            { name: 'the_viking', role: 'Go Enthusiast', text: 'Turned a 40-hour playlist into a 30-day plan in seconds. Insane productivity tool.' },
+                                            { name: 'codeshadow', role: 'Software Developer', text: 'I used to bookmark videos and never watch them. Now I have a roadmap that I actually follow.' }
+                                        ].map((t, idx) => (
+                                            <div 
+                                                key={idx} 
+                                                className="w-[350px] shrink-0 p-8 rounded-3xl bg-surface-2/40 border border-border backdrop-blur-md hover:border-primary/50 hover:bg-surface-2/60 transition-all duration-300 group/card relative overflow-hidden"
+                                            >
+                                                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover/card:opacity-20 transition-opacity">
+                                                    <Sparkles className="w-8 h-8 text-primary" />
+                                                </div>
+                                                <p className="text-text-primary text-base font-medium leading-relaxed mb-8 relative z-10">
+                                                    "{t.text}"
+                                                </p>
+                                                <div className="flex items-center gap-4 relative z-10">
+                                                    <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-black text-xl font-display">
+                                                        {t.name[0].toUpperCase()}
+                                                    </div>
+                                                    <div>
+                                                        <h4 className="text-sm font-black text-text-primary tracking-tight">{t.name}</h4>
+                                                        <p className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">{t.role}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </React.Fragment>
+                                ))}
+                            </motion.div>
                         </div>
+                        
+                        {/* Edge Fades */}
+                        <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-bg to-transparent z-10 pointer-events-none" />
+                        <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-bg to-transparent z-10 pointer-events-none" />
                     </div>
                 </section>
 
