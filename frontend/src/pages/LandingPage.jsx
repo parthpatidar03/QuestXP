@@ -214,8 +214,8 @@ const LandingPage = () => {
                             </h1>
 
                             <p className="mt-8 text-lg sm:text-xl text-text-primary font-medium leading-snug max-w-[45ch]">
-                                Stop buying expensive courses. QuestXP transforms free YouTube content into 
-                                structured, gamified learning paths you'll actually finish.
+                                Ditch expensive courses. QuestXP turns <span className="text-primary italic">YouTube</span> into a 
+                                <span className="text-primary font-bold">structured, gamified</span> workspace you'll actually finish.
                             </p>
 
                             <div className="mt-7 flex flex-col sm:flex-row gap-3 sm:items-center">
