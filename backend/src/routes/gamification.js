@@ -159,8 +159,7 @@ router.get('/leaderboard', async (req, res) => {
         const { generateRandomUsername } = require('../utils/nameGenerator');
         
         const players = await User.find({}, 'name username usernameSet totalXP level streak')
-            .sort({ totalXP: -1 })
-            .limit(50);
+            .sort({ totalXP: -1 });
         
         const formattedPlayers = await Promise.all(players.map(async (p, i) => {
             let currentUsername = p.username;

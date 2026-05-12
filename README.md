@@ -114,7 +114,8 @@ The core innovation of QuestXP is the **Linear Propagation Engine** for study sc
 - **Data Integrity**: Schedule mutations are atomic. If a user completes a lecture early, the engine offers a "Pull Forward" option to compress the remaining timeline.
 
 ### 2. Scalable Global Leaderboard
-The **Global Hall of Fame** is built for high-concurrency read performance.
+The **Global Hall of Fame** is built for high-concurrency read performance and real-time scaling.
+- **Dynamic Scaling**: No longer restricted to a top-50 view; the leaderboard scales dynamically with the user base, providing a comprehensive view of all learners.
 - **Ranking Engine**: Calculates user rank based on total XP and Level using a high-performance MongoDB index on `{ totalXP: -1, level: -1 }`.
 - **Percentile Tracking**: Dynamically computes where a user stands (e.g., "Top 5% of learners") by comparing their XP against the total user count.
 - **Identity Protection**: To ensure privacy in a competitive space, QuestXP uses an **Anime-Themed Alias System**. Users are assigned random handles (e.g., *Kakashi_Mastery*) which they can "claim" or "cycle" through to maintain a professional yet private presence.

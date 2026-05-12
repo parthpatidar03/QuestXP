@@ -25,7 +25,7 @@ const GlobalLeaderboardModal = ({ isOpen, onClose, players = [] }) => {
                             <h2 className="text-xl font-black uppercase tracking-tight text-text-primary" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
                                 Global Hall of Fame
                             </h2>
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted opacity-60">Top 50 Learners</p>
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted opacity-60">Top {players.length} Learners</p>
                         </div>
                     </div>
                     <button 
@@ -45,7 +45,7 @@ const GlobalLeaderboardModal = ({ isOpen, onClose, players = [] }) => {
                     <section>
                         <div className="mb-6 flex items-center justify-between">
                             <h3 className="text-xs font-black uppercase tracking-widest text-text-muted">Rankings</h3>
-                            <span className="text-[10px] font-bold text-text-muted px-2 py-1 bg-surface-2 rounded-md border border-border">Total 50 users</span>
+                            <span className="text-sm font-black text-primary px-3 py-1.5 bg-primary/10 rounded-xl border border-primary/20 shadow-lg shadow-primary/10">Total {players.length} users</span>
                         </div>
                         <LeaderboardTable players={players} />
                     </section>
