@@ -86,8 +86,8 @@ const ProgressHeader = React.memo(({ roadmap, onShift, totalCalendarDays, onUpda
             </div>
             
             <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-8 relative z-10">
-                <div className="space-y-4 max-w-xl">
-                    <div className="flex flex-col gap-3">
+                <div className="flex-1 min-w-0">
+                    <div className="flex flex-col gap-1">
                         {isEditing ? (
                             <div className="flex items-center gap-2">
                                 <input 
@@ -101,10 +101,9 @@ const ProgressHeader = React.memo(({ roadmap, onShift, totalCalendarDays, onUpda
                                 <button onClick={handleTitleSave} className="bg-primary p-2 rounded-lg text-white shadow-lg shadow-primary/20"><CheckSquare className="w-5 h-5" /></button>
                             </div>
                         ) : (
-                        <div className="flex flex-col gap-3">
                             <h2 
                                 onClick={() => setIsEditing(true)}
-                                className="text-3xl sm:text-4xl font-black text-text-primary tracking-tight leading-[0.9] cursor-pointer hover:text-primary transition-colors inline-flex items-center gap-3 flex-wrap" 
+                                className="text-3xl sm:text-4xl font-black text-text-primary tracking-tight leading-[1.1] cursor-pointer hover:text-primary transition-colors flex items-center gap-3 flex-wrap" 
                                 style={{ fontFamily: "'Barlow Condensed', sans-serif" }}
                             >
                                 <span className="uppercase">{roadmap.title || "Your Mastery Journey"}</span>
@@ -113,89 +112,99 @@ const ProgressHeader = React.memo(({ roadmap, onShift, totalCalendarDays, onUpda
                                     <span className="text-[10px] font-black uppercase tracking-widest">Rename</span>
                                 </div>
                             </h2>
-                            <div className="px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-1.5">
-                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Live Sync Active</span>
+                        )}
+                        {roadmap.days && roadmap.days.length > 0 && (
+                            <div className="text-xs font-bold text-text-muted flex items-center gap-2 opacity-60">
+                                <span>Targeting completion by</span>
+                                <span className="text-success font-black">
+                                    {format(new Date(roadmap.days[roadmap.days.length - 1].date), 'MMMM dd, yyyy')}
+                                </span>
+                                <span>🎯</span>
                             </div>
-                        </div>
                         )}
                     </div>
-                    {roadmap.days && roadmap.days.length > 0 && (
-                    <div className="text-sm text-text-muted font-bold flex items-center gap-2">
-                        <span>Targeting completion by</span>
-                        <span className="text-primary bg-primary/10 px-2 py-0.5 rounded border border-primary/20">
-                            {format(new Date(roadmap.days[roadmap.days.length - 1].date), 'MMM dd, yyyy')}
-                        </span>
-                        <span>🎯</span>
-                    </div>
-                    )}
                 </div>
 
-                <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-6 xl:gap-10">
+                <div className="flex items-center gap-6 xl:gap-10">
+                    <div className="h-16 w-px bg-border/40 hidden xl:block" />
+
                     {/* Schedule Adjuster */}
-                    <div className="flex items-center gap-2 bg-surface-2 p-1.5 rounded-xl border border-border relative shrink-0">
+                    <div className="flex flex-col items-center gap-2 bg-surface-2/50 p-3 rounded-2xl border border-border/50 relative shrink-0 min-w-[160px]">
                         {onShift.adjusting && (
                             <div className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap px-3 py-1 bg-primary/20 text-primary text-[10px] font-black rounded-full border border-primary/30 animate-pulse z-20">
                                 SYNCING...
                             </div>
                         )}
-                        <motion.button 
-                            whileTap={{ scale: 0.9 }}
-                            onClick={() => onShift(-1)}
-                            className="p-1.5 hover:bg-surface-3 rounded-lg text-text-muted hover:text-primary transition-colors disabled:opacity-50"
-                            title="Subtract 1 day"
-                            disabled={onShift.adjusting}
-                        >
-                            <Minus className="w-3.5 h-3.5" />
-                        </motion.button>
-                        <div className="text-center min-w-[90px] px-1">
-                            <span className="text-[9px] font-black text-text-muted uppercase tracking-widest block mb-0.5">📅 Shift Plan</span>
-                            <span className="text-xs font-black text-text-primary uppercase">Adjust Schedule</span>
+                        <div className="flex items-center gap-4 w-full justify-between">
+                            <motion.button 
+                                whileTap={{ scale: 0.9 }}
+                                onClick={() => onShift(-1)}
+                                className="p-1.5 hover:bg-surface-3 rounded-lg text-text-muted hover:text-primary transition-colors disabled:opacity-50"
+                                title="Subtract 1 day"
+                                disabled={onShift.adjusting}
+                            >
+                                <Minus className="w-4 h-4" />
+                            </motion.button>
+                            <div className="text-center">
+                                <span className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] block mb-0.5">📅 Shift Plan</span>
+                                <span className="text-sm font-black text-text-primary uppercase tracking-tight">Adjust Schedule</span>
+                            </div>
+                            <motion.button 
+                                whileTap={{ scale: 0.9 }}
+                                onClick={() => onShift(1)}
+                                className="p-1.5 hover:bg-surface-3 rounded-lg text-text-muted hover:text-primary transition-colors disabled:opacity-50"
+                                title="Add 1 day"
+                                disabled={onShift.adjusting}
+                            >
+                                <Plus className="w-4 h-4" />
+                            </motion.button>
                         </div>
-                        <motion.button 
-                            whileTap={{ scale: 0.9 }}
-                            onClick={() => onShift(1)}
-                            className="p-1.5 hover:bg-surface-3 rounded-lg text-text-muted hover:text-primary transition-colors disabled:opacity-50"
-                            title="Add 1 day"
-                            disabled={onShift.adjusting}
-                        >
-                            <Plus className="w-3.5 h-3.5" />
-                        </motion.button>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row items-center gap-8 lg:border-l lg:border-border/50 lg:pl-10">
-                        {/* Learning Progress */}
-                        <div className="text-center sm:text-right">
-                            <span className="text-[9px] font-black text-text-muted uppercase tracking-[0.2em] block mb-2">🚀 Learning Progress</span>
-                            <div className="flex items-center gap-4">
-                                <span className="text-3xl font-black text-text-primary italic leading-none" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>{learningStats.percent}%</span>
-                                <div className="w-32 sm:w-40 h-2 rounded-full bg-surface-3 overflow-hidden border border-border relative">
+                    <div className="h-16 w-px bg-border/40 hidden xl:block" />
+
+                    {/* Stats Section */}
+                    <div className="flex flex-col sm:flex-row items-center gap-8 relative">
+                        {/* Trophy Watermark for this section */}
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.04] pointer-events-none">
+                            <Trophy className="w-32 h-32" />
+                        </div>
+
+                        {/* Learning Progress - Made more compact */}
+                        <div className="text-center sm:text-right relative z-10">
+                            <div className="flex items-center gap-2 justify-center sm:justify-end mb-1">
+                                <Zap className="w-3 h-3 text-success" />
+                                <span className="text-[9px] font-black text-text-muted uppercase tracking-[0.2em]">Learning Progress</span>
+                            </div>
+                            <div className="flex flex-col items-center sm:items-end gap-1">
+                                <span className="text-4xl font-black text-text-primary italic leading-none" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>{learningStats.percent}%</span>
+                                <div className="w-32 h-1.5 rounded-full bg-surface-3 overflow-hidden border border-border/50 relative">
                                     <motion.div 
                                         initial={{ width: 0 }}
                                         animate={{ width: `${learningStats.percent}%` }}
-                                        className="h-full bg-success shadow-[0_0_15px_var(--color-success)]" 
+                                        className="h-full bg-success shadow-[0_0_10px_var(--color-success)]" 
                                     />
                                 </div>
+                                <span className="text-[9px] font-bold text-text-muted opacity-60 uppercase tracking-widest">{learningStats.completed}/{learningStats.total} Done</span>
                             </div>
-                            <span className="text-[10px] font-bold text-text-muted block mt-1.5">{learningStats.completed}/{learningStats.total} Missions Done</span>
                         </div>
 
-                        {/* Time Progress */}
-                        <div className="text-center sm:text-right border-t sm:border-t-0 sm:border-l border-border/50 pt-6 sm:pt-0 sm:pl-10">
-                            <span className="text-[9px] font-black text-text-muted uppercase tracking-[0.2em] block mb-2">🔥 Time Progress</span>
-                            <div className="flex items-center gap-4">
-                                <span className="text-3xl font-black text-text-primary italic leading-none" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>Day {Math.max(1, currentDayIndex)}/{totalCalendarDays}</span>
-                                <div className="w-32 sm:w-40 h-2 rounded-full bg-surface-3 overflow-hidden border border-border relative">
+                        {/* Time Progress - Matching the Screenshot */}
+                        <div className="text-center sm:text-right relative z-10 min-w-[120px]">
+                            <div className="flex items-center gap-2 justify-center sm:justify-end mb-1">
+                                <span className="text-[9px] font-black text-text-muted uppercase tracking-[0.2em]">🔥 Time Progress</span>
+                            </div>
+                            <div className="flex flex-col items-center sm:items-end gap-1">
+                                <span className="text-4xl font-black text-text-primary italic leading-none" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>Day {Math.max(1, currentDayIndex)}/{totalCalendarDays}</span>
+                                <div className="w-32 h-1.5 rounded-full bg-surface-3 overflow-hidden border border-border/50 relative">
                                     <motion.div 
                                         initial={{ width: 0 }}
                                         animate={{ width: `${timeProgressPercent}%` }}
-                                        className="h-full bg-primary shadow-[0_0_15px_var(--color-primary)]" 
+                                        className="h-full bg-primary shadow-[0_0_10px_var(--color-primary)]" 
                                     />
                                 </div>
+                                <span className="text-[9px] font-bold text-text-muted opacity-60 uppercase tracking-widest">{totalCalendarDays - Math.max(1, currentDayIndex)} Left</span>
                             </div>
-                            <span className="text-[10px] font-bold text-text-muted block mt-1.5">
-                                {totalCalendarDays - Math.max(1, currentDayIndex)} Days Remaining
-                            </span>
                         </div>
                     </div>
                 </div>
