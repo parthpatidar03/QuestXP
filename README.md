@@ -15,7 +15,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.7.1-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-1.8.0-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License">
   <img src="https://img.shields.io/badge/status-production-success.svg" alt="Status">
 </p>
@@ -222,6 +222,14 @@ cd QuestXP && npm run install-all
 # 3. Launch Services (Docker Recommended)
 docker-compose up --build
 ```
+
+---
+
+## 🗺️ Surgical Adaptive Roadmap Algorithm (v2)
+QuestXP's roadmap engine is designed for realism, not perfection.
+- **75% Efficiency Rule**: If you commit to 4 hours, the system only schedules 3 hours of video. The remaining 25% is reserved for active note-taking and practice.
+- **Granular Scheduling**: Every video is an individual entry. Use the `+` and `-` buttons to shift specific videos forward or backward without breaking the rest of your plan.
+- **Global & Unified Plans**: Create one roadmap that combines multiple courses or specific playlists from across the platform using the global `+ New Roadmap` feature.
 
 ---
 

@@ -381,6 +381,13 @@ const Dashboard = () => {
                 localStorage.setItem('seenFeatures', JSON.stringify(seenFeatures));
             }, 8000);
         }
+        if (!seenFeatures.includes('global_roadmap')) {
+            setTimeout(() => {
+                addBadgeToast('New: Multi-Course Roadmaps!', 'Combine any courses into one unified study plan!', 'sparkles');
+                seenFeatures.push('global_roadmap');
+                localStorage.setItem('seenFeatures', JSON.stringify(seenFeatures));
+            }, 11000);
+        }
     }, [addBadgeToast]);
     const queryClient = useQueryClient();
 

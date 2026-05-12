@@ -43,12 +43,11 @@ import useAuthStore from '../store/useAuthStore';
 
 /* ── Components ──────────────────────────────────────────────────────── */
 
-const ProgressHeader = ({ roadmap, onShift }) => {
+const ProgressHeader = ({ roadmap, onShift, totalCalendarDays }) => {
     if (!roadmap) return null;
     
-    const totalDays = roadmap.days.length;
     const currentDayIndex = differenceInDays(new Date(), new Date(roadmap.config.startDate)) + 1;
-    const progressPercent = Math.min(100, Math.max(0, (currentDayIndex / totalDays) * 100));
+    const progressPercent = Math.min(100, Math.max(0, (currentDayIndex / totalCalendarDays) * 100));
 
     return (
         <div className="glass-card p-6 mb-8 relative overflow-hidden group">
@@ -103,7 +102,7 @@ const ProgressHeader = ({ roadmap, onShift }) => {
                     <div className="text-center sm:text-right sm:border-l sm:border-border/50 sm:pl-8 py-2">
                         <span className="text-xs font-black text-text-muted uppercase tracking-widest block mb-2">🔥 Time Progress</span>
                         <div className="flex flex-col sm:flex-row items-center gap-4">
-                            <span className="text-3xl font-black text-text-primary italic leading-none" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>Day {Math.max(1, currentDayIndex)}/{totalDays}</span>
+                            <span className="text-3xl font-black text-text-primary italic leading-none" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>Day {Math.max(1, currentDayIndex)}/{totalCalendarDays}</span>
                             <div className="w-full sm:w-32 h-3 rounded-full bg-surface-3 overflow-hidden border border-border relative">
                                 <motion.div 
                                     initial={{ width: 0 }}
@@ -119,7 +118,7 @@ const ProgressHeader = ({ roadmap, onShift }) => {
     );
 };
 
-const RoadmapPlaylistCard = ({ playlistId, days, roadmapId, courseId, onPartialShift }) => {
+const RoadmapPlaylistCard = ({ playlistId, days, dayLabelsMap, totalCalendarDays, roadmapId, courseId, onPartialShift }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     
     const playlistName = useMemo(() => {
@@ -202,7 +201,7 @@ const RoadmapPlaylistCard = ({ playlistId, days, roadmapId, courseId, onPartialS
                                 <div className="flex items-center gap-3">
                                     <div className="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgba(var(--color-primary-rgb),0.5)]" />
                                     <span className="text-[12px] font-black uppercase tracking-[0.1em] text-text-primary italic">
-                                        Day {day.dayIndex + 1} — {format(new Date(day.date), 'EEEE, MMM dd')}
+                                        Day {dayLabelsMap.get(day.dayIndex)} — {format(new Date(day.date), 'EEEE, MMM dd')}
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-3">
@@ -266,6 +265,7 @@ const Roadmap = () => {
     const [roadmap, setRoadmap] = useState(null);
     const [loading, setLoading] = useState(true);
     const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
+    const [modalCourseId, setModalCourseId] = useState(courseId);
     const [adjusting, setAdjusting] = useState(false);
     
     // T050: Debounce & Accumulation Logic for responsive +/- buttons
@@ -392,6 +392,30 @@ const Roadmap = () => {
     handleShift.adjusting = adjusting;
     handlePartialShift.adjusting = adjusting;
 
+    // Map each dayIndex to a "Calendar Day" number
+    const dayLabelsMap = useMemo(() => {
+        if (!roadmap) return new Map();
+        const map = new Map();
+        let currentDayLabel = 0;
+        let lastDateString = null;
+        
+        roadmap.days.forEach((day, index) => {
+            const dateString = format(new Date(day.date), 'yyyy-MM-dd');
+            if (dateString !== lastDateString) {
+                currentDayLabel++;
+                lastDateString = dateString;
+            }
+            map.set(index, currentDayLabel);
+        });
+        return map;
+    }, [roadmap]);
+
+    const totalCalendarDays = useMemo(() => {
+        if (!roadmap) return 0;
+        const dates = new Set(roadmap.days.map(d => format(new Date(d.date), 'yyyy-MM-dd')));
+        return dates.size;
+    }, [roadmap]);
+
     const playlistIds = useMemo(() => {
         if (!roadmap) return [];
         const ids = new Set();
@@ -417,21 +441,41 @@ const Roadmap = () => {
             <NavBar />
 
             <main className="max-w-4xl mx-auto px-4 py-12 relative z-10">
-                <Link to="/dashboard" className="inline-flex items-center gap-3 px-5 py-2.5 bg-surface-2 hover:bg-surface-3 border border-border rounded-xl transition-all group mb-8 w-fit">
-                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center group-hover:-translate-x-1 transition-transform">
-                        <ArrowLeft className="w-5 h-5 text-primary" />
-                    </div>
-                    <span className="text-sm font-black uppercase tracking-widest text-text-primary italic">Back to Hub</span>
-                </Link>
+                <div className="flex items-center justify-between mb-8">
+                    <Link to="/dashboard" className="inline-flex items-center gap-3 px-5 py-2.5 bg-surface-2 hover:bg-surface-3 border border-border rounded-xl transition-all group w-fit">
+                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center group-hover:-translate-x-1 transition-transform">
+                            <ArrowLeft className="w-5 h-5 text-primary" />
+                        </div>
+                        <span className="text-sm font-black uppercase tracking-widest text-text-primary italic">Back to Hub</span>
+                    </Link>
+
+                    <button 
+                        onClick={() => {
+                            setModalCourseId(null);
+                            setIsGenerateModalOpen(true);
+                        }}
+                        className="flex items-center gap-2 px-5 py-2.5 bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-xl text-primary text-xs font-black uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    >
+                        <Plus className="w-4 h-4" />
+                        New Roadmap
+                    </button>
+                </div>
                 
                 {roadmap ? (
                     <>
-                        <ProgressHeader roadmap={roadmap} onShift={handleShift} />
+                        <ProgressHeader 
+                            roadmap={roadmap} 
+                            onShift={handleShift} 
+                            totalCalendarDays={totalCalendarDays}
+                        />
                         
                         <div className="mb-6 flex items-center justify-between">
                             <h3 className="text-xs font-black text-text-muted uppercase tracking-[0.2em]">Learning Milestones</h3>
                             <button 
-                                onClick={() => setIsGenerateModalOpen(true)}
+                                onClick={() => {
+                                    setModalCourseId(courseId);
+                                    setIsGenerateModalOpen(true);
+                                }}
                                 className="text-[10px] font-bold text-primary hover:underline uppercase tracking-wider"
                             >
                                 Regenerate Plan
@@ -444,6 +488,8 @@ const Roadmap = () => {
                                     key={id} 
                                     playlistId={id} 
                                     days={roadmap.days}
+                                    dayLabelsMap={dayLabelsMap}
+                                    totalCalendarDays={totalCalendarDays}
                                     roadmapId={roadmap._id}
                                     courseId={courseId}
                                     onPartialShift={handlePartialShift}
@@ -461,7 +507,10 @@ const Roadmap = () => {
                             {courseId ? "This course doesn't have a specific roadmap yet." : "You haven't generated a study plan yet."} Generate a custom roadmap to start mastering these playlists.
                         </p>
                         <button 
-                            onClick={() => setIsGenerateModalOpen(true)}
+                            onClick={() => {
+                                setModalCourseId(courseId);
+                                setIsGenerateModalOpen(true);
+                            }}
                             className="px-8 py-4 rounded-2xl bg-primary text-white font-black text-sm hover:bg-primary-hover transition-all shadow-xl shadow-primary/20 flex items-center gap-3"
                         >
                             <Sparkles className="w-4 h-4" />
@@ -474,7 +523,7 @@ const Roadmap = () => {
             <GenerateRoadmapModal 
                 isOpen={isGenerateModalOpen} 
                 onClose={() => setIsGenerateModalOpen(false)}
-                courseId={courseId}
+                courseId={modalCourseId}
                 onGenerated={(newRoadmap) => {
                     setRoadmap(newRoadmap);
                     setIsGenerateModalOpen(false);
