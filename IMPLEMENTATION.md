@@ -145,3 +145,32 @@ Implement **Optimistic Updates** across high-traffic interactions.
 
 ## 10. Security Infrastructure Hardening
 Integrated `helmet` and `hpp`. Global rate limiting (1000 req/15 min) is positioned *after* auth routes to prevent lockout.
+
+---
+
+## 11. AI-Powered One-Shot Splitting
+
+### The Problem
+Educational "One-Shot" videos (e.g., "Learn Java in 10 Hours") are popular but difficult to study because they lack the tracking and modularity of a playlist.
+
+### The Solution: AI Content Architecture
+QuestXP implements a multi-stage transformation pipeline for monolithic videos.
+
+- **Timestamp Prioritization**:
+  - The worker (`workers/courseProcessor.js`) first scans the YouTube description for standard timestamp formats (e.g., `00:00 Intro`).
+  - If found, it creates section "breaks" based on these markers.
+
+- **AI Topic Boundary Detection**:
+  - If no timestamps exist, the `ChapterizationService` sends the full transcript (or large chunks) to **Gemini Flash**.
+  - **Prompt Engineering**: The AI is instructed to identify logical subject shifts and return a chronological JSON array of segments.
+  - **Constraint Enforcement**: We enforce that the first segment starts at `0` and the last segment ends exactly at the video's `totalDuration`.
+
+- **Segment-Isolated RAG Pipeline**:
+  - Unlike simple splitting, each segment is treated as a unique `Lecture` in the database.
+  - The `TranscriptionService` "slices" the main transcript for each segment.
+  - Summaries and Quizzes are generated using only the transcript slice, ensuring that a quiz for "Loops" doesn't accidentally ask about "Classes" covered 5 hours later.
+
+- **IFrame API Orchestration**:
+  - `VideoPlayer.jsx` uses the **YouTube IFrame Player API** instead of a raw iframe.
+  - **Bounded Playback**: We pass `start` and `end` parameters to the player.
+  - **Programmatic Seek**: We handle cross-component communication (Topics -> Player) via a `seekTo` prop, allowing users to jump to sub-topics within a long video without reloading the player.

@@ -21,7 +21,7 @@
 </p>
 
 <p align="center">
-  QuestXP is a high-performance Learning Management System (LMS) designed to solve "Playlist Fatigue." It converts unstructured YouTube content into structured curricula using AI orchestration, vector-based RAG, and an adaptive scheduling engine.
+   QuestXP is a high-performance Learning Management System (LMS) designed to solve "Playlist Fatigue." It converts unstructured YouTube content—including massive 10+ hour "one-shot" lectures—into structured, modular curricula using AI orchestration, vector-based RAG, and an adaptive scheduling engine.
 </p>
 
 ---
@@ -145,7 +145,13 @@ QuestXP moved away from unreliable external mail-to links in favor of a robust, 
 - **State-Aware Generation**: The Roadmap engine now utilizes a **Surgical Gating** mechanism. It detects if a course is in `processing` status and blocks roadmap generation with a 10s countdown overlay.
 - **Progress-Isolated Sharing**: Implemented a **Social Mastery** system. Users can share a "Quest Replica" link which initializes a fresh, isolated `Progress` model for the new user.
 
-### 7. Robust Error Handling & Observability
+### 7. AI-Powered One-Shot Splitting
+QuestXP solves the "Monolithic Video" problem where a single 10-hour video covers an entire subject.
+- **Intelligent Fallback**: The system prioritizes YouTube timestamps. If missing, it uses **Gemini Flash** to parse the transcript and detect logical topic shifts.
+- **Modular Missions**: Each segment is transformed into a distinct "Mission" with its own dedicated AI summary, transcript slice, and localized RAG quiz.
+- **Seamless Playback**: Integrated YouTube IFrame Player API to clamp playback within segment boundaries and support programmatic `seekTo` navigation.
+
+### 8. Robust Error Handling & Observability
 QuestXP implements a multi-layered error handling architecture designed for production stability.
 - **Global Error Middleware**: A centralized hub in `app.js` that catches all unhandled exceptions, providing standardized JSON responses and detailed server-side logging (timestamps, request context, user IDs).
 - **AI-Provider Validation**: Proactive validation of third-party dependencies (e.g., OpenAI API keys) during lazy-initialization, ensuring configuration errors are caught early with descriptive feedback.

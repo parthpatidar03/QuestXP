@@ -188,7 +188,7 @@ const LandingPage = () => {
                                 We buy expensive courses but end up on YouTube. It has the content, but lacks the 
                                 <span className="text-primary italic"> structure, gamification, and personalization </span> 
                                 you need to finish. 
-                                <span className="text-primary block mt-2">QuestXP gives free content the structure it lacks.</span>
+                                <span className="text-primary block mt-2">QuestXP transforms Playlists or single long videos into structured courses.</span>
                             </p>
 
                             <div className="mt-7 flex flex-col sm:flex-row gap-3 sm:items-center">
@@ -222,8 +222,8 @@ const LandingPage = () => {
                                 {/* Step 1 */}
                                 <div className="relative pl-6 border-l border-primary/30 pb-2 group">
                                     <div className="absolute -left-[5px] top-0 w-2.5 h-2.5 rounded-full bg-primary ring-4 ring-bg group-hover:scale-125 transition-transform" />
-                                    <h3 className="text-sm font-bold text-text-primary mb-1 -mt-1">1. Add Playlists</h3>
-                                    <p className="text-xs text-text-secondary leading-relaxed mb-3">Paste any YouTube playlist link into your dashboard.</p>
+                                    <h3 className="text-sm font-bold text-text-primary mb-1 -mt-1">1. Add Playlists or Videos</h3>
+                                    <p className="text-xs text-text-secondary leading-relaxed mb-3">Paste any YouTube playlist or long "one-shot" lecture link.</p>
                                     <div className="rounded border border-border bg-surface p-2 shadow-sm">
                                         <div className="flex items-center gap-2 opacity-50">
                                             <div className="w-3 h-3 rounded bg-white/20" />
@@ -235,8 +235,8 @@ const LandingPage = () => {
                                 {/* Step 2 */}
                                 <div className="relative pl-6 border-l border-primary/30 pb-2 group">
                                     <div className="absolute -left-[5px] top-0 w-2.5 h-2.5 rounded-full bg-surface border border-primary ring-4 ring-bg group-hover:bg-primary transition-colors" />
-                                    <h3 className="text-sm font-bold text-text-primary mb-1 -mt-1">2. AI Course Roadmap</h3>
-                                    <p className="text-xs text-text-secondary leading-relaxed mb-3">QuestXP generates a structured roadmap with sections.</p>
+                                    <h3 className="text-sm font-bold text-text-primary mb-1 -mt-1">2. AI Auto-Splitting</h3>
+                                    <p className="text-xs text-text-secondary leading-relaxed mb-3">QuestXP splits long lectures into logical, 15-min missions automatically.</p>
                                     <div className="grid grid-cols-2 gap-2">
                                         <div className="h-6 rounded border border-border bg-surface shadow-sm" />
                                         <div className="h-6 rounded border border-border bg-surface shadow-sm" />

@@ -1,39 +1,78 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-const VideoPlayer = ({ courseId, lectureId, youtubeId, onEnded }) => {
+const VideoPlayer = ({ courseId, lectureId, youtubeId, onEnded, onTimeUpdate, startTime = 0, endTime = null, seekTo = null }) => {
     const playerRef = useRef(null);
-    const [lastPosition, setLastPosition] = useState(0);
+    const containerRef = useRef(null);
+    const [isPlayerReady, setIsPlayerReady] = useState(false);
 
     useEffect(() => {
-        setLastPosition(0);
-    }, [courseId, lectureId]);
+        // Load YouTube IFrame API if not already loaded
+        if (!window.YT) {
+            const tag = document.createElement('script');
+            tag.src = 'https://www.youtube.com/iframe_api';
+            const firstScriptTag = document.getElementsByTagName('script')[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-    // Added a simple placeholder button to trigger "onEnded" manually for testing the completion card,
-    // since we are using a basic iframe and not the full YouTube IFrame Player API.
-    // In a production app, we would use react-youtube's onEnd event.
+            window.onYouTubeIframeAPIReady = () => {
+                createPlayer();
+            };
+        } else {
+            createPlayer();
+        }
+
+        function createPlayer() {
+            if (playerRef.current) playerRef.current.destroy();
+
+            playerRef.current = new window.YT.Player(containerRef.current, {
+                videoId: youtubeId,
+                playerVars: {
+                    start: startTime,
+                    end: endTime,
+                    rel: 0,
+                    modestbranding: 1,
+                    enablejsapi: 1,
+                },
+                events: {
+                    onReady: (event) => {
+                        setIsPlayerReady(true);
+                        event.target.playVideo();
+                    },
+                    onStateChange: (event) => {
+                        if (event.data === window.YT.PlayerState.ENDED) {
+                            if (onEnded) onEnded();
+                        }
+                    },
+                },
+            });
+        }
+
+        const interval = setInterval(() => {
+            if (playerRef.current && playerRef.current.getCurrentTime && onTimeUpdate) {
+                onTimeUpdate(playerRef.current.getCurrentTime());
+            }
+        }, 1000);
+
+        return () => {
+            clearInterval(interval);
+            if (playerRef.current) playerRef.current.destroy();
+        };
+    }, [youtubeId, startTime, endTime]);
+
+    // Handle external seek requests via props
+    useEffect(() => {
+        if (seekTo && playerRef.current && playerRef.current.seekTo) {
+            playerRef.current.seekTo(seekTo.time, true);
+        }
+    }, [seekTo]);
 
     return (
-        <div className="w-full h-full flex flex-col items-center justify-center relative">
-            <div className="w-full aspect-video bg-black overflow-hidden ring-1 ring-white/5 shadow-2xl relative z-10">
-                <iframe 
-                    ref={playerRef}
-                    src={`https://www.youtube.com/embed/${youtubeId}?enablejsapi=1&start=${lastPosition}&rel=0&modestbranding=1`}
-                    title="YouTube video player"
-                    className="w-full h-full"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                ></iframe>
-            </div>
+        <div className="w-full h-full flex flex-col items-center justify-center relative bg-black rounded-xl overflow-hidden">
+            <div ref={containerRef} className="w-full h-full" />
             
-            {/* Debug/Dev button to simulate video completion */}
-            {onEnded && (
-                <button 
-                    onClick={onEnded}
-                    className="mt-8 px-4 py-2 bg-white/5 hover:bg-white/10 text-white/50 text-xs rounded-md border border-white/10 transition-colors"
-                    title="Simulate video end for testing gamification"
-                >
-                    [Dev] Simulate Video Completion
-                </button>
+            {!isPlayerReady && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black z-20">
+                    <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                </div>
             )}
         </div>
     );

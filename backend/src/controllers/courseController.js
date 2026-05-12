@@ -189,30 +189,38 @@ const getPlaylistInfo = async (req, res, next) => {
         const { url } = req.query;
         if (!url) return res.status(400).json({ error: 'URL is required' });
 
-        const playlistId = url.includes('list=') 
-            ? url.split('list=')[1].split('&')[0]
-            : url;
-
         const apiKey = process.env.YOUTUBE_API_KEY;
         if (!apiKey) return res.status(500).json({ error: 'YouTube API key missing' });
 
-        const response = await axios.get('https://www.googleapis.com/youtube/v3/playlists', {
-            params: {
-                part: 'snippet',
-                id: playlistId,
-                key: apiKey
-            }
-        });
+        // Helper to extract ID
+        const getYoutubeId = (url) => {
+            if (url.includes('list=')) return { id: url.split('list=')[1].split('&')[0], type: 'playlist' };
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? { id: match[2], type: 'video' } : null;
+        };
 
-        if (!response.data.items || response.data.items.length === 0) {
-            return res.status(404).json({ error: 'Playlist not found' });
+        const yt = getYoutubeId(url);
+        if (!yt) return res.status(400).json({ error: 'Invalid YouTube URL' });
+
+        let title = '';
+        if (yt.type === 'playlist') {
+            const response = await axios.get('https://www.googleapis.com/youtube/v3/playlists', {
+                params: { part: 'snippet', id: yt.id, key: apiKey }
+            });
+            if (response.data.items?.[0]) title = response.data.items[0].snippet.title;
+        } else {
+            const response = await axios.get('https://www.googleapis.com/youtube/v3/videos', {
+                params: { part: 'snippet', id: yt.id, key: apiKey }
+            });
+            if (response.data.items?.[0]) title = response.data.items[0].snippet.title;
         }
 
-        const title = response.data.items[0].snippet.title;
+        if (!title) return res.status(404).json({ error: 'Resource not found' });
         res.json({ title });
     } catch (error) {
         console.error('[PlaylistInfo] Error:', error.message);
-        res.status(500).json({ error: 'Failed to fetch playlist info' });
+        res.status(500).json({ error: 'Failed to fetch resource info' });
     }
 };
 

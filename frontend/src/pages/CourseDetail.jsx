@@ -97,9 +97,19 @@ function MissionRow({ lecture, index, isCompleted, isActive, isLocked, courseId 
                     <span className="flex items-center gap-1 text-[10px] sm:text-xs font-bold text-text-muted uppercase tracking-wider">
                         <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> {fmtDuration(lecture.duration)}
                     </span>
+                    {lecture.startTime > 0 && (
+                        <span className="text-[10px] font-mono text-text-muted/60">
+                            {Math.floor(lecture.startTime / 60)}:{String(lecture.startTime % 60).padStart(2, '0')} - {Math.floor((lecture.endTime || 0) / 60)}:{String((lecture.endTime || 0) % 60).padStart(2, '0')}
+                        </span>
+                    )}
                     {isActive && (
                         <span className="text-[8px] font-black tracking-widest px-2 py-0.5 rounded border border-primary/40 bg-primary/10 text-primary animate-pulse">
                             ACTIVE
+                        </span>
+                    )}
+                    {lecture.aiStatus?.transcription === 'in_progress' && lecture.duration > 900 && (
+                        <span className="text-[8px] font-black tracking-widest px-2 py-0.5 rounded border border-cyan/40 bg-cyan/10 text-cyan animate-pulse">
+                            AI CHAPTERIZING
                         </span>
                     )}
                 </div>

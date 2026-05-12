@@ -34,6 +34,7 @@ const Player = () => {
     const [quizAutoStart, setQuizAutoStart] = useState(false);
     const [lectureAiStatus, setLectureAiStatus] = useState(null);
     const [xpEarned, setXpEarned] = useState(null); // golden XP toast value
+    const [seekTo, setSeekTo] = useState(null);
     const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 640 : false));
     const [isDark, setIsDark] = useState(() => (typeof window !== 'undefined' ? document.documentElement.classList.contains('dark') : true));
     const positionTimerRef = useRef(null);
@@ -67,6 +68,7 @@ const Player = () => {
         setQuizAutoStart(false);
         setLectureAiStatus(null);
         setXpEarned(null);
+        setSeekTo(null);
         return () => { if (positionTimerRef.current) clearInterval(positionTimerRef.current); };
     }, [courseId, lectureId]);
 
@@ -114,7 +116,7 @@ const Player = () => {
     const nextLecture = currentLectureIndex < allLectures.length - 1 ? allLectures[currentLectureIndex + 1] : null;
     const currentAiStatus = lectureAiStatus || currentLecture?.aiStatus || {};
 
-    const handleTopicClick = (t) => setCurrentTime(t);
+    const handleTopicClick = (t) => setSeekTo({ time: t, version: Date.now() });
 
     useEffect(() => {
         if (shouldStartQuiz) {
@@ -286,8 +288,11 @@ const PLAYER_THEME = {
                                     courseId={courseId}
                                     lectureId={lectureId}
                                     youtubeId={currentLecture.youtubeId}
+                                    startTime={currentLecture.startTime}
+                                    endTime={currentLecture.endTime}
                                     onEnded={handleVideoEnd}
                                     onTimeUpdate={setCurrentTime}
+                                    seekTo={seekTo}
                                 />
                             </div>
                         </div>

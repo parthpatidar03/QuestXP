@@ -21,48 +21,113 @@ const courseProcessor = new Worker('course-processing', async job => {
         for (const section of sections) {
             let playlistItems = [];
             try {
-                const playlistId = section.playlistUrl.includes('list=') 
-                    ? section.playlistUrl.split('list=')[1].split('&')[0]
-                    : section.playlistUrl;
-
+                const isPlaylist = section.playlistUrl.includes('list=');
                 const apiKey = process.env.YOUTUBE_API_KEY;
                 if (!apiKey) throw new Error('YOUTUBE_API_KEY missing in .env');
 
-                const response = await axios.get('https://www.googleapis.com/youtube/v3/playlistItems', {
-                    params: {
-                        part: 'snippet,contentDetails',
-                        maxResults: 50,
-                        playlistId: playlistId,
-                        key: apiKey
-                    }
-                });
+                if (isPlaylist) {
+                    const playlistId = section.playlistUrl.split('list=')[1].split('&')[0];
+                    const response = await axios.get('https://www.googleapis.com/youtube/v3/playlistItems', {
+                        params: {
+                            part: 'snippet,contentDetails',
+                            maxResults: 50,
+                            playlistId: playlistId,
+                            key: apiKey
+                        }
+                    });
 
-                const videoIds = response.data.items.map(item => item.contentDetails.videoId).join(',');
-                
-                const videoResponse = await axios.get('https://www.googleapis.com/youtube/v3/videos', {
-                    params: {
-                        part: 'contentDetails',
-                        id: videoIds,
-                        key: apiKey
-                    }
-                });
+                    const videoIds = response.data.items.map(item => item.contentDetails.videoId).join(',');
+                    const videoResponse = await axios.get('https://www.googleapis.com/youtube/v3/videos', {
+                        params: {
+                            part: 'contentDetails',
+                            id: videoIds,
+                            key: apiKey
+                        }
+                    });
 
-                const durationsMap = {};
-                videoResponse.data.items.forEach(v => {
-                    const duration = v.contentDetails.duration;
+                    const durationsMap = {};
+                    videoResponse.data.items.forEach(v => {
+                        const duration = v.contentDetails.duration;
+                        const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+                        const hours = parseInt(match[1] || 0);
+                        const minutes = parseInt(match[2] || 0);
+                        const seconds = parseInt(match[3] || 0);
+                        durationsMap[v.id] = hours * 3600 + minutes * 60 + seconds;
+                    });
+
+                    playlistItems = response.data.items.map(item => ({
+                        id: item.contentDetails.videoId,
+                        title: item.snippet.title,
+                        durationSec: durationsMap[item.contentDetails.videoId] || 0,
+                        bestThumbnail: { url: item.snippet.thumbnails?.high?.url || item.snippet.thumbnails?.default?.url }
+                    }));
+                } else {
+                    // Single Video Logic
+                    let videoId;
+                    if (section.playlistUrl.includes('v=')) {
+                        videoId = section.playlistUrl.split('v=')[1].split('&')[0];
+                    } else if (section.playlistUrl.includes('youtu.be/')) {
+                        videoId = section.playlistUrl.split('youtu.be/')[1].split('?')[0];
+                    } else {
+                        videoId = section.playlistUrl;
+                    }
+
+                    const videoResponse = await axios.get('https://www.googleapis.com/youtube/v3/videos', {
+                        params: {
+                            part: 'snippet,contentDetails',
+                            id: videoId,
+                            key: apiKey
+                        }
+                    });
+
+                    if (!videoResponse.data.items.length) throw new Error('Video not found');
+                    const video = videoResponse.data.items[0];
+                    
+                    const duration = video.contentDetails.duration;
                     const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
-                    const hours = parseInt(match[1] || 0);
-                    const minutes = parseInt(match[2] || 0);
-                    const seconds = parseInt(match[3] || 0);
-                    durationsMap[v.id] = hours * 3600 + minutes * 60 + seconds;
-                });
+                    const totalDurationSec = parseInt(match[1] || 0) * 3600 + parseInt(match[2] || 0) * 60 + parseInt(match[3] || 0);
 
-                playlistItems = response.data.items.map(item => ({
-                    id: item.contentDetails.videoId,
-                    title: item.snippet.title,
-                    durationSec: durationsMap[item.contentDetails.videoId] || 0,
-                    bestThumbnail: { url: item.snippet.thumbnails?.high?.url || item.snippet.thumbnails?.default?.url }
-                }));
+                    // Parse timestamps from description
+                    const description = video.snippet.description;
+                    const timestampRegex = /(?:(\d{1,2}):)?(\d{1,2}):(\d{2})\s+-\s+(.+)|(.+)\s+-\s+(?:(\d{1,2}):)?(\d{1,2}):(\d{2})|(?:(\d{1,2}):)?(\d{1,2}):(\d{2})\s+(.+)/g;
+                    let matches;
+                    const timestamps = [];
+                    
+                    // Simple timestamp parser for common formats (00:00 Intro or 00:00:00 Intro)
+                    const simpleRegex = /(?:(\d{1,2}):)?(\d{1,2}):(\d{2})\s+(.+)/g;
+                    while ((matches = simpleRegex.exec(description)) !== null) {
+                        const h = parseInt(matches[1] || 0);
+                        const m = parseInt(matches[2] || 0);
+                        const s = parseInt(matches[3] || 0);
+                        const timeInSec = h * 3600 + m * 60 + s;
+                        timestamps.push({ time: timeInSec, title: matches[4].trim() });
+                    }
+
+                    if (timestamps.length > 1) {
+                        // Create lectures based on timestamps
+                        playlistItems = timestamps.map((ts, idx) => {
+                            const nextTime = timestamps[idx + 1]?.time || totalDurationSec;
+                            return {
+                                id: videoId,
+                                title: ts.title,
+                                startTime: ts.time,
+                                endTime: nextTime,
+                                durationSec: nextTime - ts.time,
+                                bestThumbnail: { url: video.snippet.thumbnails?.high?.url || video.snippet.thumbnails?.default?.url }
+                            };
+                        });
+                    } else {
+                        // Single lecture
+                        playlistItems = [{
+                            id: videoId,
+                            title: video.snippet.title,
+                            durationSec: totalDurationSec,
+                            startTime: 0,
+                            endTime: totalDurationSec,
+                            bestThumbnail: { url: video.snippet.thumbnails?.high?.url || video.snippet.thumbnails?.default?.url }
+                        }];
+                    }
+                }
 
             } catch (err) {
                 console.error(`YouTube API Error for ${section.playlistUrl}:`, err.response?.data || err.message);
@@ -78,6 +143,8 @@ const courseProcessor = new Worker('course-processing', async job => {
                     youtubeId: item.id,
                     title: item.title,
                     duration: durationSecs,
+                    startTime: item.startTime || 0,
+                    endTime: item.endTime || null,
                     order: index,
                     thumbnailUrl: item.bestThumbnail?.url,
                     aiStatus: {
@@ -133,7 +200,9 @@ const courseProcessor = new Worker('course-processing', async job => {
                     courseId: course._id.toString(),
                     lectureId: lecture._id.toString(),
                     youtubeId: lecture.youtubeId,
-                    durationSecs: lecture.duration
+                    durationSecs: lecture.duration,
+                    startTime: lecture.startTime,
+                    endTime: lecture.endTime
                 }, jobOptions);
             }
         }

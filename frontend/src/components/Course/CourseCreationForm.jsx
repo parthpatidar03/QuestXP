@@ -23,7 +23,8 @@ const CourseCreationForm = ({ onSuccess }) => {
         setSections(newSections);
 
         // Auto-fill logic
-        if (field === 'playlistUrl' && value.includes('list=')) {
+        const isYoutubeUrl = value.includes('youtube.com') || value.includes('youtu.be');
+        if (field === 'playlistUrl' && isYoutubeUrl) {
             try {
                 const { data } = await api.get(`/courses/playlist-info?url=${encodeURIComponent(value)}`);
                 if (data.title) {
@@ -153,18 +154,21 @@ const CourseCreationForm = ({ onSuccess }) => {
                                     <div>
                                         <label className="block text-xs font-semibold text-text-muted mb-1.5 flex items-center gap-1.5">
                                             <LinkIcon className="w-3.5 h-3.5" />
-                                            YouTube Playlist URL
+                                            YouTube Playlist or Video URL
                                         </label>
                                         <input 
                                             type="url" value={section.playlistUrl} onChange={e => updateSection(index, 'playlistUrl', e.target.value)} required
                                             className="w-full p-2.5 bg-surface border border-border focus:border-primary rounded-md outline-none text-sm text-text-primary placeholder:text-text-muted"
-                                            placeholder="https://youtube.com/playlist?list=..."
+                                            placeholder="https://youtube.com/playlist?list=... or https://youtu.be/..."
                                         />
                                         <div className="mt-2 p-2.5 bg-surface/50 rounded-lg border border-border/30 flex items-start gap-2 text-sm text-text-muted leading-relaxed">
-                                            <Info className="w-3 h-3 text-primary shrink-0 mt-0.5" />
+                                            <div className="bg-primary/10 p-1 rounded">
+                                                <Info className="w-3 h-3 text-primary shrink-0" />
+                                            </div>
                                             <span>
-                                                <strong className="text-primary uppercase tracking-tighter mr-1">URL Tip:</strong> 
-                                                Open the playlist in a new tab. Copy the URL from the browser bar. It must contain <code className="text-primary font-mono bg-primary/5 px-1 rounded text-sm">?list=</code>. (Don't copy the video link from inside the playlist).
+                                                <strong className="text-primary uppercase tracking-tighter mr-1">One-Shot Support:</strong> 
+                                                Paste a playlist or a single long video. 
+                                                <span className="text-text-primary font-bold ml-1">AI will automatically split 1hr+ lectures into modular missions</span> using timestamps or topic shifts.
                                             </span>
                                         </div>
                                     </div>

@@ -23,7 +23,7 @@ router.get('/playlist-info', getPlaylistInfo);
 
 // Basic validation for playlistUrl pattern
 
-const youtubePlaylistRegex = /^.*(youtu.be\/|list=)([^#\&\?]*).*/;
+const youtubePlaylistRegex = /^.*(youtu.be\/|list=|watch\?v=|\&v=)([^#\&\?]*).*/;
 
 router.post('/', [
     body('title').notEmpty().withMessage('Course title is required'),

@@ -13,6 +13,8 @@ const courseSchema = new Schema({
             youtubeId: { type: String, required: true },
             title: { type: String, required: true },
             duration: { type: Number, required: true },
+            startTime: { type: Number, default: 0 },
+            endTime: { type: Number, default: null },
             order: { type: Number, required: true },
             thumbnailUrl: { type: String },
             aiStatus: {
