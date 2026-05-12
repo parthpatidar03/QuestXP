@@ -64,9 +64,11 @@ const ProgressHeader = ({ roadmap, onShift, totalCalendarDays }) => {
                         <span className="text-xs font-black uppercase tracking-widest">🗺️ Active Roadmap</span>
                     </div>
                     <h2 className="text-2xl sm:text-3xl font-black text-text-primary tracking-tight leading-none" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>Your Mastery Journey</h2>
-                    <p className="text-sm text-text-muted font-bold">
-                        Targeting completion by <span className="text-primary">{format(new Date(roadmap.days[roadmap.days.length - 1].date), 'MMMM dd, yyyy')}</span> 🎯
-                    </p>
+                    {roadmap.days && roadmap.days.length > 0 && (
+                        <p className="text-sm text-text-muted font-bold">
+                            Targeting completion by <span className="text-primary">{format(new Date(roadmap.days[roadmap.days.length - 1].date), 'MMMM dd, yyyy')}</span> 🎯
+                        </p>
+                    )}
                 </div>
 
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:gap-8">
@@ -446,7 +448,7 @@ const Roadmap = () => {
 
     // Map each dayIndex to a "Calendar Day" number
     const dayLabelsMap = useMemo(() => {
-        if (!roadmap) return new Map();
+        if (!roadmap || !roadmap.days) return new Map();
         const map = new Map();
         let currentDayLabel = 0;
         let lastDateString = null;
