@@ -110,16 +110,26 @@ const embeddingWorker = new Worker('embedding', async job => {
             upsertData.push(...batchVectors);
         }
 
+        console.log(`[EmbeddingWorker] Total vectors generated: ${upsertData.length} for lecture ${lectureId}`);
+        
         // Upsert to Pinecone in batches
         if (upsertData.length === 0) {
-            throw new Error(`No vectors generated for lecture ${lectureId}. Check OpenAI response.`);
+            throw new Error(`No vectors generated for lecture ${lectureId}. Transcript might be too short or splitter failed.`);
         }
 
-        console.log(`Upserting ${upsertData.length} vectors to Pinecone for lecture ${lectureId}`);
+        const ns = index.namespace(lectureId.toString());
+
         for (let i = 0; i < upsertData.length; i += batchSize) {
             const batch = upsertData.slice(i, i + batchSize);
-            if (batch.length > 0) {
-                await index.namespace(lectureId.toString()).upsert(batch);
+            
+            // Validate batch content to prevent PineconeArgumentError
+            const validBatch = batch.filter(v => v && v.id && v.values && Array.isArray(v.values) && v.values.length > 0);
+            
+            if (validBatch.length > 0) {
+                console.log(`[EmbeddingWorker] Upserting batch of ${validBatch.length} to namespace ${lectureId}`);
+                await ns.upsert(validBatch);
+            } else {
+                console.warn(`[EmbeddingWorker] Skipping empty or invalid batch at index ${i}`);
             }
         }
 

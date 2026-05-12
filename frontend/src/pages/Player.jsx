@@ -233,13 +233,13 @@ const PLAYER_THEME = {
 
     return (
         <div
-            className="min-h-screen lg:h-dvh flex flex-col lg:overflow-hidden relative"
+            className="min-h-screen flex flex-col relative"
             style={{ background: PLAYER_THEME.pageBg }}
         >
             <BGPattern variant="grid" mask="fade-edges" fill={PLAYER_THEME.patternFill} className="opacity-10 z-0" />
 
             {/* Top progress bar */}
-            <div className="fixed top-0 left-0 w-full h-[3px] z-50" style={{ background: PLAYER_THEME.progressTrack }}>
+            <div className="fixed top-0 left-0 w-full h-[2px] z-50" style={{ background: PLAYER_THEME.progressTrack }}>
                 <div
                     className="h-full transition-all duration-500 shadow-[0_0_8px_var(--color-primary)]"
                     style={{ width: `${((currentLectureIndex + 1) / allLectures.length) * 100}%`, background: 'var(--color-primary)' }}
@@ -247,7 +247,7 @@ const PLAYER_THEME = {
             </div>
 
             {/* Header - Ultra Thinner */}
-            <header className="shrink-0 px-3 sm:px-6 py-1.5 sm:py-2 flex flex-col gap-1 border-b" style={{ borderColor: PLAYER_THEME.border, background: PLAYER_THEME.panelBg }}>
+            <header className="shrink-0 px-3 sm:px-6 py-1 sm:py-1.5 flex flex-col gap-1 border-b" style={{ borderColor: PLAYER_THEME.border, background: PLAYER_THEME.panelBg }}>
                 <div className="flex items-center justify-between">
                     <Link
                         to={`/courses/${courseId}`}

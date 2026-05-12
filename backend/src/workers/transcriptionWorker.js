@@ -14,11 +14,19 @@ const transcriptionWorker = new Worker('transcription', async job => {
     const { lectureId, courseId, youtubeId, durationSecs, startTime = 0, endTime = null } = job.data;
     
     try {
+        const mongoose = require('mongoose');
+        
         // Verify course/lecture exist and set in_progress
         const course = await Course.findOneAndUpdate(
-            { _id: courseId, 'sections.lectures._id': lectureId },
+            { 
+                _id: new mongoose.Types.ObjectId(courseId), 
+                'sections.lectures._id': new mongoose.Types.ObjectId(lectureId) 
+            },
             { $set: { 'sections.$[].lectures.$[lec].aiStatus.transcription': 'in_progress' } },
-            { arrayFilters: [{ 'lec._id': lectureId }], new: true }
+            { 
+                arrayFilters: [{ 'lec._id': new mongoose.Types.ObjectId(lectureId) }], 
+                new: true 
+            }
         );
 
         if (!course) throw new Error('Course or lecture not found');

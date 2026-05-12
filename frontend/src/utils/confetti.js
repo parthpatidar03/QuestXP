@@ -4,6 +4,7 @@ export const shootConfetti = (origin) => {
   const count = 200;
   const defaults = {
     origin: origin || { x: 0.5, y: 0.5 },
+    zIndex: 9999,
   };
 
   function fire(particleRatio, opts) {
@@ -26,12 +27,13 @@ export const shootLighterConfetti = () => {
     particleCount: 40,
     spread: 70,
     origin: { y: 0.6 },
-    colors: ['#a786ff', '#fd8bbc', '#eca184']
+    colors: ['#a786ff', '#fd8bbc', '#eca184'],
+    zIndex: 9999,
   });
 };
 
 export const shootFireworks = () => {
-  const duration = 1 * 1000;
+  const duration = 5 * 1000; // Increased to 5s to be more celebratory
   const end = Date.now() + duration;
 
   const colors = ["#a786ff", "#fd8bbc", "#eca184", "#f8deb1"];
@@ -46,6 +48,7 @@ export const shootFireworks = () => {
       startVelocity: 60,
       origin: { x: 0, y: 0.5 },
       colors,
+      zIndex: 9999,
     });
     confetti({
       particleCount: 2,
@@ -54,6 +57,7 @@ export const shootFireworks = () => {
       startVelocity: 60,
       origin: { x: 1, y: 0.5 },
       colors,
+      zIndex: 9999,
     });
 
     requestAnimationFrame(frame);

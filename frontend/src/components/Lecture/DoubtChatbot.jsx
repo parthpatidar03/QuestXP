@@ -123,8 +123,10 @@ const DoubtChatbot = ({ lectureId, courseTitle = '', lectureTitle = '' }) => {
                 drag
                 dragConstraints={constraintsRef}
                 dragMomentum={false}
+                dragElastic={0.1}
+                whileDrag={{ scale: 1.1, zIndex: 60 }}
                 onClick={() => setOpen(o => !o)}
-                className="pointer-events-auto fixed bottom-6 right-6 w-14 h-14 rounded-full flex items-center justify-center bg-primary text-white shadow-[0_0_16px_rgba(var(--color-primary),0.5)] transition-shadow hover:shadow-[0_0_24px_rgba(var(--color-primary),0.6)] z-50"
+                className="pointer-events-auto fixed bottom-24 right-6 w-14 h-14 rounded-full flex items-center justify-center bg-primary text-white shadow-[0_0_16px_rgba(var(--color-primary),0.5)] transition-shadow hover:shadow-[0_0_24px_rgba(var(--color-primary),0.6)] z-50"
                 style={{
                     animation: open ? 'none' : 'glow-pulse 2.5s ease-in-out infinite'
                 }}
@@ -143,14 +145,16 @@ const DoubtChatbot = ({ lectureId, courseTitle = '', lectureTitle = '' }) => {
                         drag
                         dragConstraints={constraintsRef}
                         dragMomentum={false}
+                        dragElastic={0.1}
+                        whileDrag={{ scale: 1.02, zIndex: 60 }}
                         initial={{ opacity: 0, y: 28, scale: 0.94 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 28, scale: 0.94 }}
                         transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                        className="pointer-events-auto fixed bottom-24 right-6 flex flex-col rounded-2xl overflow-hidden shadow-2xl border border-border bg-surface-2/95 backdrop-blur-md z-40"
+                        className="pointer-events-auto fixed bottom-40 right-6 flex flex-col rounded-2xl overflow-hidden shadow-2xl border border-border bg-surface-2/95 backdrop-blur-md z-40"
                         style={{
                             width: 'min(380px, calc(100vw - 2rem))',
-                            maxHeight: '72vh',
+                            maxHeight: '65vh',
                         }}
                     >
                         {/* Header */}

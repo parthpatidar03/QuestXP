@@ -27,9 +27,9 @@ import {
 } from 'lucide-react';
 import { format, differenceInDays, addDays } from 'date-fns';
 
-const formatTime = (seconds) => {
-    if (!seconds || seconds <= 0) return '0 min';
-    const s = parseInt(seconds);
+const formatTime = (value, unit = 'seconds') => {
+    if (!value || value <= 0) return '0 min';
+    const s = unit === 'minutes' ? value * 60 : parseInt(value);
     if (s < 3600) {
         const m = s / 60;
         return `${m % 1 === 0 ? m : m.toFixed(1)} min`;
@@ -304,7 +304,7 @@ const RoadmapPlaylistCard = React.memo(({ playlistId, days, dayLabelsMap, totalC
                                         </motion.button>
                                     </div>
                                     <div className="px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/30">
-                                        <span className="text-[11px] font-black text-primary uppercase tracking-tight">Target: {formatTime(day.totalMinutes)}</span>
+                                        <span className="text-[11px] font-black text-primary uppercase tracking-tight">Target: {formatTime(day.totalMinutes, 'minutes')}</span>
                                     </div>
 
 
