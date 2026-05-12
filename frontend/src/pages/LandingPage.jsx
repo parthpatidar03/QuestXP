@@ -119,7 +119,7 @@ const LandingPage = () => {
             <motion.div 
                 className="pointer-events-none fixed inset-0 z-[1] overflow-hidden"
                 animate={{ 
-                    background: `radial-gradient(600px at ${mousePos.x}px ${mousePos.y}px, rgba(34, 197, 94, ${isClicked ? 0.08 : 0.035}), transparent 80%)` 
+                    background: `radial-gradient(500px at ${mousePos.x}px ${mousePos.y}px, rgba(34, 197, 94, ${isClicked ? 0.25 : 0.12}), transparent 80%)` 
                 }}
                 transition={{ type: "tween", ease: "backOut", duration: 0.5 }}
             />
