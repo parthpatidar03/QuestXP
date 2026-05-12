@@ -18,6 +18,7 @@ import {
     ShieldCheck,
     Bell,
     Share2,
+    Map,
 } from 'lucide-react';
 import { BGPattern } from '../components/ui/bg-pattern';
 import FeedbackModal from '../components/FeedbackModal';
@@ -369,6 +370,70 @@ const LandingPage = () => {
                     </div>
                 </section>
 
+
+                {/* New Feature: Dynamic Roadmap */}
+                <section className="max-w-screen-xl mx-auto px-4 sm:px-6 py-20">
+                    <div className="grid md:grid-cols-2 gap-16 items-center">
+                        <motion.div
+                            initial={{ opacity: 0, x: -30 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                        >
+                            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/30 bg-primary/10 mb-6 text-xs font-bold text-primary uppercase tracking-widest">
+                                <Map className="w-4 h-4" />
+                                Interactive Learning paths
+                            </div>
+                            <h2 className="text-4xl sm:text-5xl font-black text-text-primary tracking-tight mb-8 leading-[1.1]">
+                                Master Any Subject with <br/><span className="text-primary">Dynamic Roadmaps</span>
+                            </h2>
+                            <p className="text-text-secondary text-lg leading-relaxed mb-10">
+                                Stop guessing what to learn next. QuestXP transforms complex topics into 
+                                structured, visual roadmaps. Track your progress across modules, 
+                                visualize your learning trajectory, and never lose sight of your ultimate goal.
+                            </p>
+                            
+                            <ul className="space-y-4">
+                                {[
+                                    { icon: CheckCircle2, text: "Visual progress tracking for every milestone" },
+                                    { icon: CheckCircle2, text: "AI-generated curriculum based on your goals" },
+                                    { icon: CheckCircle2, text: "Sequential module locks to ensure fundamentals first" }
+                                ].map((item, idx) => (
+                                    <li key={idx} className="flex items-center gap-3 text-text-secondary font-medium">
+                                        <item.icon className="w-5 h-5 text-primary" />
+                                        {item.text}
+                                    </li>
+                                ))}
+                            </ul>
+                        </motion.div>
+
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ once: true }}
+                            className="relative"
+                        >
+                            <div className="absolute inset-0 bg-primary/10 blur-[80px] rounded-full" />
+                            <img 
+                                src="/Images/Roadmap_landingpage.png" 
+                                alt="Dynamic Roadmap Feature" 
+                                className="relative z-10 rounded-3xl border border-border shadow-2xl hover:scale-[1.02] transition-transform duration-500"
+                            />
+                            
+                            {/* Decorative Badge */}
+                            <div className="absolute -bottom-6 -left-6 z-20 bg-surface border border-border p-4 rounded-2xl shadow-xl hidden sm:block animate-bounce-slow">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-success/10 flex items-center justify-center text-success">
+                                        <Trophy className="w-5 h-5" />
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Level Progress</p>
+                                        <p className="text-sm font-black text-text-primary">85% Completed</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                </section>
 
                 <section className="max-w-screen-xl mx-auto px-4 sm:px-6 py-20">
                     <div className="grid md:grid-cols-2 gap-16 items-center">
