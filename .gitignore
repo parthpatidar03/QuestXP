@@ -48,12 +48,12 @@ design-system/
 .agents/
 .claude/
 # .github/workflows/ (removed to allow CI/CD)
-QuestXP.pdf
+*.pdf
 .specify/
 query
 DESIGN.md
 PRODUCT.md
-# docs/
+docs/
 HACKATHON.md
 IMPLEMENTATION.md
 DEVPOST_STORY.md
