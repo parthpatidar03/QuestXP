@@ -29,7 +29,8 @@ const RoadmapSchema = new mongoose.Schema({
             title: String,
             duration: Number,
             playlistId: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' },
-            playlistName: String
+            playlistName: String,
+            completed: { type: Boolean, default: false }
         }],
         totalMinutes: Number
     }],

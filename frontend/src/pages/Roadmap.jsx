@@ -19,6 +19,7 @@ import {
     MinusCircle,
     PlusCircle,
     Square,
+    CheckSquare,
     Loader2
 } from 'lucide-react';
 import { format, differenceInDays, addDays } from 'date-fns';
@@ -35,7 +36,8 @@ const formatTime = (seconds) => {
 };
 
 
-import { getCurrentRoadmap, adjustRoadmap, partialShiftRoadmap } from '../services/roadmapApi';
+import { getCurrentRoadmap, adjustRoadmap, partialShiftRoadmap, toggleVideoCompletion } from '../services/roadmapApi';
+import { shootConfetti } from '../utils/confetti';
 import NavBar from '../components/NavBar';
 import { BGPattern } from '../components/ui/bg-pattern';
 import GenerateRoadmapModal from '../components/Roadmap/GenerateRoadmapModal';
@@ -118,7 +120,7 @@ const ProgressHeader = ({ roadmap, onShift, totalCalendarDays }) => {
     );
 };
 
-const RoadmapPlaylistCard = ({ playlistId, days, dayLabelsMap, totalCalendarDays, roadmapId, courseId, onPartialShift }) => {
+const RoadmapPlaylistCard = ({ playlistId, days, dayLabelsMap, totalCalendarDays, roadmapId, courseId, onPartialShift, onToggleCompletion }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     
     const playlistName = useMemo(() => {
@@ -243,8 +245,26 @@ const RoadmapPlaylistCard = ({ playlistId, days, dayLabelsMap, totalCalendarDays
                                         </span>
 
                                         <span className="text-[11px] font-bold text-text-muted tabular-nums">{formatTime(vid.duration)}</span>
-
-
+                                        
+                                        <motion.button
+                                            whileTap={{ scale: 0.8 }}
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                onToggleCompletion(vid.videoId, !vid.completed);
+                                            }}
+                                            className={`flex items-center gap-2 p-1.5 rounded-lg border transition-all ${
+                                                vid.completed 
+                                                    ? 'bg-primary border-primary text-white shadow-[0_0_10px_rgba(var(--color-primary-rgb),0.3)]' 
+                                                    : 'bg-surface-3 border-border text-text-muted hover:border-primary/50 hover:text-primary'
+                                            }`}
+                                            title={vid.completed ? "Mark Incomplete" : "Mark as Done"}
+                                        >
+                                            {vid.completed ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
+                                            <span className="text-[10px] font-black uppercase tracking-tighter px-1">
+                                                {vid.completed ? 'Done' : 'Mark'}
+                                            </span>
+                                        </motion.button>
                                     </Link>
                                 ))}
                             </div>
@@ -388,6 +408,38 @@ const Roadmap = () => {
         }, 400);
     };
 
+    const handleToggleCompletion = async (videoId, completed) => {
+        if (!roadmap) return;
+
+        // Play confetti if marking as completed
+        if (completed) {
+            shootConfetti();
+        }
+
+        // Optimistic UI Update
+        setRoadmap(prev => {
+            if (!prev) return prev;
+            return {
+                ...prev,
+                days: prev.days.map(day => ({
+                    ...day,
+                    plannedVideos: day.plannedVideos.map(vid => 
+                        vid.videoId === videoId ? { ...vid, completed } : vid
+                    )
+                }))
+            };
+        });
+
+        try {
+            const updated = await toggleVideoCompletion(roadmap._id, videoId, completed);
+            setRoadmap(updated);
+        } catch (err) {
+            console.error("Failed to toggle video completion", err);
+            // Re-fetch on error
+            fetchRoadmap();
+        }
+    };
+
     // Attach adjusting state to handlers for sub-components
     handleShift.adjusting = adjusting;
     handlePartialShift.adjusting = adjusting;
@@ -493,6 +545,7 @@ const Roadmap = () => {
                                     roadmapId={roadmap._id}
                                     courseId={courseId}
                                     onPartialShift={handlePartialShift}
+                                    onToggleCompletion={handleToggleCompletion}
                                 />
                             ))}
                         </div>

@@ -228,4 +228,40 @@ router.patch('/shift-partial', auth, async (req, res, next) => {
     }
 });
 
+// @route   PATCH /api/roadmap/:roadmapId/video/:videoId/complete
+// @desc    Toggle video completion in roadmap
+router.patch('/:roadmapId/video/:videoId/complete', auth, async (req, res, next) => {
+    try {
+        const { roadmapId, videoId } = req.params;
+        const { completed } = req.body;
+
+        const roadmap = await Roadmap.findById(roadmapId);
+        if (!roadmap || roadmap.userId.toString() !== req.user.id) {
+            return res.status(404).json({ msg: 'Roadmap not found' });
+        }
+
+        // Find the video and update it
+        let found = false;
+        for (let day of roadmap.days) {
+            for (let vid of day.plannedVideos) {
+                if (vid.videoId.toString() === videoId) {
+                    vid.completed = completed;
+                    found = true;
+                    break;
+                }
+            }
+            if (found) break;
+        }
+
+        if (!found) {
+            return res.status(404).json({ msg: 'Video not found in roadmap' });
+        }
+
+        await roadmap.save();
+        res.json(roadmap);
+    } catch (err) {
+        next(err);
+    }
+});
+
 module.exports = router;

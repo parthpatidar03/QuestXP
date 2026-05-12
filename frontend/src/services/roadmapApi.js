@@ -19,3 +19,7 @@ export const partialShiftRoadmap = async (roadmapId, fromDayIndex, shiftAmount) 
     const response = await api.patch('/roadmap/shift-partial', { roadmapId, fromDayIndex, shiftAmount });
     return response.data;
 };
+export const toggleVideoCompletion = async (roadmapId, videoId, completed) => {
+    const response = await api.patch(`/roadmap/${roadmapId}/video/${videoId}/complete`, { completed });
+    return response.data;
+};
