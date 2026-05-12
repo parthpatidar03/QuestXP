@@ -214,10 +214,8 @@ const LandingPage = () => {
                             </h1>
 
                             <p className="mt-8 text-lg sm:text-xl text-text-primary font-medium leading-snug max-w-[45ch]">
-                                We buy expensive courses but end up on YouTube. It has the content, but lacks the 
-                                <span className="text-primary italic"> structure, gamification, and personalization </span> 
-                                you need to finish. 
-                                <span className="text-primary block mt-2">QuestXP transforms Playlists or single long videos into structured courses.</span>
+                                Stop buying expensive courses. QuestXP transforms free YouTube content into 
+                                structured, gamified learning paths you'll actually finish.
                             </p>
 
                             <div className="mt-7 flex flex-col sm:flex-row gap-3 sm:items-center">
@@ -347,7 +345,7 @@ const LandingPage = () => {
                             Global Hall of Fame
                         </h2>
                         <p className="text-text-secondary max-w-2xl mx-auto text-base sm:text-lg">
-                            Compete with learners worldwide. Earn XP for every lecture, quiz, and milestone you complete.
+                            Compete with learners worldwide and earn XP for every mission you finish.
                         </p>
                     </div>
 
@@ -387,9 +385,8 @@ const LandingPage = () => {
                                 Master Any Subject with <br/><span className="text-primary">Dynamic Roadmaps</span>
                             </h2>
                             <p className="text-text-secondary text-lg leading-relaxed mb-10">
-                                Stop guessing what to learn next. QuestXP transforms complex topics into 
-                                structured, visual roadmaps. Track your progress across modules, 
-                                visualize your learning trajectory, and never lose sight of your ultimate goal.
+                                Visual learning paths that keep you on track. Transform complex topics into 
+                                structured modules and master anything faster.
                             </p>
                             
                             <ul className="space-y-4">
@@ -450,9 +447,8 @@ const LandingPage = () => {
                                 Your Proactive <br/><span className="text-primary">Focus Guardian</span>
                             </h2>
                             <p className="text-text-secondary text-lg leading-relaxed mb-10">
-                                Sliding back into the "reels hole"? QuestXP doesn't just track time—it protects it. 
-                                Our Guardian detects when you drift into distracting digital loops and sends a sharp, 
-                                personalized nudge to snap you back to your learning session.
+                                Don't fall into the distraction trap. Our Guardian detects when you drift away 
+                                and sends a personalized nudge to keep you on mission.
                             </p>
                             
                             <div className="relative p-6 rounded-2xl bg-surface-2 border border-border overflow-hidden group">
