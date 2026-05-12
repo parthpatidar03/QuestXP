@@ -127,7 +127,7 @@ const RoadmapPlaylistCard = ({ playlistId, days, dayLabelsMap, totalCalendarDays
     
     const playlistName = useMemo(() => {
         for (const day of days) {
-            const vid = day.plannedVideos.find(v => v.playlistId === playlistId);
+            const vid = day.plannedVideos.find(v => v.playlistId?.toString() === playlistId?.toString());
             if (vid) return vid.playlistName || "Learning Module";
         }
         return "Learning Module";
@@ -135,17 +135,20 @@ const RoadmapPlaylistCard = ({ playlistId, days, dayLabelsMap, totalCalendarDays
 
     const totalVideos = useMemo(() => {
         return days.reduce((sum, day) => 
-            sum + day.plannedVideos.filter(v => v.playlistId === playlistId).length, 0
+            sum + day.plannedVideos.filter(v => v.playlistId?.toString() === playlistId?.toString()).length, 0
         );
     }, [days, playlistId]);
 
-    const dateRange = useMemo(() => {
-        const pDays = days.filter(d => d.plannedVideos.some(v => v.playlistId === playlistId));
-        if (pDays.length === 0) return "N/A";
-        const start = format(new Date(pDays[0].date), 'MMM dd');
-        const end = format(new Date(pDays[pDays.length - 1].date), 'MMM dd');
-        return start === end ? start : `${start} — ${end}`;
+    const filteredDays = useMemo(() => {
+        return days.filter(d => d.plannedVideos.some(v => v.playlistId?.toString() === playlistId?.toString()));
     }, [days, playlistId]);
+
+    const dateRange = useMemo(() => {
+        if (filteredDays.length === 0) return "N/A";
+        const start = format(new Date(filteredDays[0].date), 'MMM dd');
+        const end = format(new Date(filteredDays[filteredDays.length - 1].date), 'MMM dd');
+        return start === end ? start : `${start} — ${end}`;
+    }, [filteredDays]);
 
     return (
         <div className="bg-surface/30 backdrop-blur-md mb-2 overflow-hidden border border-border/40 rounded-xl hover:border-primary/20 transition-all group">
@@ -199,7 +202,7 @@ const RoadmapPlaylistCard = ({ playlistId, days, dayLabelsMap, totalCalendarDays
 
             {isExpanded && (
                 <div className="bg-black/10 border-t border-border/30 p-3 space-y-2">
-                    {days.filter(d => d.plannedVideos.some(v => v.playlistId === playlistId)).map((day, dIdx) => (
+                    {filteredDays.map((day, dIdx) => (
                         <div key={dIdx} className="p-4 rounded-xl bg-surface/50 border border-border/20">
                             <div className="flex items-center justify-between mb-4">
                                 <div className="flex items-center gap-3">
@@ -235,7 +238,7 @@ const RoadmapPlaylistCard = ({ playlistId, days, dayLabelsMap, totalCalendarDays
                                 </div>
                             </div>
                             <div className="space-y-1.5 pl-4 border-l border-border/30 ml-0.5">
-                                {day.plannedVideos.filter(v => v.playlistId === playlistId).map((vid, vIdx) => (
+                                {day.plannedVideos.filter(v => v.playlistId?.toString() === playlistId?.toString()).map((vid, vIdx) => (
                                     <Link 
                                         key={vIdx} 
                                         to={`/courses/${vid.playlistId}/lectures/${vid.videoId}`}
@@ -471,10 +474,14 @@ const Roadmap = () => {
     }, [roadmap]);
 
     const playlistIds = useMemo(() => {
-        if (!roadmap) return [];
+        if (!roadmap || !roadmap.days) return [];
         const ids = new Set();
         roadmap.days.forEach(day => {
-            day.plannedVideos.forEach(v => ids.add(v.playlistId));
+            if (day.plannedVideos) {
+                day.plannedVideos.forEach(v => {
+                    if (v.playlistId) ids.add(v.playlistId.toString());
+                });
+            }
         });
         return Array.from(ids);
     }, [roadmap]);
