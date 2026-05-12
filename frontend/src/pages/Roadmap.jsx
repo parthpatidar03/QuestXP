@@ -20,7 +20,8 @@ import {
     PlusCircle,
     Square,
     CheckSquare,
-    Loader2
+    Loader2,
+    Edit2
 } from 'lucide-react';
 import { format, differenceInDays, addDays } from 'date-fns';
 
@@ -77,7 +78,8 @@ const ProgressHeader = ({ roadmap, onShift, totalCalendarDays, onUpdateTitle }) 
                                     className="bg-surface-3 border border-primary/50 text-text-primary px-3 py-1 rounded-lg font-black text-2xl focus:outline-none focus:ring-2 ring-primary/20"
                                     autoFocus
                                 />
-                                <button onClick={handleTitleSave} className="bg-primary p-2 rounded-lg text-white"><CheckSquare className="w-5 h-5" /></button>
+                                <button onClick={handleTitleSave} className="bg-primary p-2 rounded-lg text-white shadow-lg shadow-primary/20"><CheckSquare className="w-5 h-5" /></button>
+                                <span className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-2 animate-pulse">Press Enter to Save</span>
                             </div>
                         ) : (
                             <h2 
@@ -86,7 +88,10 @@ const ProgressHeader = ({ roadmap, onShift, totalCalendarDays, onUpdateTitle }) 
                                 style={{ fontFamily: "'Barlow Condensed', sans-serif" }}
                             >
                                 {roadmap.title || "Your Mastery Journey"}
-                                <Sparkles className="w-4 h-4 opacity-0 group-hover:opacity-40" />
+                                <div className="flex items-center gap-1.5 opacity-40 group-hover:opacity-100 transition-opacity">
+                                    <Edit2 className="w-4 h-4" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest hidden sm:inline-block">Rename</span>
+                                </div>
                             </h2>
                         )}
                     </div>
