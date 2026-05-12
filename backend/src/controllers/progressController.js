@@ -145,10 +145,11 @@ const deletePlan = async (req, res, next) => {
     }
 };
 
-const completeLecture = async (req, res, next) => {
+const toggleLecture = async (req, res, next) => {
     try {
         const { courseId, lectureId } = req.params;
-        const result = await progressService.completeLecture(req.user._id, courseId, lectureId);
+        const { isCompleted } = req.body;
+        const result = await progressService.toggleLecture(req.user._id, courseId, lectureId, isCompleted);
         res.json(result);
     } catch (error) {
         next(error);
@@ -164,4 +165,5 @@ module.exports = {
     getWeeklyTargets,
     deletePlan,
     completeLecture,
+    toggleLecture,
 };

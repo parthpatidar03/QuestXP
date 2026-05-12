@@ -3,6 +3,7 @@ const router = express.Router();
 const auth = require('../middleware/auth');
 const Roadmap = require('../models/Roadmap');
 const Course = require('../models/Course');
+const progressService = require('../services/progressService');
 const { generateRoadmapLogic } = require('../services/roadmapGenerator');
 const { addDays } = require('date-fns');
 
@@ -288,12 +289,14 @@ router.patch('/:roadmapId/video/:videoId/complete', auth, async (req, res, next)
             return res.status(404).json({ msg: 'Roadmap not found' });
         }
 
-        // Find the video and update it
+        // Find the video and update it in roadmap model
         let found = false;
+        let targetPlaylistId = null;
         for (let day of roadmap.days) {
             for (let vid of day.plannedVideos) {
                 if (vid.videoId.toString() === videoId) {
                     vid.completed = completed;
+                    targetPlaylistId = vid.playlistId;
                     found = true;
                     break;
                 }
@@ -303,6 +306,12 @@ router.patch('/:roadmapId/video/:videoId/complete', auth, async (req, res, next)
 
         if (!found) {
             return res.status(404).json({ msg: 'Video not found in roadmap' });
+        }
+
+        // BI-DIRECTIONAL SYNC: Also update Progress model
+        const courseId = roadmap.courseId || targetPlaylistId;
+        if (courseId) {
+            await progressService.toggleLecture(req.user.id, courseId, videoId, completed);
         }
 
         await roadmap.save();

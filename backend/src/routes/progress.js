@@ -8,7 +8,8 @@ const {
     getTodayTarget,
     getWeeklyTargets,
     deletePlan,
-    completeLecture
+    completeLecture,
+    toggleLecture
 } = require('../controllers/progressController');
 const auth = require('../middleware/auth');
 const featureGate = require('../middleware/featureGate');
@@ -21,6 +22,14 @@ router.post('/:courseId/lectures/:lectureId/complete', [
     param('courseId').isMongoId().withMessage('Invalid courseId'),
     param('lectureId').isMongoId().withMessage('Invalid lectureId')
 ], completeLecture);
+
+router.post('/:courseId/video/:videoId/toggle', [
+    param('courseId').isMongoId().withMessage('Invalid courseId'),
+    param('videoId').isMongoId().withMessage('Invalid videoId')
+], (req, res, next) => {
+    req.params.lectureId = req.params.videoId; // Map for controller compatibility if needed
+    toggleLecture(req, res, next);
+});
 
 router.patch('/:courseId/lectures/:lectureId/position', [
     param('courseId').isMongoId().withMessage('Invalid courseId'),

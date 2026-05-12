@@ -45,6 +45,12 @@ function MissionRow({ lecture, index, isCompleted, isActive, isLocked, courseId 
         }
     };
 
+    const handleToggle = (e) => {
+        e.stopPropagation();
+        if (isLocked) return;
+        lecture.onToggle?.(lecture._id, isCompleted);
+    };
+
     return (
         <div
             role="button"
@@ -60,7 +66,8 @@ function MissionRow({ lecture, index, isCompleted, isActive, isLocked, courseId 
         >
             {/* Hex mission number */}
             <div
-                className="hex-clip w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-[10px] sm:text-[11px] font-black shrink-0 shadow-sm transition-transform group-hover:scale-105"
+                onClick={handleToggle}
+                className={`hex-clip w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-[10px] sm:text-[11px] font-black shrink-0 shadow-sm transition-all ${isLocked ? 'cursor-not-allowed' : 'cursor-pointer hover:scale-110 active:scale-95'}`}
                 style={{ 
                     background: isCompleted ? 'var(--color-success)' : isActive ? 'var(--color-primary)' : 'var(--color-surface-3)', 
                     color: isLocked 
@@ -68,7 +75,8 @@ function MissionRow({ lecture, index, isCompleted, isActive, isLocked, courseId 
                         : (isCompleted || isActive) 
                             ? '#fff' 
                             : 'var(--color-text-secondary)',
-                    border: isActive ? '1px solid rgba(255,255,255,0.2)' : 'none'
+                    border: isActive ? '1px solid rgba(255,255,255,0.2)' : 'none',
+                    boxShadow: isCompleted ? '0 0 15px var(--color-success)' : 'none'
                 }}
             >
                 {isCompleted ? <CheckCircle2 className="w-4 h-4 sm:w-5 h-5" /> : isLocked ? <Lock className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : index + 1}
@@ -298,6 +306,34 @@ const CourseDetail = () => {
             alert("Failed to add playlist. Please check the URL.");
         } finally {
             setAddingPlaylist(false);
+        }
+    };
+
+    const handleToggleCompletion = async (videoId, currentStatus) => {
+        if (courseId?.startsWith('demo-')) return;
+        
+        // Optimistic UI
+        const nextStatus = !currentStatus;
+        setProgress(prev => {
+            const newList = nextStatus 
+                ? [...(prev?.completedLectures || []), videoId]
+                : (prev?.completedLectures || []).filter(id => id !== videoId);
+            return { ...prev, completedLectures: newList };
+        });
+
+        try {
+            await api.post(`/progress/${courseId}/video/${videoId}/toggle`, {
+                isCompleted: nextStatus
+            });
+        } catch (err) {
+            console.error("Failed to toggle completion:", err);
+            // Revert on error
+            setProgress(prev => {
+                const revertList = !nextStatus 
+                    ? [...(prev?.completedLectures || []), videoId]
+                    : (prev?.completedLectures || []).filter(id => id !== videoId);
+                return { ...prev, completedLectures: revertList };
+            });
         }
     };
 
@@ -678,7 +714,7 @@ const CourseDetail = () => {
                                                         return (
                                                             <MissionRow
                                                                 key={lec._id}
-                                                                lecture={lec}
+                                                                lecture={{ ...lec, onToggle: handleToggleCompletion }}
                                                                 index={globalIdx}
                                                                 isCompleted={isDone}
                                                                 isActive={isActive}

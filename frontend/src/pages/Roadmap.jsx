@@ -420,7 +420,27 @@ const Roadmap = () => {
     };
 
     useEffect(() => {
-        fetchRoadmap();
+        if (roadmapId || courseId) {
+            fetchRoadmap();
+        } else {
+            fetchAllRoadmaps();
+        }
+
+        // BI-DIRECTIONAL SYNC: Refresh on window focus to catch updates from other tabs (Course Player)
+        let lastFocusFetch = Date.now();
+        const handleFocus = () => {
+            // Throttle to 5 seconds
+            if (Date.now() - lastFocusFetch > 5000) {
+                if (roadmapId || courseId) {
+                    fetchRoadmap();
+                } else {
+                    fetchAllRoadmaps();
+                }
+                lastFocusFetch = Date.now();
+            }
+        };
+        window.addEventListener('focus', handleFocus);
+        return () => window.removeEventListener('focus', handleFocus);
     }, [courseId, roadmapId]);
 
     const handleShift = (days) => {

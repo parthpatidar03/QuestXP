@@ -104,7 +104,7 @@ const savePosition = async (userId, courseId, lectureId, { position, watchedSeco
     };
 };
 
-const completeLecture = async (userId, courseId, lectureId) => {
+const toggleLecture = async (userId, courseId, lectureId, isCompleted) => {
     let progress = await Progress.findOne({ user: userId, course: courseId });
     const course = await Course.findById(courseId);
 
@@ -130,20 +130,23 @@ const completeLecture = async (userId, courseId, lectureId) => {
         progress.lectureProgress.push(lectureProg);
     }
 
-    if (lectureProg.completed) {
-        return { alreadyCompleted: true, completionPct: progress.completionPct };
+    const wasCompleted = lectureProg.completed;
+    
+    // Set status
+    lectureProg.completed = isCompleted;
+    if (isCompleted) {
+        lectureProg.completedAt = new Date();
+    } else {
+        lectureProg.completedAt = undefined;
     }
 
-    // Mark complete
-    lectureProg.completed = true;
-    lectureProg.completedAt = new Date();
-
-    // Award XP
-    const awardResult = await xpService.award(userId, 'LECTURE_COMPLETED');
-    const xpAwarded = awardResult?.xpEarned || 50;
-
-    // Record Streak Activity
-    await streakService.recordActivity(userId);
+    let xpAwarded = 0;
+    // Award XP ONLY if it was not completed before and now it is
+    if (isCompleted && !wasCompleted) {
+        const awardResult = await xpService.award(userId, 'LECTURE_COMPLETED');
+        xpAwarded = awardResult?.xpEarned || 50;
+        await streakService.recordActivity(userId);
+    }
 
     // Recalculate Course Completion
     const completedCount = progress.lectureProgress.filter(lp => lp.completed).length;
@@ -156,11 +159,13 @@ const completeLecture = async (userId, courseId, lectureId) => {
         success: true,
         xpAwarded,
         completionPct: progress.completionPct,
-        lectureProgress: lectureProg
+        lectureProgress: lectureProg,
+        isCompleted
     };
 };
 
 module.exports = {
     savePosition,
-    completeLecture
+    completeLecture,
+    toggleLecture
 };
