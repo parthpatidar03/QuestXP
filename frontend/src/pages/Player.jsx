@@ -11,6 +11,7 @@ import useGamificationStore from '../store/useGamificationStore';
 import { ArrowLeft, CheckCircle2, ChevronRight, ChevronLeft, Zap } from 'lucide-react';
 import { BGPattern } from '../components/ui/bg-pattern';
 import { useLectureStatus } from '../hooks/useLectureStatus';
+import { shootConfetti } from '../utils/confetti';
 
 const TABS = [
     { key: 'topics', label: 'Topics' },
@@ -148,6 +149,7 @@ const Player = () => {
             setShowCompletionCard(true);
             if (xpEarned > 0) {
                 addXPToast(xpEarned, 'Mission Complete');
+                shootConfetti();
             }
             // Refresh gamification profile so NavBar XP updates
             import('../services/gamificationApi').then(({ getGamificationProfile }) => {

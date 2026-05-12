@@ -28,6 +28,7 @@ const Auth = () => {
                 await login(email, password);
             } else {
                 await register(name, email, password);
+                localStorage.setItem('justSignedUp', 'true');
             }
             const redirect = localStorage.getItem('redirectAfterLogin');
             if (redirect) {

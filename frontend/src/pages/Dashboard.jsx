@@ -12,6 +12,7 @@ import UserTour from '../components/Dashboard/UserTour';
 
 import StreakCalendar from '../components/StreakCalendar';
 import CourseCreationForm from '../components/Course/CourseCreationForm';
+import { shootFireworks } from '../utils/confetti';
 import { BGPattern } from '../components/ui/bg-pattern';
 import FeedbackModal from '../components/FeedbackModal';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -339,6 +340,30 @@ const Dashboard = () => {
     const { user: authUser } = useAuthStore();
     const [searchParams, setSearchParams] = useSearchParams();
     const isDemo = searchParams.get('demo') === 'true';
+
+    useEffect(() => {
+        if (localStorage.getItem('justSignedUp') === 'true') {
+            shootFireworks();
+            localStorage.removeItem('justSignedUp');
+        }
+        
+        // Feature Announcements
+        const seenFeatures = JSON.parse(localStorage.getItem('seenFeatures') || '[]');
+        if (!seenFeatures.includes('confetti_gamification')) {
+            setTimeout(() => {
+                addBadgeToast('New: Celebratory Effects!', 'Celebrate your progress with confetti and fireworks!', 'zap');
+                seenFeatures.push('confetti_gamification');
+                localStorage.setItem('seenFeatures', JSON.stringify(seenFeatures));
+            }, 2000);
+        }
+        if (!seenFeatures.includes('one_shot_videos')) {
+            setTimeout(() => {
+                addBadgeToast('New: One-Shot Support!', 'Create courses from single long videos now!', 'video');
+                seenFeatures.push('one_shot_videos');
+                localStorage.setItem('seenFeatures', JSON.stringify(seenFeatures));
+            }, 5000);
+        }
+    }, [addBadgeToast]);
     
     // Mock user for demo mode
     const user = authUser || (isDemo ? { 
@@ -349,7 +374,7 @@ const Dashboard = () => {
         guest: true 
     } : null);
 
-    const { totalXP, level, levelTitle, streak, xpProgress, xpToNextLevel, setProfile } = useGamificationStore();
+    const { totalXP, level, levelTitle, streak, xpProgress, xpToNextLevel, setProfile, addBadgeToast } = useGamificationStore();
     const queryClient = useQueryClient();
 
     const [showCreate, setShowCreate] = useState(false);

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import { Plus, X, Link as LinkIcon, AlertCircle, Info } from 'lucide-react';
+import { shootConfetti } from '../../utils/confetti';
 
 const CourseCreationForm = ({ onSuccess }) => {
     const [title, setTitle] = useState('');
@@ -84,6 +85,7 @@ const CourseCreationForm = ({ onSuccess }) => {
                 };
                 localStorage.setItem('questxp_demo_course', JSON.stringify(mockCourse));
                 setIsSubmitting(false);
+                shootConfetti();
                 if (onSuccess) onSuccess(mockCourse._id);
                 else navigate(`/courses/${mockCourse._id}?demo=true`);
             }, 2000);
@@ -92,6 +94,7 @@ const CourseCreationForm = ({ onSuccess }) => {
 
         try {
             const { data } = await api.post('/courses', { title, sections });
+            shootConfetti();
             if (onSuccess) {
                 onSuccess(data.course._id);
             } else {

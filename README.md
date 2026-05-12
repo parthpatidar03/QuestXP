@@ -15,7 +15,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.6.0-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-1.7.0-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License">
   <img src="https://img.shields.io/badge/status-production-success.svg" alt="Status">
 </p>
@@ -177,6 +177,7 @@ QuestXP implements a multi-layered error handling architecture designed for prod
 - **📈 Smart Engagement**: Dynamic landing page statistics fetch real-time database totals (users, hours, courses) and apply a "momentum buff" for maximum conversion.
 - **✨ Global Interactive FX**: Immersive mouse-tracking green glow and click-ripple animations pervasive across the entire application for a premium feel.
 - **🛡️ Focus Guardian**: Real-time activity monitoring that detects digital "looping" behavior and triggers high-friction alerts to protect deep work.
+- **🎉 Gamified Celebrations**: Immersive `confetti` and `fireworks` bursts triggered via `canvas-confetti` on signup, course creation, and mission completion to drive user dopamine and retention. [Read more →](docs/GAMIFICATION.md)
 
 ---
 
