@@ -35,7 +35,7 @@ function CourseSearch() {
             setFetchedCourses(courses);
             // Also populate the query cache so Dashboard benefits too
             queryClient.setQueryData(['courses'], courses);
-        } catch (_) {
+        } catch (error) {
             setFetchedCourses([]);
         } finally {
             setIsFetching(false);

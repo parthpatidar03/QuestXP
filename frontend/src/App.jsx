@@ -4,6 +4,8 @@ import useAuthStore from './store/useAuthStore';
 import GamificationOverlay from './components/Gamification/GamificationOverlay';
 import ErrorBoundary from './components/ErrorBoundary';
 import PomodoroTimer from './components/PomodoroTimer';
+import useHeartbeat from './hooks/useHeartbeat';
+import GlobalInteractiveEffect from './components/ui/GlobalInteractiveEffect';
 
 // Lazy load pages for performance
 const Auth = lazy(() => import('./pages/Auth'));
@@ -39,8 +41,7 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to="/login" replace />;
 };
 
-import useHeartbeat from './hooks/useHeartbeat';
-import GlobalInteractiveEffect from './components/ui/GlobalInteractiveEffect';
+
 
 const AppContent = () => {
     const { checkAuth, isLoading, isAuthenticated } = useAuthStore();
@@ -115,4 +116,10 @@ const App = () => {
     );
 };
 
-export default () => <ErrorBoundary><App /></ErrorBoundary>;
+const RootApp = () => (
+    <ErrorBoundary>
+        <App />
+    </ErrorBoundary>
+);
+
+export default RootApp;

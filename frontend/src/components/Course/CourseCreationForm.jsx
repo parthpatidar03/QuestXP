@@ -67,7 +67,7 @@ const CourseCreationForm = ({ onSuccess }) => {
                     _id: 'demo-' + Date.now(),
                     title: title || 'Demo Course',
                     status: 'ready',
-                    totalLectures: sections.reduce((acc, s) => acc + 5, 0), // Mock 5 lectures per section
+                    totalLectures: sections.reduce((acc) => acc + 5, 0), // Mock 5 lectures per section
                     createdAt: new Date().toISOString(),
                     sections: sections.map((s, i) => ({
                         _id: 'sec-' + i,

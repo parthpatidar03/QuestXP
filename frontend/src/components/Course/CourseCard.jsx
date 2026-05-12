@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Play, CheckCircle, Clock, AlertTriangle, Image as ImageIcon } from 'lucide-react';
+import { Play, Image as ImageIcon } from 'lucide-react';
 
 const CourseCard = ({ course }) => {
     const isProcessing = course.status === 'processing';
