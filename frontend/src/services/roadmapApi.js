@@ -31,3 +31,7 @@ export const updateRoadmapTitle = async (roadmapId, title) => {
     const response = await api.patch(`/roadmap/${roadmapId}/title`, { title });
     return response.data;
 };
+export const deleteRoadmap = async (roadmapId) => {
+    const response = await api.delete(`/roadmap/${roadmapId}`);
+    return response.data;
+};

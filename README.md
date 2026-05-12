@@ -15,7 +15,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.9.0-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-1.10.0-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License">
   <img src="https://img.shields.io/badge/status-production-success.svg" alt="Status">
 </p>
@@ -230,8 +230,9 @@ docker-compose up --build
 QuestXP's roadmap engine is designed for realism, not perfection.
 - **75% Efficiency Rule**: If you commit to 4 hours, the system only schedules 3 hours of video. The remaining 25% is reserved for active note-taking and practice.
 - **Granular Scheduling**: Every video is an individual entry. Use the `+` and `-` buttons to shift specific videos forward or backward without breaking the rest of your plan.
-- **Global & Unified Plans**: Create one roadmap that combines multiple courses or specific playlists from across the platform using the global `+ New Roadmap` feature.
-- **Personalized Naming**: Give your study plans custom titles (e.g., "AI Engineering - Fast Track") to keep your dashboard organized.
+- **Universal Roadmap Hub**: Access and manage all your study plans from a single dashboard.
+- **Personalized Roadmap Naming**: Rename your roadmaps (e.g., "Fullstack Sprint") for better organization.
+- **Roadmap Management**: Delete unwanted or completed roadmaps to keep your hub organized.
 
 ---
 

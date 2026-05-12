@@ -258,6 +258,18 @@ router.patch('/:roadmapId/title', auth, async (req, res, next) => {
     }
 });
 
+// @route   DELETE /api/roadmap/:roadmapId
+// @desc    Delete a roadmap
+router.delete('/:roadmapId', auth, async (req, res, next) => {
+    try {
+        const roadmap = await Roadmap.findOneAndDelete({ _id: req.params.roadmapId, userId: req.user.id });
+        if (!roadmap) return res.status(404).json({ msg: 'Roadmap not found' });
+        res.json({ msg: 'Roadmap deleted' });
+    } catch (err) {
+        next(err);
+    }
+});
+
 // @route   PATCH /api/roadmap/:roadmapId/video/:videoId/complete
 // @desc    Toggle video completion in roadmap
 router.patch('/:roadmapId/video/:videoId/complete', auth, async (req, res, next) => {

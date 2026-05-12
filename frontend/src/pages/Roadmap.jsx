@@ -21,7 +21,8 @@ import {
     Square,
     CheckSquare,
     Loader2,
-    Edit2
+    Edit2,
+    Trash2
 } from 'lucide-react';
 import { format, differenceInDays, addDays } from 'date-fns';
 
@@ -37,7 +38,7 @@ const formatTime = (seconds) => {
 };
 
 
-import { getCurrentRoadmap, adjustRoadmap, partialShiftRoadmap, toggleVideoCompletion, getAllRoadmaps, updateRoadmapTitle } from '../services/roadmapApi';
+import { getCurrentRoadmap, adjustRoadmap, partialShiftRoadmap, toggleVideoCompletion, getAllRoadmaps, updateRoadmapTitle, deleteRoadmap } from '../services/roadmapApi';
 import { shootConfetti } from '../utils/confetti';
 import NavBar from '../components/NavBar';
 import { BGPattern } from '../components/ui/bg-pattern';
@@ -312,7 +313,7 @@ const RoadmapPlaylistCard = ({ playlistId, days, dayLabelsMap, totalCalendarDays
     );
 };
 
-const UniversalRoadmapCard = ({ roadmap }) => {
+const UniversalRoadmapCard = ({ roadmap, onDelete }) => {
     const totalVideos = useMemo(() => {
         return (roadmap.days || []).reduce((sum, day) => sum + (day.plannedVideos?.length || 0), 0);
     }, [roadmap]);
@@ -329,32 +330,48 @@ const UniversalRoadmapCard = ({ roadmap }) => {
     }, [roadmap]);
 
     return (
-        <Link 
-            to={roadmap.courseId ? `/roadmap?courseId=${roadmap.courseId}` : `/roadmap`}
-            className="glass-card p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group hover:border-primary/40 transition-all hover:scale-[1.01]"
-        >
-            <div className="flex items-center gap-4 sm:gap-6">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                    <Calendar className="w-6 h-6 sm:w-7 h-7" />
-                </div>
-                <div>
-                    <h4 className="text-base sm:text-lg font-black text-text-primary mb-1 line-clamp-1">{roadmap.title || "Untitled Roadmap"}</h4>
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] sm:text-xs font-bold text-text-muted">
-                        <span className="flex items-center gap-1"><Play className="w-3 h-3" /> {totalVideos} Videos</span>
-                        <span className="flex items-center gap-1">
-                            <Clock className="w-3 h-3" /> 
-                            {totalMinutes >= 60 
-                                ? `${(totalMinutes / 60).toFixed(1)} hrs` 
-                                : `${Math.round(totalMinutes)} mins`}
-                        </span>
-                        <span className="flex items-center gap-1 text-primary/70">{dateRange}</span>
+        <div className="relative group/card">
+            <Link 
+                to={roadmap.courseId ? `/roadmap?courseId=${roadmap.courseId}` : `/roadmap`}
+                className="glass-card p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group hover:border-primary/40 transition-all hover:scale-[1.01]"
+            >
+                <div className="flex items-center gap-4 sm:gap-6">
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                        <Calendar className="w-6 h-6 sm:w-7 h-7" />
+                    </div>
+                    <div>
+                        <h4 className="text-base sm:text-lg font-black text-text-primary mb-1 line-clamp-1">{roadmap.title || "Untitled Roadmap"}</h4>
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] sm:text-xs font-bold text-text-muted">
+                            <span className="flex items-center gap-1"><Play className="w-3 h-3" /> {totalVideos} Videos</span>
+                            <span className="flex items-center gap-1">
+                                <Clock className="w-3 h-3" /> 
+                                {totalMinutes >= 60 
+                                    ? `${(totalMinutes / 60).toFixed(1)} hrs` 
+                                    : `${Math.round(totalMinutes)} mins`}
+                            </span>
+                            <span className="flex items-center gap-1 text-primary/70">{dateRange}</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div className="self-end sm:self-center w-10 h-10 rounded-xl bg-surface-3 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
-                <ChevronRight className="w-5 h-5" />
-            </div>
-        </Link>
+                <div className="self-end sm:self-center w-10 h-10 rounded-xl bg-surface-3 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
+                    <ChevronRight className="w-5 h-5" />
+                </div>
+            </Link>
+            
+            <button 
+                onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (window.confirm("Are you sure you want to delete this study plan? All progress tracking for this roadmap will be lost.")) {
+                        onDelete(roadmap._id);
+                    }
+                }}
+                className="absolute top-1/2 -translate-y-1/2 right-16 p-3 rounded-xl bg-error/10 text-error opacity-0 group-hover/card:opacity-100 hover:bg-error hover:text-white transition-all z-20 shadow-lg shadow-error/10"
+                title="Delete Roadmap"
+            >
+                <Trash2 className="w-4 h-4" />
+            </button>
+        </div>
     );
 };
 
@@ -541,6 +558,20 @@ const Roadmap = () => {
         }
     };
 
+    const handleDeleteRoadmap = async (roadmapId) => {
+        try {
+            await deleteRoadmap(roadmapId);
+            // If we're in individual view, go back
+            if (roadmap && roadmap._id === roadmapId) {
+                setRoadmap(null);
+            }
+            // Update the list
+            setAllRoadmaps(prev => prev.filter(rm => rm._id !== roadmapId));
+        } catch (err) {
+            console.error("Failed to delete roadmap", err);
+        }
+    };
+
     // Attach adjusting state to handlers for sub-components
     handleShift.adjusting = adjusting;
     handlePartialShift.adjusting = adjusting;
@@ -668,7 +699,7 @@ const Roadmap = () => {
                         {allRoadmaps.length > 0 ? (
                             <div className="grid grid-cols-1 gap-4">
                                 {allRoadmaps.map(rm => (
-                                    <UniversalRoadmapCard key={rm._id} roadmap={rm} />
+                                    <UniversalRoadmapCard key={rm._id} roadmap={rm} onDelete={handleDeleteRoadmap} />
                                 ))}
                             </div>
                         ) : (
