@@ -22,7 +22,8 @@ import {
     CheckSquare,
     Loader2,
     Edit2,
-    Trash2
+    Trash2,
+    Check
 } from 'lucide-react';
 import { format, differenceInDays, addDays } from 'date-fns';
 
