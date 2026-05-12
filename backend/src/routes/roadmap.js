@@ -4,6 +4,7 @@ const auth = require('../middleware/auth');
 const Roadmap = require('../models/Roadmap');
 const Course = require('../models/Course');
 const progressService = require('../services/progressService');
+const Progress = require('../models/Progress');
 const { generateRoadmapLogic } = require('../services/roadmapGenerator');
 const { addDays } = require('date-fns');
 
@@ -56,7 +57,25 @@ router.post('/generate', auth, async (req, res, next) => {
         // 2. Run Algorithm
         const roadmapDays = generateRoadmapLogic(allVideos, startDate || new Date(), parseFloat(weekdayHours) || 2, parseFloat(weekendHours) || 4, []);
 
-        // 3. Save to DB (Handle global vs course-specific)
+        // 3. BI-DIRECTIONAL SYNC: Fetch existing progress to mark videos as completed
+        const allProgress = await Progress.find({ user: req.user.id });
+        const completedLectureIds = new Set();
+        allProgress.forEach(p => {
+            p.lectureProgress.forEach(lp => {
+                if (lp.completed) completedLectureIds.add(lp.lecture.toString());
+            });
+        });
+
+        // Mark completed in generated days
+        roadmapDays.forEach(day => {
+            day.plannedVideos.forEach(vid => {
+                if (completedLectureIds.has(vid.videoId.toString())) {
+                    vid.completed = true;
+                }
+            });
+        });
+
+        // 4. Save to DB (Handle global vs course-specific)
         const filter = courseId ? { userId: req.user.id, courseId } : { userId: req.user.id, courseId: null };
         await Roadmap.deleteMany(filter);
 
@@ -102,6 +121,31 @@ router.get('/current', auth, async (req, res, next) => {
         if (!roadmap) {
             return res.status(404).json({ msg: 'No active roadmap' });
         }
+
+        // BI-DIRECTIONAL SYNC: Ensure roadmap is up-to-date with current progress
+        const allProgress = await Progress.find({ user: req.user.id });
+        const completedLectureIds = new Set();
+        allProgress.forEach(p => {
+            p.lectureProgress.forEach(lp => {
+                if (lp.completed) completedLectureIds.add(lp.lecture.toString());
+            });
+        });
+
+        let changed = false;
+        roadmap.days.forEach(day => {
+            day.plannedVideos.forEach(vid => {
+                const isNowCompleted = completedLectureIds.has(vid.videoId.toString());
+                if (vid.completed !== isNowCompleted) {
+                    vid.completed = isNowCompleted;
+                    changed = true;
+                }
+            });
+        });
+
+        if (changed) {
+            await roadmap.save();
+        }
+
         res.json(roadmap);
     } catch (err) {
         next(err);

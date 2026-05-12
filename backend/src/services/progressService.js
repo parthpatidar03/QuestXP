@@ -2,6 +2,7 @@ const Progress = require('../models/Progress');
 const Course = require('../models/Course');
 const xpService = require('./xpService');
 const streakService = require('./streakService');
+const Roadmap = require('../models/Roadmap');
 
 const savePosition = async (userId, courseId, lectureId, { position, watchedSeconds }) => {
     let progress = await Progress.findOne({ user: userId, course: courseId });
@@ -154,6 +155,37 @@ const toggleLecture = async (userId, courseId, lectureId, isCompleted) => {
     progress.lastAccessedAt = new Date();
 
     await progress.save();
+
+    // BI-DIRECTIONAL SYNC: Update Roadmap if it exists
+    try {
+        const roadmaps = await Roadmap.find({ 
+            userId, 
+            $or: [
+                { courseId },
+                { "days.plannedVideos.videoId": lectureId }
+            ]
+        });
+
+        for (const roadmap of roadmaps) {
+            let changed = false;
+            for (const day of roadmap.days) {
+                for (const vid of day.plannedVideos) {
+                    if (vid.videoId.toString() === lectureId.toString()) {
+                        if (vid.completed !== isCompleted) {
+                            vid.completed = isCompleted;
+                            changed = true;
+                        }
+                    }
+                }
+            }
+            if (changed) {
+                await roadmap.save();
+            }
+        }
+    } catch (syncError) {
+        console.error("[Sync] Failed to sync roadmap progress:", syncError);
+        // Don't fail the main request if roadmap sync fails
+    }
 
     return {
         success: true,

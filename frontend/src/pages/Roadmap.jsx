@@ -58,7 +58,26 @@ const ProgressHeader = React.memo(({ roadmap, onShift, totalCalendarDays, onUpda
     };
     
     const currentDayIndex = differenceInDays(new Date(), new Date(roadmap.config.startDate)) + 1;
-    const progressPercent = Math.min(100, Math.max(0, (currentDayIndex / totalCalendarDays) * 100));
+    const timeProgressPercent = Math.min(100, Math.max(0, (currentDayIndex / totalCalendarDays) * 100));
+
+    const learningStats = useMemo(() => {
+        if (!roadmap || !roadmap.days) return { total: 0, completed: 0, percent: 0 };
+        let total = 0;
+        let completed = 0;
+        roadmap.days.forEach(day => {
+            if (day.plannedVideos) {
+                day.plannedVideos.forEach(v => {
+                    total++;
+                    if (v.completed) completed++;
+                });
+            }
+        });
+        return {
+            total,
+            completed,
+            percent: total > 0 ? Math.round((completed / total) * 100) : 0
+        };
+    }, [roadmap]);
 
     return (
         <div className="glass-card p-6 mb-8 relative overflow-hidden group">
@@ -83,6 +102,7 @@ const ProgressHeader = React.memo(({ roadmap, onShift, totalCalendarDays, onUpda
                                 <span className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-2 animate-pulse">Press Enter to Save</span>
                             </div>
                         ) : (
+                        <div className="flex flex-wrap items-center gap-3">
                             <h2 
                                 onClick={() => setIsEditing(true)}
                                 className="text-2xl sm:text-3xl font-black text-text-primary tracking-tight leading-none cursor-pointer hover:text-primary transition-colors flex items-center gap-2" 
@@ -94,6 +114,11 @@ const ProgressHeader = React.memo(({ roadmap, onShift, totalCalendarDays, onUpda
                                     <span className="text-[10px] font-black uppercase tracking-widest hidden sm:inline-block">Rename</span>
                                 </div>
                             </h2>
+                            <div className="px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-1.5">
+                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Live Sync Active</span>
+                            </div>
+                        </div>
                         )}
                     </div>
                     {roadmap.days && roadmap.days.length > 0 && (
@@ -135,16 +160,35 @@ const ProgressHeader = React.memo(({ roadmap, onShift, totalCalendarDays, onUpda
                         </motion.button>
                     </div>
 
-                    <div className="text-center sm:text-right sm:border-l sm:border-border/50 sm:pl-8 py-2">
-                        <span className="text-xs font-black text-text-muted uppercase tracking-widest block mb-2">🔥 Time Progress</span>
-                        <div className="flex flex-col sm:flex-row items-center gap-4">
-                            <span className="text-3xl font-black text-text-primary italic leading-none" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>Day {Math.max(1, currentDayIndex)}/{totalCalendarDays}</span>
-                            <div className="w-full sm:w-32 h-3 rounded-full bg-surface-3 overflow-hidden border border-border relative">
-                                <motion.div 
-                                    initial={{ width: 0 }}
-                                    animate={{ width: `${progressPercent}%` }}
-                                    className="h-full bg-primary shadow-[0_0_10px_var(--color-primary)]" 
-                                />
+                    <div className="flex flex-col sm:flex-row items-center gap-6 sm:border-l sm:border-border/50 sm:pl-8 py-2">
+                        {/* Learning Progress */}
+                        <div className="text-center sm:text-right">
+                            <span className="text-[10px] font-black text-text-muted uppercase tracking-widest block mb-2">🚀 Learning Progress</span>
+                            <div className="flex items-center gap-4">
+                                <span className="text-3xl font-black text-text-primary italic leading-none" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>{learningStats.percent}%</span>
+                                <div className="w-24 h-3 rounded-full bg-surface-3 overflow-hidden border border-border relative">
+                                    <motion.div 
+                                        initial={{ width: 0 }}
+                                        animate={{ width: `${learningStats.percent}%` }}
+                                        className="h-full bg-primary shadow-[0_0_10px_var(--color-primary)]" 
+                                    />
+                                </div>
+                            </div>
+                            <span className="text-[10px] font-bold text-text-muted block mt-1">{learningStats.completed}/{learningStats.total} Missions Done</span>
+                        </div>
+
+                        {/* Time Progress */}
+                        <div className="text-center sm:text-right border-t sm:border-t-0 sm:border-l border-border/50 pt-4 sm:pt-0 sm:pl-6">
+                            <span className="text-[10px] font-black text-text-muted uppercase tracking-widest block mb-2">🔥 Time Progress</span>
+                            <div className="flex items-center gap-4">
+                                <span className="text-3xl font-black text-text-primary italic leading-none" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>Day {Math.max(1, currentDayIndex)}/{totalCalendarDays}</span>
+                                <div className="w-24 h-3 rounded-full bg-surface-3 overflow-hidden border border-border relative">
+                                    <motion.div 
+                                        initial={{ width: 0 }}
+                                        animate={{ width: `${timeProgressPercent}%` }}
+                                        className="h-full bg-primary/40 shadow-[0_0_10px_rgba(var(--color-primary-rgb),0.2)]" 
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>

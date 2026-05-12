@@ -400,6 +400,13 @@ const Dashboard = () => {
                 localStorage.setItem('seenFeatures', JSON.stringify(seenFeatures));
             }, 8000);
         }
+        if (!seenFeatures.includes('roadmap_progress_sync')) {
+            setTimeout(() => {
+                addBadgeToast('New: Live Progress Sync!', 'Roadmap & Course Player now sync bi-directionally!', 'refresh-cw');
+                seenFeatures.push('roadmap_progress_sync');
+                localStorage.setItem('seenFeatures', JSON.stringify(seenFeatures));
+            }, 11000);
+        }
         if (!seenFeatures.includes('global_roadmap')) {
             setTimeout(() => {
                 addBadgeToast('New: Multi-Course Roadmaps!', 'Combine any courses into one unified study plan!', 'sparkles');
@@ -431,8 +438,23 @@ const Dashboard = () => {
     useEffect(() => {
         const handleOpenLeaderboard = () => setShowLeaderboard(true);
         window.addEventListener('open-leaderboard', handleOpenLeaderboard);
-        return () => window.removeEventListener('open-leaderboard', handleOpenLeaderboard);
-    }, []);
+
+        // BI-DIRECTIONAL SYNC: Refresh on window focus to catch updates from other tabs (Roadmap, Player)
+        let lastFocusFetch = Date.now();
+        const handleFocus = () => {
+            if (Date.now() - lastFocusFetch > 5000) {
+                queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+                queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
+                lastFocusFetch = Date.now();
+            }
+        };
+        window.addEventListener('focus', handleFocus);
+
+        return () => {
+            window.removeEventListener('open-leaderboard', handleOpenLeaderboard);
+            window.removeEventListener('focus', handleFocus);
+        };
+    }, [queryClient]);
 
     useEffect(() => {
         if (searchParams.get('open') === 'leaderboard') {
