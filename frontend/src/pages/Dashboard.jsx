@@ -341,6 +341,17 @@ const Dashboard = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const isDemo = searchParams.get('demo') === 'true';
 
+    // Mock user for demo mode
+    const user = authUser || (isDemo ? { 
+        name: 'Guest Explorer', 
+        role: 'guest', 
+        level: 1, 
+        usernameSet: true,
+        guest: true 
+    } : null);
+
+    const { totalXP, level, levelTitle, streak, xpProgress, xpToNextLevel, setProfile, addBadgeToast } = useGamificationStore();
+
     useEffect(() => {
         if (localStorage.getItem('justSignedUp') === 'true') {
             shootFireworks();
@@ -364,17 +375,6 @@ const Dashboard = () => {
             }, 5000);
         }
     }, [addBadgeToast]);
-    
-    // Mock user for demo mode
-    const user = authUser || (isDemo ? { 
-        name: 'Guest Explorer', 
-        role: 'guest', 
-        level: 1, 
-        usernameSet: true,
-        guest: true 
-    } : null);
-
-    const { totalXP, level, levelTitle, streak, xpProgress, xpToNextLevel, setProfile, addBadgeToast } = useGamificationStore();
     const queryClient = useQueryClient();
 
     const [showCreate, setShowCreate] = useState(false);
