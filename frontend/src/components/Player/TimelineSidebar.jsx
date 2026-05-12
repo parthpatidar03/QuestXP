@@ -15,7 +15,7 @@ const TimelineSidebar = ({ allLectures, currentLectureId, completedLectures = []
                 </div>
             </div>
             
-            <div className="overflow-y-auto flex-grow divide-y divide-border/50 custom-scrollbar">
+            <div className="overflow-y-auto lg:overflow-y-auto flex-grow divide-y divide-border/50 custom-scrollbar lg:h-0">
                 {allLectures.map((lecture, idx) => {
                     const isCurrent = lecture._id === currentLectureId;
                     const isCompleted = completedSet.has(lecture._id);

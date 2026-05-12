@@ -233,7 +233,7 @@ const PLAYER_THEME = {
 
     return (
         <div
-            className="h-dvh flex flex-col overflow-hidden relative"
+            className="min-h-screen lg:h-dvh flex flex-col lg:overflow-hidden relative"
             style={{ background: PLAYER_THEME.pageBg }}
         >
             <BGPattern variant="grid" mask="fade-edges" fill={PLAYER_THEME.patternFill} className="opacity-10 z-0" />
@@ -246,47 +246,47 @@ const PLAYER_THEME = {
                 />
             </div>
 
-            {/* Header */}
-            <header className="shrink-0 px-3 sm:px-6 py-3 sm:py-4 flex flex-col gap-3 border-b" style={{ borderColor: PLAYER_THEME.border, background: PLAYER_THEME.panelBg }}>
-                <div className="flex items-center justify-between gap-3">
+            {/* Header - Ultra Thinner */}
+            <header className="shrink-0 px-3 sm:px-6 py-1.5 sm:py-2 flex flex-col gap-1 border-b" style={{ borderColor: PLAYER_THEME.border, background: PLAYER_THEME.panelBg }}>
+                <div className="flex items-center justify-between">
                     <Link
                         to={`/courses/${courseId}`}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-surface-2 hover:bg-surface-3 border border-border rounded-xl transition-all group"
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-surface-2/50 hover:bg-surface-3 border border-border/50 rounded-lg transition-all group"
                     >
-                        <ArrowLeft className="w-4 h-4 text-primary group-hover:-translate-x-1 transition-transform" />
-                        <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-text-primary">Course Overview</span>
+                        <ArrowLeft className="w-3.5 h-3.5 text-primary group-hover:-translate-x-1 transition-transform" />
+                        <span className="text-[9px] font-black uppercase tracking-widest text-text-muted group-hover:text-text-primary transition-colors">Course Overview</span>
                     </Link>
                     <div className="flex items-center gap-2">
-                        <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-full border border-primary/20" style={{ background: 'rgba(0,255,128,0.05)', color: 'var(--color-primary)' }}>
+                        <span className="text-[9px] font-black uppercase tracking-[0.1em] px-2 py-0.5 rounded-full border border-primary/20 bg-primary/5 text-primary">
                             MISSION {currentLectureIndex + 1} OF {allLectures.length}
                         </span>
                     </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 min-w-0">
-                    <h1 className="text-base sm:text-lg font-black tracking-tight line-clamp-1" style={{ color: PLAYER_THEME.text, fontFamily: "'Barlow Condensed', sans-serif" }}>
+                <div className="flex items-center justify-between gap-4 min-w-0">
+                    <h1 className="text-sm sm:text-base font-black tracking-tight line-clamp-1" style={{ color: PLAYER_THEME.text, fontFamily: "'Barlow Condensed', sans-serif" }}>
                         {currentLecture.title}
                     </h1>
                     
-                    <div className="flex items-center gap-2 shrink-0">
+                    <div className="flex items-center gap-1.5 shrink-0">
                         {prevLecture && (
                             <button
                                 onClick={() => navigate(`/courses/${courseId}/lectures/${prevLecture._id}`)}
-                                className="flex items-center gap-2 px-4 sm:px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98]"
+                                className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98]"
                                 style={{ background: PLAYER_THEME.panelAlt, border: `1px solid ${PLAYER_THEME.border}`, color: PLAYER_THEME.secondaryText }}
                             >
-                                <ChevronLeft className="w-4 h-4" />
+                                <ChevronLeft className="w-3.5 h-3.5" />
                                 <span>Prev</span>
                             </button>
                         )}
                         {nextLecture && (
                             <button
                                 onClick={handleNextLecture}
-                                className="flex items-center gap-2 px-4 sm:px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/10"
+                                className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-[0.15em] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/20"
                                 style={{ background: 'var(--color-primary)', border: 'none', color: '#000' }}
                             >
                                 <span>Next</span>
-                                <ChevronRight className="w-4 h-4" />
+                                <ChevronRight className="w-4 h-4 stroke-[3px]" />
                             </button>
                         )}
                     </div>
@@ -298,8 +298,8 @@ const PLAYER_THEME = {
 
                 {/* Video Area */}
                 {!shouldStartQuiz && (
-                    <div className="shrink-0 lg:flex-1 flex flex-col items-center lg:justify-center p-2 sm:p-4 lg:p-6 min-h-0 relative" style={{ background: PLAYER_THEME.pageBg }}>
-                        <div className="w-full max-w-5xl mx-auto aspect-video relative">
+                    <div className="shrink-0 lg:flex-1 flex flex-col items-center lg:justify-center p-0 sm:p-2 lg:p-4 min-h-0 relative" style={{ background: PLAYER_THEME.pageBg }}>
+                        <div className="w-full max-w-6xl mx-auto aspect-video relative">
                             <div className="w-full h-full rounded-xl overflow-hidden" style={{ border: '1px solid rgba(0,255,128,0.25)', boxShadow: PLAYER_THEME.shadow }}>
                                 <VideoPlayer
                                     courseId={courseId}
@@ -369,7 +369,7 @@ const PLAYER_THEME = {
                 )}
 
                 {/* Right Sidebar */}
-                <div ref={sidebarRef} className={`flex-1 w-full shrink-0 flex flex-col border-t lg:border-t-0 min-h-0 ${shouldStartQuiz ? '' : 'lg:flex-none lg:w-[380px] xl:w-[420px] lg:border-l'}`} style={{ borderColor: PLAYER_THEME.border, background: PLAYER_THEME.panelBg, height: '100%' }}>
+                <div ref={sidebarRef} className={`flex-1 w-full shrink-0 flex flex-col border-t lg:border-t-0 min-h-[500px] lg:min-h-0 ${shouldStartQuiz ? '' : 'lg:flex-none lg:w-[380px] xl:w-[420px] lg:border-l'}`} style={{ borderColor: PLAYER_THEME.border, background: PLAYER_THEME.panelBg }}>
 
                     {/* Tab Navigation */}
                     <div className="flex border-b shrink-0" style={{ borderColor: PLAYER_THEME.border }}>
