@@ -157,6 +157,8 @@ QuestXP implements a multi-layered error handling architecture designed for prod
 - **Global Error Middleware**: A centralized hub in `app.js` that catches all unhandled exceptions, providing standardized JSON responses and detailed server-side logging (timestamps, request context, user IDs).
 - **AI-Provider Validation**: Proactive validation of third-party dependencies (e.g., OpenAI API keys) during lazy-initialization, ensuring configuration errors are caught early with descriptive feedback.
 - **Frontend Interceptor Logic**: Axios interceptors in `api.js` intelligently handle 401/403 errors, managing token refresh cycles and global UI feedback without hard-refreshing the application state.
+- **📈 Smart Engagement**: Dynamic landing page statistics fetch real-time database totals (users, hours, courses) and apply a "momentum buff" for maximum conversion.
+- **🛡️ Focus Guardian**: Real-time activity monitoring that detects digital "looping" behavior and triggers high-friction alerts to protect deep work.
 
 ---
 

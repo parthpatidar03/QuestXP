@@ -70,6 +70,7 @@ app.use(compression());
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
 app.use('/api/auth', authRoutes);
+app.use('/api/public', require('./routes/public'));
 
 // Global limiter applies to all other routes
 app.use(limiter);

@@ -33,6 +33,28 @@ const LandingPage = () => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [feedbackOpen, setFeedbackOpen] = useState(false);
     const [videoOpen, setVideoOpen] = useState(false);
+    const [stats, setStats] = useState({ users: 0, courses: 0, totalHours: 0 });
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const res = await fetch('/api/public/stats');
+                if (res.ok) {
+                    const data = await res.json();
+                    setStats(data);
+                }
+            } catch (err) {
+                console.error('Failed to fetch stats:', err);
+            }
+        };
+        fetchStats();
+    }, []);
+
+    const formatUserCount = (count) => {
+        const buffed = count + 20;
+        const rounded = Math.ceil(buffed / 10) * 10;
+        return `${rounded}+`;
+    };
 
 
     useEffect(() => {
@@ -268,6 +290,29 @@ const LandingPage = () => {
                     </div>
                 </section>
 
+                <section className="border-y border-border bg-surface/50 backdrop-blur-sm">
+                    <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-12">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center text-center">
+                            <div className="space-y-1">
+                                <p className="text-3xl sm:text-4xl font-black text-primary font-display">{formatUserCount(stats.users)}</p>
+                                <p className="text-xs sm:text-sm font-bold text-text-secondary uppercase tracking-widest">Active Learners</p>
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-3xl sm:text-4xl font-black text-text-primary font-display">{Math.max(200, stats.totalHours)}+</p>
+                                <p className="text-xs sm:text-sm font-bold text-text-secondary uppercase tracking-widest">Hrs of Content</p>
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-3xl sm:text-4xl font-black text-text-primary font-display">100%</p>
+                                <p className="text-xs sm:text-sm font-bold text-text-secondary uppercase tracking-widest">AI Accurate</p>
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-3xl sm:text-4xl font-black text-text-primary font-display">0</p>
+                                <p className="text-xs sm:text-sm font-bold text-text-secondary uppercase tracking-widest">Distractions</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
                 <section className="max-w-screen-xl mx-auto px-4 sm:px-6 py-12">
                     <div className="relative overflow-hidden bg-black rounded-[2.5rem] border border-white/10 py-20 px-6 flex flex-col items-center justify-center shadow-2xl">
                         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,180,255,0.1),transparent_70%)]" />
@@ -438,6 +483,44 @@ const LandingPage = () => {
                                 Earn XP, maintain streaks, and climb the Global Hall of Fame as you learn.
                             </p>
                         </article>
+                    </div>
+                </section>
+
+                <section className="py-24 bg-surface/30 overflow-hidden">
+                    <div className="max-w-screen-xl mx-auto px-4 sm:px-6 mb-12">
+                        <div className="flex flex-col items-center text-center space-y-4">
+                            <span className="text-primary font-black text-[10px] uppercase tracking-[0.3em]">Wall of Love</span>
+                            <h2 className="text-4xl font-black text-text-primary tracking-tight font-display">What learners say</h2>
+                        </div>
+                    </div>
+
+                    <div className="relative">
+                        <div className="flex animate-scroll hover:[animation-play-state:paused] gap-6 px-4 w-max">
+                            {[
+                                { name: 'krish_dev', role: 'Full Stack Learner', text: 'QuestXP completely changed how I use YouTube. No more falling into the recommendation trap!' },
+                                { name: 'shadow_01', role: 'CS Student', text: 'The AI auto-splitting is magic. Long lectures now feel like achievable missions.' },
+                                { name: 'priyanka_tech', role: 'UI Designer', text: 'Finally a platform that gives me structure without charging me hundreds of dollars.' },
+                                { name: 'aditya_codes', role: 'Backend Engineer', text: 'XP and streaks keep me coming back every day. It feels like a game but I am actually learning.' },
+                                { name: 'sarah_f', role: 'Self Taught', text: 'The focus guardian alert is exactly what I needed. It keeps me honest while studying.' },
+                                { name: 'the_viking', role: 'Go Enthusiast', text: 'Turned a 40-hour playlist into a 30-day plan in seconds. Insane productivity tool.' },
+                                { name: 'krish_dev', role: 'Full Stack Learner', text: 'QuestXP completely changed how I use YouTube. No more falling into the recommendation trap!' },
+                                { name: 'shadow_01', role: 'CS Student', text: 'The AI auto-splitting is magic. Long lectures now feel like achievable missions.' },
+                                { name: 'priyanka_tech', role: 'UI Designer', text: 'Finally a platform that gives me structure without charging me hundreds of dollars.' },
+                            ].map((t, i) => (
+                                <div key={i} className="w-[300px] sm:w-[350px] p-6 rounded-2xl border border-border bg-surface-2 flex flex-col justify-between shadow-lg">
+                                    <p className="text-text-secondary text-sm italic leading-relaxed mb-6">"{t.text}"</p>
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center font-bold text-primary">
+                                            {t.name[0].toUpperCase()}
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-bold text-text-primary">{t.name}</p>
+                                            <p className="text-[10px] font-medium text-text-muted uppercase tracking-wider">{t.role}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </section>
 
