@@ -80,14 +80,14 @@ const ProgressHeader = React.memo(({ roadmap, onShift, totalCalendarDays, onUpda
     }, [roadmap]);
 
     return (
-        <div className="glass-card p-6 mb-8 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                <Trophy className="w-24 h-24" />
+        <div className="glass-card p-8 mb-8 relative overflow-hidden group">
+            <div className="absolute top-1/2 -right-8 -translate-y-1/2 p-4 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity pointer-events-none">
+                <Trophy className="w-64 h-64 rotate-12" />
             </div>
             
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
-                <div className="space-y-2">
-                    <div className="flex items-center gap-3">
+            <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-8 relative z-10">
+                <div className="space-y-4 max-w-xl">
+                    <div className="flex flex-col gap-3">
                         {isEditing ? (
                             <div className="flex items-center gap-2">
                                 <input 
@@ -95,23 +95,22 @@ const ProgressHeader = React.memo(({ roadmap, onShift, totalCalendarDays, onUpda
                                     value={tempTitle}
                                     onChange={(e) => setTempTitle(e.target.value)}
                                     onKeyDown={(e) => e.key === 'Enter' && handleTitleSave()}
-                                    className="bg-surface-3 border border-primary/50 text-text-primary px-3 py-1 rounded-lg font-black text-2xl focus:outline-none focus:ring-2 ring-primary/20"
+                                    className="bg-surface-3 border border-primary/50 text-text-primary px-3 py-1 rounded-lg font-black text-2xl focus:outline-none focus:ring-2 ring-primary/20 flex-1"
                                     autoFocus
                                 />
                                 <button onClick={handleTitleSave} className="bg-primary p-2 rounded-lg text-white shadow-lg shadow-primary/20"><CheckSquare className="w-5 h-5" /></button>
-                                <span className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-2 animate-pulse">Press Enter to Save</span>
                             </div>
                         ) : (
-                        <div className="flex flex-wrap items-center gap-3">
+                        <div className="flex flex-col gap-3">
                             <h2 
                                 onClick={() => setIsEditing(true)}
-                                className="text-2xl sm:text-3xl font-black text-text-primary tracking-tight leading-none cursor-pointer hover:text-primary transition-colors flex items-center gap-2" 
+                                className="text-3xl sm:text-4xl font-black text-text-primary tracking-tight leading-[0.9] cursor-pointer hover:text-primary transition-colors inline-flex items-center gap-3 flex-wrap" 
                                 style={{ fontFamily: "'Barlow Condensed', sans-serif" }}
                             >
-                                {roadmap.title || "Your Mastery Journey"}
-                                <div className="flex items-center gap-1.5 opacity-40 group-hover:opacity-100 transition-opacity">
+                                <span className="uppercase">{roadmap.title || "Your Mastery Journey"}</span>
+                                <div className="flex items-center gap-1.5 opacity-30 group-hover:opacity-100 transition-opacity translate-y-1">
                                     <Edit2 className="w-4 h-4" />
-                                    <span className="text-[10px] font-black uppercase tracking-widest hidden sm:inline-block">Rename</span>
+                                    <span className="text-[10px] font-black uppercase tracking-widest">Rename</span>
                                 </div>
                             </h2>
                             <div className="px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-1.5">
@@ -122,15 +121,19 @@ const ProgressHeader = React.memo(({ roadmap, onShift, totalCalendarDays, onUpda
                         )}
                     </div>
                     {roadmap.days && roadmap.days.length > 0 && (
-                        <p className="text-sm text-text-muted font-bold">
-                            Targeting completion by <span className="text-primary">{format(new Date(roadmap.days[roadmap.days.length - 1].date), 'MMMM dd, yyyy')}</span> 🎯
-                        </p>
+                    <div className="text-sm text-text-muted font-bold flex items-center gap-2">
+                        <span>Targeting completion by</span>
+                        <span className="text-primary bg-primary/10 px-2 py-0.5 rounded border border-primary/20">
+                            {format(new Date(roadmap.days[roadmap.days.length - 1].date), 'MMM dd, yyyy')}
+                        </span>
+                        <span>🎯</span>
+                    </div>
                     )}
                 </div>
 
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:gap-8">
+                <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-6 xl:gap-10">
                     {/* Schedule Adjuster */}
-                    <div className="flex items-center gap-3 bg-surface-2 p-2 rounded-xl border border-border relative flex-1 sm:flex-none">
+                    <div className="flex items-center gap-2 bg-surface-2 p-1.5 rounded-xl border border-border relative shrink-0">
                         {onShift.adjusting && (
                             <div className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap px-3 py-1 bg-primary/20 text-primary text-[10px] font-black rounded-full border border-primary/30 animate-pulse z-20">
                                 SYNCING...
@@ -139,34 +142,34 @@ const ProgressHeader = React.memo(({ roadmap, onShift, totalCalendarDays, onUpda
                         <motion.button 
                             whileTap={{ scale: 0.9 }}
                             onClick={() => onShift(-1)}
-                            className="p-2 hover:bg-surface-3 rounded-lg text-text-muted hover:text-primary transition-colors disabled:opacity-50"
+                            className="p-1.5 hover:bg-surface-3 rounded-lg text-text-muted hover:text-primary transition-colors disabled:opacity-50"
                             title="Subtract 1 day"
                             disabled={onShift.adjusting}
                         >
-                            <Minus className="w-4 h-4" />
+                            <Minus className="w-3.5 h-3.5" />
                         </motion.button>
-                        <div className="text-center min-w-[100px] flex-1">
-                            <span className="text-[10px] font-black text-text-muted uppercase tracking-widest block mb-1">📅 Shift Plan</span>
-                            <span className="text-sm font-black text-text-primary">Adjust Schedule</span>
+                        <div className="text-center min-w-[90px] px-1">
+                            <span className="text-[9px] font-black text-text-muted uppercase tracking-widest block mb-0.5">📅 Shift Plan</span>
+                            <span className="text-xs font-black text-text-primary uppercase">Adjust Schedule</span>
                         </div>
                         <motion.button 
                             whileTap={{ scale: 0.9 }}
                             onClick={() => onShift(1)}
-                            className="p-2 hover:bg-surface-3 rounded-lg text-text-muted hover:text-primary transition-colors disabled:opacity-50"
+                            className="p-1.5 hover:bg-surface-3 rounded-lg text-text-muted hover:text-primary transition-colors disabled:opacity-50"
                             title="Add 1 day"
                             disabled={onShift.adjusting}
                         >
-                            <Plus className="w-4 h-4" />
+                            <Plus className="w-3.5 h-3.5" />
                         </motion.button>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row items-center gap-6 sm:border-l sm:border-border/50 sm:pl-8 py-2">
+                    <div className="flex flex-col sm:flex-row items-center gap-8 lg:border-l lg:border-border/50 lg:pl-10">
                         {/* Learning Progress */}
                         <div className="text-center sm:text-right">
-                            <span className="text-[10px] font-black text-text-muted uppercase tracking-widest block mb-2">🚀 Learning Progress</span>
+                            <span className="text-[9px] font-black text-text-muted uppercase tracking-[0.2em] block mb-2">🚀 Learning Progress</span>
                             <div className="flex items-center gap-4">
                                 <span className="text-3xl font-black text-text-primary italic leading-none" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>{learningStats.percent}%</span>
-                                <div className="w-32 sm:w-48 h-2.5 rounded-full bg-surface-3 overflow-hidden border border-border relative">
+                                <div className="w-32 sm:w-40 h-2 rounded-full bg-surface-3 overflow-hidden border border-border relative">
                                     <motion.div 
                                         initial={{ width: 0 }}
                                         animate={{ width: `${learningStats.percent}%` }}
@@ -174,15 +177,15 @@ const ProgressHeader = React.memo(({ roadmap, onShift, totalCalendarDays, onUpda
                                     />
                                 </div>
                             </div>
-                            <span className="text-[10px] font-bold text-text-muted block mt-1">{learningStats.completed}/{learningStats.total} Missions Done</span>
+                            <span className="text-[10px] font-bold text-text-muted block mt-1.5">{learningStats.completed}/{learningStats.total} Missions Done</span>
                         </div>
 
                         {/* Time Progress */}
-                        <div className="text-center sm:text-right border-t sm:border-t-0 sm:border-l border-border/50 pt-4 sm:pt-0 sm:pl-6">
-                            <span className="text-[10px] font-black text-text-muted uppercase tracking-widest block mb-2">🔥 Time Progress</span>
+                        <div className="text-center sm:text-right border-t sm:border-t-0 sm:border-l border-border/50 pt-6 sm:pt-0 sm:pl-10">
+                            <span className="text-[9px] font-black text-text-muted uppercase tracking-[0.2em] block mb-2">🔥 Time Progress</span>
                             <div className="flex items-center gap-4">
                                 <span className="text-3xl font-black text-text-primary italic leading-none" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>Day {Math.max(1, currentDayIndex)}/{totalCalendarDays}</span>
-                                <div className="w-32 sm:w-48 h-2.5 rounded-full bg-surface-3 overflow-hidden border border-border relative">
+                                <div className="w-32 sm:w-40 h-2 rounded-full bg-surface-3 overflow-hidden border border-border relative">
                                     <motion.div 
                                         initial={{ width: 0 }}
                                         animate={{ width: `${timeProgressPercent}%` }}
@@ -190,6 +193,9 @@ const ProgressHeader = React.memo(({ roadmap, onShift, totalCalendarDays, onUpda
                                     />
                                 </div>
                             </div>
+                            <span className="text-[10px] font-bold text-text-muted block mt-1.5">
+                                {totalCalendarDays - Math.max(1, currentDayIndex)} Days Remaining
+                            </span>
                         </div>
                     </div>
                 </div>
