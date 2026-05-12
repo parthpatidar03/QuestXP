@@ -39,6 +39,7 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to="/login" replace />;
 };
 
+import useHeartbeat from './hooks/useHeartbeat';
 import GlobalInteractiveEffect from './components/ui/GlobalInteractiveEffect';
 
 const AppContent = () => {
