@@ -35,6 +35,11 @@ const getProgress = async (req, res, next) => {
             return res.json({ progress: null });
         }
 
+        // Add helper for frontend
+        progress.completedLectures = progress.lectureProgress
+            ? progress.lectureProgress.filter(lp => lp.completed).map(lp => lp.lecture)
+            : [];
+
         res.json({ progress });
     } catch (error) {
         next(error);

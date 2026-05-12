@@ -12,6 +12,7 @@ import { ArrowLeft, CheckCircle2, ChevronRight, ChevronLeft, Zap } from 'lucide-
 import { BGPattern } from '../components/ui/bg-pattern';
 import { useLectureStatus } from '../hooks/useLectureStatus';
 import { shootConfetti } from '../utils/confetti';
+import { broadcastProgressUpdate } from '../utils/sync';
 
 const TABS = [
     { key: 'timeline', label: 'Timeline' },
@@ -76,7 +77,30 @@ const Player = () => {
         setLectureAiStatus(null);
         setXpEarned(null);
         setSeekTo(null);
-        return () => { if (positionTimerRef.current) clearInterval(positionTimerRef.current); };
+
+        // Refetch on focus (5s throttle)
+        let lastFocusFetch = Date.now();
+        const handleFocus = () => {
+            if (Date.now() - lastFocusFetch > 5000) {
+                fetchCourse();
+                lastFocusFetch = Date.now();
+            }
+        };
+        window.addEventListener('focus', handleFocus);
+
+        // Listen for cross-tab progress updates
+        const handleStorageSync = (e) => {
+            if (e.key === 'questxp_progress_sync') {
+                fetchCourse();
+            }
+        };
+        window.addEventListener('storage', handleStorageSync);
+
+        return () => { 
+            if (positionTimerRef.current) clearInterval(positionTimerRef.current); 
+            window.removeEventListener('focus', handleFocus);
+            window.removeEventListener('storage', handleStorageSync);
+        };
     }, [courseId, lectureId]);
 
     useEffect(() => {
@@ -124,6 +148,35 @@ const Player = () => {
     const currentAiStatus = lectureAiStatus || currentLecture?.aiStatus || {};
 
     const handleTopicClick = (t) => setSeekTo({ time: t, version: Date.now() });
+    
+    const handleToggleCompletion = async (videoId, currentStatus) => {
+        if (courseId?.startsWith('demo-')) return;
+        
+        // Optimistic UI
+        const nextStatus = !currentStatus;
+        setProgress(prev => {
+            const newList = nextStatus 
+                ? [...new Set([...(prev?.completedLectures || []), videoId])]
+                : (prev?.completedLectures || []).filter(id => id !== videoId);
+            return { ...prev, completedLectures: newList };
+        });
+
+        try {
+            await api.post(`/progress/${courseId}/video/${videoId}/toggle`, {
+                isCompleted: nextStatus
+            });
+            broadcastProgressUpdate();
+        } catch (err) {
+            console.error("Failed to toggle completion:", err);
+            // Revert on error
+            setProgress(prev => {
+                const revertList = !nextStatus 
+                    ? [...new Set([...(prev?.completedLectures || []), videoId])]
+                    : (prev?.completedLectures || []).filter(id => id !== videoId);
+                return { ...prev, completedLectures: revertList };
+            });
+        }
+    };
 
     useEffect(() => {
         if (shouldStartQuiz) {
@@ -397,6 +450,7 @@ const PLAYER_THEME = {
                                 currentLectureId={lectureId}
                                 completedLectures={progress?.completedLectures || []}
                                 onLectureClick={(id) => navigate(`/courses/${courseId}/lectures/${id}`)}
+                                onToggleComplete={handleToggleCompletion}
                                 courseId={courseId}
                             />
                         )}

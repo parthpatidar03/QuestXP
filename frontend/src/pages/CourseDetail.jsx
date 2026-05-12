@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { shootConfetti } from '../utils/confetti';
+import { broadcastProgressUpdate } from '../utils/sync';
 import api from '../services/api';
 import NavBar from '../components/NavBar';
 import StudyPlan from '../components/Dashboard/StudyPlan';
@@ -64,22 +66,20 @@ function MissionRow({ lecture, index, isCompleted, isActive, isLocked, courseId 
                 }
             }}
         >
-            {/* Hex mission number */}
-            <div
-                onClick={handleToggle}
-                className={`hex-clip w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-[10px] sm:text-[11px] font-black shrink-0 shadow-sm transition-all ${isLocked ? 'cursor-not-allowed' : 'cursor-pointer hover:scale-110 active:scale-95'}`}
-                style={{ 
-                    background: isCompleted ? 'var(--color-success)' : isActive ? 'var(--color-primary)' : 'var(--color-surface-3)', 
-                    color: isLocked 
-                        ? 'var(--color-text-muted)' 
-                        : (isCompleted || isActive) 
-                            ? '#fff' 
-                            : 'var(--color-text-secondary)',
-                    border: isActive ? '1px solid rgba(255,255,255,0.2)' : 'none',
-                    boxShadow: isCompleted ? '0 0 15px var(--color-success)' : 'none'
-                }}
-            >
-                {isCompleted ? <Check className="w-5 h-5 sm:w-6 h-6 stroke-[3]" /> : isLocked ? <Lock className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : index + 1}
+            {/* Interactive Checkbox */}
+            <div className="shrink-0">
+                <button
+                    onClick={handleToggle}
+                    disabled={isLocked}
+                    className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all ${
+                        isLocked ? 'cursor-not-allowed opacity-40 border-border' :
+                        isCompleted 
+                            ? 'bg-success border-success text-white shadow-[0_0_12px_rgba(16,185,129,0.3)] hover:scale-110' 
+                            : 'border-border bg-surface-3 hover:border-primary/50 hover:scale-110 active:scale-95'
+                    }`}
+                >
+                    {isCompleted ? <CheckCircle2 className="w-4 h-4 stroke-[3]" /> : isLocked ? <Lock className="w-3.5 h-3.5" /> : null}
+                </button>
             </div>
 
             {/* Thumbnail (small) */}
@@ -99,6 +99,7 @@ function MissionRow({ lecture, index, isCompleted, isActive, isLocked, courseId 
             {/* Title + Duration */}
             <div className="flex-1 min-w-0 flex flex-col justify-center">
                 <p className={`text-[13px] sm:text-[14px] font-bold leading-tight line-clamp-2 ${isActive ? 'text-primary' : 'text-text-primary'} group-hover:text-primary transition-colors mb-1`}>
+                    <span className="text-[10px] text-text-muted mr-2 font-mono">{String(index + 1).padStart(2, '0')}</span>
                     {lecture.title}
                 </p>
                 <div className="flex items-center gap-2 flex-wrap">
@@ -325,6 +326,7 @@ const CourseDetail = () => {
             await api.post(`/progress/${courseId}/video/${videoId}/toggle`, {
                 isCompleted: nextStatus
             });
+            broadcastProgressUpdate();
         } catch (err) {
             console.error("Failed to toggle completion:", err);
             // Revert on error
@@ -378,16 +380,28 @@ const CourseDetail = () => {
         };
         fetchAll();
 
-        // Refetch on focus to keep progress live (with 30s throttle)
+        // Refetch on focus to keep progress live (with 5s throttle)
         let lastFocusFetch = Date.now();
         const handleFocus = () => {
-            if (Date.now() - lastFocusFetch > 30000) {
+            if (Date.now() - lastFocusFetch > 5000) {
                 fetchAll();
                 lastFocusFetch = Date.now();
             }
         };
         window.addEventListener('focus', handleFocus);
-        return () => window.removeEventListener('focus', handleFocus);
+        
+        // Listen for cross-tab progress updates
+        const handleStorageSync = (e) => {
+            if (e.key === 'questxp_progress_sync') {
+                fetchAll();
+            }
+        };
+        window.addEventListener('storage', handleStorageSync);
+
+        return () => {
+            window.removeEventListener('focus', handleFocus);
+            window.removeEventListener('storage', handleStorageSync);
+        };
     }, [courseId]);
 
     // Poll status if processing
@@ -618,8 +632,8 @@ const CourseDetail = () => {
                         {/* Mission List */}
                         <div className="glass-card overflow-hidden" style={{ padding: 0 }}>
                             <div className="px-8 py-6 border-b border-border bg-surface/30">
-                                <div className="flex items-center justify-between mb-4">
-                                    <div className="flex flex-col">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+                                    <div className="flex flex-col min-w-0">
                                         <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tight text-text-primary leading-none flex items-center gap-2" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
                                             🗺️ Quest Journey
                                         </h2>
@@ -627,14 +641,21 @@ const CourseDetail = () => {
                                             Path to Mastery
                                         </p>
                                     </div>
-                                    <div className="text-right">
-                                        <div className="text-2xl font-black text-primary leading-none" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>{pct}%</div>
-                                        <div className="text-xs font-black text-text-muted uppercase tracking-widest mt-1.5">COMPLETED</div>
+                                    <div className="flex min-h-[68px] w-[9.5rem] shrink-0 flex-col items-start justify-center gap-1 py-2 pr-0 sm:w-[12.5rem] sm:items-end sm:self-stretch sm:gap-2 sm:pl-8 sm:pr-3 sm:text-right">
+                                        <div
+                                            className="text-3xl sm:text-4xl md:text-[2.75rem] font-black text-primary leading-[0.92] tabular-nums"
+                                            style={{ fontFamily: "'Barlow Condensed', sans-serif" }}
+                                        >
+                                            {pct}%
+                                        </div>
+                                        <div className="mt-1 text-[9px] sm:text-[10px] font-black text-text-muted uppercase tracking-[0.18em] leading-none opacity-70 whitespace-nowrap">
+                                            COMPLETED
+                                        </div>
                                     </div>
                                 </div>
                                 
                                 {/* Elite Journey Progress Bar */}
-                                <div className="relative pt-2 pb-8">
+                                <div className="relative pt-2 pb-12 sm:pb-14">
                                     {/* Track */}
                                     <div className="h-5 w-full bg-surface-2 rounded-full border border-border/50 relative overflow-visible shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]">
                                         {/* Progress Fill */}
@@ -652,7 +673,7 @@ const CourseDetail = () => {
                                         
                                         {/* Goal Icon - Aligned with the track */}
                                         <div className="absolute -right-1 top-1/2 -translate-y-1/2 flex flex-col items-center">
-                                            <div className="absolute -top-10 text-[9px] font-black text-text-muted uppercase tracking-[0.2em] whitespace-nowrap opacity-70">
+                                            <div className="absolute -top-12 sm:-top-14 text-[9px] font-black text-text-muted uppercase tracking-[0.2em] whitespace-nowrap opacity-70">
                                                 Victory Goal
                                             </div>
                                             <span className={`text-2xl ${pct === 100 ? 'animate-bounce' : 'opacity-90'}`}>🚩</span>
@@ -661,7 +682,7 @@ const CourseDetail = () => {
                                 </div>
 
                                 {/* Done vs Remaining Stats */}
-                                <div className="flex items-center justify-between mt-2 px-4 py-3 border-t border-border/40 bg-surface-2/20 rounded-2xl">
+                                <div className="flex flex-col sm:flex-row items-center justify-between mt-2 px-4 py-4 sm:py-3 border-t border-border/40 bg-surface-2/20 rounded-2xl gap-4">
                                     <div className="flex items-center gap-4">
                                         <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
                                             <CheckCircle2 className="w-5 h-5 text-primary" />

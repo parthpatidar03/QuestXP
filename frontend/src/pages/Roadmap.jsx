@@ -41,6 +41,7 @@ const formatTime = (value, unit = 'seconds') => {
 
 import { getCurrentRoadmap, adjustRoadmap, partialShiftRoadmap, toggleVideoCompletion, getAllRoadmaps, updateRoadmapTitle, deleteRoadmap } from '../services/roadmapApi';
 import { shootConfetti, shootLighterConfetti } from '../utils/confetti';
+import { broadcastProgressUpdate } from '../utils/sync';
 import NavBar from '../components/NavBar';
 import { BGPattern } from '../components/ui/bg-pattern';
 import GenerateRoadmapModal from '../components/Roadmap/GenerateRoadmapModal';
@@ -226,12 +227,12 @@ const RoadmapPlaylistCard = React.memo(({ playlistId, days, dayLabelsMap, totalC
     return (
         <div className="bg-surface/30 backdrop-blur-md mb-2 overflow-hidden border border-border/40 rounded-xl hover:border-primary/20 transition-all group">
             <div 
-                className="p-4 flex items-center justify-between gap-4 cursor-pointer hover:bg-surface-2 transition-colors select-none"
+                className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer hover:bg-surface-2 transition-colors select-none"
                 onClick={() => setIsExpanded(!isExpanded)}
             >
                 {/* LEFT SIDE */}
                 <div className="flex items-center gap-4 flex-1 min-w-0">
-                    <div className="shrink-0 w-6 h-6 rounded-lg border border-primary/30 flex items-center justify-center bg-primary/10 group-hover:scale-110 transition-transform">
+                    <div className="shrink-0 w-6 h-6 rounded-md border border-primary/30 flex items-center justify-center bg-primary/10 group-hover:scale-110 transition-transform">
                         <Zap className="w-3.5 h-3.5 text-primary" />
                     </div>
                     <h3 className="text-base font-black text-text-primary tracking-tight truncate">
@@ -241,9 +242,9 @@ const RoadmapPlaylistCard = React.memo(({ playlistId, days, dayLabelsMap, totalC
                 </div>
 
                 {/* RIGHT SIDE */}
-                <div className="flex items-center gap-4 shrink-0">
+                <div className="flex items-center justify-between sm:justify-end gap-4 sm:shrink-0">
                     <div 
-                        className="flex items-center gap-3 bg-black/40 px-5 py-2.5 rounded-xl border border-border/80 shadow-inner"
+                        className="flex items-center gap-3 bg-black/40 px-3 sm:px-5 py-2 rounded-xl border border-border/80 shadow-inner"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <motion.button 
@@ -252,9 +253,9 @@ const RoadmapPlaylistCard = React.memo(({ playlistId, days, dayLabelsMap, totalC
                             className="text-text-muted hover:text-primary transition-all p-1 disabled:opacity-30"
                             disabled={onPartialShift.adjusting}
                         >
-                            {onPartialShift.adjusting ? <Loader2 className="w-6 h-6 animate-spin opacity-50" /> : <MinusCircle className="w-6 h-6" />}
+                            {onPartialShift.adjusting ? <Loader2 className="w-5 h-5 animate-spin opacity-50" /> : <MinusCircle className="w-6 h-6" />}
                         </motion.button>
-                        <span className="text-sm font-black text-text-primary uppercase tracking-tight min-w-[130px] text-center font-mono">
+                        <span className="text-xs sm:text-sm font-black text-text-primary uppercase tracking-tight min-w-[100px] sm:min-w-[130px] text-center font-mono">
                             {dateRange}
                         </span>
                         <motion.button 
@@ -263,7 +264,7 @@ const RoadmapPlaylistCard = React.memo(({ playlistId, days, dayLabelsMap, totalC
                             className="text-text-muted hover:text-primary transition-all p-1 disabled:opacity-30"
                             disabled={onPartialShift.adjusting}
                         >
-                            {onPartialShift.adjusting ? <Loader2 className="w-6 h-6 animate-spin opacity-50" /> : <PlusCircle className="w-6 h-6" />}
+                            {onPartialShift.adjusting ? <Loader2 className="w-5 h-5 animate-spin opacity-50" /> : <PlusCircle className="w-6 h-6" />}
                         </motion.button>
                     </div>
 
@@ -319,30 +320,27 @@ const RoadmapPlaylistCard = React.memo(({ playlistId, days, dayLabelsMap, totalC
                                     >
                                         <Play className="w-2.5 h-2.5 text-primary opacity-70 group-hover/item:opacity-100 group-hover/item:scale-110 transition-all" />
                                         <span className="text-xs font-bold text-text-primary flex-1 truncate group-hover/item:text-primary transition-colors">
+                                            <span className="text-[10px] text-text-muted mr-2 font-mono opacity-50 group-hover/item:opacity-100">{String(vIdx + 1).padStart(2, '0')}</span>
                                             {vid.title}
                                         </span>
 
                                         <span className="text-[11px] font-bold text-text-muted tabular-nums">{formatTime(vid.duration)}</span>
                                         
-                                        <motion.button
-                                            whileTap={{ scale: 0.8 }}
+                                        <button
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 e.stopPropagation();
                                                 onToggleCompletion(vid.videoId, !vid.completed);
                                             }}
-                                            className={`flex items-center gap-2 p-1.5 rounded-lg border transition-all ${
+                                            className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all shrink-0 ${
                                                 vid.completed 
-                                                    ? 'bg-success border-success text-white shadow-[0_0_10px_var(--color-success)]' 
-                                                    : 'bg-surface-3 border-border text-text-muted hover:border-primary/50 hover:text-primary'
+                                                    ? 'bg-success border-success text-white shadow-[0_0_12px_rgba(16,185,129,0.3)]' 
+                                                    : 'border-border bg-surface-3 hover:border-primary/50'
                                             }`}
-                                            title={vid.completed ? "Mark Incomplete" : "Mark as Done"}
+                                            title={vid.completed ? "Mark Incomplete" : "Mark Done"}
                                         >
-                                            {vid.completed ? <Check className="w-4 h-4 stroke-[3]" /> : <Square className="w-4 h-4" />}
-                                            <span className="text-[10px] font-black uppercase tracking-tighter px-1">
-                                                {vid.completed ? 'Done' : 'Mark'}
-                                            </span>
-                                        </motion.button>
+                                            {vid.completed && <CheckCircle2 className="w-4 h-4 stroke-[3]" />}
+                                        </button>
                                     </Link>
                                 ))}
                             </div>
@@ -440,7 +438,7 @@ const Roadmap = () => {
     
     const { user } = useAuthStore();
 
-    const fetchRoadmap = async () => {
+    const fetchRoadmap = useCallback(async () => {
         setLoading(true);
         try {
             if (roadmapId || courseId) {
@@ -458,23 +456,46 @@ const Roadmap = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [courseId, roadmapId]);
+
+    const fetchAllRoadmaps = useCallback(async () => {
+        try {
+            const data = await getAllRoadmaps();
+            setAllRoadmaps(data);
+        } catch (err) {
+            console.error("Failed to fetch roadmaps");
+            setAllRoadmaps([]);
+        }
+    }, []);
 
     useEffect(() => {
         fetchRoadmap();
+        fetchAllRoadmaps();
 
-        // BI-DIRECTIONAL SYNC: Refresh on window focus to catch updates from other tabs (Course Player)
+        // Refetch on focus to keep progress live (with 5s throttle)
         let lastFocusFetch = Date.now();
         const handleFocus = () => {
-            // Throttle to 5 seconds
             if (Date.now() - lastFocusFetch > 5000) {
                 fetchRoadmap();
+                fetchAllRoadmaps();
                 lastFocusFetch = Date.now();
             }
         };
         window.addEventListener('focus', handleFocus);
-        return () => window.removeEventListener('focus', handleFocus);
-    }, [courseId, roadmapId]);
+        
+        // Listen for cross-tab progress updates
+        const handleStorageSync = (e) => {
+            if (e.key === 'questxp_progress_sync') {
+                fetchRoadmap();
+            }
+        };
+        window.addEventListener('storage', handleStorageSync);
+
+        return () => {
+            window.removeEventListener('focus', handleFocus);
+            window.removeEventListener('storage', handleStorageSync);
+        };
+    }, [fetchRoadmap, fetchAllRoadmaps]);
 
     const handleShift = (days) => {
         if (!roadmap) return;
@@ -594,6 +615,7 @@ const Roadmap = () => {
         try {
             const updated = await toggleVideoCompletion(roadmap._id, videoId, completed);
             setRoadmap(updated);
+            broadcastProgressUpdate();
         } catch (err) {
             console.error("Failed to toggle video completion", err);
             // Re-fetch on error
