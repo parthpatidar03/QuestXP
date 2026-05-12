@@ -11,7 +11,7 @@ const ragAnswerSchema = {
                     label: { type: 'string', maxLength: 100 },
                     chunkIndex: { type: 'number' }
                 },
-                required: ['timestamp', 'label', 'chunkIndex']
+                required: ['timestamp', 'label']
             }
         },
         notFound: { type: 'boolean' }
@@ -48,15 +48,9 @@ const validate = (parsed) => {
         }
     }
     
-    // T021 [US3] Extracted constraints
-    if (parsed.notFound === false && parsed.citations.length === 0) {
-        throw new SchemaValidationError('When notFound is false, citations must have at least 1 item');
-    }
+    // T021 [US3] Extracted constraints - RELAXED for Hybrid Knowledge
+    // We no longer require citations if notFound is false (could be general knowledge)
     
-    if (parsed.notFound === true && parsed.answerText !== "I couldn't find information about this in the current lecture.") {
-        throw new SchemaValidationError('When notFound is true, answerText must be the exact not found message');
-    }
-
     return true;
 };
 

@@ -7,14 +7,16 @@ let _pc;
 const getPinecone = () => _pc || (_pc = new Pinecone({ apiKey: process.env.PINECONE_API_KEY }));
 
 // T015 & T020 Grounding System Prompt
-const GROUNDING_SYSTEM_PROMPT = `You are a helpful teaching assistant answering a student's question based strictly on the provided lecture context.
-You MUST only use information present in the CONTEXT block.
-If the context does not contain sufficient information to answer the question, set "notFound": true, and set "answerText" to "I couldn't find information about this in the current lecture."
-Do NOT use general knowledge, training data, or information not present in the context.
-
-When providing an answer, you must cite the timestamp for the exact section where the information is found.
-Context chunks are provided as: [timestamp_seconds] {chunk_text}.
-Return your response as a JSON object with "answerText" (the prose answer), "citations" (array of { timestamp, label, chunkIndex }), and "notFound" (boolean).
+// T015 & T020 Grounding System Prompt - UPDATED: Hybrid knowledge approach
+const GROUNDING_SYSTEM_PROMPT = `You are an expert teaching assistant. Your goal is to answer the student's question as helpfully as possible.
+1. PRIMARY SOURCE: Use the provided CONTEXT block (from the lecture transcript). If the answer is there, prioritize it.
+2. SUPPLEMENTARY KNOWLEDGE: If the context is missing specific details or the question is a broader conceptual doubt, use your general knowledge to provide a comprehensive answer.
+3. CONTEXT CITATION: When using the provided context, cite the [timestamp_seconds].
+4. Return your response as a JSON object with:
+   - "answerText": your comprehensive answer.
+   - "citations": array of { timestamp, label, chunkIndex } for lecture matches.
+   - "usedGeneralKnowledge": boolean indicating if you relied on internal knowledge.
+   - "notFound": false (unless you truly cannot answer even with general knowledge).
 `;
 
 exports.queryLecture = async (lectureId, questionText) => {
@@ -52,17 +54,12 @@ exports.queryLecture = async (lectureId, questionText) => {
     console.log(`[RAG] Pinecone search inside namespace ${lectureId} took ${pineconeLatency}ms.`);
     console.log(`[RAG] Threshold check: topScore=${topScore}, required=${minScore}. Passed: ${topScore >= minScore}`);
 
-    // 3. Relevance Gate
-    if (topScore < minScore) {
-        return { notFound: true, answerText: "I couldn't find information about this in the current lecture." };
-    }
+    // 3. Assemble Context (Prioritize lecture if score is good enough)
+    const contextString = topScore >= minScore 
+        ? matches.map(match => `[${match.metadata.startTimestamp}] ${match.metadata.text}`).join('\n\n')
+        : "NO RELEVANT LECTURE CONTEXT FOUND. Answer based on your general knowledge.";
 
-    // 4. Assemble Context
-    const contextString = matches
-        .map(match => `[${match.metadata.startTimestamp}] ${match.metadata.text} (chunkIndex: ${match.metadata.chunkIndex})`)
-        .join('\n\n');
-
-    const userMessage = `CONTEXT:\n${contextString}\n\nQUESTION: ${questionText}`;
+    const userMessage = `CONTEXT (FROM LECTURE):\n${contextString}\n\nQUESTION: ${questionText}`;
 
     // 5. AI Provider Call
     const aiStart = Date.now();
