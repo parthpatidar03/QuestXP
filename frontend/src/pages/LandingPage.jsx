@@ -246,7 +246,7 @@ const LandingPage = () => {
                             
                             <div className="relative rounded-2xl border border-border bg-surface shadow-2xl overflow-hidden transform group-hover:scale-[1.02] transition-transform duration-500">
                                 <img 
-                                    src="/screenshots/dashboard-preview.png" 
+                                    src="/Images/dashboard_landing_page.png" 
                                     alt="QuestXP Dashboard" 
                                     className="w-full h-auto object-cover block"
                                 />
