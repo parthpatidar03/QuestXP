@@ -194,8 +194,8 @@ const LandingPage = () => {
             </header>
 
             <main className="relative z-10 flex-1">
-                <section id="how-it-works" className="max-w-screen-2xl mx-auto px-4 sm:px-6 pt-10 sm:pt-14 pb-10 sm:pb-14">
-                    <div className="grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] items-center">
+                <section id="how-it-works" className="max-w-screen-xl mx-auto px-4 sm:px-6 pt-10 sm:pt-14 pb-10 sm:pb-14">
+                    <div className="grid gap-10 lg:grid-cols-2 items-center">
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
