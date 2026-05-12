@@ -108,6 +108,26 @@ const NotesTab = ({ lectureId, courseId, onSeek, notesStatus, errorReason, aiSta
         return () => clearInterval(interval);
     }, [isInProgress, notesStatus, transcriptionStatus, isTriggering]);
 
+    const handleSaveEdit = async () => {
+        if (!editContent.trim()) return;
+        try {
+            setSaving(true);
+            const { data } = await api.post(`/lectures/${lectureId}/notes/edit`, {
+                content: editContent
+            });
+            setNotes(prev => ({
+                ...prev,
+                userEdits: [data.edit, ...(prev.userEdits || [])]
+            }));
+            setEditContent('');
+            setIsEditing(false);
+        } catch (err) {
+            setError('Failed to save note.');
+        } finally {
+            setSaving(false);
+        }
+    };
+
     // Reset when lecture changes
     useEffect(() => {
         setTriggered(false);
