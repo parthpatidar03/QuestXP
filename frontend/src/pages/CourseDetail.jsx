@@ -642,7 +642,7 @@ const CourseDetail = () => {
                                             initial={{ width: 0 }}
                                             animate={{ width: `${pct}%` }}
                                             transition={{ duration: 1.5, ease: "circOut" }}
-                                            className="absolute top-0 left-0 h-full bg-gradient-to-r from-success/80 to-success rounded-full shadow-[0_0_20px_var(--color-success)]"
+                                            className="absolute top-0 left-0 h-full bg-success rounded-full shadow-[0_0_20px_var(--color-success)]"
                                         >
                                             {/* Journey Thumb (The Runner) */}
                                             <div className="absolute -right-4 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white border-[4px] border-success shadow-[0_0_15px_var(--color-success)] z-10 flex items-center justify-center overflow-hidden">
