@@ -93,8 +93,49 @@ const LandingPage = () => {
         'Surgical study plan adjustments',
     ];
 
+    const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+    const [ripples, setRipples] = useState([]);
+
+    const handleMouseMove = (e) => {
+        setMousePos({ x: e.clientX, y: e.clientY });
+    };
+
+    const handleClick = (e) => {
+        const id = Date.now();
+        setRipples(prev => [...prev, { id, x: e.clientX, y: e.clientY }]);
+        setTimeout(() => {
+            setRipples(prev => prev.filter(r => r.id !== id));
+        }, 1000);
+    };
+
     return (
-        <div className="min-h-screen bg-bg relative overflow-hidden flex flex-col">
+        <div 
+            className="min-h-screen bg-bg relative overflow-hidden flex flex-col cursor-crosshair"
+            onMouseMove={handleMouseMove}
+            onClick={handleClick}
+        >
+            {/* Click Ripples */}
+            {ripples.map(ripple => (
+                <motion.div
+                    key={ripple.id}
+                    initial={{ opacity: 0.5, scale: 0 }}
+                    animate={{ opacity: 0, scale: 4 }}
+                    transition={{ duration: 0.8 }}
+                    className="pointer-events-none fixed z-50 w-8 h-8 rounded-full border border-primary/40 bg-primary/10"
+                    style={{ 
+                        left: ripple.x - 16, 
+                        top: ripple.y - 16,
+                    }}
+                />
+            ))}
+            {/* Mouse Glow Effect */}
+            <div 
+                className="pointer-events-none fixed inset-0 z-50 opacity-30 transition-opacity duration-300"
+                style={{
+                    background: `radial-gradient(600px at ${mousePos.x}px ${mousePos.y}px, rgba(34, 197, 94, 0.15), transparent 80%)`
+                }}
+            />
+
             <BGPattern variant="grid" mask="fade-edges" fill="var(--color-text-muted)" className="opacity-20 z-0" />
 
             <header className="relative z-20 border-b border-border bg-surface/90 backdrop-blur">
@@ -295,67 +336,30 @@ const LandingPage = () => {
                     </div>
                 </section>
 
-                <section className="py-20 relative overflow-hidden">
-                    <div className="max-w-4xl mx-auto px-4 sm:px-6">
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-                            <motion.div 
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                whileInView={{ opacity: 1, scale: 1 }}
-                                viewport={{ once: true }}
-                                className="aspect-square flex flex-col items-center justify-center p-6 rounded-2xl border border-border bg-surface/50 backdrop-blur-sm shadow-xl hover:border-primary/50 transition-colors group"
-                            >
-                                <p className="text-3xl sm:text-4xl font-black text-primary font-display group-hover:scale-110 transition-transform">
-                                    {formatMetric(stats.learners)}
-                                </p>
-                                <p className="text-[10px] sm:text-xs font-bold text-text-secondary uppercase tracking-[0.2em] mt-3 text-center leading-tight">
-                                    Active <br/> Learners
-                                </p>
-                            </motion.div>
-
-                            <motion.div 
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                whileInView={{ opacity: 1, scale: 1 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: 0.1 }}
-                                className="aspect-square flex flex-col items-center justify-center p-6 rounded-2xl border border-border bg-surface/50 backdrop-blur-sm shadow-xl hover:border-primary/50 transition-colors group"
-                            >
-                                <p className="text-3xl sm:text-4xl font-black text-text-primary font-display group-hover:scale-110 transition-transform">
-                                    {formatMetric(stats.missions)}
-                                </p>
-                                <p className="text-[10px] sm:text-xs font-bold text-text-secondary uppercase tracking-[0.2em] mt-3 text-center leading-tight">
-                                    Missions <br/> Finished
-                                </p>
-                            </motion.div>
-
-                            <motion.div 
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                whileInView={{ opacity: 1, scale: 1 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: 0.2 }}
-                                className="aspect-square flex flex-col items-center justify-center p-6 rounded-2xl border border-border bg-surface/50 backdrop-blur-sm shadow-xl hover:border-primary/50 transition-colors group"
-                            >
-                                <p className="text-3xl sm:text-4xl font-black text-text-primary font-display group-hover:scale-110 transition-transform">
-                                    {formatMetric(stats.xp)}
-                                </p>
-                                <p className="text-[10px] sm:text-xs font-bold text-text-secondary uppercase tracking-[0.2em] mt-3 text-center leading-tight">
-                                    Knowledge <br/> XP Distributed
-                                </p>
-                            </motion.div>
-
-                            <motion.div 
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                whileInView={{ opacity: 1, scale: 1 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: 0.3 }}
-                                className="aspect-square flex flex-col items-center justify-center p-6 rounded-2xl border border-border bg-surface/50 backdrop-blur-sm shadow-xl hover:border-primary/50 transition-colors group"
-                            >
-                                <p className="text-3xl sm:text-4xl font-black text-text-primary font-display group-hover:scale-110 transition-transform">
-                                    {formatMetric(stats.visits || 1200)}
-                                </p>
-                                <p className="text-[10px] sm:text-xs font-bold text-text-secondary uppercase tracking-[0.2em] mt-3 text-center leading-tight">
-                                    Global <br/> Interactions
-                                </p>
-                            </motion.div>
+                <section className="py-12 relative overflow-hidden">
+                    <div className="max-w-5xl mx-auto px-4 sm:px-6">
+                        <div className="bg-surface/40 backdrop-blur-md border border-border rounded-[2.5rem] p-12 shadow-2xl relative group overflow-hidden">
+                            {/* Inner glow on hover */}
+                            <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                            
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 relative z-10">
+                                <div className="flex flex-col items-center justify-center text-center">
+                                    <p className="text-4xl sm:text-5xl font-black text-primary font-display mb-2">{formatMetric(stats.learners)}</p>
+                                    <p className="text-[10px] font-bold text-text-secondary uppercase tracking-[0.2em] leading-tight">Active <br/> Learners</p>
+                                </div>
+                                <div className="flex flex-col items-center justify-center text-center border-l border-border/50">
+                                    <p className="text-4xl sm:text-5xl font-black text-text-primary font-display mb-2">{formatMetric(stats.missions)}</p>
+                                    <p className="text-[10px] font-bold text-text-secondary uppercase tracking-[0.2em] leading-tight">Missions <br/> Finished</p>
+                                </div>
+                                <div className="flex flex-col items-center justify-center text-center border-l border-border/50">
+                                    <p className="text-4xl sm:text-5xl font-black text-text-primary font-display mb-2">{formatMetric(stats.xp)}</p>
+                                    <p className="text-[10px] font-bold text-text-secondary uppercase tracking-[0.2em] leading-tight">Knowledge <br/> XP Distributed</p>
+                                </div>
+                                <div className="flex flex-col items-center justify-center text-center border-l border-border/50">
+                                    <p className="text-4xl sm:text-5xl font-black text-text-primary font-display mb-2">{formatMetric(stats.visits || 1200)}</p>
+                                    <p className="text-[10px] font-bold text-text-secondary uppercase tracking-[0.2em] leading-tight">Global <br/> Interactions</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
