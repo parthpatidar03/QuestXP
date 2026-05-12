@@ -3,6 +3,8 @@ const assert = require('node:assert/strict');
 const axios = require('axios');
 const app = require('../src/app');
 
+const redisClient = require('../src/queues/redisConnection');
+
 let server;
 let baseURL;
 
@@ -16,6 +18,8 @@ test.after(async () => {
     if (server) {
         await new Promise((resolve) => server.close(resolve));
     }
+    // Close redis to prevent hang
+    await redisClient.quit();
 });
 
 test('Security: Helmet headers are present', async () => {

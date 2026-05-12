@@ -31,7 +31,7 @@
 ---
 
 ## 🚀 CI/CD & Security First
-QuestXP implements an automated **CI/CD Pipeline** via GitHub Actions to maintain production standards:
+QuestXP implements a robust **CI/CD Pipeline** powered by **GitHub Actions** to automate quality control and deployment:
 - **Automated Testing**: Comprehensive backend integration tests and frontend smoke tests run on every push.
 - **Security Audits**: Continuous dependency scanning with `npm audit` to block high-risk vulnerabilities.
 - **Linting & Quality**: Automated ESLint checks to enforce consistent code standards.

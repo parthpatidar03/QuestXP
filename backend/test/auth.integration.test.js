@@ -18,6 +18,7 @@ process.env.FRONTEND_URL = 'http://localhost:5173';
 const authRoutes = require('../src/routes/auth');
 const User = require('../src/models/User');
 const Session = require('../src/models/Session');
+const redisClient = require('../src/queues/redisConnection');
 
 let mongod;
 let server;
@@ -134,6 +135,8 @@ test.before(async () => {
 test.after(async () => {
     await stopServer();
     await stopMongo();
+    // Close redis to prevent hang
+    await redisClient.quit();
 });
 
 test.beforeEach(async () => {
