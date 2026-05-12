@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../services/api';
 import VideoPlayer from '../components/Player/VideoPlayer';
-import TopicSidebar from '../components/Player/TopicSidebar';
+import TimelineSidebar from '../components/Player/TimelineSidebar';
 import NotesTab from '../components/Lecture/NotesTab';
 import QuizTab from '../components/Lecture/QuizTab';
 import DoubtChatbot from '../components/Lecture/DoubtChatbot';
@@ -14,9 +14,9 @@ import { useLectureStatus } from '../hooks/useLectureStatus';
 import { shootConfetti } from '../utils/confetti';
 
 const TABS = [
-    { key: 'topics', label: 'Topics' },
-    { key: 'notes',  label: 'Summary' },
-    { key: 'quiz',   label: 'Quiz' },
+    { key: 'timeline', label: 'Timeline' },
+    { key: 'notes',    label: 'Summary' },
+    { key: 'quiz',     label: 'Quiz' },
 ];
 
 const Player = () => {
@@ -27,11 +27,12 @@ const Player = () => {
     const shouldStartQuiz = useMemo(() => new URLSearchParams(location.search).get('startQuiz') === 'true', [location.search]);
 
     const [course, setCourse] = useState(null);
+    const [progress, setProgress] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [currentTime, setCurrentTime] = useState(0);
     const [showCompletionCard, setShowCompletionCard] = useState(false);
-    const [activeTab, setActiveTab] = useState(() => shouldStartQuiz ? 'quiz' : 'topics');
+    const [activeTab, setActiveTab] = useState(() => shouldStartQuiz ? 'quiz' : 'timeline');
     const [quizAutoStart, setQuizAutoStart] = useState(false);
     const [lectureAiStatus, setLectureAiStatus] = useState(null);
     const [xpEarned, setXpEarned] = useState(null); // golden XP toast value
@@ -56,8 +57,13 @@ const Player = () => {
             }
 
             try {
-                const { data } = await api.get(`/courses/${courseId}`);
-                setCourse(data.course);
+                const [cRes, pRes] = await Promise.allSettled([
+                    api.get(`/courses/${courseId}`),
+                    api.get(`/progress/${courseId}`)
+                ]);
+                if (cRes.status === 'fulfilled') setCourse(cRes.value.data.course);
+                if (pRes.status === 'fulfilled' && pRes.value.data.progress)
+                    setProgress(pRes.value.data.progress);
             } catch (err) {
                 setError('Failed to load course details.');
             } finally {
@@ -144,13 +150,22 @@ const Player = () => {
 
     useEffect(() => {
         const handleMissionComplete = (e) => {
-            const { xpEarned } = e.detail;
+            const { xpEarned, lectureId: completedLecId } = e.detail;
             setXpEarned(xpEarned);
             setShowCompletionCard(true);
             if (xpEarned > 0) {
                 addXPToast(xpEarned, 'Mission Complete');
                 shootConfetti();
             }
+
+            // Update local progress state so Timeline tick appears
+            if (completedLecId) {
+                setProgress(prev => ({
+                    ...prev,
+                    completedLectures: [...new Set([...(prev?.completedLectures || []), completedLecId])]
+                }));
+            }
+
             // Refresh gamification profile so NavBar XP updates
             import('../services/gamificationApi').then(({ getGamificationProfile }) => {
                 getGamificationProfile().then(profile => {
@@ -376,11 +391,13 @@ const PLAYER_THEME = {
 
                     {/* Tab Content */}
                     <div className="flex-1 overflow-y-auto min-h-0">
-                        {activeTab === 'topics' && (
-                            <TopicSidebar
-                                topics={currentLecture.topics || []}
-                                currentTime={currentTime}
-                                onTopicClick={handleTopicClick}
+                        {activeTab === 'timeline' && (
+                            <TimelineSidebar
+                                allLectures={allLectures}
+                                currentLectureId={lectureId}
+                                completedLectures={progress?.completedLectures || []}
+                                onLectureClick={(id) => navigate(`/courses/${courseId}/lectures/${id}`)}
+                                courseId={courseId}
                             />
                         )}
                         {activeTab === 'notes' && (
