@@ -254,6 +254,12 @@ function CourseCard({ course, progress, onDelete, isDeleting }) {
         setTimeout(() => setShareStatus(''), 2000);
     };
 
+    const navigate = useNavigate();
+
+    const handleCardClick = () => {
+        navigate(`/courses/${course._id}`);
+    };
+
     return (
         <>
         <ShareModal 
@@ -262,7 +268,11 @@ function CourseCard({ course, progress, onDelete, isDeleting }) {
             courseTitle={course.title}
             shareUrl={`${window.location.origin}/share/${course._id}`}
         />
-        <Link to={`/courses/${course._id}`} className="glass-card group block transition-all" style={{ padding: 0, overflow: 'hidden' }}>
+        <div 
+            onClick={handleCardClick}
+            className="glass-card group block transition-all cursor-pointer" 
+            style={{ padding: 0, overflow: 'hidden' }}
+        >
             <div
                 className="relative w-full aspect-video overflow-hidden"
             >
@@ -339,7 +349,7 @@ function CourseCard({ course, progress, onDelete, isDeleting }) {
                     </Link>
                 </div>
             </div>
-        </Link>
+        </div>
         </>
     );
 }
