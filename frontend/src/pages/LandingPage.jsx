@@ -223,7 +223,7 @@ const LandingPage = () => {
                             </p>
 
                             <div className="mt-7 flex flex-col sm:flex-row gap-3 sm:items-center">
-                                <button onClick={openApp} className="btn-primary inline-flex items-center justify-center gap-2 px-8 py-3.5 text-sm sm:text-base">
+                                <button onClick={openApp} className="btn-primary inline-flex items-center justify-center gap-2 px-8 py-3.5 text-sm sm:text-base active:scale-95 active:shadow-[0_0_30px_rgba(34,197,94,0.4)] transition-all">
                                     Start Learning
                                     <ChevronRight className="w-4 h-4" />
                                 </button>
@@ -413,7 +413,7 @@ const LandingPage = () => {
                             viewport={{ once: true }}
                             className="relative"
                         >
-                            <div className="absolute inset-0 bg-primary/10 blur-[80px] rounded-full" />
+                            <div className="absolute inset-0 bg-primary/10 blur-[80px] rounded-full opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity duration-500" />
                             <img 
                                 src="/Images/Roadmap_landingpage.png" 
                                 alt="Dynamic Roadmap Feature" 
@@ -477,7 +477,7 @@ const LandingPage = () => {
                             viewport={{ once: true }}
                             className="relative"
                         >
-                            <div className="absolute -inset-10 bg-primary/10 blur-[100px] rounded-full opacity-50" />
+                            <div className="absolute -inset-10 bg-primary/10 blur-[100px] rounded-full opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity duration-500" />
                             <div className="relative rounded-3xl border border-border p-2 bg-bg shadow-2xl overflow-hidden group">
                                 <img 
                                     src="/Images/notificatiions questXP.jpeg" 
@@ -553,7 +553,7 @@ const LandingPage = () => {
 
                     <div className="relative">
                         {/* Glow effect around container */}
-                        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-full w-full bg-primary/5 blur-[120px] rounded-full opacity-0 group-hover/testimonial:opacity-100 transition-opacity duration-1000" />
+                        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-full w-full bg-primary/5 blur-[120px] rounded-full opacity-0 group-hover/testimonial:opacity-100 group-active/testimonial:opacity-100 transition-opacity duration-1000" />
                         
                         <div className="flex overflow-hidden relative">
                             <motion.div 
