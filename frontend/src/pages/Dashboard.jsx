@@ -43,8 +43,8 @@ function RankCard({ rank, percentile, trend }) {
                 </div>
                 <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Rank Position</span>
             </div>
-            <div className="flex items-baseline gap-2 mb-1">
-                <span className="text-3xl font-black text-text-primary tracking-tight">#{rank || '—'}</span>
+            <div className="flex items-baseline gap-2 mb-1 overflow-hidden">
+                <span className="text-2xl sm:text-3xl font-black text-text-primary tracking-tight truncate">#{rank || '—'}</span>
                 {trend === 'up' && (
                     <span className="text-xs font-bold text-success flex items-center gap-0.5">
                         <TrendingUp className="w-3 h-3" /> Trend Up
@@ -82,8 +82,8 @@ function LearningTimeCard({ totalSeconds, weeklySeconds, avgSecondsPerDay }) {
                 </div>
                 <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Learning Time</span>
             </div>
-            <div className="flex items-baseline gap-2 mb-1">
-                <span className="text-3xl font-black text-text-primary tracking-tight">
+            <div className="flex items-baseline gap-2 mb-1 overflow-hidden">
+                <span className="text-2xl sm:text-3xl font-black text-text-primary tracking-tight truncate">
                     {formatTime(totalSeconds)}
                 </span>
                 <span className="text-xs font-bold text-text-muted">{hasActivity ? 'Total' : 'No activity yet'}</span>
@@ -216,8 +216,8 @@ function ProductivityCard({ completionRate, completedCourses, totalEnrolled }) {
                 </div>
                 <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Mastery Level</span>
             </div>
-            <div className="flex items-baseline gap-2 mb-1">
-                <span className="text-3xl font-black text-text-primary tracking-tight">{completionRate}%</span>
+            <div className="flex items-baseline gap-2 mb-1 overflow-hidden">
+                <span className="text-2xl sm:text-3xl font-black text-text-primary tracking-tight truncate">{completionRate}%</span>
                 <span className="text-xs font-bold text-text-muted">Global</span>
             </div>
             <p className="text-xs font-semibold text-text-secondary">
@@ -783,18 +783,18 @@ const Dashboard = () => {
                             <h2 className="text-sm font-semibold tracking-wide text-text-primary">Daily Quests</h2>
                         </div>
                         <div className="space-y-3">
-                            <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-surface-2 hover:border-success/50 transition-colors cursor-pointer group">
-                                <div>
-                                    <p className="text-sm font-medium text-text-primary group-hover:text-success transition-colors">Study for 15 minutes</p>
+                            <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-surface-2 hover:border-success/50 transition-colors cursor-pointer group gap-3">
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-sm font-medium text-text-primary group-hover:text-success transition-colors truncate">Study for 15 minutes</p>
                                     <p className="text-xs text-text-secondary mt-0.5">Gain 50 XP</p>
                                 </div>
                                 <div className="w-8 h-8 rounded-full bg-surface border border-border flex items-center justify-center group-hover:bg-success/10 group-hover:border-success/30 transition-colors p-1.5">
                                     <img src="/favicon.png" alt="" className="w-full h-full object-contain" />
                                 </div>
                             </div>
-                            <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-surface-2 hover:border-success/50 transition-colors cursor-pointer group">
-                                <div>
-                                    <p className="text-sm font-medium text-text-primary group-hover:text-success transition-colors">Complete a Quiz</p>
+                            <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-surface-2 hover:border-success/50 transition-colors cursor-pointer group gap-3">
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-sm font-medium text-text-primary group-hover:text-success transition-colors truncate">Complete a Quiz</p>
                                     <p className="text-xs text-text-secondary mt-0.5">Gain 100 XP</p>
                                 </div>
                                 <div className="w-8 h-8 rounded-full bg-surface border border-border flex items-center justify-center group-hover:bg-success/10 group-hover:border-success/30 transition-colors p-1.5">
