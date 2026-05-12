@@ -72,7 +72,7 @@ const NavBar = () => {
                         Home
                     </Link>
                     <Link to={`/dashboard${demoQuery}`} className="px-3 py-1.5 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-lg transition-colors">
-                        My Courses
+                        Dashboard
                     </Link>
                     <Link id="tour-roadmap" to={`/roadmap${demoQuery}`} className="px-3 py-1.5 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-lg transition-colors">
                         Roadmap
@@ -156,7 +156,7 @@ const NavBar = () => {
                                 className="flex items-center gap-3 p-3 rounded-xl bg-surface-2 border border-border text-sm font-semibold text-text-primary"
                             >
                                 <Zap className="w-5 h-5 text-warning" />
-                                Courses
+                                Dashboard
                             </Link>
                             <Link 
                                 to={`/roadmap${demoQuery}`} 
