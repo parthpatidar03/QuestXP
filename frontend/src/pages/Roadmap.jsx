@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { 
     CheckCircle2, 
     Circle, 
@@ -378,6 +378,7 @@ const UniversalRoadmapCard = ({ roadmap, onDelete }) => {
 /* ── Main Page ───────────────────────────────────────────────────────── */
 
 const Roadmap = () => {
+    const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const courseId = searchParams.get('courseId');
     const roadmapId = searchParams.get('id');
