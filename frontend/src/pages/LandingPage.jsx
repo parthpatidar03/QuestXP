@@ -595,13 +595,12 @@ const LandingPage = () => {
                                 {[...Array(2)].map((_, i) => (
                                     <React.Fragment key={i}>
                                         {[
-                                            { name: 'krish_dev', role: 'Full Stack Learner', text: 'QuestXP completely changed how I use YouTube. No more falling into the recommendation trap!' },
-                                            { name: 'shadow_01', role: 'CS Student', text: 'The AI auto-splitting is magic. Long lectures now feel like achievable missions.' },
-                                            { name: 'priyanka_tech', role: 'UI Designer', text: 'Finally a platform that gives me structure without charging me hundreds of dollars.' },
-                                            { name: 'aditya_codes', role: 'Backend Engineer', text: 'XP and streaks keep me coming back every day. It feels like a game but I am actually learning.' },
-                                            { name: 'sarah_f', role: 'Self Taught', text: 'The focus guardian alert is exactly what I needed. It keeps me honest while studying.' },
-                                            { name: 'the_viking', role: 'Go Enthusiast', text: 'Turned a 40-hour playlist into a 30-day plan in seconds. Insane productivity tool.' },
-                                            { name: 'codeshadow', role: 'Software Developer', text: 'I used to bookmark videos and never watch them. Now I have a roadmap that I actually follow.' }
+                                            { name: 'sarah01', text: 'QuestXP stops me from doom-scrolling. I open the app, watch my playlist, and actually learn.' },
+                                            { name: 'jamesdev', text: 'The notes feature linked to timestamps is a game changer. I can jump back to exactly where I got confused.' },
+                                            { name: 'ruchii', text: 'I use this for my anatomy lecture playlists. Turning them into a course makes studying so much less overwhelming.' },
+                                            { name: 'mk_codes', text: 'Cleanest learning experience I\'ve found. No distractions, just the content I need.' },
+                                            { name: 'aditya.s', text: 'Being able to see my progress visually is surprisingly motivating. Love the minimal design.' },
+                                            { name: 'alok7', text: 'Finally finished a 12-hour React course. The progress tracking is the only reason I didn\'t quit halfway.' },
                                         ].map((t, idx) => (
                                             <div 
                                                 key={idx} 
@@ -618,8 +617,7 @@ const LandingPage = () => {
                                                         {t.name[0].toUpperCase()}
                                                     </div>
                                                     <div>
-                                                        <h4 className="text-sm font-black text-text-primary tracking-tight">{t.name}</h4>
-                                                        <p className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">{t.role}</p>
+                                                        <h4 className="text-sm font-black text-text-primary tracking-tight">@{t.name}</h4>
                                                     </div>
                                                 </div>
                                             </div>
