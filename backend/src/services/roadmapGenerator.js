@@ -67,7 +67,7 @@ const generateRoadmapLogic = (videos, startDate, weekdayHours = 2, weekendHours 
                         playlistName: video.playlistName,
                         sectionId: video.sectionId
                     }],
-                    totalMinutes: durationSeconds,
+                    totalMinutes: durationMinutes,
                     isRestDay: false
                 });
                 

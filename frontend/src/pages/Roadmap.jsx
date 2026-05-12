@@ -347,7 +347,7 @@ const UniversalRoadmapCard = React.memo(({ roadmap, onDelete }) => {
                             <span className="flex items-center gap-1">
                                 <Clock className="w-3 h-3" /> 
                                 {totalMinutes >= 60 
-                                    ? `${(totalMinutes / 60).toFixed(1)} hrs` 
+                                    ? `${(totalMinutes / 60).toFixed(1)} hr` 
                                     : `${Math.round(totalMinutes)} mins`}
                             </span>
                             <span className="flex items-center gap-1 text-primary/70">{dateRange}</span>
