@@ -236,62 +236,43 @@ const LandingPage = () => {
                         </motion.div>
 
                         <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.55, ease: 'easeOut', delay: 0.08 }}
-                            className="relative h-[380px] w-full rounded-2xl border border-border bg-surface-2/40 backdrop-blur-xl overflow-hidden flex flex-col shadow-2xl shadow-black/20"
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.6, ease: 'easeOut', delay: 0.2 }}
+                            className="relative group"
                         >
-                            <div className="p-4 border-b border-border bg-surface-2/60 flex items-center gap-2 shrink-0">
-                                <Sparkles className="w-4 h-4 text-primary" />
-                                <h2 className="text-sm font-semibold text-text-primary tracking-wide">The QuestXP Journey</h2>
-                            </div>
+                            {/* Decorative glow behind image */}
+                            <div className="absolute -inset-4 bg-primary/10 rounded-[2.5rem] blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                             
-                            <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent pr-4">
-                                {/* Step 1 */}
-                                <div className="relative pl-6 border-l border-primary/30 pb-2 group">
-                                    <div className="absolute -left-[5px] top-0 w-2.5 h-2.5 rounded-full bg-primary ring-4 ring-bg group-hover:scale-125 transition-transform" />
-                                    <h3 className="text-sm font-bold text-text-primary mb-1 -mt-1">1. Add Playlists or Videos</h3>
-                                    <p className="text-xs text-text-secondary leading-relaxed mb-3">Paste any YouTube playlist or long "one-shot" lecture link.</p>
-                                    <div className="rounded border border-border bg-surface p-2 shadow-sm">
-                                        <div className="flex items-center gap-2 opacity-50">
-                                            <div className="w-3 h-3 rounded bg-white/20" />
-                                            <div className="h-1.5 w-1/2 bg-white/20 rounded" />
-                                        </div>
+                            <div className="relative rounded-2xl border border-border bg-surface shadow-2xl overflow-hidden transform group-hover:scale-[1.02] transition-transform duration-500">
+                                <img 
+                                    src="/screenshots/dashboard-preview.png" 
+                                    alt="QuestXP Dashboard" 
+                                    className="w-full h-auto object-cover block"
+                                />
+                                
+                                {/* Glass overlay on bottom */}
+                                <div className="absolute bottom-0 inset-x-0 p-4 bg-gradient-to-t from-black/80 to-transparent backdrop-blur-sm flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                                        <span className="text-[10px] font-bold text-white uppercase tracking-widest">Live Dashboard Preview</span>
                                     </div>
-                                </div>
-
-                                {/* Step 2 */}
-                                <div className="relative pl-6 border-l border-primary/30 pb-2 group">
-                                    <div className="absolute -left-[5px] top-0 w-2.5 h-2.5 rounded-full bg-surface border border-primary ring-4 ring-bg group-hover:bg-primary transition-colors" />
-                                    <h3 className="text-sm font-bold text-text-primary mb-1 -mt-1">2. AI Auto-Splitting</h3>
-                                    <p className="text-xs text-text-secondary leading-relaxed mb-3">QuestXP splits long lectures into logical, 15-min missions automatically.</p>
-                                    <div className="grid grid-cols-2 gap-2">
-                                        <div className="h-6 rounded border border-border bg-surface shadow-sm" />
-                                        <div className="h-6 rounded border border-border bg-surface shadow-sm" />
-                                    </div>
-                                </div>
-
-                                {/* Step 3 */}
-                                <div className="relative pl-6 border-l border-primary/30 pb-2 group">
-                                    <div className="absolute -left-[5px] top-0 w-2.5 h-2.5 rounded-full bg-surface border border-primary ring-4 ring-bg group-hover:bg-primary transition-colors" />
-                                    <h3 className="text-sm font-bold text-text-primary mb-1 -mt-1">3. Learn & Take Quizzes</h3>
-                                    <p className="text-xs text-text-secondary leading-relaxed mb-3">Watch lectures without distractions and complete AI quizzes.</p>
-                                    <div className="rounded border border-border bg-surface p-2 flex gap-2 items-center shadow-sm">
-                                        <CheckCircle2 className="w-3 h-3 text-success opacity-70" />
-                                        <div className="h-1.5 w-full bg-white/10 rounded" />
-                                    </div>
-                                </div>
-
-                                {/* Step 4 */}
-                                <div className="relative pl-6 border-l border-transparent pb-2 group">
-                                    <div className="absolute -left-[5px] top-0 w-2.5 h-2.5 rounded-full bg-surface border border-primary ring-4 ring-bg group-hover:bg-primary transition-colors" />
-                                    <h3 className="text-sm font-bold text-text-primary mb-1 -mt-1">4. Earn XP & Streaks</h3>
-                                    <p className="text-xs text-text-secondary leading-relaxed">Level up your profile as you finish videos and build daily streaks.</p>
+                                    <Sparkles className="w-4 h-4 text-primary" />
                                 </div>
                             </div>
-                            
-                            {/* Scroll fade overlay */}
-                            <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-[var(--color-surface-2)] to-transparent pointer-events-none opacity-80" />
+
+                            {/* Floating badge */}
+                            <div className="absolute -top-4 -right-4 bg-surface-2 border border-border p-3 rounded-xl shadow-xl hidden md:block">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                                        <Flame className="w-6 h-6 text-primary" />
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] text-text-muted uppercase font-bold tracking-tight">Active Mission</p>
+                                        <p className="text-xs font-black text-text-primary">Master ML in 6h</p>
+                                    </div>
+                                </div>
+                            </div>
                         </motion.div>
                     </div>
                 </section>
