@@ -33,7 +33,12 @@ const LandingPage = () => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [feedbackOpen, setFeedbackOpen] = useState(false);
     const [videoOpen, setVideoOpen] = useState(false);
-    const [stats, setStats] = useState({ users: 0, courses: 0, totalHours: 0 });
+    const [stats, setStats] = useState({ 
+        learners: 0, 
+        quizzes: 0, 
+        missions: 0, 
+        xp: 0 
+    });
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -50,10 +55,10 @@ const LandingPage = () => {
         fetchStats();
     }, []);
 
-    const formatUserCount = (count) => {
-        const buffed = count + 20;
-        const rounded = Math.ceil(buffed / 10) * 10;
-        return `${rounded}+`;
+    const formatMetric = (num) => {
+        if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M+`;
+        if (num >= 1000) return `${(num / 1000).toFixed(1)}k+`;
+        return `${num}+`;
     };
 
 
@@ -294,20 +299,20 @@ const LandingPage = () => {
                     <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-12">
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center text-center">
                             <div className="space-y-1">
-                                <p className="text-3xl sm:text-4xl font-black text-primary font-display">{formatUserCount(stats.users)}</p>
+                                <p className="text-3xl sm:text-4xl font-black text-primary font-display">{formatMetric(stats.learners)}</p>
                                 <p className="text-xs sm:text-sm font-bold text-text-secondary uppercase tracking-widest">Active Learners</p>
                             </div>
                             <div className="space-y-1">
-                                <p className="text-3xl sm:text-4xl font-black text-text-primary font-display">{Math.max(200, stats.totalHours)}+</p>
-                                <p className="text-xs sm:text-sm font-bold text-text-secondary uppercase tracking-widest">Hrs of Content</p>
+                                <p className="text-3xl sm:text-4xl font-black text-text-primary font-display">{formatMetric(stats.quizzes)}</p>
+                                <p className="text-xs sm:text-sm font-bold text-text-secondary uppercase tracking-widest">Quizzes Conquered</p>
                             </div>
                             <div className="space-y-1">
-                                <p className="text-3xl sm:text-4xl font-black text-text-primary font-display">100%</p>
-                                <p className="text-xs sm:text-sm font-bold text-text-secondary uppercase tracking-widest">AI Accurate</p>
+                                <p className="text-3xl sm:text-4xl font-black text-text-primary font-display">{formatMetric(stats.missions)}</p>
+                                <p className="text-xs sm:text-sm font-bold text-text-secondary uppercase tracking-widest">Missions Finished</p>
                             </div>
                             <div className="space-y-1">
-                                <p className="text-3xl sm:text-4xl font-black text-text-primary font-display">0</p>
-                                <p className="text-xs sm:text-sm font-bold text-text-secondary uppercase tracking-widest">Distractions</p>
+                                <p className="text-3xl sm:text-4xl font-black text-text-primary font-display">{formatMetric(stats.xp)}</p>
+                                <p className="text-xs sm:text-sm font-bold text-text-secondary uppercase tracking-widest">Knowledge XP</p>
                             </div>
                         </div>
                     </div>
