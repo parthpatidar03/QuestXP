@@ -164,46 +164,27 @@ const ProgressHeader = React.memo(({ roadmap, onShift, totalCalendarDays, onUpda
                     <div className="h-16 w-px bg-border/40 hidden xl:block" />
 
                     {/* Stats Section */}
-                    <div className="flex flex-col sm:flex-row items-center gap-8 relative">
+                    <div className="flex items-center relative">
                         {/* Trophy Watermark for this section */}
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.04] pointer-events-none">
                             <Trophy className="w-32 h-32" />
                         </div>
 
-                        {/* Learning Progress - Made more compact */}
-                        <div className="text-center sm:text-right relative z-10">
-                            <div className="flex items-center gap-2 justify-center sm:justify-end mb-1">
-                                <Zap className="w-3 h-3 text-success" />
-                                <span className="text-[9px] font-black text-text-muted uppercase tracking-[0.2em]">Learning Progress</span>
-                            </div>
-                            <div className="flex flex-col items-center sm:items-end gap-1">
-                                <span className="text-4xl font-black text-text-primary italic leading-none" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>{learningStats.percent}%</span>
-                                <div className="w-32 h-1.5 rounded-full bg-surface-3 overflow-hidden border border-border/50 relative">
-                                    <motion.div 
-                                        initial={{ width: 0 }}
-                                        animate={{ width: `${learningStats.percent}%` }}
-                                        className="h-full bg-success shadow-[0_0_10px_var(--color-success)]" 
-                                    />
-                                </div>
-                                <span className="text-[9px] font-bold text-text-muted opacity-60 uppercase tracking-widest">{learningStats.completed}/{learningStats.total} Done</span>
-                            </div>
-                        </div>
-
                         {/* Time Progress - Matching the Screenshot */}
-                        <div className="text-center sm:text-right relative z-10 min-w-[120px]">
+                        <div className="text-center sm:text-right relative z-10 min-w-[140px]">
                             <div className="flex items-center gap-2 justify-center sm:justify-end mb-1">
-                                <span className="text-[9px] font-black text-text-muted uppercase tracking-[0.2em]">🔥 Time Progress</span>
+                                <span className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">🔥 Time Progress</span>
                             </div>
                             <div className="flex flex-col items-center sm:items-end gap-1">
                                 <span className="text-4xl font-black text-text-primary italic leading-none" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>Day {Math.max(1, currentDayIndex)}/{totalCalendarDays}</span>
-                                <div className="w-32 h-1.5 rounded-full bg-surface-3 overflow-hidden border border-border/50 relative">
+                                <div className="w-40 h-2 rounded-full bg-surface-3 overflow-hidden border border-border/50 relative">
                                     <motion.div 
                                         initial={{ width: 0 }}
                                         animate={{ width: `${timeProgressPercent}%` }}
-                                        className="h-full bg-primary shadow-[0_0_10px_var(--color-primary)]" 
+                                        className="h-full bg-primary shadow-[0_0_15px_var(--color-primary)]" 
                                     />
                                 </div>
-                                <span className="text-[9px] font-bold text-text-muted opacity-60 uppercase tracking-widest">{totalCalendarDays - Math.max(1, currentDayIndex)} Left</span>
+                                <span className="text-[10px] font-bold text-text-muted opacity-60 uppercase tracking-widest mt-1">{totalCalendarDays - Math.max(1, currentDayIndex)} Left</span>
                             </div>
                         </div>
                     </div>
