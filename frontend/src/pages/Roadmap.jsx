@@ -737,7 +737,7 @@ const Roadmap = () => {
                 onClose={() => setIsGenerateModalOpen(false)}
                 courseId={modalCourseId}
                 onGenerated={(newRoadmap) => {
-                    setRoadmap(newRoadmap);
+                    navigate(`/roadmap?id=${newRoadmap._id}`);
                     setIsGenerateModalOpen(false);
                 }}
             />
