@@ -24,6 +24,7 @@ Because each video is its own entry, the `+` and `-` buttons in the Roadmap UI n
 
 ### 4. Technical Fixes
 - Resolved a unit mismatch where video durations (seconds) were being compared directly to daily capacity (minutes), which previously limited many days to a single video.
+- **Duration Fix**: Corrected the `totalMinutes` field to store minutes instead of seconds, resolving the "397.9 hrs" display bug (where minutes were being labeled as hours).
 - Unified the 75% rule across both the manual **Roadmap** system and the automated **Study Plan** (Progress) system.
 
 ## Implementation Details
