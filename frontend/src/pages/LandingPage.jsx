@@ -34,16 +34,17 @@ const LandingPage = () => {
     const [feedbackOpen, setFeedbackOpen] = useState(false);
     const [videoOpen, setVideoOpen] = useState(false);
     const [stats, setStats] = useState({ 
-        learners: 0, 
-        quizzes: 0, 
-        missions: 0, 
-        xp: 0 
+        learners: 80, 
+        quizzes: 250, 
+        missions: 600, 
+        xp: 75000,
+        visits: 1200
     });
 
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const res = await fetch('/api/public/stats');
+                const res = await fetch(`/api/public/stats?t=${Date.now()}`);
                 if (res.ok) {
                     const data = await res.json();
                     setStats(data);
@@ -93,49 +94,8 @@ const LandingPage = () => {
         'Surgical study plan adjustments',
     ];
 
-    const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-    const [ripples, setRipples] = useState([]);
-
-    const handleMouseMove = (e) => {
-        setMousePos({ x: e.clientX, y: e.clientY });
-    };
-
-    const handleClick = (e) => {
-        const id = Date.now();
-        setRipples(prev => [...prev, { id, x: e.clientX, y: e.clientY }]);
-        setTimeout(() => {
-            setRipples(prev => prev.filter(r => r.id !== id));
-        }, 1000);
-    };
-
     return (
-        <div 
-            className="min-h-screen bg-bg relative overflow-hidden flex flex-col cursor-crosshair"
-            onMouseMove={handleMouseMove}
-            onClick={handleClick}
-        >
-            {/* Click Ripples */}
-            {ripples.map(ripple => (
-                <motion.div
-                    key={ripple.id}
-                    initial={{ opacity: 0.5, scale: 0 }}
-                    animate={{ opacity: 0, scale: 4 }}
-                    transition={{ duration: 0.8 }}
-                    className="pointer-events-none fixed z-50 w-8 h-8 rounded-full border border-primary/40 bg-primary/10"
-                    style={{ 
-                        left: ripple.x - 16, 
-                        top: ripple.y - 16,
-                    }}
-                />
-            ))}
-            {/* Mouse Glow Effect */}
-            <div 
-                className="pointer-events-none fixed inset-0 z-50 opacity-30 transition-opacity duration-300"
-                style={{
-                    background: `radial-gradient(600px at ${mousePos.x}px ${mousePos.y}px, rgba(34, 197, 94, 0.15), transparent 80%)`
-                }}
-            />
-
+        <div className="min-h-screen bg-bg relative overflow-hidden flex flex-col">
             <BGPattern variant="grid" mask="fade-edges" fill="var(--color-text-muted)" className="opacity-20 z-0" />
 
             <header className="relative z-20 border-b border-border bg-surface/90 backdrop-blur">

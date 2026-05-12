@@ -158,6 +158,7 @@ QuestXP implements a multi-layered error handling architecture designed for prod
 - **AI-Provider Validation**: Proactive validation of third-party dependencies (e.g., OpenAI API keys) during lazy-initialization, ensuring configuration errors are caught early with descriptive feedback.
 - **Frontend Interceptor Logic**: Axios interceptors in `api.js` intelligently handle 401/403 errors, managing token refresh cycles and global UI feedback without hard-refreshing the application state.
 - **📈 Smart Engagement**: Dynamic landing page statistics fetch real-time database totals (users, hours, courses) and apply a "momentum buff" for maximum conversion.
+- **✨ Global Interactive FX**: Immersive mouse-tracking green glow and click-ripple animations pervasive across the entire application for a premium feel.
 - **🛡️ Focus Guardian**: Real-time activity monitoring that detects digital "looping" behavior and triggers high-friction alerts to protect deep work.
 
 ---

@@ -39,7 +39,7 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to="/login" replace />;
 };
 
-import useHeartbeat from './hooks/useHeartbeat';
+import GlobalInteractiveEffect from './components/ui/GlobalInteractiveEffect';
 
 const AppContent = () => {
     const { checkAuth, isLoading, isAuthenticated } = useAuthStore();
@@ -72,7 +72,8 @@ const AppContent = () => {
 
 
     return (
-        <>
+        <div className="relative min-h-screen bg-bg cursor-crosshair">
+            <GlobalInteractiveEffect />
             <GamificationOverlay />
             {showPomodoro && <PomodoroTimer />}
             <Suspense fallback={<PageLoader />}>
@@ -101,7 +102,7 @@ const AppContent = () => {
                     <Route path="/share/:courseId" element={<SharePage />} />
                 </Routes>
             </Suspense>
-        </>
+        </div>
     );
 };
 
