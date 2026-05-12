@@ -166,6 +166,5 @@ const toggleLecture = async (userId, courseId, lectureId, isCompleted) => {
 
 module.exports = {
     savePosition,
-    completeLecture,
     toggleLecture
 };

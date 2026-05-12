@@ -8,7 +8,6 @@ const {
     getTodayTarget,
     getWeeklyTargets,
     deletePlan,
-    completeLecture,
     toggleLecture
 } = require('../controllers/progressController');
 const auth = require('../middleware/auth');
@@ -21,7 +20,10 @@ router.use(auth); // Protect all progress routes
 router.post('/:courseId/lectures/:lectureId/complete', [
     param('courseId').isMongoId().withMessage('Invalid courseId'),
     param('lectureId').isMongoId().withMessage('Invalid lectureId')
-], completeLecture);
+], (req, res, next) => {
+    req.body.isCompleted = true;
+    toggleLecture(req, res, next);
+});
 
 router.post('/:courseId/video/:videoId/toggle', [
     param('courseId').isMongoId().withMessage('Invalid courseId'),

@@ -269,7 +269,7 @@ router.post('/:lectureId/quiz/submit', [
         const courseLookup = await Course.findOne({ "sections.lectures._id": lectureId }, { _id: 1 });
         let progressResult = null;
         if (courseLookup) {
-            progressResult = await progressService.completeLecture(req.user._id, courseLookup._id.toString(), lectureId);
+            progressResult = await progressService.toggleLecture(req.user._id, courseLookup._id.toString(), lectureId, true);
         }
 
         res.json({

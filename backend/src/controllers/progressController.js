@@ -164,6 +164,5 @@ module.exports = {
     getTodayTarget,
     getWeeklyTargets,
     deletePlan,
-    completeLecture,
     toggleLecture,
 };
