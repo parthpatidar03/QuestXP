@@ -77,6 +77,7 @@ QuestXP's roadmap engine is designed for realism, not perfection.
 - **⚡ Optimistic UI & Tab Sync**: Instant progress updates with zero-flicker sync. [Read more →](docs/021-optimistic-ui-and-tab-sync.md)
 - **🔍 Observability & Logging**: Robust error tracking and diagnostic logs. [Read more →](docs/OBSERVABILITY_AND_LOGGING.md)
 - **🎨 UI & Gamification**: Visual refinements and progress tracking logic. [Read more →](docs/UI_AND_GAMIFICATION.md)
+- **📝 Hero Section Refinement**: Restored high-contrast white text for better legibility. [Read more →](docs/022-landing-page-contrast-fix.md)
 
 ---
 
