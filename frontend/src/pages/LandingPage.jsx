@@ -250,9 +250,9 @@ const LandingPage = () => {
 
                             <p className="mt-8 text-lg sm:text-xl text-text-primary/90 font-medium leading-relaxed max-w-[60ch]">
                                 We buy expensive courses but end up on YouTube. It has the content, but lacks the 
-                                <span className="text-primary italic font-bold"> structure, gamification, and personalization </span> 
+                                <span className="text-text-primary italic font-bold"> structure, gamification, and personalization </span> 
                                 you need to finish.
-                                <span className="block mt-4 text-primary font-black tracking-tight">
+                                <span className="block mt-4 text-text-primary font-black tracking-tight">
                                     QuestXP transforms Playlists or single long videos into structured courses.
                                 </span>
                             </p>
