@@ -39,6 +39,8 @@ app.use(cors({
         
         const isAllowed = allowedOrigins.some(allowed => origin === allowed) || 
                          origin.endsWith('.vercel.app') ||
+                         origin.endsWith('.questxp.in') ||
+                         origin === 'https://questxp.in' ||
                          (['localhost', '127.0.0.1'].some(h => origin.includes(h)) && process.env.NODE_ENV !== 'production');
         
         if (isAllowed) return cb(null, true);
