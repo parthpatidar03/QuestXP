@@ -41,7 +41,7 @@ const formatTime = (value, unit = 'seconds') => {
 
 import { getCurrentRoadmap, adjustRoadmap, partialShiftRoadmap, toggleVideoCompletion, getAllRoadmaps, updateRoadmapTitle, deleteRoadmap } from '../services/roadmapApi';
 import { shootConfetti, shootLighterConfetti } from '../utils/confetti';
-import { broadcastProgressUpdate } from '../utils/sync';
+import { broadcastProgressUpdate, getTabId } from '../utils/sync';
 import NavBar from '../components/NavBar';
 import { BGPattern } from '../components/ui/bg-pattern';
 import GenerateRoadmapModal from '../components/Roadmap/GenerateRoadmapModal';
