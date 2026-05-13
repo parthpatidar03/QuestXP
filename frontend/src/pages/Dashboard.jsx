@@ -445,14 +445,35 @@ const Dashboard = () => {
             if (Date.now() - lastFocusFetch > 5000) {
                 queryClient.invalidateQueries({ queryKey: ['dashboard'] });
                 queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
+                queryClient.invalidateQueries({ queryKey: ['progress'] });
+                queryClient.invalidateQueries({ queryKey: ['courses'] });
                 lastFocusFetch = Date.now();
             }
         };
         window.addEventListener('focus', handleFocus);
 
+        const handleProgressSync = () => {
+            queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+            queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
+            queryClient.invalidateQueries({ queryKey: ['progress'] });
+            queryClient.invalidateQueries({ queryKey: ['courses'] });
+            queryClient.invalidateQueries({ queryKey: ['profile'] });
+            queryClient.invalidateQueries({ queryKey: ['xpHistory'] });
+        };
+        window.addEventListener('questxp_progress_updated', handleProgressSync);
+
+        const handleStorageSync = (e) => {
+            if (e.key === 'questxp_progress_sync') {
+                handleProgressSync();
+            }
+        };
+        window.addEventListener('storage', handleStorageSync);
+
         return () => {
             window.removeEventListener('open-leaderboard', handleOpenLeaderboard);
             window.removeEventListener('focus', handleFocus);
+            window.removeEventListener('questxp_progress_updated', handleProgressSync);
+            window.removeEventListener('storage', handleStorageSync);
         };
     }, [queryClient]);
 
@@ -521,9 +542,9 @@ const Dashboard = () => {
     });
 
     const { data: progressMap = {}, isLoading: progressLoading } = useQuery({
-        queryKey: ['progress'],
+        queryKey: ['progress', user?.guest, coursesData?.map(c => c._id).join('|') || 'none'],
         queryFn: async () => {
-            const courses = await queryClient.ensureQueryData({ queryKey: ['courses'] });
+            const courses = coursesData || [];
             const pMap = {};
             await Promise.allSettled(courses.map(async c => {
                 try {

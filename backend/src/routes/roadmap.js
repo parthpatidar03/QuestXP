@@ -333,13 +333,13 @@ router.patch('/:roadmapId/video/:videoId/complete', auth, async (req, res, next)
             return res.status(404).json({ msg: 'Roadmap not found' });
         }
 
-        // Find the video and update it in roadmap model
+        // Find the video and resolve its owning course. The progress service is
+        // the source of truth and will sync the roadmap copy after updating.
         let found = false;
         let targetPlaylistId = null;
         for (let day of roadmap.days) {
             for (let vid of day.plannedVideos) {
                 if (vid.videoId.toString() === videoId) {
-                    vid.completed = completed;
                     targetPlaylistId = vid.playlistId;
                     found = true;
                     break;
@@ -354,12 +354,14 @@ router.patch('/:roadmapId/video/:videoId/complete', auth, async (req, res, next)
 
         // BI-DIRECTIONAL SYNC: Also update Progress model
         const courseId = roadmap.courseId || targetPlaylistId;
-        if (courseId) {
-            await progressService.toggleLecture(req.user.id, courseId, videoId, completed);
+        if (!courseId) {
+            return res.status(400).json({ msg: 'Unable to resolve course for video' });
         }
 
-        await roadmap.save();
-        res.json(roadmap);
+        await progressService.toggleLecture(req.user.id, courseId, videoId, Boolean(completed));
+
+        const updatedRoadmap = await Roadmap.findOne({ _id: roadmapId, userId: req.user.id });
+        res.json(updatedRoadmap || roadmap);
     } catch (err) {
         next(err);
     }

@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 export const broadcastProgressUpdate = () => {
     // Local tab event
     window.dispatchEvent(new CustomEvent('questxp_progress_updated'));
@@ -7,9 +9,7 @@ export const broadcastProgressUpdate = () => {
 };
 
 export const useProgressSync = (onUpdate) => {
-    const lastUpdateRef = React.useRef(Date.now());
-
-    React.useEffect(() => {
+    useEffect(() => {
         const handleLocal = () => onUpdate();
         const handleStorage = (e) => {
             if (e.key === 'questxp_progress_sync') {

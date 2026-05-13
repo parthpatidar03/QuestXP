@@ -482,16 +482,23 @@ const Roadmap = () => {
         };
         window.addEventListener('focus', handleFocus);
         
-        // Listen for cross-tab progress updates
+        // Listen for same-tab and cross-tab progress updates
+        const handleProgressSync = () => {
+            fetchRoadmap();
+            fetchAllRoadmaps();
+        };
+        window.addEventListener('questxp_progress_updated', handleProgressSync);
         const handleStorageSync = (e) => {
             if (e.key === 'questxp_progress_sync') {
                 fetchRoadmap();
+                fetchAllRoadmaps();
             }
         };
         window.addEventListener('storage', handleStorageSync);
 
         return () => {
             window.removeEventListener('focus', handleFocus);
+            window.removeEventListener('questxp_progress_updated', handleProgressSync);
             window.removeEventListener('storage', handleStorageSync);
         };
     }, [fetchRoadmap, fetchAllRoadmaps]);

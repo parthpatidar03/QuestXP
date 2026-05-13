@@ -321,6 +321,11 @@ const googleLogin = async (req, res, next) => {
             refreshToken
         });
     } catch (error) {
+        console.error('[Auth] Google Login Failure Details:', {
+            error: error.message,
+            stack: error.stack?.split('\n')[0],
+            body: !!req.body.credential
+        });
         next(error);
     }
 };

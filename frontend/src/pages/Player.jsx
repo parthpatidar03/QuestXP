@@ -31,7 +31,6 @@ const Player = () => {
     const [progress, setProgress] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [currentTime, setCurrentTime] = useState(0);
     const [showCompletionCard, setShowCompletionCard] = useState(false);
     const [activeTab, setActiveTab] = useState(() => shouldStartQuiz ? 'quiz' : 'timeline');
     const [quizAutoStart, setQuizAutoStart] = useState(false);
@@ -41,6 +40,9 @@ const Player = () => {
     const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 640 : false));
     const [isDark, setIsDark] = useState(() => (typeof window !== 'undefined' ? document.documentElement.classList.contains('dark') : true));
     const positionTimerRef = useRef(null);
+    const autoCompleteInFlightRef = useRef(false);
+    const currentTimeRef = useRef(0);
+    const lastSavedPositionRef = useRef(0);
     const sidebarRef = useRef(null);
 
     useEffect(() => {
@@ -77,6 +79,8 @@ const Player = () => {
         setLectureAiStatus(null);
         setXpEarned(null);
         setSeekTo(null);
+        currentTimeRef.current = 0;
+        lastSavedPositionRef.current = 0;
 
         // Refetch on focus (5s throttle)
         let lastFocusFetch = Date.now();
@@ -88,7 +92,9 @@ const Player = () => {
         };
         window.addEventListener('focus', handleFocus);
 
-        // Listen for cross-tab progress updates
+        // Listen for same-tab and cross-tab progress updates
+        const handleProgressSync = () => fetchCourse();
+        window.addEventListener('questxp_progress_updated', handleProgressSync);
         const handleStorageSync = (e) => {
             if (e.key === 'questxp_progress_sync') {
                 fetchCourse();
@@ -99,6 +105,7 @@ const Player = () => {
         return () => { 
             if (positionTimerRef.current) clearInterval(positionTimerRef.current); 
             window.removeEventListener('focus', handleFocus);
+            window.removeEventListener('questxp_progress_updated', handleProgressSync);
             window.removeEventListener('storage', handleStorageSync);
         };
     }, [courseId, lectureId]);
@@ -121,15 +128,21 @@ const Player = () => {
     // Auto-save position every 30s
     useEffect(() => {
         positionTimerRef.current = setInterval(() => {
-            if (currentTime > 5 && !courseId?.startsWith('demo-')) {
+            const latestTime = currentTimeRef.current;
+            if (latestTime > 5 && !courseId?.startsWith('demo-')) {
+                const position = Math.floor(latestTime);
+                const watchedSeconds = Math.max(0, position - lastSavedPositionRef.current);
+                if (watchedSeconds <= 0) return;
+                lastSavedPositionRef.current = position;
+
                 api.patch(`/progress/${courseId}/lectures/${lectureId}/position`, {
-                    position: Math.floor(currentTime),
-                    watchedSeconds: Math.floor(currentTime)
+                    position,
+                    watchedSeconds
                 }).catch(() => {});
             }
         }, 30000);
         return () => clearInterval(positionTimerRef.current);
-    }, [courseId, lectureId, currentTime]);
+    }, [courseId, lectureId]);
 
     const allLectures = useMemo(() => {
         if (!course) return [];
@@ -148,6 +161,10 @@ const Player = () => {
     const currentAiStatus = lectureAiStatus || currentLecture?.aiStatus || {};
 
     const handleTopicClick = (t) => setSeekTo({ time: t, version: Date.now() });
+
+    const handleTimeUpdate = (time) => {
+        currentTimeRef.current = time;
+    };
     
     const handleToggleCompletion = async (videoId, currentStatus) => {
         if (courseId?.startsWith('demo-')) return;
@@ -162,9 +179,14 @@ const Player = () => {
         });
 
         try {
-            await api.post(`/progress/${courseId}/video/${videoId}/toggle`, {
+            const { data } = await api.post(`/progress/${courseId}/video/${videoId}/toggle`, {
                 isCompleted: nextStatus
             });
+            setProgress(prev => ({
+                ...(prev || {}),
+                completedLectures: prev?.completedLectures || [],
+                completionPct: data?.completionPct ?? prev?.completionPct
+            }));
             broadcastProgressUpdate();
         } catch (err) {
             console.error("Failed to toggle completion:", err);
@@ -175,6 +197,51 @@ const Player = () => {
                     : (prev?.completedLectures || []).filter(id => id !== videoId);
                 return { ...prev, completedLectures: revertList };
             });
+        }
+    };
+
+    const markLectureComplete = async (videoId) => {
+        if (courseId?.startsWith('demo-') || !videoId || autoCompleteInFlightRef.current) return;
+
+        const alreadyCompleted = progress?.completedLectures?.some(id => id?.toString() === videoId?.toString());
+        if (alreadyCompleted) return;
+
+        autoCompleteInFlightRef.current = true;
+        setProgress(prev => ({
+            ...(prev || {}),
+            completedLectures: [...new Set([...(prev?.completedLectures || []), videoId])]
+        }));
+
+        try {
+            const { data } = await api.post(`/progress/${courseId}/video/${videoId}/toggle`, {
+                isCompleted: true
+            });
+            const xp = data?.xpAwarded || 0;
+
+            setProgress(prev => ({
+                ...(prev || {}),
+                completedLectures: [...new Set([...(prev?.completedLectures || []), videoId])],
+                completionPct: data?.completionPct ?? prev?.completionPct
+            }));
+
+            if (xp > 0) {
+                setXpEarned(xp);
+                setShowCompletionCard(true);
+                addXPToast(xp, 'Video Complete');
+                shootConfetti();
+            } else {
+                addXPToast(0, 'Video Complete');
+            }
+
+            broadcastProgressUpdate();
+        } catch (err) {
+            console.error("Failed to auto-complete video:", err);
+            setProgress(prev => ({
+                ...(prev || {}),
+                completedLectures: (prev?.completedLectures || []).filter(id => id?.toString() !== videoId?.toString())
+            }));
+        } finally {
+            autoCompleteInFlightRef.current = false;
         }
     };
 
@@ -218,6 +285,7 @@ const Player = () => {
                     completedLectures: [...new Set([...(prev?.completedLectures || []), completedLecId])]
                 }));
             }
+            broadcastProgressUpdate();
 
             // Refresh gamification profile so NavBar XP updates
             import('../services/gamificationApi').then(({ getGamificationProfile }) => {
@@ -241,9 +309,7 @@ const Player = () => {
     const handleVideoEnd = () => {
         setQuizAutoStart(true);
         setActiveTab('quiz');
-        // We no longer auto-complete via API here. 
-        // Completion happens after Quiz submission.
-        addXPToast(0, 'Video Finished! Take the quiz to complete mission.');
+        markLectureComplete(currentLecture?._id);
     };
 
     const handleNextLecture = () => nextLecture
@@ -361,7 +427,7 @@ const PLAYER_THEME = {
                                     startTime={currentLecture.startTime}
                                     endTime={currentLecture.endTime}
                                     onEnded={handleVideoEnd}
-                                    onTimeUpdate={setCurrentTime}
+                                    onTimeUpdate={handleTimeUpdate}
                                     seekTo={seekTo}
                                 />
                             </div>

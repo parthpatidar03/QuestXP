@@ -317,22 +317,27 @@ const CourseDetail = () => {
         const nextStatus = !currentStatus;
         setProgress(prev => {
             const newList = nextStatus 
-                ? [...(prev?.completedLectures || []), videoId]
+                ? [...new Set([...(prev?.completedLectures || []), videoId])]
                 : (prev?.completedLectures || []).filter(id => id !== videoId);
             return { ...prev, completedLectures: newList };
         });
 
         try {
-            await api.post(`/progress/${courseId}/video/${videoId}/toggle`, {
+            const { data } = await api.post(`/progress/${courseId}/video/${videoId}/toggle`, {
                 isCompleted: nextStatus
             });
+            setProgress(prev => ({
+                ...(prev || {}),
+                completedLectures: prev?.completedLectures || [],
+                completionPct: data?.completionPct ?? prev?.completionPct
+            }));
             broadcastProgressUpdate();
         } catch (err) {
             console.error("Failed to toggle completion:", err);
             // Revert on error
             setProgress(prev => {
                 const revertList = !nextStatus 
-                    ? [...(prev?.completedLectures || []), videoId]
+                    ? [...new Set([...(prev?.completedLectures || []), videoId])]
                     : (prev?.completedLectures || []).filter(id => id !== videoId);
                 return { ...prev, completedLectures: revertList };
             });
@@ -390,7 +395,9 @@ const CourseDetail = () => {
         };
         window.addEventListener('focus', handleFocus);
         
-        // Listen for cross-tab progress updates
+        // Listen for same-tab and cross-tab progress updates
+        const handleProgressSync = () => fetchAll();
+        window.addEventListener('questxp_progress_updated', handleProgressSync);
         const handleStorageSync = (e) => {
             if (e.key === 'questxp_progress_sync') {
                 fetchAll();
@@ -400,6 +407,7 @@ const CourseDetail = () => {
 
         return () => {
             window.removeEventListener('focus', handleFocus);
+            window.removeEventListener('questxp_progress_updated', handleProgressSync);
             window.removeEventListener('storage', handleStorageSync);
         };
     }, [courseId]);

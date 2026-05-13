@@ -4,20 +4,38 @@ const xpService = require('./xpService');
 const streakService = require('./streakService');
 const Roadmap = require('../models/Roadmap');
 
+const getOrCreateProgress = async (userId, courseId) => {
+    try {
+        const progress = await Progress.findOneAndUpdate(
+            { user: userId, course: courseId },
+            {
+                $setOnInsert: {
+                    user: userId,
+                    course: courseId,
+                    lectureProgress: [],
+                    studySessions: []
+                }
+            },
+            { new: true, upsert: true, setDefaultsOnInsert: true }
+        );
+
+        if (!progress) throw new Error('Progress not found after upsert');
+        return progress;
+    } catch (error) {
+        if (error.code === 11000) {
+            const progress = await Progress.findOne({ user: userId, course: courseId });
+            if (progress) return progress;
+        }
+        throw error;
+    }
+};
+
 const savePosition = async (userId, courseId, lectureId, { position, watchedSeconds }) => {
-    let progress = await Progress.findOne({ user: userId, course: courseId });
     const course = await Course.findById(courseId);
 
     if (!course) throw new Error('Course not found');
 
-    if (!progress) {
-        progress = new Progress({
-            user: userId,
-            course: courseId,
-            lectureProgress: [],
-            studySessions: []
-        });
-    }
+    const progress = await getOrCreateProgress(userId, courseId);
 
     // Find the lecture in the course to get its total duration
     let lectureDuration = 0;
@@ -47,9 +65,8 @@ const savePosition = async (userId, courseId, lectureId, { position, watchedSeco
     }
     lectureProg.lastPosition = position;
     lectureProg.lastAccessedAt = new Date();
+    progress.lastLectureId = lectureId;
 
-    // Auto-completion based on watch time removed per US-RESTRUCTURE
-    // Completion now requires a Quiz submission.
     let newlyCompleted = false;
 
     // Append study session for today
@@ -57,13 +74,12 @@ const savePosition = async (userId, courseId, lectureId, { position, watchedSeco
     let session = progress.studySessions.find(s => streakService.getISTDateString(s.date) === todayStr);
 
     if (!session) {
-        session = { date: new Date(), minutes: 0 };
+        session = { date: new Date(), minutesStudied: 0 };
         progress.studySessions.push(session);
     }
 
     if (watchedSeconds > 0) {
-        // For simplicity, add to minutes (fractional)
-        session.minutes += (watchedSeconds / 60);
+        session.minutesStudied = (session.minutesStudied || 0) + (watchedSeconds / 60);
     }
 
     // Save changes to progress before doing side-effects
@@ -89,7 +105,7 @@ const savePosition = async (userId, courseId, lectureId, { position, watchedSeco
         await streakService.recordActivity(userId); // Any watch time counts for streak
     }
 
-    if (progress.studyPlan?.dailyGoalMins && session.minutes >= progress.studyPlan.dailyGoalMins) {
+    if (progress.studyPlan?.dailyGoalMins && session.minutesStudied >= progress.studyPlan.dailyGoalMins) {
         // Assuming xpService handles dedup logic per day per user based on resourceId/date
         const streakResult = await xpService.award(userId, 'GOAL_MET', todayStr);
         if (streakResult && streakResult.xpEarned && !awardResult) {
@@ -106,18 +122,12 @@ const savePosition = async (userId, courseId, lectureId, { position, watchedSeco
 };
 
 const toggleLecture = async (userId, courseId, lectureId, isCompleted) => {
-    let progress = await Progress.findOne({ user: userId, course: courseId });
     const course = await Course.findById(courseId);
+    const nextCompleted = Boolean(isCompleted);
 
     if (!course) throw new Error('Course not found');
-    if (!progress) {
-        progress = new Progress({
-            user: userId,
-            course: courseId,
-            lectureProgress: [],
-            studySessions: []
-        });
-    }
+
+    const progress = await getOrCreateProgress(userId, courseId);
 
     let lectureProg = progress.lectureProgress.find(lp => lp.lecture.toString() === lectureId.toString());
 
@@ -134,8 +144,8 @@ const toggleLecture = async (userId, courseId, lectureId, isCompleted) => {
     const wasCompleted = lectureProg.completed;
     
     // Set status
-    lectureProg.completed = isCompleted;
-    if (isCompleted) {
+    lectureProg.completed = nextCompleted;
+    if (nextCompleted) {
         lectureProg.completedAt = new Date();
     } else {
         lectureProg.completedAt = undefined;
@@ -143,7 +153,7 @@ const toggleLecture = async (userId, courseId, lectureId, isCompleted) => {
 
     let xpAwarded = 0;
     // Award XP ONLY if it was not completed before and now it is
-    if (isCompleted && !wasCompleted) {
+    if (nextCompleted && !wasCompleted) {
         const awardResult = await xpService.award(userId, 'LECTURE_COMPLETED');
         xpAwarded = awardResult?.xpEarned || 50;
         await streakService.recordActivity(userId);
@@ -151,8 +161,10 @@ const toggleLecture = async (userId, courseId, lectureId, isCompleted) => {
 
     // Recalculate Course Completion
     const completedCount = progress.lectureProgress.filter(lp => lp.completed).length;
+    progress.completedCount = completedCount;
     progress.completionPct = course.totalLectures > 0 ? Math.round((completedCount / course.totalLectures) * 100) : 0;
     progress.lastAccessedAt = new Date();
+    progress.lastLectureId = lectureId;
 
     await progress.save();
 
@@ -171,8 +183,8 @@ const toggleLecture = async (userId, courseId, lectureId, isCompleted) => {
             for (const day of roadmap.days) {
                 for (const vid of day.plannedVideos) {
                     if (vid.videoId.toString() === lectureId.toString()) {
-                        if (vid.completed !== isCompleted) {
-                            vid.completed = isCompleted;
+                        if (vid.completed !== nextCompleted) {
+                            vid.completed = nextCompleted;
                             changed = true;
                         }
                     }
@@ -192,7 +204,7 @@ const toggleLecture = async (userId, courseId, lectureId, isCompleted) => {
         xpAwarded,
         completionPct: progress.completionPct,
         lectureProgress: lectureProg,
-        isCompleted
+        isCompleted: nextCompleted
     };
 };
 

@@ -6,6 +6,7 @@ import api from '../../services/api';
 import LockedFeature from '../LockedFeature';
 import { MAINTENANCE_CONFIG } from '../../constants/maintenance';
 import AILoadingState from './AILoadingState';
+import { broadcastProgressUpdate } from '../../utils/sync';
 
 const LEVEL_QUIZ = 1;
 
@@ -176,8 +177,9 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
             if (data.progress?.success || data.progress?.alreadyCompleted) {
                 const xp = data.progress?.xpAwarded || 50;
                 window.dispatchEvent(new CustomEvent('mission-completed', { 
-                    detail: { xpEarned: xp } 
+                    detail: { xpEarned: xp, lectureId }
                 }));
+                broadcastProgressUpdate();
             }
         } catch (err) {
             console.error('Failed to submit quiz', err);
