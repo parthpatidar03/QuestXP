@@ -35,7 +35,11 @@ const DailyMissionWidget = () => {
                 const data = await getCurrentRoadmap();
                 setRoadmap(data);
             } catch (err) {
-                console.log("No active roadmap for dashboard widget");
+                console.error("[DailyMissionWidget] Error fetching roadmap:", {
+                    message: err.message,
+                    response: err.response?.data,
+                    stack: err.stack
+                });
             } finally {
                 setLoading(false);
             }

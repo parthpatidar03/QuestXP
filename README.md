@@ -75,6 +75,8 @@ QuestXP's roadmap engine is designed for realism, not perfection.
 - **🔄 Bi-Directional Roadmap Sync**: Instant synchronization between Player and Hub. [Read more →](docs/roadmap-sync.md)
 - **🌐 Domain Migration & CORS Fix**: Full support for `questxp.in`. [Read more →](docs/020-domain-migration-and-cors.md)
 - **⚡ Optimistic UI & Tab Sync**: Instant progress updates with zero-flicker sync. [Read more →](docs/021-optimistic-ui-and-tab-sync.md)
+- **🔍 Observability & Logging**: Robust error tracking and diagnostic logs. [Read more →](docs/OBSERVABILITY_AND_LOGGING.md)
+- **🎨 UI & Gamification**: Visual refinements and progress tracking logic. [Read more →](docs/UI_AND_GAMIFICATION.md)
 
 ---
 

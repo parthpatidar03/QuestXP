@@ -60,12 +60,24 @@ export const requestNotificationPermission = async () => {
             });
             
             if (token) {
+                // Check if token already registered today to avoid spam
+                const storedToken = localStorage.getItem('questxp_fcm_token');
+                const storedAt = localStorage.getItem('questxp_fcm_registered_at');
+                const now = Date.now();
+                const oneDay = 24 * 60 * 60 * 1000;
+
+                if (storedToken === token && storedAt && (now - parseInt(storedAt)) < oneDay) {
+                    return token;
+                }
+
                 console.log('[Firebase] ✅ Token generated successfully!');
                 try {
                     await api.post('/notifications/register', {
                         fcmToken: token,
                         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
                     });
+                    localStorage.setItem('questxp_fcm_token', token);
+                    localStorage.setItem('questxp_fcm_registered_at', now.toString());
                     console.log('[Firebase] ✅ Token saved to database successfully!');
                 } catch (apiErr) {
                     console.error('[Firebase] ❌ Token generated, but failed to save to Database. Are you logged in?', apiErr);

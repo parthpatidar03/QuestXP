@@ -370,6 +370,18 @@ const Dashboard = () => {
     } : null);
 
     const { totalXP, level, levelTitle, streak, xpProgress, xpToNextLevel, setProfile, addBadgeToast } = useGamificationStore();
+    const queryClient = useQueryClient();
+
+    const [showCreate, setShowCreate] = useState(false);
+    const [deletingCourseId, setDeletingCourseId] = useState(null);
+    const [deleteError, setDeleteError] = useState('');
+    const [feedbackOpen, setFeedbackOpen] = useState(false);
+    const [showUsernameModal, setShowUsernameModal] = useState(false);
+    const [showLeaderboard, setShowLeaderboard] = useState(false);
+    const [roadmapCourseId, setRoadmapCourseId] = useState(null);
+    const [optimisticHiddenIds, setOptimisticHiddenIds] = useState(new Set());
+    const [showUndo, setShowUndo] = useState(null); // { id, title, timer }
+    const [undoCountdown, setUndoCountdown] = useState(0);
 
     useEffect(() => {
         if (localStorage.getItem('justSignedUp') === 'true') {
@@ -414,19 +426,14 @@ const Dashboard = () => {
                 localStorage.setItem('seenFeatures', JSON.stringify(seenFeatures));
             }, 11000);
         }
+        if (!seenFeatures.includes('enhanced_stability_v1')) {
+            setTimeout(() => {
+                addBadgeToast('New: Enhanced Stability!', 'Every mission toggle and sync is now tracked for maximum reliability.', 'shield');
+                seenFeatures.push('enhanced_stability_v1');
+                localStorage.setItem('seenFeatures', JSON.stringify(seenFeatures));
+            }, 14000);
+        }
     }, [addBadgeToast]);
-    const queryClient = useQueryClient();
-
-    const [showCreate, setShowCreate] = useState(false);
-    const [deletingCourseId, setDeletingCourseId] = useState(null);
-    const [deleteError, setDeleteError] = useState('');
-    const [feedbackOpen, setFeedbackOpen] = useState(false);
-    const [showUsernameModal, setShowUsernameModal] = useState(false);
-    const [showLeaderboard, setShowLeaderboard] = useState(false);
-    const [roadmapCourseId, setRoadmapCourseId] = useState(null);
-    const [optimisticHiddenIds, setOptimisticHiddenIds] = useState(new Set());
-    const [showUndo, setShowUndo] = useState(null); // { id, title, timer }
-    const [undoCountdown, setUndoCountdown] = useState(0);
 
     useEffect(() => {
         if (user && !user.usernameSet) {
@@ -869,13 +876,13 @@ const Dashboard = () => {
                 isOpen={showLeaderboard} 
                 onClose={() => setShowLeaderboard(false)} 
                 players={leaderboardData} 
-            />
+                />
             {roadmapCourseId && (
                 <GenerateRoadmapModal 
                     isOpen={!!roadmapCourseId} 
                     onClose={() => setRoadmapCourseId(null)} 
                     courseId={roadmapCourseId} 
-                />
+                    />
             )}
             {!showUsernameModal && <UserTour />}
 

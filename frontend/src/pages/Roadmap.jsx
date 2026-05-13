@@ -483,13 +483,18 @@ const Roadmap = () => {
         window.addEventListener('focus', handleFocus);
         
         // Listen for same-tab and cross-tab progress updates
-        const handleProgressSync = () => {
+        const handleProgressSync = (e) => {
+            if (e.detail?.sourceId === getTabId()) return;
             fetchRoadmap();
             fetchAllRoadmaps();
         };
         window.addEventListener('questxp_progress_updated', handleProgressSync);
         const handleStorageSync = (e) => {
             if (e.key === 'questxp_progress_sync') {
+                try {
+                    const data = JSON.parse(e.newValue);
+                    if (data.sourceId === getTabId()) return;
+                } catch (err) {}
                 fetchRoadmap();
                 fetchAllRoadmaps();
             }
@@ -581,20 +586,23 @@ const Roadmap = () => {
         partialShiftTimeoutRef.current = setTimeout(async () => {
             const entries = Array.from(pendingPartialShiftsRef.current.entries());
             pendingPartialShiftsRef.current.clear();
-
-            for (const [idx, amt] of entries) {
+            for (const [idx, amt] of entries) {
                 if (amt === 0) continue;
                 try {
                     const updated = await partialShiftRoadmap(roadmap._id, idx, amt);
                     setRoadmap(updated);
                 } catch (err) {
-                    console.error("Failed to partially shift roadmap", err);
+                    console.error("[Roadmap] Failed to partially shift roadmap:", {
+                        message: err.message,
+                        response: err.response?.data,
+                        stack: err.stack
+                    });
                     fetchRoadmap();
                 }
             }
             setAdjusting(false);
         }, 400);
-    }, [roadmap, roadmap?._id]);
+    }, [roadmap, roadmap?._id, fetchRoadmap]);
 
     const handleToggleCompletion = useCallback(async (videoId, completed) => {
         if (!roadmap) return;
@@ -623,19 +631,29 @@ const Roadmap = () => {
             setRoadmap(updated);
             broadcastProgressUpdate();
         } catch (err) {
-            console.error("Failed to toggle video completion", err);
+            console.error("[Roadmap] Failed to toggle video completion:", {
+                message: err.message,
+                response: err.response?.data,
+                stack: err.stack
+            });
             // Re-fetch on error
             fetchRoadmap();
         }
-    }, [roadmap, roadmap?._id]);
+    }, [roadmap, roadmap?._id, fetchRoadmap]);
 
     const handleUpdateTitle = useCallback(async (newTitle) => {
         if (!roadmap) return;
+        const oldTitle = roadmap.title;
         setRoadmap(prev => ({ ...prev, title: newTitle }));
         try {
             await updateRoadmapTitle(roadmap._id, newTitle);
         } catch (err) {
-            console.error("Failed to update title", err);
+            console.error("[Roadmap] Failed to update title:", {
+                message: err.message,
+                response: err.response?.data,
+                stack: err.stack
+            });
+            setRoadmap(prev => ({ ...prev, title: oldTitle }));
         }
     }, [roadmap, roadmap?._id]);
 
@@ -649,7 +667,11 @@ const Roadmap = () => {
             // Update the list
             setAllRoadmaps(prev => prev.filter(rm => rm._id !== roadmapId));
         } catch (err) {
-            console.error("Failed to delete roadmap", err);
+            console.error("[Roadmap] Failed to delete roadmap:", {
+                message: err.message,
+                response: err.response?.data,
+                stack: err.stack
+            });
         }
     };
 

@@ -9,15 +9,12 @@ export const getTabId = () => {
     return window.name;
 };
 
-export const broadcastProgressUpdate = (sourceId = null) => {
-    const id = sourceId || getTabId();
-    // Local tab event
-    window.dispatchEvent(new CustomEvent('questxp_progress_updated', { detail: { sourceId: id } }));
-    
-    // Cross-tab sync via localStorage
-    localStorage.setItem('questxp_progress_sync', JSON.stringify({ 
-        timestamp: Date.now(), 
-        sourceId: id 
+export const broadcastProgressUpdate = (sourceId = getTabId()) => {
+    const event = new CustomEvent('questxp_progress_updated', { detail: { sourceId } });
+    window.dispatchEvent(event);
+    localStorage.setItem('questxp_progress_sync', JSON.stringify({
+        timestamp: Date.now(),
+        sourceId
     }));
 };
 

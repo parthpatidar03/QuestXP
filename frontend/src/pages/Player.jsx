@@ -199,7 +199,11 @@ const Player = () => {
             }));
             broadcastProgressUpdate();
         } catch (err) {
-            console.error("Failed to toggle completion:", err);
+            console.error("[Player] Failed to toggle completion:", {
+                message: err.message,
+                response: err.response?.data,
+                stack: err.stack
+            });
             // Revert on error
             setProgress(prev => {
                 const revertList = !nextStatus 
@@ -245,7 +249,11 @@ const Player = () => {
 
             broadcastProgressUpdate();
         } catch (err) {
-            console.error("Failed to auto-complete video:", err);
+            console.error("[Player] Failed to auto-complete video:", {
+                message: err.message,
+                response: err.response?.data,
+                stack: err.stack
+            });
             setProgress(prev => ({
                 ...(prev || {}),
                 completedLectures: (prev?.completedLectures || []).filter(id => id?.toString() !== videoId?.toString())

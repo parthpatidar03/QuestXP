@@ -70,6 +70,7 @@ function MissionRow({ lecture, index, isCompleted, isActive, isLocked, courseId 
             {/* Interactive Checkbox */}
             <div className="shrink-0">
                 <button
+                    type="button"
                     onClick={handleToggle}
                     disabled={isLocked}
                     className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all ${
@@ -334,9 +335,13 @@ const CourseDetail = () => {
                     : (prev?.completedLectures || []).filter(id => id !== videoId),
                 completionPct: data?.completionPct ?? prev?.completionPct
             }));
-            broadcastProgressUpdate(TAB_ID);
+            broadcastProgressUpdate(getTabId());
         } catch (err) {
-            console.error("Failed to toggle completion:", err);
+            console.error("[CourseDetail] Failed to toggle completion:", {
+                message: err.message,
+                response: err.response?.data,
+                stack: err.stack
+            });
             // Revert on error
             setProgress(prev => {
                 const revertList = !nextStatus 
@@ -665,7 +670,7 @@ const CourseDetail = () => {
                                         >
                                             {pct}%
                                         </div>
-                                        <div className="mt-1 text-[9px] sm:text-[10px] font-black text-text-muted uppercase tracking-[0.18em] leading-none opacity-70 whitespace-nowrap">
+                                        <div className="mt-1 text-[10px] sm:text-[11px] font-black text-text-muted uppercase tracking-[0.18em] leading-none opacity-80 whitespace-nowrap">
                                             COMPLETED
                                         </div>
                                     </div>
@@ -689,8 +694,8 @@ const CourseDetail = () => {
                                         </motion.div>
                                         
                                         {/* Goal Icon - Aligned with the track */}
-                                        <div className="absolute -right-1 top-1/2 -translate-y-1/2 flex flex-col items-center">
-                                            <div className="absolute -top-12 sm:-top-14 text-[9px] font-black text-text-muted uppercase tracking-[0.2em] whitespace-nowrap opacity-70">
+                                        <div className="absolute -right-1 top-1/2 -translate-y-1/2 flex flex-col items-center group">
+                                            <div className="absolute -bottom-10 sm:-bottom-12 text-[10px] sm:text-[11px] font-black text-text-muted uppercase tracking-[0.2em] whitespace-nowrap opacity-80 group-hover:opacity-100 transition-opacity">
                                                 Victory Goal
                                             </div>
                                             <span className={`text-2xl ${pct === 100 ? 'animate-bounce' : 'opacity-90'}`}>🚩</span>
@@ -843,7 +848,11 @@ const CourseDetail = () => {
                     courseId={courseId}
                     onClose={() => setShowSetupModal(false)}
                     onGenerated={() => {
-                        window.location.reload();
+                        // Refresh everything without reloading page
+                        api.get(`/courses/${courseId}`).then(res => setCourse(res.data.course));
+                        api.get(`/progress/${courseId}`).then(res => {
+                            if (res.data.progress) setProgress(res.data.progress);
+                        });
                     }}
                 />
             )}

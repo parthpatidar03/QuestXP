@@ -48,6 +48,16 @@ api.interceptors.response.use(
     },
     async (error) => {
         const originalRequest = error.config;
+        const status = error.response ? error.response.status : 'NETWORK_ERROR';
+        const url = error.config ? error.config.url : 'UNKNOWN_URL';
+        const method = error.config ? error.config.method?.toUpperCase() : 'UNKNOWN_METHOD';
+        const responseData = error.response ? error.response.data : null;
+
+        console.error(`[API ERROR] ${method} ${url} | Status: ${status}`, {
+            message: error.message,
+            details: responseData,
+            stack: error.stack
+        });
 
         if (
             error.response &&
@@ -99,11 +109,9 @@ api.interceptors.response.use(
         }
 
         if (error.response && error.response.status === 401) {
-            // Zustand useAuthStore will handle the state update and redirection via ProtectedRoute
-            console.warn('[API] 401 Unauthorized detected');
+            console.warn('[API] 401 Unauthorized detected - redirecting or clearing state');
         }
 
-        // T061 — Emit a custom event on 403 so LockedFeature can react globally
         if (error.response && error.response.status === 403) {
             window.dispatchEvent(new CustomEvent('feature-locked', {
                 detail: { url: error.config?.url, message: error.response.data?.error }
