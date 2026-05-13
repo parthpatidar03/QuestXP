@@ -110,14 +110,14 @@ const ProgressHeader = React.memo(({ roadmap, onShift, totalCalendarDays, onUpda
                                 <span className="uppercase">{roadmap.title || "Your Mastery Journey"}</span>
                                 <div className="flex items-center gap-1.5 opacity-30 group-hover:opacity-100 transition-opacity translate-y-1">
                                     <Edit2 className="w-4 h-4" />
-                                    <span className="text-[10px] font-black uppercase tracking-widest">Rename</span>
+                                    <span className="text-xs font-bold uppercase tracking-widest text-text-primary">Rename</span>
                                 </div>
                             </h2>
                         )}
                         {roadmap.days && roadmap.days.length > 0 && (
-                            <div className="text-xs font-bold text-text-muted flex items-center gap-2 opacity-60">
+                            <div className="text-sm font-bold text-text-secondary flex items-center gap-2">
                                 <span>Targeting completion by</span>
-                                <span className="text-success font-black">
+                                <span className="text-success font-black bg-success/10 px-2 py-0.5 rounded">
                                     {format(new Date(roadmap.days[roadmap.days.length - 1].date), 'MMMM dd, yyyy')}
                                 </span>
                                 <span>🎯</span>
@@ -147,8 +147,8 @@ const ProgressHeader = React.memo(({ roadmap, onShift, totalCalendarDays, onUpda
                                 <Minus className="w-4 h-4" />
                             </motion.button>
                             <div className="text-center">
-                                <span className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] block mb-0.5">📅 Shift Plan</span>
-                                <span className="text-sm font-black text-text-primary uppercase tracking-tight">Adjust Schedule</span>
+                                <span className="text-xs font-black text-primary uppercase tracking-[0.2em] block mb-0.5">📅 Shift Plan</span>
+                                <span className="text-base font-black text-text-primary uppercase tracking-tight">Adjust Schedule</span>
                             </div>
                             <motion.button 
                                 whileTap={{ scale: 0.9 }}
@@ -174,10 +174,10 @@ const ProgressHeader = React.memo(({ roadmap, onShift, totalCalendarDays, onUpda
                         {/* Time Progress - Matching the Screenshot */}
                         <div className="text-center sm:text-right relative z-10 min-w-[140px]">
                             <div className="flex items-center gap-2 justify-center sm:justify-end mb-1">
-                                <span className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">🔥 Time Progress</span>
+                                <span className="text-xs font-black text-primary uppercase tracking-[0.2em]">🔥 Time Progress</span>
                             </div>
                             <div className="flex flex-col items-center sm:items-end gap-1">
-                                <span className="text-4xl font-black text-text-primary italic leading-none">Day {Math.max(1, currentDayIndex)}/{totalCalendarDays}</span>
+                                <span className="text-5xl font-black text-text-primary italic leading-none">Day {Math.max(1, currentDayIndex)}/{totalCalendarDays}</span>
                                 <div className="w-40 h-2 rounded-full bg-surface-3 overflow-hidden border border-border/50 relative">
                                     <motion.div 
                                         initial={{ width: 0 }}
@@ -185,7 +185,7 @@ const ProgressHeader = React.memo(({ roadmap, onShift, totalCalendarDays, onUpda
                                         className="h-full bg-primary shadow-[0_0_15px_var(--color-primary)]" 
                                     />
                                 </div>
-                                <span className="text-[10px] font-bold text-text-muted opacity-60 uppercase tracking-widest mt-1">{totalCalendarDays - Math.max(1, currentDayIndex)} Left</span>
+                                <span className="text-xs font-black text-text-secondary uppercase tracking-widest mt-1">{totalCalendarDays - Math.max(1, currentDayIndex)} Left</span>
                             </div>
                         </div>
                     </div>
@@ -234,9 +234,9 @@ const RoadmapPlaylistCard = React.memo(({ playlistId, days, dayLabelsMap, totalC
                     <div className="shrink-0 w-6 h-6 rounded-md border border-primary/30 flex items-center justify-center bg-primary/10 group-hover:scale-110 transition-transform">
                         <Zap className="w-3.5 h-3.5 text-primary" />
                     </div>
-                    <h3 className="text-base font-black text-text-primary tracking-tight truncate">
+                    <h3 className="text-lg font-black text-text-primary tracking-tight truncate">
                         {playlistName} 
-                        <span className="text-sm font-bold text-text-muted ml-3 opacity-60">({totalVideos} Missions)</span>
+                        <span className="text-sm font-bold text-text-secondary ml-3">({totalVideos} Missions)</span>
                     </h3>
                 </div>
 

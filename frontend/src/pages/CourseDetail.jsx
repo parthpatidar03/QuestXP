@@ -660,7 +660,7 @@ const CourseDetail = () => {
                                         <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tight text-text-primary leading-none flex items-center gap-2">
                                             🗺️ Quest Journey
                                         </h2>
-                                        <p className="text-xs font-bold text-text-muted uppercase tracking-[0.15em] mt-2 opacity-80">
+                                        <p className="text-sm font-bold text-primary uppercase tracking-[0.15em] mt-2">
                                             Path to Mastery
                                         </p>
                                     </div>
@@ -670,7 +670,7 @@ const CourseDetail = () => {
                                         >
                                             {pct}%
                                         </div>
-                                        <div className="mt-1 text-[10px] sm:text-[11px] font-black text-text-muted uppercase tracking-[0.18em] leading-none opacity-80 whitespace-nowrap">
+                                        <div className="mt-1 text-xs font-black text-text-secondary uppercase tracking-[0.18em] leading-none whitespace-nowrap">
                                             COMPLETED
                                         </div>
                                     </div>
@@ -695,7 +695,7 @@ const CourseDetail = () => {
                                         
                                         {/* Goal Icon - Aligned with the track */}
                                         <div className="absolute -right-1 top-1/2 -translate-y-1/2 flex flex-col items-center group">
-                                            <div className="absolute -bottom-10 sm:-bottom-12 text-[10px] sm:text-[11px] font-black text-text-muted uppercase tracking-[0.2em] whitespace-nowrap opacity-80 group-hover:opacity-100 transition-opacity">
+                                            <div className="absolute -bottom-10 sm:-bottom-12 text-xs font-black text-text-secondary uppercase tracking-[0.2em] whitespace-nowrap">
                                                 Victory Goal
                                             </div>
                                             <span className={`text-2xl ${pct === 100 ? 'animate-bounce' : 'opacity-90'}`}>🚩</span>
@@ -710,17 +710,17 @@ const CourseDetail = () => {
                                             <CheckCircle2 className="w-5 h-5 text-primary" />
                                         </div>
                                         <div className="flex flex-col">
-                                            <span className="text-[10px] font-black text-text-muted uppercase tracking-widest">Completed</span>
+                                            <span className="text-xs font-black text-text-secondary uppercase tracking-widest">Completed</span>
                                             <span className="text-sm font-bold text-text-primary">{completedCount} Missions</span>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-4 text-right">
                                         <div className="flex flex-col">
-                                            <span className="text-[10px] font-black text-text-muted uppercase tracking-widest">To Go</span>
+                                            <span className="text-xs font-black text-text-secondary uppercase tracking-widest">To Go</span>
                                             <span className="text-sm font-bold text-text-primary">{allLectures.length - completedCount} Missions</span>
                                         </div>
                                         <div className="w-10 h-10 rounded-xl bg-surface-3 flex items-center justify-center border border-border">
-                                            <Flag className="w-5 h-5 text-text-muted" />
+                                            <Flag className="w-5 h-5 text-text-secondary" />
                                         </div>
                                     </div>
                                 </div>
@@ -733,7 +733,7 @@ const CourseDetail = () => {
                                         {course.sections.length > 1 && (
                                             <button 
                                                 onClick={() => toggleSection(sIdx)}
-                                                className="w-full px-5 py-3 text-xs font-bold uppercase tracking-widest bg-surface-2/40 text-text-muted flex items-center justify-between hover:bg-surface-2 transition-colors group"
+                                                className="w-full px-5 py-4 text-xs font-black uppercase tracking-[0.15em] bg-surface-2/40 text-text-primary flex items-center justify-between hover:bg-surface-2 transition-colors group"
                                             >
                                                 <span>Section {sIdx + 1}: {section.title}</span>
                                                 <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isCollapsed ? '-rotate-90' : ''}`} />

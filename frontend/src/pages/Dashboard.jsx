@@ -105,10 +105,10 @@ function LearningTimeCard({ totalSeconds, weeklySeconds, avgSecondsPerDay }) {
 function DeadlineCard({ deadline }) {
     if (!deadline || !deadline.courseTitle) {
         return (
-            <div className="glass-card p-5 flex flex-col justify-center items-center text-center opacity-80 hover:opacity-100 transition-opacity">
-                <Calendar className="w-8 h-8 text-text-muted mb-2 opacity-30" />
-                <p className="text-xs font-bold text-text-muted uppercase tracking-widest">No Active Targets</p>
-                <p className="text-[10px] text-text-muted mt-1">Set a study plan to see targets</p>
+            <div className="glass-card p-5 flex flex-col justify-center items-center text-center">
+                <Calendar className="w-8 h-8 text-primary mb-2 opacity-40" />
+                <p className="text-sm font-black text-text-secondary uppercase tracking-widest">No Active Targets</p>
+                <p className="text-xs text-text-muted mt-1">Set a study plan to see targets</p>
             </div>
         );
     }
@@ -123,16 +123,16 @@ function DeadlineCard({ deadline }) {
                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isUrgent ? 'bg-danger/10 text-danger' : 'bg-primary/10 text-primary'} border border-border`}>
                     <Calendar className="w-4 h-4" />
                 </div>
-                <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Next Milestone</span>
+                <span className="text-xs font-black uppercase tracking-widest text-primary">Next Milestone</span>
             </div>
             <h4 className="text-sm font-black text-text-primary truncate mb-1">
                 {deadline.courseTitle}
             </h4>
             <div className="flex items-center justify-between mb-3">
-                <span className={`text-xs font-bold ${isUrgent ? 'text-danger' : 'text-text-secondary'}`}>
+                <span className={`text-sm font-black ${isUrgent ? 'text-danger' : 'text-text-secondary'}`}>
                     {deadline.daysLeft} Days Left
                 </span>
-                <span className="text-[10px] font-bold text-text-muted">{deadline.progress}%</span>
+                <span className="text-xs font-black text-text-primary">{deadline.progress}%</span>
             </div>
             <div className="progress-bar h-1.5 bg-surface-3">
                 <div 
@@ -193,11 +193,11 @@ function ShareModal({ isOpen, onClose, courseTitle, shareUrl }) {
                     </div>
                     
                     <div className="pt-4 border-t border-border">
-                        <div className="flex items-center justify-between text-[10px] font-black text-text-muted uppercase tracking-widest mb-2">
+                        <div className="flex items-center justify-between text-xs font-black text-primary uppercase tracking-widest mb-2">
                             <span>Direct Link</span>
-                            <span className="text-primary">Copied!</span>
+                            <span className="text-success">Ready</span>
                         </div>
-                        <div className="flex items-center gap-2 p-3 bg-surface-3 rounded-lg border border-border text-xs font-mono text-text-muted truncate">
+                        <div className="flex items-center gap-2 p-3 bg-surface-3 rounded-lg border border-border text-xs font-mono text-text-primary truncate">
                             {shareUrl}
                         </div>
                     </div>
@@ -214,11 +214,11 @@ function ProductivityCard({ completionRate, completedCourses, totalEnrolled }) {
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-success/10 border border-success/20 overflow-hidden">
                     <img src="/Mastery level.png" alt="" className="w-5 h-5 object-contain" />
                 </div>
-                <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Mastery Level</span>
+                <span className="text-xs font-black uppercase tracking-widest text-primary">Mastery Level</span>
             </div>
             <div className="flex items-baseline gap-2 mb-1 overflow-hidden">
-                <span className="text-2xl sm:text-3xl font-black text-text-primary tracking-tight truncate">{completionRate}%</span>
-                <span className="text-xs font-bold text-text-muted">Global</span>
+                <span className="text-3xl sm:text-4xl font-black text-text-primary tracking-tight truncate">{completionRate}%</span>
+                <span className="text-sm font-black text-text-secondary">Global</span>
             </div>
             <p className="text-xs font-semibold text-text-secondary">
                 <span className="text-success">{completedCourses}</span> courses mastered out of {totalEnrolled}
@@ -328,9 +328,9 @@ function CourseCard({ course, progress, onDelete, isDeleting }) {
                 <div className="progress-bar mb-2">
                     <div className="progress-bar__fill" style={{ width: `${pct}%` }} />
                 </div>
-                <div className="flex items-center justify-between text-xs text-text-muted">
+                <div className="flex items-center justify-between text-xs font-black text-text-secondary uppercase tracking-tight">
                     <span>{course.totalLectures} missions</span>
-                    <span>{pct}% complete</span>
+                    <span className="text-primary">{pct}% complete</span>
                 </div>
                 <div className="mt-2 flex items-center justify-between">
                     {resumeId && (
@@ -343,9 +343,9 @@ function CourseCard({ course, progress, onDelete, isDeleting }) {
                     <Link 
                         to={`/roadmap?courseId=${course._id}`}
                         onClick={(e) => e.stopPropagation()}
-                        className="flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-text-muted hover:text-primary transition-colors"
+                        className="flex items-center gap-1 text-xs font-black uppercase tracking-widest text-text-secondary hover:text-primary transition-colors"
                     >
-                        <Layout className="w-3 h-3" /> Roadmap
+                        <Layout className="w-3.5 h-3.5" /> Roadmap
                     </Link>
                 </div>
             </div>

@@ -68,9 +68,6 @@ const NavBar = () => {
                 <div className="flex-1 md:hidden" />
 
                 <nav className="hidden md:flex items-center gap-1 mr-2">
-                    <Link to="/" className="px-3 py-1.5 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-lg transition-colors">
-                        Home
-                    </Link>
                     <Link to={`/dashboard${demoQuery}`} className="px-3 py-1.5 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-lg transition-colors">
                         Dashboard
                     </Link>
@@ -142,14 +139,6 @@ const NavBar = () => {
 
                         {/* Mobile Nav Links */}
                         <div className="grid grid-cols-2 gap-2">
-                            <Link 
-                                to="/" 
-                                onClick={() => setMobileOpen(false)}
-                                className="flex items-center gap-3 p-3 rounded-xl bg-surface-2 border border-border text-sm font-semibold text-text-primary"
-                            >
-                                <img src="/favicon.png" alt="" className="w-6 h-6 object-contain" />
-                                Home
-                            </Link>
                             <Link 
                                 to={`/dashboard${demoQuery}`} 
                                 onClick={() => setMobileOpen(false)}
