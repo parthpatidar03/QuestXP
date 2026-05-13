@@ -26,10 +26,12 @@ import VideoModal from '../components/VideoModal';
 import { Play } from 'lucide-react';
 import Footer from '../components/ui/Footer';
 import LeaderboardPodium from '../components/Dashboard/LeaderboardPodium';
+import useAuthStore from '../store/useAuthStore';
 
 
 const LandingPage = () => {
     const navigate = useNavigate();
+    const { isAuthenticated, isLoading } = useAuthStore();
     const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [feedbackOpen, setFeedbackOpen] = useState(false);
@@ -107,6 +109,11 @@ const LandingPage = () => {
         navigate('/dashboard');
     };
 
+    const openAuth = () => {
+        setMobileMenuOpen(false);
+        navigate(isAuthenticated ? '/dashboard' : '/login');
+    };
+
     const keyPoints = [
         'Curate your own technical mastery',
         'Built-in focus guardian',
@@ -160,8 +167,8 @@ const LandingPage = () => {
                             <span className="text-sm font-bold text-text-secondary group-hover:text-text-primary leading-none">Try Demo</span>
                             <span className="text-[8px] text-text-muted uppercase tracking-tighter mt-1 font-black opacity-60">Without Sign-in</span>
                         </button>
-                        <button onClick={() => navigate('/login')} className="btn-blink bg-red-600 text-sm px-6 py-2.5 rounded-lg text-white font-bold transition-all hover:bg-red-700">
-                            Sign in
+                        <button onClick={openAuth} className="btn-blink bg-red-600 text-sm px-6 py-2.5 rounded-lg text-white font-bold transition-all hover:bg-red-700">
+                            {isAuthenticated && !isLoading ? 'Dashboard' : 'Sign in'}
                         </button>
                         <button onClick={openApp} className="btn-blink btn-primary text-sm px-6 py-2.5">
                             Get Started
@@ -213,7 +220,9 @@ const LandingPage = () => {
                                 <span className="text-sm font-bold text-text-secondary">Try Demo</span>
                                 <span className="text-[8px] text-text-muted uppercase tracking-tighter mt-0.5 font-black opacity-60">Without Sign-in</span>
                             </button>
-                            <button onClick={() => navigate('/login')} className="mt-2 w-full py-3 rounded-lg bg-red-600 text-white font-bold text-center hover:bg-red-700 transition-colors">Sign in</button>
+                            <button onClick={openAuth} className="mt-2 w-full py-3 rounded-lg bg-red-600 text-white font-bold text-center hover:bg-red-700 transition-colors">
+                                {isAuthenticated && !isLoading ? 'Dashboard' : 'Sign in'}
+                            </button>
                             <button onClick={openApp} className="mt-2 btn-primary w-full">Get Started</button>
                         </div>
                     </div>

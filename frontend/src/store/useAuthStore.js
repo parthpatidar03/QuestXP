@@ -1,16 +1,21 @@
 import { create } from 'zustand';
 import api from '../services/api';
 
+let authVersion = 0;
+
 const useAuthStore = create((set) => ({
     user: null,
     isAuthenticated: false,
     isLoading: true,
 
     checkAuth: async () => {
+        const version = authVersion;
         try {
             const { data } = await api.get('/auth/me');
+            if (version !== authVersion) return;
             set({ user: data.user, isAuthenticated: true, isLoading: false });
         } catch (error) {
+            if (version !== authVersion) return;
             console.error('[AuthStore] checkAuth failed:', error.response?.data || error.message);
             set({ user: null, isAuthenticated: false, isLoading: false });
         }
@@ -19,6 +24,7 @@ const useAuthStore = create((set) => ({
     login: async (email, password) => {
         try {
             const { data } = await api.post('/auth/login', { email, password });
+            authVersion += 1;
             set({ user: data.user, isAuthenticated: true, isLoading: false });
             return data;
         } catch (error) {
@@ -30,6 +36,7 @@ const useAuthStore = create((set) => ({
     googleLogin: async (credential) => {
         try {
             const { data } = await api.post('/auth/google', { credential });
+            authVersion += 1;
             set({ user: data.user, isAuthenticated: true, isLoading: false });
             return data;
         } catch (error) {
@@ -41,6 +48,7 @@ const useAuthStore = create((set) => ({
     register: async (name, email, password) => {
         try {
             const { data } = await api.post('/auth/register', { name, email, password });
+            authVersion += 1;
             set({ user: data.user, isAuthenticated: true, isLoading: false });
             return data;
         } catch (error) {
@@ -57,6 +65,7 @@ const useAuthStore = create((set) => ({
         }
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
+        authVersion += 1;
         set({ user: null, isAuthenticated: false });
         window.location.href = '/login';
     },
