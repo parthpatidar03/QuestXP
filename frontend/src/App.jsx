@@ -6,6 +6,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import PomodoroTimer from './components/PomodoroTimer';
 import useHeartbeat from './hooks/useHeartbeat';
 import GlobalInteractiveEffect from './components/ui/GlobalInteractiveEffect';
+import { requestNotificationPermission } from './services/firebase';
 
 // Lazy load pages for performance
 const Auth = lazy(() => import('./pages/Auth'));
@@ -47,6 +48,12 @@ const AppContent = () => {
     const { checkAuth, isLoading, isAuthenticated } = useAuthStore();
     const location = useLocation();
     useHeartbeat();
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            requestNotificationPermission();
+        }
+    }, [isAuthenticated]);
 
     useEffect(() => {
         checkAuth();
