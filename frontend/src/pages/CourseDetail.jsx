@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+
 import { motion, AnimatePresence } from 'framer-motion';
 import { shootConfetti } from '../utils/confetti';
-import { broadcastProgressUpdate } from '../utils/sync';
+import { broadcastProgressUpdate, getTabId } from '../utils/sync';
 import api from '../services/api';
 import NavBar from '../components/NavBar';
 import StudyPlan from '../components/Dashboard/StudyPlan';
@@ -328,10 +329,12 @@ const CourseDetail = () => {
             });
             setProgress(prev => ({
                 ...(prev || {}),
-                completedLectures: prev?.completedLectures || [],
+                completedLectures: nextStatus 
+                    ? [...new Set([...(prev?.completedLectures || []), videoId])]
+                    : (prev?.completedLectures || []).filter(id => id !== videoId),
                 completionPct: data?.completionPct ?? prev?.completionPct
             }));
-            broadcastProgressUpdate();
+            broadcastProgressUpdate(TAB_ID);
         } catch (err) {
             console.error("Failed to toggle completion:", err);
             // Revert on error
@@ -396,10 +399,17 @@ const CourseDetail = () => {
         window.addEventListener('focus', handleFocus);
         
         // Listen for same-tab and cross-tab progress updates
-        const handleProgressSync = () => fetchAll();
+        const handleProgressSync = (e) => {
+            if (e.detail?.sourceId === getTabId()) return;
+            fetchAll();
+        };
         window.addEventListener('questxp_progress_updated', handleProgressSync);
         const handleStorageSync = (e) => {
             if (e.key === 'questxp_progress_sync') {
+                try {
+                    const data = JSON.parse(e.newValue);
+                    if (data.sourceId === getTabId()) return;
+                } catch (err) {}
                 fetchAll();
             }
         };

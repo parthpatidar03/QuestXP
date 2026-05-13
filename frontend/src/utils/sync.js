@@ -1,19 +1,37 @@
 import { useEffect } from 'react';
 
-export const broadcastProgressUpdate = () => {
+// Tab-unique ID persistent across reloads
+export const getTabId = () => {
+    if (typeof window === 'undefined') return 'server';
+    if (!window.name || window.name === '') {
+        window.name = 'qxp_' + Math.random().toString(36).substring(2, 11);
+    }
+    return window.name;
+};
+
+export const broadcastProgressUpdate = (sourceId = null) => {
+    const id = sourceId || getTabId();
     // Local tab event
-    window.dispatchEvent(new CustomEvent('questxp_progress_updated'));
+    window.dispatchEvent(new CustomEvent('questxp_progress_updated', { detail: { sourceId: id } }));
     
     // Cross-tab sync via localStorage
-    localStorage.setItem('questxp_progress_sync', Date.now().toString());
+    localStorage.setItem('questxp_progress_sync', JSON.stringify({ 
+        timestamp: Date.now(), 
+        sourceId: id 
+    }));
 };
 
 export const useProgressSync = (onUpdate) => {
     useEffect(() => {
-        const handleLocal = () => onUpdate();
+        const handleLocal = (e) => onUpdate(e.detail?.sourceId);
         const handleStorage = (e) => {
             if (e.key === 'questxp_progress_sync') {
-                onUpdate();
+                try {
+                    const data = JSON.parse(e.newValue);
+                    onUpdate(data.sourceId);
+                } catch (err) {
+                    onUpdate();
+                }
             }
         };
 

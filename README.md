@@ -74,6 +74,7 @@ QuestXP's roadmap engine is designed for realism, not perfection.
 - **🛡️ Auth & Progress Stability**: Resolved 500 errors and ReferenceErrors. [Read more →](docs/012-auth-and-progress-fix.md)
 - **🔄 Bi-Directional Roadmap Sync**: Instant synchronization between Player and Hub. [Read more →](docs/roadmap-sync.md)
 - **🌐 Domain Migration & CORS Fix**: Full support for `questxp.in`. [Read more →](docs/020-domain-migration-and-cors.md)
+- **⚡ Optimistic UI & Tab Sync**: Instant progress updates with zero-flicker sync. [Read more →](docs/021-optimistic-ui-and-tab-sync.md)
 
 ---
 

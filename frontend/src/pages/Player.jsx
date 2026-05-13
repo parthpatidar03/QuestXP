@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
+
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../services/api';
 import VideoPlayer from '../components/Player/VideoPlayer';
@@ -12,7 +13,7 @@ import { ArrowLeft, CheckCircle2, ChevronRight, ChevronLeft, Zap } from 'lucide-
 import { BGPattern } from '../components/ui/bg-pattern';
 import { useLectureStatus } from '../hooks/useLectureStatus';
 import { shootConfetti } from '../utils/confetti';
-import { broadcastProgressUpdate } from '../utils/sync';
+import { broadcastProgressUpdate, getTabId } from '../utils/sync';
 
 const TABS = [
     { key: 'timeline', label: 'Timeline' },
@@ -93,10 +94,17 @@ const Player = () => {
         window.addEventListener('focus', handleFocus);
 
         // Listen for same-tab and cross-tab progress updates
-        const handleProgressSync = () => fetchCourse();
+        const handleProgressSync = (e) => {
+            if (e.detail?.sourceId === getTabId()) return;
+            fetchCourse();
+        };
         window.addEventListener('questxp_progress_updated', handleProgressSync);
         const handleStorageSync = (e) => {
             if (e.key === 'questxp_progress_sync') {
+                try {
+                    const data = JSON.parse(e.newValue);
+                    if (data.sourceId === getTabId()) return;
+                } catch (err) {}
                 fetchCourse();
             }
         };
@@ -184,7 +192,9 @@ const Player = () => {
             });
             setProgress(prev => ({
                 ...(prev || {}),
-                completedLectures: prev?.completedLectures || [],
+                completedLectures: nextStatus 
+                    ? [...new Set([...(prev?.completedLectures || []), videoId])]
+                    : (prev?.completedLectures || []).filter(id => id !== videoId),
                 completionPct: data?.completionPct ?? prev?.completionPct
             }));
             broadcastProgressUpdate();
