@@ -28,7 +28,7 @@ const CourseCard = ({ course }) => {
             </div>
 
             <div className="p-5 flex-1 w-full flex flex-col">
-                <h3 className="text-base font-display font-semibold text-text-primary line-clamp-2 mb-4 leading-snug group-hover:text-primary transition-colors" title={course.title}>
+                <h3 className="text-base font-serif font-semibold text-text-primary line-clamp-2 mb-4 leading-snug group-hover:text-primary transition-colors" title={course.title}>
                     {course.title}
                 </h3>
                 
