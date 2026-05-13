@@ -74,8 +74,12 @@
   h3,
   h4,
   h5,
-  h6 {
+  h6,
+  .course-title,
+  .video-title,
+  .roadmap-title {
     @apply font-serif tracking-tight;
+    font-family: math !important;
   }
 
   ::-webkit-scrollbar {

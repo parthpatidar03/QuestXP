@@ -52,7 +52,7 @@ const UsernameModal = ({ isOpen, onClose }) => {
                         <User className="w-8 h-8 text-primary" />
                     </div>
                     
-                    <h2 className="text-2xl font-black mb-3 uppercase tracking-tight text-text-primary" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
+                    <h2 className="text-2xl font-black mb-3 uppercase tracking-tight text-text-primary">
                         Choose Your Identity
                     </h2>
                     <p className="text-text-secondary text-sm mb-8 font-medium">

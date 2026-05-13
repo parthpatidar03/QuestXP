@@ -10,7 +10,7 @@ const Footer = ({ onOpenFeedback }) => {
                 <div className="flex flex-col items-center md:items-start gap-1">
                     <div className="flex items-center gap-2">
                         <img src="/favicon.png" alt="" className="w-5 h-5 object-contain" />
-                        <span className="text-sm font-black uppercase tracking-tighter text-primary" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>QuestXP</span>
+                        <span className="text-sm font-black uppercase tracking-tighter text-primary">QuestXP</span>
                         <div className="w-1 h-1 rounded-full bg-primary/40" />
                         <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Mastery Platform</span>
                     </div>

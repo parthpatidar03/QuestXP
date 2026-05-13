@@ -125,7 +125,7 @@ function DeadlineCard({ deadline }) {
                 </div>
                 <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Next Milestone</span>
             </div>
-            <h4 className="text-sm font-black text-text-primary truncate mb-1" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
+            <h4 className="text-sm font-black text-text-primary truncate mb-1">
                 {deadline.courseTitle}
             </h4>
             <div className="flex items-center justify-between mb-3">
@@ -684,7 +684,7 @@ const Dashboard = () => {
 
                     <section>
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                            <h2 className="text-xl font-bold tracking-tight text-text-primary uppercase" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>Dashboard</h2>
+                            <h2 className="text-xl font-bold tracking-tight text-text-primary uppercase">Dashboard</h2>
                             <div className="flex items-center gap-2">
                                 <button id="tour-new-course" onClick={() => setShowCreate(v => !v)} className="btn-primary py-2.5 px-5 text-[10px] font-black uppercase tracking-widest flex items-center gap-2 flex-1 sm:flex-none justify-center">
                                     {showCreate ? <X className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}

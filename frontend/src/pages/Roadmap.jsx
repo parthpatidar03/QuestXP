@@ -106,7 +106,6 @@ const ProgressHeader = React.memo(({ roadmap, onShift, totalCalendarDays, onUpda
                             <h2 
                                 onClick={() => setIsEditing(true)}
                                 className="text-3xl sm:text-4xl font-black text-text-primary tracking-tight leading-[1.1] cursor-pointer hover:text-primary transition-colors flex items-center gap-3 flex-wrap" 
-                                style={{ fontFamily: "'Barlow Condensed', sans-serif" }}
                             >
                                 <span className="uppercase">{roadmap.title || "Your Mastery Journey"}</span>
                                 <div className="flex items-center gap-1.5 opacity-30 group-hover:opacity-100 transition-opacity translate-y-1">
@@ -178,7 +177,7 @@ const ProgressHeader = React.memo(({ roadmap, onShift, totalCalendarDays, onUpda
                                 <span className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">🔥 Time Progress</span>
                             </div>
                             <div className="flex flex-col items-center sm:items-end gap-1">
-                                <span className="text-4xl font-black text-text-primary italic leading-none" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>Day {Math.max(1, currentDayIndex)}/{totalCalendarDays}</span>
+                                <span className="text-4xl font-black text-text-primary italic leading-none">Day {Math.max(1, currentDayIndex)}/{totalCalendarDays}</span>
                                 <div className="w-40 h-2 rounded-full bg-surface-3 overflow-hidden border border-border/50 relative">
                                     <motion.div 
                                         initial={{ width: 0 }}
@@ -766,7 +765,7 @@ const Roadmap = () => {
                     <div className="space-y-6">
                         <div className="flex items-center justify-between mb-8">
                             <div>
-                                <h2 className="text-3xl font-black text-text-primary tracking-tight" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>Universal Roadmap</h2>
+                                <h2 className="text-3xl font-black text-text-primary tracking-tight">Universal Roadmap</h2>
                                 <p className="text-sm text-text-muted font-bold">Access all your active study plans from one place.</p>
                             </div>
                         </div>

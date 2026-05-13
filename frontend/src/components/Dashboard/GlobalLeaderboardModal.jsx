@@ -22,7 +22,7 @@ const GlobalLeaderboardModal = ({ isOpen, onClose, players = [] }) => {
                             <Crown className="w-6 h-6 text-gold" />
                         </div>
                         <div>
-                            <h2 className="text-xl font-black uppercase tracking-tight text-text-primary" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
+                            <h2 className="text-xl font-black uppercase tracking-tight text-text-primary">
                                 Global Hall of Fame
                             </h2>
                             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted opacity-60">Top {players.length} Learners</p>

@@ -317,7 +317,7 @@ const PLAYER_THEME = {
                 </div>
 
                 <div className="flex items-center justify-between gap-4 min-w-0">
-                    <h1 className="text-sm sm:text-base font-black tracking-tight line-clamp-1" style={{ color: PLAYER_THEME.text, fontFamily: "'Barlow Condensed', sans-serif" }}>
+                    <h1 className="text-sm sm:text-base font-black tracking-tight line-clamp-1" style={{ color: PLAYER_THEME.text }}>
                         {currentLecture.title}
                     </h1>
                     
@@ -377,7 +377,7 @@ const PLAYER_THEME = {
                                     exit={{ opacity: 0, y: -60, scale: 0.9 }}
                                     transition={{ duration: 0.4 }}
                                     className="absolute top-3 sm:top-8 right-3 sm:right-8 flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-black text-sm sm:text-lg pointer-events-none"
-                                    style={{ background: 'rgba(245,165,36,0.2)', border: '1px solid rgba(245,165,36,0.6)', color: '#f5a524', fontFamily: "'Barlow Condensed', sans-serif", boxShadow: '0 0 20px rgba(245,165,36,0.4)' }}
+                                    style={{ background: 'rgba(245,165,36,0.2)', border: '1px solid rgba(245,165,36,0.6)', color: '#f5a524', boxShadow: '0 0 20px rgba(245,165,36,0.4)' }}
                                 >
                                     <img src="/favicon.png" alt="" className="w-4 h-4 sm:w-5 sm:h-5 object-contain" /> +{xpEarned} XP
                                 </motion.div>
@@ -398,7 +398,7 @@ const PLAYER_THEME = {
                                     <div className="w-14 h-14 rounded-full flex items-center justify-center mb-4" style={{ background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)' }}>
                                         <CheckCircle2 className="w-7 h-7 text-[#10B981]" />
                                     </div>
-                                    <h3 className="text-2xl font-black mb-1" style={{ color: PLAYER_THEME.text, fontFamily: "'Barlow Condensed', sans-serif" }}>Mission Complete!</h3>
+                                    <h3 className="text-2xl font-black mb-1" style={{ color: PLAYER_THEME.text }}>Mission Complete!</h3>
                                     <p className="text-sm font-bold mb-6" style={{ color: '#f5a524' }}>+{xpEarned || 50} XP Earned</p>
                                     <div className="flex gap-3 w-full">
                                         <button

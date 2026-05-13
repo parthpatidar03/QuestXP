@@ -106,7 +106,7 @@ const Profile = () => {
 
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center flex-wrap gap-3 mb-2">
-                            <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-white leading-none" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
+                            <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-white leading-none">
                                 {user.username || user.name}
                             </h1>
                             {!user.usernameSet && (
@@ -180,7 +180,7 @@ const Profile = () => {
                                 <Shield className="w-5 h-5 text-gold" />
                             </div>
                             <div>
-                                <h2 className="text-xl font-black uppercase tracking-tight text-white" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>Achievements</h2>
+                                <h2 className="text-xl font-black uppercase tracking-tight text-white">Achievements</h2>
                                 <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest">{badges.filter(b => b.earned).length} / {badges.length} unlocked</p>
                             </div>
                         </div>
@@ -210,7 +210,7 @@ const Profile = () => {
                                 <BarChart3 className="w-5 h-5 text-primary" />
                             </div>
                             <div>
-                                <h2 className="text-xl font-black uppercase tracking-tight text-white" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>XP Activity</h2>
+                                <h2 className="text-xl font-black uppercase tracking-tight text-white">XP Activity</h2>
                                 <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Recent performance</p>
                             </div>
                         </div>

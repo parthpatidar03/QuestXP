@@ -493,7 +493,7 @@ const CourseDetail = () => {
                         <div className="absolute inset-0 border-4 border-primary rounded-full border-t-transparent animate-spin" />
                         <BookOpen className="w-8 h-8 text-primary absolute" />
                     </div>
-                    <h2 className="text-3xl font-black mb-3 text-text-primary" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>Synthesizing Quest</h2>
+                    <h2 className="text-3xl font-black mb-3 text-text-primary">Synthesizing Quest</h2>
                     <p className="text-sm mb-8 text-text-secondary">Analyzing playlist, extracting metadata, building your mission list…</p>
                     <div className="bg-surface-2 rounded-xl p-4 border border-border">
                         <div className="flex justify-between items-center mb-2 text-xs">
@@ -513,7 +513,7 @@ const CourseDetail = () => {
         <div className="min-h-screen flex flex-col items-center justify-center p-8 bg-bg">
             <div className="glass-card max-w-md w-full text-center p-10" style={{ borderColor: 'var(--color-danger)' }}>
                 <AlertOctagon className="w-14 h-14 mx-auto mb-6 text-danger" />
-                <h2 className="text-2xl font-black mb-3 text-text-primary" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>Quest Failed</h2>
+                <h2 className="text-2xl font-black mb-3 text-text-primary">Quest Failed</h2>
                 <p className="text-sm mb-8 text-text-secondary">Could not process playlist. Ensure URLs are public YouTube playlists.</p>
                 <Link to="/dashboard" className="btn-esports w-full block">Return to Dashboard</Link>
             </div>
@@ -572,7 +572,7 @@ const CourseDetail = () => {
                                     <span className="badge-epic text-[10px] py-1 px-3">EPIC QUEST</span>
                                     <span className="text-sm font-bold text-text-secondary">{allLectures.length} Missions · {totalDurMins} Minutes</span>
                                 </div>
-                                <h1 className="text-2xl sm:text-5xl font-black text-text-primary mb-5 leading-[1.1] max-w-xl" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
+                                <h1 className="text-2xl sm:text-5xl font-black text-text-primary mb-5 leading-[1.1] max-w-xl">
                                     {course.title}
                                 </h1>
                                 <div className="flex items-center gap-3 sm:gap-4 flex-wrap mb-6">
@@ -634,7 +634,7 @@ const CourseDetail = () => {
                             <div className="px-8 py-6 border-b border-border bg-surface/30">
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
                                     <div className="flex flex-col min-w-0">
-                                        <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tight text-text-primary leading-none flex items-center gap-2" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
+                                        <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tight text-text-primary leading-none flex items-center gap-2">
                                             🗺️ Quest Journey
                                         </h2>
                                         <p className="text-xs font-bold text-text-muted uppercase tracking-[0.15em] mt-2 opacity-80">
@@ -644,7 +644,6 @@ const CourseDetail = () => {
                                     <div className="flex min-h-[68px] w-[9.5rem] shrink-0 flex-col items-start justify-center gap-1 py-2 pr-0 sm:w-[12.5rem] sm:items-end sm:self-stretch sm:gap-2 sm:pl-8 sm:pr-3 sm:text-right">
                                         <div
                                             className="text-3xl sm:text-4xl md:text-[2.75rem] font-black text-primary leading-[0.92] tabular-nums"
-                                            style={{ fontFamily: "'Barlow Condensed', sans-serif" }}
                                         >
                                             {pct}%
                                         </div>
@@ -900,7 +899,7 @@ const OnboardingModal = ({ onClose }) => {
                             <div className="w-20 h-20 rounded-2xl bg-[var(--color-surface-3)] flex items-center justify-center mb-8 border border-[var(--color-border)] shadow-xl">
                                 {steps[step].icon}
                             </div>
-                            <h2 className="text-3xl font-black mb-4 uppercase tracking-tight text-[var(--color-primary)]" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
+                            <h2 className="text-3xl font-black mb-4 uppercase tracking-tight text-[var(--color-primary)]">
                                 {steps[step].title}
                             </h2>
                             <p className="text-[var(--color-text-secondary)] text-base leading-relaxed mb-10 max-w-sm font-medium">
