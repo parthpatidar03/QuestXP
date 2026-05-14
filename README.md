@@ -15,12 +15,24 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.11.0-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-1.12.0-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License">
   <img src="https://img.shields.io/badge/status-production-success.svg" alt="Status">
 </p>
 
 QuestXP is a high-performance Learning Management System (LMS) designed to solve "Playlist Fatigue." It converts unstructured YouTube content—including massive 10+ hour "one-shot" lectures—into structured, modular curricula using AI orchestration, vector-based RAG, and an adaptive scheduling engine.
+
+---
+
+## 🚀 Recent Updates
+- **3D Parallax Previews**: Added interactive mouse-tracking tilt effects to dashboard and feature previews for a premium, immersive experience. [Read more →](docs/UI_EFFECTS.md)
+- **One-Shot Support**: Convert single long videos into structured missions automatically.
+- **Bi-Directional Sync**: Instant synchronization between Player and Roadmap Hub.
+
+## ✨ Core Features
+- **Dynamic Roadmaps**: AI-generated visual paths that adapt to your pace.
+- **Focus Guardian**: Ad-free, recommendation-free player to keep you in the flow.
+- **Interactive 3D UI**: Smooth parallax effects following cursor movement for visual excellence.
 
 ---
 
