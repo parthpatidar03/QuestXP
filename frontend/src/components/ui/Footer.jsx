@@ -14,8 +14,8 @@ const Footer = ({ onOpenFeedback }) => {
                         <div className="w-1 h-1 rounded-full bg-primary/40" />
                         <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Mastery Platform</span>
                     </div>
-                    <p className="text-[10px] text-text-muted font-medium flex items-center gap-1.5 mt-1">
-                        Designed with <Heart className="w-2.5 h-2.5 text-danger fill-danger" /> by <span className="text-text-primary font-bold">Parth Patidar</span>
+                    <p className="text-[12px] text-text-muted font-bold flex items-center gap-1.5 mt-2">
+                        Designed with <Heart className="w-3.5 h-3.5 text-danger fill-danger" /> by <span className="text-text-primary font-black text-sm ml-1">Parth Patidar</span>
                     </p>
                 </div>
 

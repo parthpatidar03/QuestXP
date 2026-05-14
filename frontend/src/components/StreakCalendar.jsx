@@ -41,13 +41,21 @@ const StreakInfoModal = ({ isOpen, onClose }) => {
     );
 };
 
-const ShareAchievementModal = ({ isOpen, onClose, exportRef, handleDownload, isExporting, currentDate, days }) => {
-    useEffect(() => {
-        if (isOpen) {
-            // Stability check for share modal
-        }
-    }, [isOpen]);
-
+const ShareAchievementModal = ({ 
+    isOpen, 
+    onClose, 
+    exportRef, 
+    handleDownload, 
+    isExporting, 
+    currentDate, 
+    days,
+    showUsername,
+    setShowUsername,
+    showRank,
+    setShowRank,
+    username,
+    rank
+}) => {
     return createPortal(
         <AnimatePresence>
             {isOpen && (
@@ -113,11 +121,59 @@ const ShareAchievementModal = ({ isOpen, onClose, exportRef, handleDownload, isE
                                         <span className="text-[10px] font-black text-text-muted uppercase tracking-widest">Current</span>
                                         <span className="text-xs font-black text-white">Streak Stats</span>
                                     </div>
+                                    
+                                    {showUsername && (
+                                        <div className="flex items-center gap-2 bg-primary/5 border border-primary/20 rounded-full px-4 py-1.5">
+                                            <span className="text-[10px] font-black text-primary uppercase tracking-widest">Learner</span>
+                                            <span className="text-xs font-black text-white">{username || 'Explorer'}</span>
+                                        </div>
+                                    )}
+
+                                    {showRank && rank && (
+                                        <div className="flex items-center gap-2 bg-warning/5 border border-warning/20 rounded-full px-4 py-1.5">
+                                            <span className="text-[10px] font-black text-warning uppercase tracking-widest">Rank</span>
+                                            <span className="text-xs font-black text-white">#{rank}</span>
+                                        </div>
+                                    )}
                                 </div>
 
-                                <div className="mt-8 flex flex-col items-center gap-1 opacity-40">
-                                    <div className="text-[8px] font-black text-primary uppercase tracking-[0.3em]">QuestXP Protocol</div>
-                                    <div className="text-[6px] font-bold text-text-muted uppercase tracking-widest">Verification ID: {Math.random().toString(36).substring(7).toUpperCase()}</div>
+                                <div className="mt-8 flex flex-col items-center gap-1.5">
+                                    <div className="text-[11px] font-black text-primary uppercase tracking-[0.4em] drop-shadow-[0_0_12px_rgba(34,197,94,0.3)]">QuestXP Protocol</div>
+                                    <div className="text-[7px] font-bold text-text-muted/60 uppercase tracking-widest">Verification ID: {Math.random().toString(36).substring(7).toUpperCase()}</div>
+                                </div>
+                            </div>
+
+                            {/* Options Area */}
+                            <div className="mt-6 space-y-4">
+                                <div className="flex items-center justify-between px-4">
+                                    <span className="text-[10px] font-black text-text-muted uppercase tracking-widest">Configuration</span>
+                                    <div className="h-px flex-1 bg-white/5 mx-4" />
+                                </div>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <button 
+                                        onClick={() => setShowUsername(!showUsername)}
+                                        className={`flex items-center justify-between p-4 rounded-2xl border transition-all ${showUsername ? 'bg-primary/5 border-primary/20 text-primary' : 'bg-white/[0.02] border-white/5 text-text-muted'}`}
+                                    >
+                                        <div className="flex flex-col items-start">
+                                            <span className="text-[10px] font-black uppercase tracking-widest mb-1">Username</span>
+                                            <span className="text-[11px] font-bold">{showUsername ? 'Visible' : 'Hidden'}</span>
+                                        </div>
+                                        <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all ${showUsername ? 'bg-primary border-primary text-white' : 'border-white/10'}`}>
+                                            {showUsername && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                                        </div>
+                                    </button>
+                                    <button 
+                                        onClick={() => setShowRank(!showRank)}
+                                        className={`flex items-center justify-between p-4 rounded-2xl border transition-all ${showRank ? 'bg-warning/5 border-warning/20 text-warning' : 'bg-white/[0.02] border-white/5 text-text-muted'}`}
+                                    >
+                                        <div className="flex flex-col items-start">
+                                            <span className="text-[10px] font-black uppercase tracking-widest mb-1">Rank Position</span>
+                                            <span className="text-[11px] font-bold">{showRank ? 'Visible' : 'Hidden'}</span>
+                                        </div>
+                                        <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all ${showRank ? 'bg-warning border-warning text-white' : 'border-white/10'}`}>
+                                            {showRank && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                                        </div>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -153,6 +209,10 @@ export default function StreakCalendar({ history = [], rank }) {
     const [showShareModal, setShowShareModal] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
     
+    // Achievement Share Options
+    const [showUsername, setShowUsername] = useState(true);
+    const [showRank, setShowRank] = useState(true);
+
     const exportRef = useRef(null);
 
     const xpByDate = {};
@@ -322,6 +382,12 @@ export default function StreakCalendar({ history = [], rank }) {
                 isExporting={isExporting}
                 currentDate={currentDate}
                 days={days}
+                showUsername={showUsername}
+                setShowUsername={setShowUsername}
+                showRank={showRank}
+                setShowRank={setShowRank}
+                username={user?.username || user?.name}
+                rank={rank}
             />
         </div>
     );
