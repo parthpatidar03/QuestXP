@@ -1102,7 +1102,7 @@ const XPSystemModal = ({ isOpen, onClose }) => {
             <motion.div 
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                className="relative w-full max-w-lg glass-card p-8 overflow-hidden"
+                className="relative w-full max-w-lg glass-card p-8 overflow-y-auto max-h-[90vh] scrollbar-hide"
             >
                 <div className="absolute top-0 right-0 p-4">
                     <button onClick={onClose} className="p-2 hover:bg-surface-2 rounded-lg transition-colors">
