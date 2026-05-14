@@ -33,10 +33,10 @@ export default {
         }
       },
       fontFamily: {
-        display: ["'Plus Jakarta Sans'", 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        body: ["'Outfit'", 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        display: ["'Josefin Sans'", 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        body: ["'Josefin Sans'", 'ui-sans-serif', 'system-ui', 'sans-serif'],
         mono: ["'JetBrains Mono'", 'monospace'],
-        sans: ["'Outfit'", 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ["'Josefin Sans'", 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       screens: {
         'xs': '400px',
