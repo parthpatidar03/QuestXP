@@ -16,9 +16,10 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.14.0-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-1.15.0-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License">
-  <img src="https://img.shields.io/badge/status-production-success.svg" alt="Status">
+  <img src="https://img.shields.io/badge/status-production_ready-success.svg" alt="Status">
+  <img src="https://img.shields.io/badge/Cloud-Azure-blue?style=flat&logo=microsoft-azure" alt="Azure">
 </p>
 
 QuestXP is a high-performance LMS engineered to solve "Playlist Fatigue." It programmatically transforms unstructured YouTube content—from massive playlists to 10-hour "one-shot" lectures—into structured, modular curricula using an AI-orchestrated pipeline, Redis-backed background processing, and a surgical adaptive scheduling engine.
@@ -78,10 +79,10 @@ A premium achievement sharing system inspired by top-tier platforms.
 
 ## 🛠️ Technical Stack
 
-- **Runtime**: Node.js v20+, Express
+- **Runtime**: Node.js v22 LTS (Azure App Service)
 - **Database**: MongoDB Atlas, Redis (Caching/Queues)
 - **AI**: OpenAI GPT-4o-mini, yt-transcript
-- **Auth**: Google OAuth 2.0, JWT
+- **Cloud**: Microsoft Azure (Backend), Vercel (Frontend)
 - **Sync**: BroadcastChannel API, Firebase FCM
 - **Export**: html-to-image, canvas-confetti
 
@@ -99,6 +100,7 @@ A premium achievement sharing system inspired by top-tier platforms.
 ---
 
 ## 📚 Documentation
+- [Cloud Architecture (Azure)](docs/025-azure-cloud-deployment.md) - Infrastructure and scaling.
 - [Streak & Sharing System](docs/024-streak-capture-and-sharing.md) - Deep dive into achievement sharing.
 - [Backend Engineering](docs/backend-features.md) - AI pipeline and XP system logic.
 - [Mobile UI Optimization](docs/019-ui-density-refinement.md) - High-density responsive design.

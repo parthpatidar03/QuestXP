@@ -243,7 +243,7 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
                                     type="number" min="0.5" step="0.5" max="24"
                                     value={weekdayHours}
                                     onChange={e => setWeekdayHours(e.target.value)}
-                                    className="w-full bg-surface-2 border border-border rounded-xl pl-10 pr-4 py-3 text-sm font-bold focus:border-primary outline-none transition-colors"
+                                    className="w-full bg-surface-2 border border-border rounded-xl pl-10 pr-4 py-3 text-sm font-bold text-text-primary focus:border-primary outline-none transition-colors"
                                 />
                             </div>
                         </div>
