@@ -2,6 +2,11 @@ const IORedis = require('ioredis');
 
 const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
 
+// Debug: Log Redis connection target (mask password)
+const maskedUrl = redisUrl.replace(/:([^@]+)@/, ':****@');
+console.log(`[Redis] Connecting to: ${maskedUrl}`);
+console.log(`[Redis] REDIS_URL env var exists: ${!!process.env.REDIS_URL}`);
+
 const connection = new IORedis(redisUrl, {
     maxRetriesPerRequest: null,
     family: 4, // Force IPv4 (Fixes Azure ECONNREFUSED)
