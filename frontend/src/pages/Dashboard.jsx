@@ -965,73 +965,75 @@ const Dashboard = () => {
                     )}
 
                     {!isGuest && (
-                        <div className="glass-card block transition-all p-4">
-                            <div className="flex items-center justify-between mb-3">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full border border-border flex items-center justify-center font-semibold text-sm bg-primary text-white">
-                                        {user.name?.charAt(0)?.toUpperCase()}
+                        <>
+                            <div className="glass-card block transition-all p-4">
+                                <div className="flex items-center justify-between mb-3">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-full border border-border flex items-center justify-center font-semibold text-sm bg-primary text-white">
+                                            {user.name?.charAt(0)?.toUpperCase()}
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-semibold text-text-primary">{user.name}</p>
+                                            <p className="text-xs text-text-secondary">{levelTitle || 'Explorer'} · Level {level}</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <p className="text-sm font-semibold text-text-primary">{user.name}</p>
-                                        <p className="text-xs text-text-secondary">{levelTitle || 'Explorer'} · Level {level}</p>
-                                    </div>
+                                    <button 
+                                        onClick={() => setShowXPSystem(true)}
+                                        className="p-2 rounded-lg hover:bg-surface-2 text-text-muted hover:text-primary transition-colors"
+                                        title="How XP Works"
+                                    >
+                                        <Info className="w-4 h-4" />
+                                    </button>
                                 </div>
-                                <button 
-                                    onClick={() => setShowXPSystem(true)}
-                                    className="p-2 rounded-lg hover:bg-surface-2 text-text-muted hover:text-primary transition-colors"
-                                    title="How XP Works"
-                                >
-                                    <Info className="w-4 h-4" />
-                                </button>
+                                <div className="progress-bar mb-1">
+                                    <div className="progress-bar__fill" style={{ width: `${xpProgress}%` }} />
+                                </div>
+                                <div className="flex items-center justify-between mt-1">
+                                    <p className="text-[10px] text-text-muted uppercase tracking-widest font-bold">
+                                        {user?.xp || 0} XP
+                                    </p>
+                                    <p className="text-[10px] text-text-muted uppercase tracking-widest font-bold">
+                                        {xpToNextLevel} XP to Level {level + 1}
+                                    </p>
+                                </div>
                             </div>
-                            <div className="progress-bar mb-1">
-                                <div className="progress-bar__fill" style={{ width: `${xpProgress}%` }} />
-                            </div>
-                            <div className="flex items-center justify-between mt-1">
-                                <p className="text-[10px] text-text-muted uppercase tracking-widest font-bold">
-                                    {user?.xp || 0} XP
-                                </p>
-                                <p className="text-[10px] text-text-muted uppercase tracking-widest font-bold">
-                                    {xpToNextLevel} XP to Level {level + 1}
-                                </p>
-                            </div>
-                        </div>
 
-                        <div className="glass-card p-5 bg-gradient-to-br from-primary/5 to-transparent border-primary/20">
-                            <div className="flex items-center gap-2 mb-4">
-                                <Zap className="w-4 h-4 text-primary" />
-                                <h2 className="text-sm font-bold tracking-tight text-text-primary uppercase">Hidden Quests</h2>
+                            <div className="glass-card p-5 bg-gradient-to-br from-primary/5 to-transparent border-primary/20">
+                                <div className="flex items-center gap-2 mb-4">
+                                    <Zap className="w-4 h-4 text-primary" />
+                                    <h2 className="text-sm font-bold tracking-tight text-text-primary uppercase">Hidden Quests</h2>
+                                </div>
+                                <div className="space-y-3">
+                                    <div className="p-3 rounded-xl border border-primary/10 bg-primary/5 flex items-center gap-3 group">
+                                        <div className="w-8 h-8 rounded-lg bg-surface border border-border flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                                            <Clock className="w-4 h-4" />
+                                        </div>
+                                        <div className="min-w-0">
+                                            <p className="text-[11px] font-bold text-text-primary uppercase tracking-wider">Deep Focus</p>
+                                            <p className="text-[10px] text-text-secondary">Study 1hr today (+50 XP)</p>
+                                        </div>
+                                    </div>
+                                    <div className="p-3 rounded-xl border border-primary/10 bg-primary/5 flex items-center gap-3 group">
+                                        <div className="w-8 h-8 rounded-lg bg-surface border border-border flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                                            <Sparkles className="w-4 h-4" />
+                                        </div>
+                                        <div className="min-w-0">
+                                            <p className="text-[11px] font-bold text-text-primary uppercase tracking-wider">Hyper Learner</p>
+                                            <p className="text-[10px] text-text-secondary">Study 3hr today (+200 XP)</p>
+                                        </div>
+                                    </div>
+                                    <div className="p-3 rounded-xl border border-primary/10 bg-primary/5 flex items-center gap-3 group">
+                                        <div className="w-8 h-8 rounded-lg bg-surface border border-border flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                                            <Trophy className="w-4 h-4" />
+                                        </div>
+                                        <div className="min-w-0">
+                                            <p className="text-[11px] font-bold text-text-primary uppercase tracking-wider">Lecture Mastery</p>
+                                            <p className="text-[10px] text-text-secondary">Progressive XP rewards!</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="space-y-3">
-                                <div className="p-3 rounded-xl border border-primary/10 bg-primary/5 flex items-center gap-3 group">
-                                    <div className="w-8 h-8 rounded-lg bg-surface border border-border flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                                        <Clock className="w-4 h-4" />
-                                    </div>
-                                    <div className="min-w-0">
-                                        <p className="text-[11px] font-bold text-text-primary uppercase tracking-wider">Deep Focus</p>
-                                        <p className="text-[10px] text-text-secondary">Study 1hr today (+50 XP)</p>
-                                    </div>
-                                </div>
-                                <div className="p-3 rounded-xl border border-primary/10 bg-primary/5 flex items-center gap-3 group">
-                                    <div className="w-8 h-8 rounded-lg bg-surface border border-border flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                                        <Sparkles className="w-4 h-4" />
-                                    </div>
-                                    <div className="min-w-0">
-                                        <p className="text-[11px] font-bold text-text-primary uppercase tracking-wider">Hyper Learner</p>
-                                        <p className="text-[10px] text-text-secondary">Study 3hr today (+200 XP)</p>
-                                    </div>
-                                </div>
-                                <div className="p-3 rounded-xl border border-primary/10 bg-primary/5 flex items-center gap-3 group">
-                                    <div className="w-8 h-8 rounded-lg bg-surface border border-border flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                                        <Trophy className="w-4 h-4" />
-                                    </div>
-                                    <div className="min-w-0">
-                                        <p className="text-[11px] font-bold text-text-primary uppercase tracking-wider">Lecture Mastery</p>
-                                        <p className="text-[10px] text-text-secondary">Progressive XP rewards!</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        </>
                     )}
                 </aside>
             </div>
