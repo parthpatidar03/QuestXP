@@ -1,9 +1,7 @@
 const { Worker } = require('bullmq');
-const youtubeService = require('../services/youtubeService');
-const courseService = require('../services/courseService');
-const connection = require('../queues/redisConnection');
 const axios = require('axios');
 const Course = require('../models/Course');
+const connection = require('../queues/redisConnection');
 
 console.log('[CourseProcessor] Loaded YouTube Data API playlist importer');
 
