@@ -11,7 +11,7 @@
 <h1 align="center">QuestXP</h1>
 
 <p align="center">
-  <strong>Advanced Gamified Learning and Productivity Ecosystem</strong>
+  <strong>Advanced Gamified Learning Ecosystem | AI-Driven Roadmap Architecture</strong>
 </p>
 
 <p align="center">
@@ -20,22 +20,7 @@
   <img src="https://img.shields.io/badge/status-production-success.svg" alt="Status">
 </p>
 
-QuestXP is a high-performance Learning Management System (LMS) designed to solve "Playlist Fatigue." It converts unstructured YouTube content—including massive 10+ hour "one-shot" lectures—into structured, modular curricula using AI orchestration, vector-based RAG, and an adaptive scheduling engine.
-
----
-
-## 🚀 Recent Updates
-- **v1.13.0**: Added "What's New" feature tracking, Video Lecture support, and One-Shot parsing.
-- **v1.12.0**: Implemented 3D Interactive UI with parallax tilt effects.
-- **v1.11.0**: Added Celebratory Effects (Confetti/Fireworks) and Enhanced Stability.
-
-## ✨ Core Features
-
-- **📺 Video Support**: Full support for One-Shot videos and playlists. [Read Docs →](docs/BACKEND_VIDEO_SUPPORT.md)
-- **✨ 3D Interactive UI**: Immersive parallax effects driven by mouse movement. [Read Docs →](docs/UI_EFFECTS.md)
-- **🛡️ Focus Guardian**: Burnout prevention and ad-free learning. [Read Docs →](docs/FOCUS_GUARDIAN.md)
-- **🆕 What's New Hub**: Dedicated dashboard tab for tracking platform evolution. [Read Docs →](docs/NEW_FEATURES.md)
-- **🎓 Smart AI Roadmaps**: Dynamic learning paths with 75% higher efficiency.
+QuestXP is a high-performance Learning Management System (LMS) optimized for "Playlist Fatigue." It programmatically transforms unstructured YouTube content—ranging from multi-video playlists to 10+ hour "one-shot" lectures—into structured, modular curricula using AI orchestration, Redis-backed background processing, and an adaptive scheduling engine.
 
 ---
 
@@ -45,54 +30,65 @@ QuestXP utilizes a **Decoupled Monolith** architecture with an **Event-Driven AI
 
 ### Backend (Node.js/Express)
 - **Layered Pattern**: `Routes` -> `Middleware` -> `Services` -> `Controllers` -> `Models`.
-- **Identity & Security**: JWT-based authentication with a **Dual-Mode System** supporting both `HttpOnly` cookies and `Authorization: Bearer` headers.
-- **Worker Tier**: BullMQ + Redis cluster for non-blocking execution of AI tasks (Transcription, Summarization).
+- **Worker Tier**: BullMQ + Redis cluster for non-blocking execution of intensive AI tasks (Transcription, Summarization, Chapterization).
+- **Identity & Security**: JWT-based authentication with a Dual-Mode System supporting both `HttpOnly` cookies and `Authorization: Bearer` headers.
 
 ### Frontend (React/Vite)
-- **State Management**: Zustand (UI/Auth) & TanStack Query (Server-state).
-- **Design System**: Atomic-based Tailwind configuration with a custom glassmorphic aesthetic.
+- **Performance Layer**: Optimistic UI updates with cross-tab synchronization.
+- **State Management**: Zustand (UI/Auth) & TanStack Query (Server-state caching).
+- **Optimization**: Zero-flicker re-fetching logic using Tab-Specific Identification.
+
+---
+
+## ⚙️ Core Technical Implementations
+
+### 1. The Chapterization Engine (One-Shot Support)
+The Chapterization Engine is a sophisticated backend service that partitions long-form videos into logical, educational modules.
+- **AI-Driven Topic Segmentation**: Instead of fixed-length splitting (which disrupts pedagogy), the `ChapterizationService` analyzes transcripts to detect natural shifts in topic.
+- **Temporal Validation**: Ensures all generated timestamps are strictly chronological and encompass 100% of the video duration.
+- **Graceful Degradation**: Implements a JSON fallback mechanism to ensure course creation success even if the AI provider encounters a transient error.
+
+### 2. Surgical Adaptive Roadmap Algorithm (v2)
+A dynamic scheduling engine that treats learning paths as living documents rather than static lists.
+- **75% Efficiency Rule**: Built-in scheduling logic that accounts for note-taking and cognitive load, providing realistic completion estimates.
+- **Granular Shifting**: Allows users to shift specific lessons or blocks without breaking the entire relational dependency tree of the roadmap.
+- **Atomic Operations**: Backend updates are performed using atomic MongoDB operations to prevent race conditions during simultaneous progress updates.
+
+### 3. Frontend: Optimistic UI & Cross-Tab Sync
+To ensure a "Zero-Latency" feel, QuestXP implements a custom **Tab-Aware Synchronization** system.
+- **Optimistic Updates**: The frontend calculates and reflects progress changes (e.g., lesson completion) *before* the backend confirms the write, providing instant feedback.
+- **Source Filtering**: Each browser tab is assigned a unique `window.name` ID. When a tab receives a "Progress Updated" event, it checks the `sourceId`. If it was the initiator, it skips redundant re-fetches to prevent UI flicker.
+- **Local Persistence Sync**: Uses `localStorage` events to maintain state parity across multiple open tabs without the overhead of WebSockets.
 
 ---
 
 ## 🛠️ Technical Stack
 
 - **Runtime**: Node.js v20+
-- **Database**: MongoDB (Atlas) / Pinecone (Vector)
+- **Database**: MongoDB (Atlas) / Pinecone (Vector Search)
 - **Caching/Queue**: Redis / BullMQ
-- **AI Models**: OpenAI (GPT-4o-mini)
-- **Notification**: Firebase Cloud Messaging (FCM)
-- **Deployment**: Vercel (Frontend), Railway (Backend)
+- **AI Orchestration**: OpenAI (GPT-4o-mini) / LangChain
+- **Notification Engine**: Firebase Cloud Messaging (FCM)
+- **Monitoring**: Custom `ObservabilityService` for diagnostic logging and error tracking.
 
 ---
 
-## 🔧 Installation
+## 🚦 Key API & Routing Structure
 
-```bash
-# 1. Clone & Install
-git clone https://github.com/parthpatidar03/QuestXP.git
-cd QuestXP && npm run install-all
-
-# 2. Setup Environment
-# Create .env files in /backend and /frontend based on .env.example
-
-# 3. Launch Services (Docker Recommended)
-docker-compose up --build
-```
+| Endpoint | Method | Function | Technical Context |
+| :--- | :--- | :--- | :--- |
+| `/api/courses/generate` | POST | Course Generation | Triggers the AI pipeline (Chapters + Summaries) |
+| `/api/progress/toggle` | PATCH | Progress Update | atomic $addToSet/$pull with total XP calculation |
+| `/api/roadmaps/sync` | POST | Bidirectional Sync | Merges Player progress with Roadmap schedule |
+| `/api/auth/google` | POST | Identity Sync | OAuth2 flow with internal JWT generation |
 
 ---
 
-## 🗺️ Surgical Adaptive Roadmap Algorithm (v2)
-QuestXP's roadmap engine is designed for realism, not perfection.
-- **75% Efficiency Rule**: Realistic scheduling accounting for note-taking.
-- **Granular Scheduling**: Shift specific videos without breaking the entire plan.
-- **Universal Roadmap Hub**: Centralized management of all active study plans.
-- **🛡️ Auth & Progress Stability**: Resolved 500 errors and ReferenceErrors. [Read more →](docs/012-auth-and-progress-fix.md)
-- **🔄 Bi-Directional Roadmap Sync**: Instant synchronization between Player and Hub. [Read more →](docs/roadmap-sync.md)
-- **🌐 Domain Migration & CORS Fix**: Full support for `questxp.in`. [Read more →](docs/020-domain-migration-and-cors.md)
-- **⚡ Optimistic UI & Tab Sync**: Instant progress updates with zero-flicker sync. [Read more →](docs/021-optimistic-ui-and-tab-sync.md)
-- **🔍 Observability & Logging**: Robust error tracking and diagnostic logs. [Read more →](docs/OBSERVABILITY_AND_LOGGING.md)
-- **🎨 UI & Gamification**: Visual refinements and progress tracking logic. [Read more →](docs/UI_AND_GAMIFICATION.md)
-- **📝 Hero Section Refinement**: Restored high-contrast white text for better legibility. [Read more →](docs/022-landing-page-contrast-fix.md)
+## 🔍 Observability & Stability
+QuestXP includes a robust logging layer designed for production monitoring:
+- **Error Propagation**: Centralized middleware catches and sanitizes errors, returning structured JSON while logging the stack trace internally.
+- **CORS Hardening**: Fully configured for secure multi-domain communication (supporting `questxp.in` and local environments).
+- **Diagnostic Logs**: Injected at every stage of the AI pipeline to track transcription health and LLM response latency.
 
 ---
 

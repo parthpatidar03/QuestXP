@@ -387,9 +387,9 @@ const Dashboard = () => {
     // Features list (top 5)
     const newFeatures = [
         {
-            id: 'tilt-3d',
-            title: 'Interactive 3D UI',
-            description: 'Experience immersive 3D parallax effects on your dashboard and roadmap previews.',
+            id: 'optimistic-ui',
+            title: 'Optimistic UI & Tab Sync',
+            description: 'Zero-flicker progress updates with intelligent cross-tab state synchronization.',
             icon: <Zap className="w-5 h-5 text-warning" />,
             date: 'New'
         },
