@@ -1,15 +1,11 @@
 const { Worker } = require('bullmq');
-const IORedis = require('ioredis');
 const { Pinecone } = require('@pinecone-database/pinecone');
 const { RecursiveCharacterTextSplitter } = require('@langchain/textsplitters');
 const aiProvider = require('../services/ai-provider');
 const Transcript = require('../models/Transcript');
 const EmbeddingStatus = require('../models/EmbeddingStatus');
 const Course = require('../models/Course');
-
-const connection = new IORedis(process.env.REDIS_URL || 'redis://localhost:6379', {
-    maxRetriesPerRequest: null,
-});
+const connection = require('../queues/redisConnection');
 
 const pc = new Pinecone({ apiKey: process.env.PINECONE_API_KEY });
 const indexName = process.env.PINECONE_INDEX_NAME || 'questxp';

@@ -1,12 +1,9 @@
 const { Worker } = require('bullmq');
-const IORedis = require('ioredis');
+const youtubeService = require('../services/youtubeService');
+const courseService = require('../services/courseService');
+const connection = require('../queues/redisConnection');
 const axios = require('axios');
-
 const Course = require('../models/Course');
-
-const connection = new IORedis(process.env.REDIS_URL || 'redis://localhost:6379', {
-    maxRetriesPerRequest: null,
-});
 
 console.log('[CourseProcessor] Loaded YouTube Data API playlist importer');
 

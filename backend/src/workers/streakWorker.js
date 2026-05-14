@@ -1,11 +1,7 @@
 const { Worker } = require('bullmq');
-const IORedis = require('ioredis');
 const User = require('../models/User');
 const streakService = require('../services/streakService');
-
-const connection = new IORedis(process.env.REDIS_URL || 'redis://localhost:6379', {
-    maxRetriesPerRequest: null,
-});
+const connection = require('../queues/redisConnection');
 
 const streakWorker = new Worker('streak-reset', async job => {
     try {
