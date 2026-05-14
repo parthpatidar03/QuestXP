@@ -48,13 +48,19 @@ The Chapterization Engine is a sophisticated backend service that partitions lon
 - **Temporal Validation**: Ensures all generated timestamps are strictly chronological and encompass 100% of the video duration.
 - **Graceful Degradation**: Implements a JSON fallback mechanism to ensure course creation success even if the AI provider encounters a transient error.
 
-### 2. Surgical Adaptive Roadmap Algorithm (v2)
+### 2. Dynamic Gamification Engine (v2.0)
+A progressive reward system that scales with user consistency and effort.
+- **Progressive Lecture XP**: Implements a `50 + 10n` XP formula per lecture completion, rewarding deeper engagement.
+- **Screen-Time Bonuses**: Automated background tracking awards +50 XP for 1hr sessions and +200 XP for 3hr sessions.
+- **Custom Awarding Logic**: Refactored `XPService` to support dynamic, multi-factor XP calculation beyond static constants.
+
+### 3. Surgical Adaptive Roadmap Algorithm (v2)
 A dynamic scheduling engine that treats learning paths as living documents rather than static lists.
 - **75% Efficiency Rule**: Built-in scheduling logic that accounts for note-taking and cognitive load, providing realistic completion estimates.
 - **Granular Shifting**: Allows users to shift specific lessons or blocks without breaking the entire relational dependency tree of the roadmap.
 - **Atomic Operations**: Backend updates are performed using atomic MongoDB operations to prevent race conditions during simultaneous progress updates.
 
-### 3. Frontend: Optimistic UI & Cross-Tab Sync
+### 4. Frontend: Optimistic UI & Cross-Tab Sync
 To ensure a "Zero-Latency" feel, QuestXP implements a custom **Tab-Aware Synchronization** system.
 - **Optimistic Updates**: The frontend calculates and reflects progress changes (e.g., lesson completion) *before* the backend confirms the write, providing instant feedback.
 - **Source Filtering**: Each browser tab is assigned a unique `window.name` ID. When a tab receives a "Progress Updated" event, it checks the `sourceId`. If it was the initiator, it skips redundant re-fetches to prevent UI flicker.

@@ -23,5 +23,7 @@ module.exports = {
         STREAK_7: 50,
         STREAK_30: 200,
         STREAK_100: 500,
+        SCREEN_TIME_1HR: 50,
+        SCREEN_TIME_3HR: 200,
     }
 };

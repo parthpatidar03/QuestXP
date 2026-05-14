@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Flame, Zap, Trophy, Shield, BookOpen, Plus, ChevronRight, Star, Trash2, Target, MessageSquare, Share2, Copy, X, PlayCircle, RefreshCw, Sparkles } from 'lucide-react';
+import { Flame, Zap, Trophy, Shield, BookOpen, Plus, ChevronRight, Star, Trash2, Target, MessageSquare, Share2, Copy, Github, Monitor, Smartphone, Layout, Bell, Sparkles, Check, Clock, Info, X, PlayCircle, RefreshCw } from 'lucide-react';
 import toast from 'react-hot-toast';
 import useAuthStore from '../store/useAuthStore';
 import useGamificationStore from '../store/useGamificationStore';
@@ -20,7 +20,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { StatCardSkeleton, CourseCardSkeleton } from '../components/ui/Skeleton';
 import Footer from '../components/ui/Footer';
 import UsernameModal from '../components/Dashboard/UsernameModal';
-import { BarChart3, Clock, Calendar, ArrowUpRight, TrendingUp, Crown, Layout } from 'lucide-react';
+import { BarChart3, Calendar, ArrowUpRight, TrendingUp, Crown } from 'lucide-react';
 import GlobalLeaderboardModal from '../components/Dashboard/GlobalLeaderboardModal';
 import GenerateRoadmapModal from '../components/Roadmap/GenerateRoadmapModal';
 
@@ -32,6 +32,24 @@ function calcCourseProgress(course, progress) {
     const total = course?.totalLectures || 1;
     const done = progress?.completedLectures?.length || 0;
     return Math.round((done / total) * 100);
+}
+
+/* ── Bonus Rewards Widget ───────────────────────────────────────────── */
+function BonusRewardsWidget() {
+    return (
+        <div className="glass-card p-5 border-l-4 border-l-warning flex items-center justify-between">
+            <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-warning/10 flex items-center justify-center text-warning">
+                    <Star className="w-5 h-5 fill-warning/20" />
+                </div>
+                <div>
+                    <h4 className="text-sm font-black text-text-primary uppercase tracking-widest">Bonus Rewards</h4>
+                    <p className="text-xs text-text-secondary">Complete 3 missions today for a +200 XP multiplier!</p>
+                </div>
+            </div>
+            <button className="text-xs font-bold text-warning hover:underline uppercase">View Details</button>
+        </div>
+    );
 }
 
 /* ── Productivity Cards ─────────────────────────────────────────────── */
@@ -379,6 +397,7 @@ const Dashboard = () => {
     const [feedbackOpen, setFeedbackOpen] = useState(false);
     const [showUsernameModal, setShowUsernameModal] = useState(false);
     const [showLeaderboard, setShowLeaderboard] = useState(false);
+    const [showXPSystem, setShowXPSystem] = useState(false);
     const [roadmapCourseId, setRoadmapCourseId] = useState(null);
     const [optimisticHiddenIds, setOptimisticHiddenIds] = useState(new Set());
     const [showUndo, setShowUndo] = useState(null); // { id, title, timer }
@@ -416,22 +435,22 @@ const Dashboard = () => {
             date: 'Latest'
         },
         {
-            id: 'focus-guardian',
-            title: 'Focus Guardian',
-            description: 'Smart notifications to keep you on track and prevent burnout during deep work.',
-            icon: <Shield className="w-5 h-5 text-danger" />,
-            date: 'Stable'
+            id: 'gamification-v2',
+            title: 'Dynamic Gamification Engine',
+            description: 'New progressive XP rewards, hidden study quests, and detailed level progression analytics.',
+            icon: <Trophy className="w-5 h-5 text-gold" />,
+            date: 'Live'
         }
     ];
 
     useEffect(() => {
-        const hasSeenVideoFeature = localStorage.getItem('seen_feature_video_v1');
-        if (!hasSeenVideoFeature) {
-            toast.success("New Feature: Video Lectures & One-Shots are now supported!", {
-                duration: 5000,
-                icon: '🎬',
+        const hasSeenGamification = localStorage.getItem('seen_feature_gamification_v2');
+        if (!hasSeenGamification) {
+            toast.success("New: Dynamic XP & Hidden Study Quests are now LIVE!", {
+                duration: 6000,
+                icon: '🏆',
             });
-            localStorage.setItem('seen_feature_video_v1', 'true');
+            localStorage.setItem('seen_feature_gamification_v2', 'true');
         }
     }, []);
 
@@ -946,23 +965,73 @@ const Dashboard = () => {
                     )}
 
                     {!isGuest && (
-                        <Link to="/profile" className="glass-card block transition-all p-4">
-                            <div className="flex items-center gap-3 mb-3">
-                                <div className="w-10 h-10 rounded-full border border-border flex items-center justify-center font-semibold text-sm bg-primary text-white">
-                                    {user.name?.charAt(0)?.toUpperCase()}
+                        <div className="glass-card block transition-all p-4">
+                            <div className="flex items-center justify-between mb-3">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-full border border-border flex items-center justify-center font-semibold text-sm bg-primary text-white">
+                                        {user.name?.charAt(0)?.toUpperCase()}
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-semibold text-text-primary">{user.name}</p>
+                                        <p className="text-xs text-text-secondary">{levelTitle || 'Explorer'} · Level {level}</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p className="text-sm font-semibold text-text-primary">{user.name}</p>
-                                    <p className="text-xs text-text-secondary">{levelTitle || 'Explorer'} · Level {level || user?.level}</p>
-                                </div>
+                                <button 
+                                    onClick={() => setShowXPSystem(true)}
+                                    className="p-2 rounded-lg hover:bg-surface-2 text-text-muted hover:text-primary transition-colors"
+                                    title="How XP Works"
+                                >
+                                    <Info className="w-4 h-4" />
+                                </button>
                             </div>
                             <div className="progress-bar mb-1">
                                 <div className="progress-bar__fill" style={{ width: `${xpProgress}%` }} />
                             </div>
-                            <p className="text-xs text-right text-text-muted uppercase tracking-widest font-bold">
-                                {xpToNextLevel} XP to Level {level + 1}
-                            </p>
-                        </Link>
+                            <div className="flex items-center justify-between mt-1">
+                                <p className="text-[10px] text-text-muted uppercase tracking-widest font-bold">
+                                    {user?.xp || 0} XP
+                                </p>
+                                <p className="text-[10px] text-text-muted uppercase tracking-widest font-bold">
+                                    {xpToNextLevel} XP to Level {level + 1}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="glass-card p-5 bg-gradient-to-br from-primary/5 to-transparent border-primary/20">
+                            <div className="flex items-center gap-2 mb-4">
+                                <Zap className="w-4 h-4 text-primary" />
+                                <h2 className="text-sm font-bold tracking-tight text-text-primary uppercase">Hidden Quests</h2>
+                            </div>
+                            <div className="space-y-3">
+                                <div className="p-3 rounded-xl border border-primary/10 bg-primary/5 flex items-center gap-3 group">
+                                    <div className="w-8 h-8 rounded-lg bg-surface border border-border flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                                        <Clock className="w-4 h-4" />
+                                    </div>
+                                    <div className="min-w-0">
+                                        <p className="text-[11px] font-bold text-text-primary uppercase tracking-wider">Deep Focus</p>
+                                        <p className="text-[10px] text-text-secondary">Study 1hr today (+50 XP)</p>
+                                    </div>
+                                </div>
+                                <div className="p-3 rounded-xl border border-primary/10 bg-primary/5 flex items-center gap-3 group">
+                                    <div className="w-8 h-8 rounded-lg bg-surface border border-border flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                                        <Sparkles className="w-4 h-4" />
+                                    </div>
+                                    <div className="min-w-0">
+                                        <p className="text-[11px] font-bold text-text-primary uppercase tracking-wider">Hyper Learner</p>
+                                        <p className="text-[10px] text-text-secondary">Study 3hr today (+200 XP)</p>
+                                    </div>
+                                </div>
+                                <div className="p-3 rounded-xl border border-primary/10 bg-primary/5 flex items-center gap-3 group">
+                                    <div className="w-8 h-8 rounded-lg bg-surface border border-border flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                                        <Trophy className="w-4 h-4" />
+                                    </div>
+                                    <div className="min-w-0">
+                                        <p className="text-[11px] font-bold text-text-primary uppercase tracking-wider">Lecture Mastery</p>
+                                        <p className="text-[10px] text-text-secondary">Progressive XP rewards!</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     )}
                 </aside>
             </div>
@@ -982,6 +1051,7 @@ const Dashboard = () => {
                     courseId={roadmapCourseId} 
                     />
             )}
+            <XPSystemModal isOpen={showXPSystem} onClose={() => setShowXPSystem(false)} />
             {!showUsernameModal && <UserTour />}
 
             {/* Undo Toast */}
@@ -1011,6 +1081,72 @@ const Dashboard = () => {
             </AnimatePresence>
         </div>
 
+    );
+};
+
+const XPSystemModal = ({ isOpen, onClose }) => {
+    if (!isOpen) return null;
+
+    const mechanics = [
+        { title: "Progressive Lectures", desc: "Gain more XP as you go. Lecture 1 (+50 XP), Lecture 2 (+60 XP), and so on!", icon: <BookOpen className="w-5 h-5" />, color: "text-blue-400" },
+        { title: "Study Streaks", desc: "Keep the flame alive! 1.25x (7 days), 1.5x (14 days), 2x (30 days), up to 3x multiplier!", icon: <Flame className="w-5 h-5" />, color: "text-warning" },
+        { title: "Daily Goals", desc: "Hit your study goal for +50 XP bonus every single day.", icon: <Target className="w-5 h-5" />, color: "text-success" },
+        { title: "Deep Focus", desc: "Secret bonuses for long sessions: 1hr (+50 XP) and 3hrs (+200 XP)!", icon: <Zap className="w-5 h-5" />, color: "text-primary" },
+        { title: "Quiz Mastery", desc: "Ace a quiz for +75 XP. Improve your previous score for extra gains.", icon: <Trophy className="w-5 h-5" />, color: "text-purple-400" },
+    ];
+
+    return (
+        <div className="fixed inset-0 z-[300] flex items-center justify-center p-4">
+            <motion.div 
+                initial={{ opacity: 0 }} 
+                animate={{ opacity: 1 }} 
+                onClick={onClose}
+                className="absolute inset-0 bg-background/80 backdrop-blur-md"
+            />
+            <motion.div 
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                className="relative w-full max-w-lg glass-card p-8 overflow-hidden"
+            >
+                <div className="absolute top-0 right-0 p-4">
+                    <button onClick={onClose} className="p-2 hover:bg-surface-2 rounded-lg transition-colors">
+                        <X className="w-5 h-5 text-text-muted" />
+                    </button>
+                </div>
+
+                <div className="mb-8">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest mb-4">
+                        <Zap className="w-3 h-3" />
+                        Leveling System
+                    </div>
+                    <h2 className="text-3xl font-black text-text-primary uppercase tracking-tight">How XP Works</h2>
+                    <p className="text-text-secondary mt-2">Master the system to evolve your rank faster.</p>
+                </div>
+
+                <div className="space-y-4">
+                    {mechanics.map((m, i) => (
+                        <div key={i} className="flex gap-4 p-4 rounded-2xl bg-surface-2 border border-border hover:border-primary/30 transition-all group">
+                            <div className={`shrink-0 w-12 h-12 rounded-xl bg-surface border border-border flex items-center justify-center ${m.color} group-hover:scale-110 transition-transform`}>
+                                {m.icon}
+                            </div>
+                            <div>
+                                <h4 className="text-sm font-bold text-text-primary uppercase tracking-wide">{m.title}</h4>
+                                <p className="text-xs text-text-secondary mt-1 leading-relaxed">{m.desc}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="mt-8 pt-6 border-t border-border">
+                    <button 
+                        onClick={onClose}
+                        className="w-full btn-primary py-4 text-xs font-black uppercase tracking-[0.2em]"
+                    >
+                        Got it, Captain
+                    </button>
+                </div>
+            </motion.div>
+        </div>
     );
 };
 
