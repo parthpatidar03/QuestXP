@@ -910,11 +910,21 @@ const Dashboard = () => {
                 </div>
 
                 <aside className="flex flex-col w-full xl:w-72 shrink-0 space-y-4">
+                    <div id="tour-mission">
+                        <DailyMissionWidget />
+                    </div>
                     {!isGuest && (
                         <>
                             <div className="glass-card block transition-all p-4 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
                                 <div className="flex items-center justify-between mb-3">
                                     <div className="flex items-center gap-3">
+                                        <button 
+                                            onClick={() => setShowXPSystem(true)}
+                                            className="p-1.5 rounded-lg bg-white/20 hover:bg-white/40 text-white transition-all border border-white/30 shadow-sm"
+                                            title="How XP works"
+                                        >
+                                            <Info className="w-4 h-4" />
+                                        </button>
                                         <div className="w-10 h-10 rounded-full border border-primary/20 flex items-center justify-center font-bold text-sm bg-primary text-white shadow-lg shadow-primary/20">
                                             {user.name?.charAt(0)?.toUpperCase()}
                                         </div>
@@ -923,13 +933,6 @@ const Dashboard = () => {
                                             <p className="text-[10px] text-primary font-black uppercase tracking-tighter">{levelTitle || 'Explorer'} · Lvl {level}</p>
                                         </div>
                                     </div>
-                                    <button 
-                                        onClick={() => setShowXPSystem(true)}
-                                        className="p-2 rounded-lg bg-surface-2 hover:bg-primary/10 text-text-muted hover:text-primary transition-all border border-border hover:border-primary/30"
-                                        title="How XP works"
-                                    >
-                                        <Info className="w-4 h-4" />
-                                    </button>
                                 </div>
                                 <div className="progress-bar mb-1.5 h-1.5">
                                     <div className="progress-bar__fill bg-primary shadow-[0_0_8px_rgba(var(--color-primary),0.5)]" style={{ width: `${xpProgress}%` }} />
@@ -972,9 +975,7 @@ const Dashboard = () => {
                             </div>
                         </>
                     )}
-                    <div id="tour-mission">
-                        <DailyMissionWidget />
-                    </div>
+
                     <div className="glass-card p-5">
                         <div className="flex items-center gap-2 mb-4">
                             <Flame className="w-4 h-4 text-warning" />
@@ -1037,6 +1038,7 @@ const Dashboard = () => {
                 isOpen={showLeaderboard} 
                 onClose={() => setShowLeaderboard(false)} 
                 players={leaderboardData} 
+                onShowXPSystem={() => setShowXPSystem(true)}
                 />
             {roadmapCourseId && (
                 <GenerateRoadmapModal 

@@ -1,10 +1,10 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Crown } from 'lucide-react';
+import { X, Crown, Info } from 'lucide-react';
 import LeaderboardPodium from './LeaderboardPodium';
 import LeaderboardTable from './LeaderboardTable';
 
-const GlobalLeaderboardModal = ({ isOpen, onClose, players = [] }) => {
+const GlobalLeaderboardModal = ({ isOpen, onClose, players = [], onShowXPSystem }) => {
     if (!isOpen) return null;
 
     return (
@@ -28,12 +28,21 @@ const GlobalLeaderboardModal = ({ isOpen, onClose, players = [] }) => {
                             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted opacity-60">Top {players.length} Learners</p>
                         </div>
                     </div>
-                    <button 
-                        onClick={onClose}
-                        className="p-2 rounded-full hover:bg-surface-2 text-text-muted hover:text-text-primary transition-colors"
-                    >
-                        <X className="w-6 h-6" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                        <button 
+                            onClick={onShowXPSystem}
+                            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-all border border-primary/20 text-xs font-black uppercase tracking-widest"
+                        >
+                            <Info className="w-4 h-4" />
+                            How XP Works
+                        </button>
+                        <button 
+                            onClick={onClose}
+                            className="p-2 rounded-full hover:bg-surface-2 text-text-muted hover:text-text-primary transition-colors"
+                        >
+                            <X className="w-6 h-6" />
+                        </button>
+                    </div>
                 </div>
 
                 {/* Content */}
