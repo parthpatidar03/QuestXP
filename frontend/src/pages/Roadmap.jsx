@@ -25,6 +25,7 @@ import {
     Trash2,
     Check
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { format, differenceInDays, addDays } from 'date-fns';
 
 const formatTime = (value, unit = 'seconds') => {
@@ -428,6 +429,7 @@ const Roadmap = () => {
     const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
     const [modalCourseId, setModalCourseId] = useState(courseId);
     const [adjusting, setAdjusting] = useState(false);
+    const [isBulkUpdating, setIsBulkUpdating] = useState(false);
     
     // T050: Debounce & Accumulation Logic for responsive +/- buttons
     const shiftTimeoutRef = useRef(null);
@@ -645,17 +647,25 @@ const Roadmap = () => {
         if (!roadmap || !roadmap.courseId) return;
         if (!window.confirm("Mark all missions in this roadmap as complete? This will sync your course progress and award full XP!")) return;
 
+        setIsBulkUpdating(true);
         try {
-            const { data } = await api.post(`/progress/${roadmap.courseId}/mark-all`);
+            // Safely extract ID if populated
+            const cId = typeof roadmap.courseId === 'object' ? roadmap.courseId._id : roadmap.courseId;
+            const { data } = await api.post(`/progress/${cId}/mark-all`);
+            
             if (data.success) {
-                shootConfetti();
-                alert(`Success! Marked ${data.newlyCompletedCount} missions as complete. Earned ${data.totalXPEarned} XP!`);
+                if (data.newlyCompletedCount > 0) {
+                    shootConfetti();
+                }
+                toast.success(`Success! Marked ${data.newlyCompletedCount} missions as complete.`);
                 fetchRoadmap(); // Refresh current roadmap view
                 broadcastProgressUpdate();
             }
         } catch (err) {
             console.error("Failed to mark all complete on roadmap:", err);
-            alert("Failed to update progress.");
+            toast.error("Failed to update progress.");
+        } finally {
+            setIsBulkUpdating(false);
         }
     };
 
@@ -796,21 +806,35 @@ const Roadmap = () => {
 
                         {/* Global Bulk Action Row */}
                         {roadmap.courseId && (
-                            <div className="flex items-center gap-4 px-4 py-4 bg-primary/5 border border-border/40 rounded-xl mb-4 group/bulk">
+                            <div className="flex items-center gap-4 px-5 py-5 bg-primary/5 border-2 border-primary/20 rounded-2xl mb-6 group/bulk shadow-lg shadow-primary/5">
                                 <div className="shrink-0">
                                     <button
                                         type="button"
                                         onClick={handleMarkAllComplete}
-                                        className="w-10 h-10 rounded-xl border-2 border-primary/40 bg-primary/10 flex items-center justify-center text-primary transition-all hover:scale-110 active:scale-95 shadow-[0_0_15px_rgba(var(--color-primary-rgb),0.1)] hover:bg-primary hover:text-white hover:border-primary"
+                                        disabled={isBulkUpdating}
+                                        className="w-16 h-16 rounded-2xl border-2 border-primary/50 bg-primary/10 flex flex-col items-center justify-center text-primary transition-all hover:scale-105 active:scale-95 shadow-[0_0_25px_rgba(var(--color-primary-rgb),0.2)] hover:bg-primary hover:text-white hover:border-primary group-hover/bulk:border-primary"
                                         title="Mark All Complete"
                                     >
-                                        <CheckCircle2 className="w-6 h-6 stroke-[3]" />
+                                        {isBulkUpdating ? (
+                                            <Loader2 className="w-6 h-6 animate-spin" />
+                                        ) : (
+                                            <>
+                                                <Check className="w-8 h-8 stroke-[4] mb-0.5" />
+                                                <span className="text-[8px] font-black uppercase tracking-tighter leading-none">Mark All</span>
+                                            </>
+                                        )}
                                     </button>
                                 </div>
                                 <div className="flex flex-col">
-                                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em] leading-none mb-1">Bulk Mastery</span>
-                                    <span className="text-xs font-bold text-text-primary uppercase tracking-widest">Mark Entire Roadmap Complete</span>
+                                    <span className="text-[11px] font-black text-primary uppercase tracking-[0.25em] leading-none mb-1.5">Roadmap Mastery</span>
+                                    <h3 className="text-sm font-black text-text-primary uppercase tracking-widest">Mark all missions in this journey as complete</h3>
                                 </div>
+                                {isBulkUpdating && (
+                                    <div className="ml-auto flex items-center gap-3 px-4 py-2 bg-primary/10 rounded-full border border-primary/20 animate-pulse">
+                                        <div className="w-2.5 h-2.5 rounded-full bg-primary animate-ping" />
+                                        <span className="text-[10px] font-black text-primary uppercase tracking-widest">Syncing Progress...</span>
+                                    </div>
+                                )}
                             </div>
                         )}
 

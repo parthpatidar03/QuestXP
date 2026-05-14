@@ -1,23 +1,159 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Info, Flame, Trophy } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { toPng } from 'html-to-image';
+import { Info, Flame, Trophy, Camera, Check, Download, X, Share2, RefreshCw } from 'lucide-react';
 import useAuthStore from '../store/useAuthStore';
 
-export default function StreakCalendar({ history = [] }) {
+const StreakInfoModal = ({ isOpen, onClose }) => {
+    return createPortal(
+        <AnimatePresence>
+            {isOpen && (
+                <div className="fixed inset-0 z-[10001] flex items-center justify-center p-4">
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={onClose}
+                        className="absolute inset-0 bg-black/90 backdrop-blur-2xl z-0"
+                    />
+                    <motion.div 
+                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                        onClick={(e) => e.stopPropagation()}
+                        className="relative w-full max-w-[480px] bg-surface border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden z-10 pointer-events-auto p-8 text-sm"
+                    >
+                        <div className="flex items-center gap-2 mb-4 text-text-primary font-black uppercase tracking-widest text-xs">
+                            <Info className="w-4 h-4 text-primary" /> Streak Protocol
+                        </div>
+                        <ol className="list-decimal list-outside ml-4 space-y-3 text-text-secondary text-xs leading-relaxed mb-6 font-medium">
+                            <li>Only <span className="text-warning font-bold">completed lectures</span> count toward streaks.</li>
+                            <li>Earning any XP (greater than 0) extends your streak.</li>
+                        </ol>
+                        <p className="text-xs text-text-muted mb-6 leading-relaxed">Streaks are tracked based on your local timezone. Reset happens at midnight.</p>
+                        <button type="button" onClick={onClose} className="w-full py-4 bg-primary hover:bg-primary-hover rounded-xl font-black uppercase tracking-widest text-[10px] text-white transition-all shadow-lg shadow-primary/20">Acknowledge</button>
+                    </motion.div>
+                </div>
+            )}
+        </AnimatePresence>,
+        document.body
+    );
+};
+
+const ShareAchievementModal = ({ isOpen, onClose, exportRef, handleDownload, isExporting, currentDate, days }) => {
+    useEffect(() => {
+        if (isOpen) {
+            // Stability check for share modal
+        }
+    }, [isOpen]);
+
+    return createPortal(
+        <AnimatePresence>
+            {isOpen && (
+                <div className="fixed inset-0 z-[10001] flex items-center justify-center p-4 sm:p-8">
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/80 backdrop-blur-2xl" 
+                        onClick={onClose} 
+                    />
+                    <motion.div 
+                        initial={{ y: 50, opacity: 0, scale: 0.9 }}
+                        animate={{ y: 0, opacity: 1, scale: 1 }}
+                        exit={{ y: 50, opacity: 0, scale: 0.9 }}
+                        onClick={(e) => e.stopPropagation()}
+                        className="relative z-10 w-full max-w-[480px] bg-[#0d0d0d] border border-white/10 rounded-[2.5rem] shadow-[0_32px_128px_-16px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col pointer-events-auto"
+                    >
+                        {/* Modal Header */}
+                        <div className="px-8 py-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
+                                    <Camera className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <h3 className="text-base font-black text-text-primary uppercase tracking-widest">Share Achievement</h3>
+                                    <p className="text-[10px] text-text-muted font-bold uppercase tracking-[0.2em] mt-0.5">High-Fidelity Capture</p>
+                                </div>
+                            </div>
+                            <button type="button" onClick={onClose} className="w-12 h-12 rounded-full flex items-center justify-center text-text-muted hover:text-white hover:bg-white/5 transition-all">
+                                <X className="w-6 h-6" />
+                            </button>
+                        </div>
+
+                        {/* Export Canvas Area */}
+                        <div className="p-6 bg-black overflow-y-auto max-h-[60vh] scrollbar-hide">
+                            <div 
+                                ref={exportRef}
+                                className="bg-[#0a0a0a] border border-white/5 p-8 rounded-2xl relative overflow-hidden flex flex-col items-center"
+                                style={{ width: '100%', minWidth: '340px' }}
+                            >
+                                <div className="px-5 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-black text-white uppercase tracking-[0.2em] mb-8">
+                                    {currentDate.toLocaleString('default', { month: 'long' })}
+                                </div>
+
+                                <div className="w-full">
+                                    <div className="grid grid-cols-7 gap-y-5 gap-x-2 text-center mb-6 opacity-40">
+                                        {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((d, idx) => (
+                                            <div key={idx} className="text-[9px] font-black text-text-muted uppercase tracking-tighter">{d}</div>
+                                        ))}
+                                    </div>
+                                    <div className="grid grid-cols-7 gap-y-4 gap-x-2 text-center">
+                                        {days.map((d, i) => (
+                                            <div key={i} className={`flex items-center justify-center h-8 text-[11px] font-black ${d.type === 'current' ? 'text-text-primary' : 'text-white/5'}`}>
+                                                {d.display ? <span className="text-xl leading-none">{d.display}</span> : d.num}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+                                    <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-1.5">
+                                        <span className="text-[10px] font-black text-text-muted uppercase tracking-widest">Current</span>
+                                        <span className="text-xs font-black text-white">Streak Stats</span>
+                                    </div>
+                                </div>
+
+                                <div className="mt-8 flex flex-col items-center gap-1 opacity-40">
+                                    <div className="text-[8px] font-black text-primary uppercase tracking-[0.3em]">QuestXP Protocol</div>
+                                    <div className="text-[6px] font-bold text-text-muted uppercase tracking-widest">Verification ID: {Math.random().toString(36).substring(7).toUpperCase()}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="p-8 border-t border-white/5 bg-white/[0.01]">
+                            <button
+                                onClick={handleDownload}
+                                disabled={isExporting}
+                                className="w-full flex items-center justify-center gap-3 py-5 bg-primary hover:bg-primary-hover disabled:opacity-50 text-white rounded-[1.25rem] font-black uppercase tracking-[0.2em] text-[10px] transition-all shadow-[0_8px_32px_rgba(34,197,94,0.3)] group"
+                            >
+                                {isExporting ? (
+                                    <div className="w-4 h-4 border-2 border-white/20 border-t-white animate-spin rounded-full" />
+                                ) : (
+                                    <>
+                                        <Download className="w-4 h-4 group-hover:-translate-y-1 transition-transform" />
+                                        Capture achievement
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </motion.div>
+                </div>
+            )}
+        </AnimatePresence>,
+        document.body
+    );
+};
+
+export default function StreakCalendar({ history = [], rank }) {
     const { user } = useAuthStore();
     const [currentDate, setCurrentDate] = useState(new Date());
     const [showInfo, setShowInfo] = useState(false);
-    const infoRef = useRef(null);
-
-    // Close info popup on click outside
-    useEffect(() => {
-        function handleClickOutside(event) {
-            if (infoRef.current && !infoRef.current.contains(event.target)) {
-                setShowInfo(false);
-            }
-        }
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
+    const [showShareModal, setShowShareModal] = useState(false);
+    const [isExporting, setIsExporting] = useState(false);
+    
+    const exportRef = useRef(null);
 
     const xpByDate = {};
     history.forEach(d => { xpByDate[d.date] = d.totalXP; });
@@ -27,27 +163,24 @@ export default function StreakCalendar({ history = [] }) {
 
     const firstDayOfMonth = new Date(year, month, 1);
     const lastDayOfMonth = new Date(year, month + 1, 0);
-    const startingDayOfWeek = firstDayOfMonth.getDay() === 0 ? 6 : firstDayOfMonth.getDay() - 1; // Mon=0, Sun=6
+    const startingDayOfWeek = firstDayOfMonth.getDay() === 0 ? 6 : firstDayOfMonth.getDay() - 1;
     const daysInMonth = lastDayOfMonth.getDate();
 
     const days = [];
     
-    // Previous month padding
     const prevMonthLastDay = new Date(year, month, 0).getDate();
     for (let i = 0; i < startingDayOfWeek; i++) {
         days.push({ type: 'prev', num: prevMonthLastDay - startingDayOfWeek + i + 1 });
     }
 
-    // Current month days
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Derive join date
     const joinDate = user?._id ? new Date(parseInt(user._id.substring(0, 8), 16) * 1000) : new Date();
 
     for (let i = 1; i <= daysInMonth; i++) {
         const d = new Date(year, month, i);
-        d.setHours(0, 0, 0, 0); // normalize time
+        d.setHours(0, 0, 0, 0);
 
         const key = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
         const isToday = d.getTime() === today.getTime();
@@ -71,8 +204,7 @@ export default function StreakCalendar({ history = [] }) {
         days.push({ type: 'current', num: i, display, key });
     }
 
-    // Next month padding
-    const remainingCells = 42 - days.length; // 6 rows of 7
+    const remainingCells = 42 - days.length;
     for (let i = 1; i <= remainingCells; i++) {
         days.push({ type: 'next', num: i });
     }
@@ -80,121 +212,82 @@ export default function StreakCalendar({ history = [] }) {
     const nextMonth = () => setCurrentDate(new Date(year, month + 1, 1));
     const prevMonth = () => setCurrentDate(new Date(year, month - 1, 1));
 
-    const calendarRef = useRef(null);
-
-    const takeScreenshot = async () => {
-        if (!calendarRef.current) return;
+    const handleDownload = async () => {
+        if (!exportRef.current) return;
+        setIsExporting(true);
         
         try {
-            const { toPng } = await import('html-to-image');
             const monthName = currentDate.toLocaleString('default', { month: 'long' });
-            const fileName = `${user?.name || 'User'}-${monthName}-${year}.png`;
+            const fileName = `QuestXP-${user?.name || 'User'}-${monthName}.png`;
             
-            // Temporary hide elements we don't want in screenshot
-            const elementsToHide = calendarRef.current.querySelectorAll('.no-export');
-            elementsToHide.forEach(el => el.style.opacity = '0');
-
-            const dataUrl = await toPng(calendarRef.current, {
+            const dataUrl = await toPng(exportRef.current, { 
                 cacheBust: true,
                 backgroundColor: '#0a0a0a',
+                pixelRatio: 2,
                 style: {
-                    borderRadius: '12px'
+                    borderRadius: '0px'
                 }
             });
             
-            elementsToHide.forEach(el => el.style.opacity = '1');
-
             const link = document.createElement('a');
             link.download = fileName;
             link.href = dataUrl;
+            document.body.appendChild(link);
             link.click();
+            document.body.removeChild(link);
+            setShowShareModal(false);
         } catch (err) {
-            console.error('oops, something went wrong!', err);
+            console.error('Export failed', err);
+        } finally {
+            setIsExporting(false);
         }
     };
 
     return (
-        <div ref={calendarRef} className="w-full max-w-[320px] mx-auto py-2 relative bg-surface p-4 rounded-2xl">
+        <div className="w-full max-w-[320px] mx-auto py-2 relative bg-surface p-4 rounded-2xl">
+            {/* Header: [Info] [Month Controls] [Camera] */}
             <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-2 no-export">
-                    <button 
-                        onClick={() => setShowInfo(!showInfo)} 
-                        className="w-8 h-8 rounded-full bg-surface-2 border border-white/5 flex items-center justify-center hover:bg-surface-3 transition-colors text-text-secondary hover:text-text-primary"
-                        aria-label="Streak information"
-                    >
-                        <Info className="w-4 h-4" />
-                    </button>
-                    <button 
-                        onClick={takeScreenshot}
-                        className="w-8 h-8 rounded-full bg-surface-2 border border-white/5 flex items-center justify-center hover:bg-surface-3 transition-colors text-text-secondary hover:text-text-primary"
-                        title="Download Calendar Screenshot"
-                    >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                    </button>
-                </div>
+                <button 
+                    onClick={() => setShowInfo(true)} 
+                    className="w-8 h-8 rounded-full bg-surface-2 border border-white/5 flex items-center justify-center hover:bg-surface-3 transition-colors text-text-secondary hover:text-text-primary pointer-events-auto cursor-pointer"
+                    style={{ position: 'relative', zIndex: 50 }}
+                >
+                    <Info className="w-4 h-4" />
+                </button>
                 
-                <div className="flex items-center gap-3">
-                    <button onClick={prevMonth} className="no-export w-8 h-8 rounded-full bg-surface-2 flex items-center justify-center hover:bg-surface-3 transition-colors border border-white/5 text-text-secondary hover:text-text-primary">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                <div className="flex items-center gap-2">
+                    <button onClick={prevMonth} className="w-7 h-7 rounded-full bg-surface-2 flex items-center justify-center hover:bg-surface-3 transition-colors border border-white/5 text-text-secondary hover:text-text-primary">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                     </button>
-                    <div className="px-4 py-1.5 rounded-full bg-surface-2 border border-white/5 text-sm font-semibold tracking-wide text-text-primary shadow-sm shadow-black/20 min-w-[100px] text-center">
+                    <div className="px-3 py-1 rounded-full bg-surface-2 border border-white/5 text-xs font-bold tracking-tight text-text-primary min-w-[80px] text-center">
                         {currentDate.toLocaleString('default', { month: 'long' })}
                     </div>
-                    <button onClick={nextMonth} className="no-export w-8 h-8 rounded-full bg-surface-2 flex items-center justify-center hover:bg-surface-3 transition-colors border border-white/5 text-text-secondary hover:text-text-primary">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                    <button onClick={nextMonth} className="w-7 h-7 rounded-full bg-surface-2 flex items-center justify-center hover:bg-surface-3 transition-colors border border-white/5 text-text-secondary hover:text-text-primary">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
                     </button>
                 </div>
+
+                <button 
+                    onClick={() => setShowShareModal(true)}
+                    className="w-8 h-8 rounded-full bg-surface-2 border border-white/5 flex items-center justify-center hover:bg-surface-3 transition-colors text-text-secondary hover:text-text-primary pointer-events-auto cursor-pointer"
+                    style={{ position: 'relative', zIndex: 50 }}
+                    title="Share Achievement"
+                >
+                    <Camera className="w-4 h-4" />
+                </button>
             </div>
 
-            {/* Info Modal */}
-            {showInfo && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                    {/* Backdrop */}
-                    <div 
-                        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-                        onClick={() => setShowInfo(false)}
-                    />
-                    {/* Modal Content */}
-                    <div 
-                        ref={infoRef}
-                        className="relative z-10 w-full max-w-[340px] bg-surface border border-white/10 rounded-xl shadow-2xl p-6 text-sm"
-                        style={{ background: 'var(--color-surface)', boxShadow: '0 20px 40px -10px rgba(0,0,0,0.8)' }}
-                    >
-                    <div className="flex items-center gap-2 mb-3 text-text-primary font-semibold">
-                        <Info className="w-4 h-4" />
-                        Keep in mind:
-                    </div>
-                    <ol className="list-decimal list-outside ml-4 space-y-2 text-text-secondary text-xs leading-relaxed mb-4">
-                        <li>
-                            Only <span className="text-warning font-medium">completed lectures</span> or generating new courses counts.
-                        </li>
-                        <li>
-                            Earning any amount of XP (greater than 0) will automatically extend your streak.
-                        </li>
-                    </ol>
-                    <p className="text-xs text-text-muted mb-2">
-                        Streaks are tracked based on <span className="text-warning font-medium">your local timezone (midnight)</span>.
-                    </p>
-                    <p className="text-xs text-text-muted mb-4">
-                        Make sure your learning is done before then to count for the day!
-                    </p>
-                    <p className="text-xs text-text-secondary">
-                        Thanks for your <span className="text-warning font-medium">dedication</span> - <br/>
-                        <span className="text-text-primary font-semibold">Keep going and happy learning!</span>
-                    </p>
-                </div>
-                </div>
-            )}
-            
+
+            {/* Calendar Grid */}
             <div className="grid grid-cols-7 gap-y-4 gap-x-2 text-center mb-4">
-                {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(d => (
-                    <div key={d} className="text-xs font-medium text-text-secondary">{d}</div>
+                {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, idx) => (
+                    <div key={idx} className="text-[10px] font-black text-text-muted uppercase tracking-widest">{d}</div>
                 ))}
             </div>
             
             <div className="grid grid-cols-7 gap-y-4 gap-x-2 text-center">
                 {days.map((d, i) => (
-                    <div key={i} className={`flex items-center justify-center h-8 text-sm font-semibold ${d.type === 'current' ? 'text-text-primary' : 'text-text-muted/30'}`}>
+                    <div key={i} className={`flex items-center justify-center h-8 text-sm font-bold ${d.type === 'current' ? 'text-text-primary' : 'text-text-muted/10'}`}>
                         {d.display ? (
                             <span className="text-xl" title={d.num}>{d.display}</span>
                         ) : (
@@ -207,17 +300,29 @@ export default function StreakCalendar({ history = [] }) {
             {/* Streak Stats Pill */}
             <div className="mt-8 flex items-center justify-center bg-surface-2 border border-white/5 rounded-xl px-4 py-3">
                 <div className="flex items-center gap-2">
-                    <span className="text-xs font-semibold text-text-primary">Current</span>
+                    <span className="text-[10px] font-black text-text-muted uppercase">Current</span>
                     <span className="text-lg">🔥</span>
-                    <span className="font-bold text-text-primary">{user?.streak?.current || 0}</span>
+                    <span className="text-sm font-bold text-text-primary">{user?.streak?.current || 0}</span>
                 </div>
                 <div className="w-px h-6 bg-border mx-4" />
                 <div className="flex items-center gap-2">
-                    <span className="text-xs font-semibold text-text-primary">Max</span>
+                    <span className="text-[10px] font-black text-text-muted uppercase">Max</span>
                     <Trophy className="w-4 h-4 text-gold" />
-                    <span className="font-bold text-text-primary">{user?.streak?.longest || 0}</span>
+                    <span className="text-sm font-bold text-text-primary">{user?.streak?.longest || 0}</span>
                 </div>
             </div>
+
+            {/* Modals */}
+            <StreakInfoModal isOpen={showInfo} onClose={() => setShowInfo(false)} />
+            <ShareAchievementModal 
+                isOpen={showShareModal} 
+                onClose={() => setShowShareModal(false)}
+                exportRef={exportRef}
+                handleDownload={handleDownload}
+                isExporting={isExporting}
+                currentDate={currentDate}
+                days={days}
+            />
         </div>
     );
 }

@@ -181,8 +181,7 @@ const UserTour = () => {
         <div className="fixed inset-0 z-[9999] pointer-events-none">
             {/* Spotlight Overlay */}
             <div 
-                className="absolute inset-0 bg-black/80 backdrop-blur-[1px] pointer-events-auto transition-opacity duration-300"
-                onClick={skipTour}
+                className="absolute inset-0 bg-black/80 backdrop-blur-[1px] pointer-events-none transition-opacity duration-300"
                 style={{
                     maskImage: `radial-gradient(circle at ${targetRect.left + targetRect.width / 2}px ${targetRect.top + targetRect.height / 2}px, transparent ${Math.min(100, Math.max(targetRect.width, targetRect.height) / 2 + 10)}px, black ${Math.min(100, Math.max(targetRect.width, targetRect.height) / 2 + 11)}px)`,
                     WebkitMaskImage: `radial-gradient(circle at ${targetRect.left + targetRect.width / 2}px ${targetRect.top + targetRect.height / 2}px, transparent ${Math.min(100, Math.max(targetRect.width, targetRect.height) / 2 + 10)}px, black ${Math.min(100, Math.max(targetRect.width, targetRect.height) / 2 + 11)}px)`
@@ -199,7 +198,7 @@ const UserTour = () => {
                     height: targetRect.height + 16,
                     opacity: 1
                 }}
-                className="absolute border-2 border-white/50 rounded-xl shadow-[0_0_20px_rgba(255,255,255,0.3)] z-[10000]"
+                className="absolute border-2 border-white/50 rounded-xl shadow-[0_0_20px_rgba(255,255,255,0.3)] z-[10000] pointer-events-none"
             />
 
 
@@ -215,6 +214,7 @@ const UserTour = () => {
                         left: tooltipStyles.left,
                         top: tooltipStyles.top
                     }}
+                    onClick={(e) => e.stopPropagation()}
                     exit={{ opacity: 0, scale: 0.9, y: 10 }}
                     transition={{ type: 'spring', damping: 25, stiffness: 300 }}
                     className="absolute w-[280px] sm:w-[300px] bg-slate-900/95 backdrop-blur-md text-white border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.8)] rounded-2xl p-5 sm:p-6 pointer-events-auto"

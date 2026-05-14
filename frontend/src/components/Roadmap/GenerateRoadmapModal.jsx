@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Calendar, Clock, BookOpen, AlertCircle, Sparkles, ChevronDown, ChevronRight, Check, Zap, Info } from 'lucide-react';
 import { format, addDays } from 'date-fns';
 import api from '../../services/api';
@@ -117,11 +118,11 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
 
     if (!isOpen) return null;
 
-    return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
-            <div className="absolute inset-0 bg-bg/80 backdrop-blur-sm" onClick={onClose} />
+    return createPortal(
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 sm:p-6">
+            <div className="absolute inset-0 bg-bg/80 backdrop-blur-xl" onClick={onClose} />
             
-            <div className="relative w-full max-w-xl bg-surface border border-border rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="relative w-full max-w-xl bg-surface border border-border rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] z-10">
                 <div className="p-6 border-b border-border flex items-center justify-between bg-surface-2">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
@@ -164,7 +165,9 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
                     {/* How it works briefing */}
                     <div className="p-4 bg-surface-3 border border-border rounded-2xl space-y-2">
                         <div className="flex items-center gap-2 text-primary">
-                            <Info className="w-4 h-4" />
+                            <div className="p-1 rounded bg-primary/10">
+                                <Info className="w-4 h-4" />
+                            </div>
                             <span className="text-xs font-black uppercase tracking-wider">How it works</span>
                         </div>
                         <p className="text-sm text-text-secondary leading-relaxed">
@@ -301,7 +304,8 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
                     </button>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };
 

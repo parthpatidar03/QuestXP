@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, ShieldCheck, Loader2 } from 'lucide-react';
 import api from '../../services/api';
@@ -40,12 +41,20 @@ const UsernameModal = ({ isOpen, onClose }) => {
         }
     };
 
-    return (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+    return createPortal(
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 bg-black/80 backdrop-blur-xl"
+                onClick={onClose}
+            />
             <motion.div
                 initial={{ scale: 0.9, opacity: 0, y: 20 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
-                className="w-full max-w-md bg-surface border border-border rounded-3xl overflow-hidden shadow-2xl"
+                exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                className="relative w-full max-w-md bg-surface border border-border rounded-3xl overflow-hidden shadow-2xl z-10"
             >
                 <div className="p-8 sm:p-10 text-center">
                     <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-6 border border-primary/20">
@@ -99,7 +108,8 @@ const UsernameModal = ({ isOpen, onClose }) => {
                     </p>
                 </div>
             </motion.div>
-        </div>
+        </div>,
+        document.body
     );
 };
 

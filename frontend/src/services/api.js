@@ -102,6 +102,9 @@ api.interceptors.response.use(
                 processQueue(refreshError, null);
                 localStorage.removeItem('accessToken');
                 localStorage.removeItem('refreshToken');
+                if (!window.location.pathname.includes('/login')) {
+                    window.location.href = '/login?reason=session_expired';
+                }
                 return Promise.reject(refreshError);
             } finally {
                 isRefreshing = false;

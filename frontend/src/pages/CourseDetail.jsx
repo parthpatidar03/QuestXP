@@ -238,6 +238,7 @@ const CourseDetail = () => {
     const [editCourseTitle, setEditCourseTitle] = useState('');
     const [shareStatus, setShareStatus] = useState('');
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+    const [isBulkUpdating, setIsBulkUpdating] = useState(false);
 
     const handleShare = () => {
         const shareUrl = `${window.location.origin}/share/${courseId}`;
@@ -356,6 +357,7 @@ const CourseDetail = () => {
         if (courseId?.startsWith('demo-')) return;
         if (!window.confirm("Mark all missions in this course as complete? This will award you full XP!")) return;
 
+        setIsBulkUpdating(true);
         try {
             const { data } = await api.post(`/progress/${courseId}/mark-all`);
             if (data.success) {
@@ -367,15 +369,17 @@ const CourseDetail = () => {
                 setCourse(cRes.data.course);
                 setProgress(pRes.data.progress);
                 
-                if (data.totalXPEarned > 0) {
+                if (data.newlyCompletedCount > 0) {
                     shootConfetti();
-                    alert(`Success! Marked ${data.newlyCompletedCount} missions as complete. Earned ${data.totalXPEarned} XP!`);
                 }
+                toast.success(`Success! Marked ${data.newlyCompletedCount} missions as complete.`);
                 broadcastProgressUpdate(getTabId());
             }
         } catch (err) {
             console.error("Failed to mark all complete:", err);
-            alert("Failed to update progress.");
+            toast.error("Failed to update progress.");
+        } finally {
+            setIsBulkUpdating(false);
         }
     };
 
@@ -755,23 +759,36 @@ const CourseDetail = () => {
                                 </div>
                             </div>
 
-                            {/* Bulk Actions / Mark All Row */}
                             {!courseId?.startsWith('demo-') && (
-                                <div className="flex items-center gap-3 sm:gap-6 px-3 sm:px-6 py-4 bg-primary/5 border-b border-border/50 group/bulk">
+                                <div className="flex items-center gap-4 px-5 py-5 bg-primary/5 border-b-2 border-primary/20 group/bulk mb-2 rounded-t-2xl">
                                     <div className="shrink-0">
                                         <button
                                             type="button"
                                             onClick={handleMarkAllComplete}
-                                            className="w-10 h-10 rounded-xl border-2 border-primary/40 bg-primary/10 flex items-center justify-center text-primary transition-all hover:scale-110 active:scale-95 shadow-[0_0_15px_rgba(var(--color-primary-rgb),0.1)] hover:bg-primary hover:text-white hover:border-primary"
+                                            disabled={isBulkUpdating}
+                                            className="w-16 h-16 rounded-2xl border-2 border-primary/50 bg-primary/10 flex flex-col items-center justify-center text-primary transition-all hover:scale-105 active:scale-95 shadow-[0_0_25px_rgba(var(--color-primary-rgb),0.2)] hover:bg-primary hover:text-white hover:border-primary group-hover/bulk:border-primary"
                                             title="Mark All Complete"
                                         >
-                                            <CheckCircle2 className="w-6 h-6 stroke-[3]" />
+                                            {isBulkUpdating ? (
+                                                <Loader2 className="w-6 h-6 animate-spin" />
+                                            ) : (
+                                                <>
+                                                    <Check className="w-8 h-8 stroke-[4] mb-0.5" />
+                                                    <span className="text-[8px] font-black uppercase tracking-tighter leading-none">Mark All</span>
+                                                </>
+                                            )}
                                         </button>
                                     </div>
                                     <div className="flex flex-col">
-                                        <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em] leading-none mb-1">Bulk Action</span>
-                                        <span className="text-xs font-bold text-text-primary uppercase tracking-widest">Mark All Missions Complete</span>
+                                        <span className="text-[11px] font-black text-primary uppercase tracking-[0.25em] leading-none mb-1.5">Mastery Protocol</span>
+                                        <h3 className="text-sm font-black text-text-primary uppercase tracking-widest">Mark all missions as complete</h3>
                                     </div>
+                                    {isBulkUpdating && (
+                                        <div className="ml-auto flex items-center gap-3 px-4 py-2 bg-primary/10 rounded-full border border-primary/20 animate-pulse">
+                                            <div className="w-2.5 h-2.5 rounded-full bg-primary animate-ping" />
+                                            <span className="text-[10px] font-black text-primary uppercase tracking-widest">Syncing Mastery...</span>
+                                        </div>
+                                    )}
                                 </div>
                             )}
 

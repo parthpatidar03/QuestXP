@@ -11,7 +11,6 @@ const STATUS_ICONS = {
 
 const LABELS = {
     transcription: 'Transcription',
-    notes: 'Structured Notes',
     quiz: 'Practice Quiz',
     topics: 'Topic Chapters'
 };

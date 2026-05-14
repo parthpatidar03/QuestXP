@@ -149,7 +149,6 @@ const courseProcessor = new Worker('course-processing', async job => {
                     thumbnailUrl: item.bestThumbnail?.url,
                     aiStatus: {
                         transcription: 'pending',
-                        notes: 'pending',
                         quiz: 'pending',
                         topics: 'pending',
                         embedding: 'pending'

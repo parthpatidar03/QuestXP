@@ -66,7 +66,8 @@ router.get('/stats', async (req, res) => {
         // 4. Productivity (Completion Rate)
         const completedCourses = progressDocs.filter(p => p.completionPct === 100).length;
         const totalEnrolled = progressDocs.length;
-        const completionRate = totalEnrolled > 0 ? Math.round((completedCourses / totalEnrolled) * 100) : 0;
+        const totalCompletion = progressDocs.reduce((acc, p) => acc + (p.completionPct || 0), 0);
+        const completionRate = totalEnrolled > 0 ? Math.round(totalCompletion / totalEnrolled) : 0;
 
         res.status(200).json({
             rank: {

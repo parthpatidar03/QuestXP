@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://www.questxp.in/">
-    <img src="https://img.shields.io/badge/LIVE_DEMO-QuestXP-green?style=for-the-badge&logo=vercel" alt="Live Demo">
+    <img src="https://img.shields.io/badge/LIVE_DEMO-QuestXP-indigo?style=for-the-badge&logo=vercel" alt="Live Demo">
   </a>
 </p>
 
@@ -11,99 +11,97 @@
 <h1 align="center">QuestXP</h1>
 
 <p align="center">
-  <strong>Advanced Gamified Learning Ecosystem | AI-Driven Roadmap Architecture</strong>
+  <strong>The Future of Hyper-Efficient Learning</strong><br>
+  <em>Advanced Gamified Learning Ecosystem | AI-Driven Roadmap Architecture</em>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.13.0-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-1.14.0-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License">
   <img src="https://img.shields.io/badge/status-production-success.svg" alt="Status">
 </p>
 
-QuestXP is a high-performance Learning Management System (LMS) optimized for "Playlist Fatigue." It programmatically transforms unstructured YouTube content—ranging from multi-video playlists to 10+ hour "one-shot" lectures—into structured, modular curricula using AI orchestration, Redis-backed background processing, and an adaptive scheduling engine.
+QuestXP is a high-performance LMS engineered to solve "Playlist Fatigue." It programmatically transforms unstructured YouTube content—from massive playlists to 10-hour "one-shot" lectures—into structured, modular curricula using an AI-orchestrated pipeline, Redis-backed background processing, and a surgical adaptive scheduling engine.
+
+---
+
+## 🌟 Feature Highlights (Hackathon Ready)
+
+| Feature | Description | Implementation |
+| :--- | :--- | :--- |
+| **Video One-Shots** | Split long-form videos into logical missions | Semantic AI Chapterization (GPT-4o-mini) |
+| **Achievement Capture** | High-fidelity streak sharing (TUF-style) | `html-to-image` + React Portals + Backdrop-Blur |
+| **Bulk Mastery** | Instant course/roadmap completion | Atomic MongoDB batch writes + XP aggregation |
+| **Adaptive Roadmaps** | Dynamic schedules that shift with your pace | 75% Cognitive Load Efficiency Algorithm |
+| **Zero-Latency Sync** | Instant progress updates across all tabs | BroadcastChannel API + Tab-Aware Source Filtering |
+| **Global Leaderboard** | Real-time competitive ranking & percentiles | Redis-backed XP Pipeline + Real-time Aggregation |
 
 ---
 
 ## 🏗️ System Architecture
 
-QuestXP utilizes a **Decoupled Monolith** architecture with an **Event-Driven AI Pipeline**.
+QuestXP uses a **Decoupled Monolith** architecture with an **Event-Driven AI Pipeline**.
 
 ### Backend (Node.js/Express)
-- **Layered Pattern**: `Routes` -> `Middleware` -> `Services` -> `Controllers` -> `Models`.
-- **Worker Tier**: BullMQ + Redis cluster for non-blocking execution of intensive AI tasks (Transcription, Chapterization).
-- **Identity & Security**: JWT-based authentication with a Dual-Mode System supporting both `HttpOnly` cookies and `Authorization: Bearer` headers.
+- **Asynchronous Tier**: BullMQ + Redis cluster for non-blocking execution of transcription and semantic chapterization.
+- **Identity & Security**: JWT-based auth with Dual-Mode support (`HttpOnly` cookies + `Authorization` headers).
+- **Persistence**: MongoDB for relational-style learning data with atomic operations for progress integrity.
 
 ### Frontend (React/Vite)
-- **Performance Layer**: Optimistic UI updates with cross-tab synchronization.
-- **State Management**: Zustand (UI/Auth) & TanStack Query (Server-state caching).
-- **Optimization**: Zero-flicker re-fetching logic using Tab-Specific Identification.
+- **Sync Layer**: Cross-tab synchronization via `questxp_progress_updated` events, eliminating manual refreshes.
+- **State Management**: Optimized Zustand store for UI/Auth; TanStack Query for surgical server-state caching.
+- **UI Architecture**: High-density dashboard with progressive disclosure and premium glassmorphism aesthetics.
 
 ---
 
 ## ⚙️ Core Technical Implementations
 
-### 1. The Chapterization Engine (One-Shot Support)
-The Chapterization Engine is a sophisticated backend service that partitions long-form videos into logical, educational modules.
-- **AI-Driven Topic Segmentation**: Instead of fixed-length splitting (which disrupts pedagogy), the `ChapterizationService` analyzes transcripts to detect natural shifts in topic.
-- **Temporal Validation**: Ensures all generated timestamps are strictly chronological and encompass 100% of the video duration.
-- **Graceful Degradation**: Implements a JSON fallback mechanism to ensure course creation success even if the AI provider encounters a transient error.
+### 1. AI "One-Shot" Chapterization Pipeline
+A custom-built processing pipeline that handles 10+ hour "Roadmap" videos.
+- **Semantic Segmentation**: Analyzes video transcripts via GPT-4o-mini to identify natural pedagogical breaks rather than fixed-time splits.
+- **Fault Tolerance**: Implements background retries and JSON fallback mechanisms to guarantee curriculum generation.
 
-### 2. Dynamic Gamification Engine (v2.0)
-A progressive reward system that scales with user consistency and effort.
-- **Progressive Lecture XP**: Implements a `50 + 10n` XP formula per lecture completion, rewarding deeper engagement.
-- **Screen-Time Bonuses**: Automated background tracking awards +50 XP for 1hr sessions and +200 XP for 3hr sessions.
-- **Custom Awarding Logic**: Refactored `XPService` to support dynamic, multi-factor XP calculation beyond static constants.
+### 2. Achievement Capture 2.0
+A premium achievement sharing system inspired by top-tier platforms.
+- **High-Fidelity Export**: Uses `html-to-image` with a 2.0 pixel ratio for Retina-quality PNG exports.
+- **Immersive Modals**: Implemented using React Portals with `backdrop-blur-xl` for a focused, premium user experience.
 
 ### 3. Surgical Adaptive Roadmap Algorithm (v2)
-A dynamic scheduling engine that treats learning paths as living documents rather than static lists.
-- **75% Efficiency Rule**: Built-in scheduling logic that accounts for note-taking and cognitive load, providing realistic completion estimates.
-- **Granular Shifting**: Allows users to shift specific lessons or blocks without breaking the entire relational dependency tree of the roadmap.
-- **Atomic Operations**: Backend updates are performed using atomic MongoDB operations to prevent race conditions during simultaneous progress updates.
+- **75% Efficiency Rule**: Accounts for cognitive load and note-taking time, providing realistic, non-overwhelming study plans.
+- **Atomic Shifting**: Allows users to re-schedule specific lessons without breaking the global dependency graph.
 
-### 4. Frontend: Optimistic UI & Cross-Tab Sync
-To ensure a "Zero-Latency" feel, QuestXP implements a custom **Tab-Aware Synchronization** system.
-- **Optimistic Updates**: The frontend calculates and reflects progress changes (e.g., lesson completion) *before* the backend confirms the write, providing instant feedback.
-- **Source Filtering**: Each browser tab is assigned a unique `window.name` ID. When a tab receives a "Progress Updated" event, it checks the `sourceId`. If it was the initiator, it skips redundant re-fetches to prevent UI flicker.
-- **Local Persistence Sync**: Uses `localStorage` events to maintain state parity across multiple open tabs without the overhead of WebSockets.
-
-### 5. Bulk Progress Completion
-Enables users to batch-complete course modules, synchronizing XP rewards and roadmap states instantly.
-- **Atomic Batch Updates**: The backend processes bulk completion in a single database transaction, recalculating cumulative XP based on the progressive formula.
-- **Cross-Tab Synchronization**: Triggers a global `questxp_progress_updated` event to ensure all open views (Dashboard, Roadmap, Player) reflect the completed state without a manual refresh.
-- **Visual Reinforcement**: Integrated with the confetti utility to celebrate major milestones.
+### 4. Cross-Tab Synchronization (Zero-Latency)
+- **BroadcastChannel**: Updates are broadcasted locally to all browser tabs.
+- **Source Filtering**: Each tab uses a unique `sourceId` to ignore its own broadcasted events, preventing redundant re-fetches and UI flickering.
 
 ---
 
 ## 🛠️ Technical Stack
 
-- **Runtime**: Node.js v20+
-- **Database**: MongoDB (Atlas) / Pinecone (Vector Search)
-- **Caching/Queue**: Redis / BullMQ
-- **AI Orchestration**: OpenAI (GPT-4o-mini) / LangChain
-- **Notification Engine**: Firebase Cloud Messaging (FCM)
-- **Monitoring**: Custom `ObservabilityService` for diagnostic logging and error tracking.
+- **Runtime**: Node.js v20+, Express
+- **Database**: MongoDB Atlas, Redis (Caching/Queues)
+- **AI**: OpenAI GPT-4o-mini, yt-transcript
+- **Auth**: Google OAuth 2.0, JWT
+- **Sync**: BroadcastChannel API, Firebase FCM
+- **Export**: html-to-image, canvas-confetti
 
 ---
 
-## 🚦 Key API & Routing Structure
+## 🚦 Key API & Routing
 
-| Endpoint | Method | Function | Technical Context |
+| Endpoint | Method | Function | Backend Context |
 | :--- | :--- | :--- | :--- |
-| `/api/courses/generate` | POST | Course Generation | Triggers the AI pipeline (Chapters) |
-| `/api/progress/toggle` | PATCH | Progress Update | atomic $addToSet/$pull with total XP calculation |
-| `/api/progress/:id/mark-all` | POST | Bulk Completion | Atomic batch update with cumulative XP rewards |
-| `/api/roadmaps/sync` | POST | Bidirectional Sync | Merges Player progress with Roadmap schedule |
-| `/api/auth/google` | POST | Identity Sync | OAuth2 flow with internal JWT generation |
+| `/api/courses/generate` | POST | Course Generation | AI Semantic Chapterization Pipeline |
+| `/api/progress/toggle` | PATCH | Progress Update | Atomic $addToSet with real-time XP math |
+| `/api/roadmaps/sync` | POST | Bidirectional Sync | Merges Player progress into Global Roadmap |
+| `/api/auth/google` | POST | Identity Sync | OAuth2 flow + internal JWT issuance |
 
 ---
 
-## 🔍 Observability & Stability
-QuestXP includes a robust logging layer designed for production monitoring:
-- **Error Propagation**: Centralized middleware catches and sanitizes errors, returning structured JSON while logging the stack trace internally.
-- **CORS Hardening**: Fully configured for secure multi-domain communication (supporting `questxp.in` and local environments).
-- **Diagnostic Logs**: Injected at every stage of the AI pipeline to track transcription health and LLM response latency.
-
----
+## 📚 Documentation
+- [Streak & Sharing System](docs/024-streak-capture-and-sharing.md) - Deep dive into achievement sharing.
+- [Backend Engineering](docs/backend-features.md) - AI pipeline and XP system logic.
+- [Mobile UI Optimization](docs/019-ui-density-refinement.md) - High-density responsive design.
 
 ## 📄 License
-MIT License. Developed by Parth Patidar.
+MIT License. Developed by **Parth Patidar**.

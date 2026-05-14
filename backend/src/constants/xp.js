@@ -25,6 +25,6 @@ module.exports = {
         STREAK_100: 500,
         SCREEN_TIME_1HR: 50,
         SCREEN_TIME_3HR: 200,
-        BULK_LECTURE_COMPLETION: 0,
+        BULK_LECTURE_COMPLETION: 100,
     }
 };

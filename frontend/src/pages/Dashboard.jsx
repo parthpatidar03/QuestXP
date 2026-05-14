@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Flame, Zap, Trophy, Shield, BookOpen, Plus, ChevronRight, Star, Trash2, Target, MessageSquare, Share2, Copy, Github, Monitor, Smartphone, Layout, Bell, Sparkles, Check, Clock, Info, X, PlayCircle, RefreshCw } from 'lucide-react';
+import { Flame, Zap, Trophy, Shield, BookOpen, Plus, CheckCircle2, ChevronRight, Star, Trash2, Target, MessageSquare, Share2, Copy, Github, Monitor, Smartphone, Layout, Bell, Sparkles, Check, Clock, Info, X, PlayCircle, RefreshCw, Camera } from 'lucide-react';
 import toast from 'react-hot-toast';
 import useAuthStore from '../store/useAuthStore';
 import useGamificationStore from '../store/useGamificationStore';
@@ -407,50 +407,50 @@ const Dashboard = () => {
     // Features list (top 5)
     const newFeatures = [
         {
-            id: 'bulk-completion',
-            title: 'Bulk Progress Completion',
-            description: 'Mark entire courses as complete with a single click. Instant XP recalculation and roadmap sync.',
-            icon: <Check className="w-5 h-5 text-success" />,
+            id: 'streak-capture',
+            title: 'Achievement Capture 2.0',
+            description: 'Share your progress in style! New high-fidelity achievement cards with backdrop-blur and premium TUF-inspired aesthetics.',
+            icon: <Camera className="w-5 h-5 text-primary" />,
             date: 'New'
-        },
-        {
-            id: 'optimistic-ui',
-            title: 'Optimistic UI & Tab Sync',
-            description: 'Zero-flicker progress updates with intelligent cross-tab state synchronization.',
-            icon: <Zap className="w-5 h-5 text-warning" />,
-            date: 'Latest'
         },
         {
             id: 'video-support',
-            title: 'Video Lectures & One-Shots',
-            description: 'Full support for video lectures and one-shot tutorials in your roadmaps.',
-            icon: <PlayCircle className="w-5 h-5 text-primary" />,
-            date: 'New'
+            title: 'AI Video Chapterization',
+            description: 'Full support for single long-form "One-Shot" videos. Paste any tutorial and we\'ll split it into logical missions.',
+            icon: <PlayCircle className="w-5 h-5 text-secondary" />,
+            date: 'Popular'
         },
         {
-            id: 'smart-roadmaps',
-            title: 'Smart AI Roadmaps',
-            description: 'Generated learning paths now include multi-source curation and dynamic difficulty scaling.',
-            icon: <Target className="w-5 h-5 text-success" />,
+            id: 'bulk-mastery',
+            title: 'Bulk Mastery Protocol',
+            description: 'Level up faster! Mark entire courses as complete in one click. Automatic XP batching and global sync enabled.',
+            icon: <CheckCircle2 className="w-5 h-5 text-success" />,
+            date: 'Major'
+        },
+        {
+            id: 'global-leaderboard',
+            title: 'Global Elite Ranks',
+            description: 'Compete with the top 1% of learners. Track your rank, percentile, and trending position in real-time.',
+            icon: <Trophy className="w-5 h-5 text-warning" />,
             date: 'Updated'
         },
         {
-            id: 'live-sync',
-            title: 'Live Progress Sync',
-            description: 'Track your learning across all devices with real-time state persistence.',
-            icon: <RefreshCw className="w-5 h-5 text-info" />,
+            id: 'sync-engine',
+            title: 'Zero-Latency Sync',
+            description: 'Every progress toggle is now reflected across all open tabs instantly with zero flickering using Broadcast Channels.',
+            icon: <Zap className="w-5 h-5 text-primary" />,
             date: 'Stable'
         }
     ];
 
     useEffect(() => {
-        const hasSeenGamification = localStorage.getItem('seen_feature_gamification_v2');
-        if (!hasSeenGamification) {
-            toast.success("New: Dynamic XP & Hidden Study Quests are now LIVE!", {
+        const hasSeenVideoSupport = localStorage.getItem('seen_feature_video_support_v1');
+        if (!hasSeenVideoSupport) {
+            toast.success("New: 10hr+ One-Shot Video Support is now LIVE! 🚀", {
                 duration: 6000,
-                icon: '🏆',
+                icon: '📺'
             });
-            localStorage.setItem('seen_feature_gamification_v2', 'true');
+            localStorage.setItem('seen_feature_video_support_v1', 'true');
         }
     }, []);
 
@@ -462,54 +462,29 @@ const Dashboard = () => {
         
         // Feature Announcements
         const seenFeatures = JSON.parse(localStorage.getItem('seenFeatures') || '[]');
-        if (!seenFeatures.includes('confetti_gamification')) {
+        
+        if (!seenFeatures.includes('streak_capture_v1')) {
             setTimeout(() => {
-                addBadgeToast('New: Celebratory Effects!', 'Celebrate your progress with confetti and fireworks!', 'zap');
-                seenFeatures.push('confetti_gamification');
+                addBadgeToast('New: Achievement Capture!', 'Share your streaks with premium, high-fidelity export cards!', 'camera');
+                seenFeatures.push('streak_capture_v1');
                 localStorage.setItem('seenFeatures', JSON.stringify(seenFeatures));
-            }, 2000);
+            }, 3000);
         }
+
         if (!seenFeatures.includes('one_shot_videos')) {
             setTimeout(() => {
                 addBadgeToast('New: One-Shot Support!', 'Create courses from single long videos now!', 'video');
                 seenFeatures.push('one_shot_videos');
                 localStorage.setItem('seenFeatures', JSON.stringify(seenFeatures));
-            }, 5000);
+            }, 7000);
         }
-        if (!seenFeatures.includes('smart_roadmap_v2')) {
-            setTimeout(() => {
-                addBadgeToast('New: Smart Roadmaps!', 'Achieve more with 75% efficiency and granular shifting!', 'target');
-                seenFeatures.push('smart_roadmap_v2');
-                localStorage.setItem('seenFeatures', JSON.stringify(seenFeatures));
-            }, 8000);
-        }
-        if (!seenFeatures.includes('roadmap_progress_sync')) {
-            setTimeout(() => {
-                addBadgeToast('New: Live Progress Sync!', 'Roadmap & Course Player now sync bi-directionally!', 'refresh-cw');
-                seenFeatures.push('roadmap_progress_sync');
-                localStorage.setItem('seenFeatures', JSON.stringify(seenFeatures));
-            }, 11000);
-        }
-        if (!seenFeatures.includes('global_roadmap')) {
-            setTimeout(() => {
-                addBadgeToast('New: Multi-Course Roadmaps!', 'Combine any courses into one unified study plan!', 'sparkles');
-                seenFeatures.push('global_roadmap');
-                localStorage.setItem('seenFeatures', JSON.stringify(seenFeatures));
-            }, 11000);
-        }
-        if (!seenFeatures.includes('enhanced_stability_v1')) {
-            setTimeout(() => {
-                addBadgeToast('New: Enhanced Stability!', 'Every mission toggle and sync is now tracked for maximum reliability.', 'shield');
-                seenFeatures.push('enhanced_stability_v1');
-                localStorage.setItem('seenFeatures', JSON.stringify(seenFeatures));
-            }, 14000);
-        }
+
         if (!seenFeatures.includes('bulk_completion_v1')) {
             setTimeout(() => {
                 addBadgeToast('New: Bulk Completion!', 'Level up faster! Mark entire courses as done in one click.', 'check');
                 seenFeatures.push('bulk_completion_v1');
                 localStorage.setItem('seenFeatures', JSON.stringify(seenFeatures));
-            }, 17000);
+            }, 12000);
         }
     }, [addBadgeToast]);
 
@@ -790,9 +765,14 @@ const Dashboard = () => {
 
                     <section>
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                            <div className="flex items-center gap-4">
-                                <h2 onClick={() => setActiveTab('courses')} className={`text-xl font-bold tracking-tight uppercase cursor-pointer ${activeTab === 'courses' ? 'text-text-primary' : 'text-text-muted'}`}>Dashboard</h2>
-                                <h2 onClick={() => setActiveTab('features')} className={`text-xl font-bold tracking-tight uppercase cursor-pointer ${activeTab === 'features' ? 'text-text-primary' : 'text-text-muted'}`}>New Features</h2>
+                            <div className="flex flex-col gap-1">
+                                <div className="flex items-center gap-4">
+                                    <h2 onClick={() => setActiveTab('courses')} className={`text-xl font-bold tracking-tight uppercase cursor-pointer ${activeTab === 'courses' ? 'text-text-primary' : 'text-text-muted'}`}>Dashboard</h2>
+                                    <h2 onClick={() => setActiveTab('features')} className={`text-xl font-bold tracking-tight uppercase cursor-pointer ${activeTab === 'features' ? 'text-text-primary' : 'text-text-muted'}`}>New Features</h2>
+                                </div>
+                                <p className="text-[10px] font-black text-text-muted uppercase tracking-widest">
+                                    {activeTab === 'courses' ? 'Monitor your active learning missions' : 'Latest updates to the QuestXP platform'}
+                                </p>
                             </div>
                             <div className="flex items-center gap-2">
                                 <button id="tour-new-course" onClick={() => setShowCreate(v => !v)} className="btn-primary py-2.5 px-5 text-[10px] font-black uppercase tracking-widest flex items-center gap-2 flex-1 sm:flex-none justify-center">
@@ -926,8 +906,12 @@ const Dashboard = () => {
                                 <div className="flex items-center justify-between mb-3">
                                     <div className="flex items-center gap-3">
                                         <button 
-                                            onClick={() => setShowXPSystem(true)}
-                                            className="p-1.5 rounded-lg bg-white/20 hover:bg-white/40 text-white transition-all border border-white/30 shadow-sm"
+                                            onClick={(e) => {
+                                                console.log('[DEBUG] XP Info Clicked', { event: e });
+                                                setShowXPSystem(true);
+                                            }}
+                                            className="p-1.5 rounded-lg bg-white/20 hover:bg-white/40 text-white transition-all border border-white/30 shadow-sm pointer-events-auto cursor-pointer"
+                                            style={{ position: 'relative', zIndex: 50 }}
                                             title="How XP works"
                                         >
                                             <Info className="w-4 h-4" />
@@ -988,7 +972,7 @@ const Dashboard = () => {
                             <Flame className="w-4 h-4 text-warning" />
                             <h2 className="text-sm font-semibold tracking-wide text-text-primary">Study Streak</h2>
                         </div>
-                        <StreakCalendar history={historyData} />
+                        <StreakCalendar history={historyData} rank={stats?.rank?.current} />
                     </div>
 
 
@@ -1088,8 +1072,6 @@ const Dashboard = () => {
 };
 
 const XPSystemModal = ({ isOpen, onClose }) => {
-    if (!isOpen) return null;
-
     const mechanics = [
         { title: "Progressive Lectures", desc: "Gain more XP as you go. Lecture 1 (+50 XP), Lecture 2 (+60 XP), and so on!", icon: <BookOpen className="w-5 h-5" />, color: "text-blue-400" },
         { title: "Study Streaks", desc: "Keep the flame alive! 1.25x (7 days), 1.5x (14 days), 2x (30 days), up to 3x multiplier!", icon: <Flame className="w-5 h-5" />, color: "text-warning" },
@@ -1098,58 +1080,66 @@ const XPSystemModal = ({ isOpen, onClose }) => {
         { title: "Quiz Mastery", desc: "Ace a quiz for +75 XP. Improve your previous score for extra gains.", icon: <Trophy className="w-5 h-5" />, color: "text-purple-400" },
     ];
 
-    return (
-        <div className="fixed inset-0 z-[300] flex items-center justify-center p-4">
-            <motion.div 
-                initial={{ opacity: 0 }} 
-                animate={{ opacity: 1 }} 
-                onClick={onClose}
-                className="absolute inset-0 bg-background/80 backdrop-blur-md"
-            />
-            <motion.div 
-                initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                className="relative w-full max-w-lg glass-card p-8 overflow-y-auto max-h-[90vh] scrollbar-hide"
-            >
-                <div className="absolute top-0 right-0 p-4">
-                    <button onClick={onClose} className="p-2 hover:bg-surface-2 rounded-lg transition-colors">
-                        <X className="w-5 h-5 text-text-muted" />
-                    </button>
-                </div>
-
-                <div className="mb-8">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest mb-4">
-                        <Zap className="w-3 h-3" />
-                        Leveling System
-                    </div>
-                    <h2 className="text-3xl font-black text-text-primary uppercase tracking-tight">How XP Works</h2>
-                    <p className="text-text-secondary mt-2">Master the system to evolve your rank faster.</p>
-                </div>
-
-                <div className="space-y-4">
-                    {mechanics.map((m, i) => (
-                        <div key={i} className="flex gap-4 p-4 rounded-2xl bg-surface-2 border border-border hover:border-primary/30 transition-all group">
-                            <div className={`shrink-0 w-12 h-12 rounded-xl bg-surface border border-border flex items-center justify-center ${m.color} group-hover:scale-110 transition-transform`}>
-                                {m.icon}
-                            </div>
-                            <div>
-                                <h4 className="text-sm font-bold text-text-primary uppercase tracking-wide">{m.title}</h4>
-                                <p className="text-xs text-text-secondary mt-1 leading-relaxed">{m.desc}</p>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-
-                <div className="mt-8 pt-6 border-t border-border">
-                    <button 
+    return createPortal(
+        <AnimatePresence>
+            {isOpen && (
+                <div className="fixed inset-0 z-[10001] flex items-center justify-center p-4">
+                    <motion.div 
+                        initial={{ opacity: 0 }} 
+                        animate={{ opacity: 1 }} 
+                        exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="w-full btn-primary py-4 text-xs font-black uppercase tracking-[0.2em]"
+                        className="absolute inset-0 bg-black/80 backdrop-blur-xl"
+                    />
+                    <motion.div 
+                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                        onClick={(e) => e.stopPropagation()}
+                        className="relative w-full max-w-lg bg-surface border border-white/10 rounded-[2rem] shadow-2xl p-8 overflow-y-auto max-h-[90vh] scrollbar-hide z-10 pointer-events-auto"
                     >
-                        Got it, Captain
-                    </button>
+                        <div className="absolute top-0 right-0 p-6">
+                            <button onClick={onClose} className="p-2 hover:bg-surface-2 rounded-lg transition-colors">
+                                <X className="w-5 h-5 text-text-muted hover:text-white" />
+                            </button>
+                        </div>
+
+                        <div className="mb-8">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest mb-4">
+                                <Zap className="w-3 h-3" />
+                                Leveling System
+                            </div>
+                            <h2 className="text-3xl font-black text-text-primary uppercase tracking-tight">How XP Works</h2>
+                            <p className="text-text-secondary mt-2">Master the system to evolve your rank faster.</p>
+                        </div>
+
+                        <div className="space-y-4">
+                            {mechanics.map((m, i) => (
+                                <div key={i} className="flex gap-4 p-4 rounded-2xl bg-surface-2 border border-border hover:border-primary/30 transition-all group">
+                                    <div className={`shrink-0 w-12 h-12 rounded-xl bg-surface border border-border flex items-center justify-center ${m.color} group-hover:scale-110 transition-transform`}>
+                                        {m.icon}
+                                    </div>
+                                    <div>
+                                        <h4 className="text-sm font-bold text-text-primary uppercase tracking-wide">{m.title}</h4>
+                                        <p className="text-xs text-text-secondary mt-1 leading-relaxed">{m.desc}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="mt-8 pt-6 border-t border-border">
+                            <button 
+                                onClick={onClose}
+                                className="w-full btn-primary py-4 text-xs font-black uppercase tracking-[0.2em]"
+                            >
+                                Got it, Captain
+                            </button>
+                        </div>
+                    </motion.div>
                 </div>
-            </motion.div>
-        </div>
+            )}
+        </AnimatePresence>,
+        document.body
     );
 };
 

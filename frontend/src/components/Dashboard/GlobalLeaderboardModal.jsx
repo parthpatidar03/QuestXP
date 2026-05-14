@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Crown, Info } from 'lucide-react';
 import LeaderboardPodium from './LeaderboardPodium';
@@ -7,13 +8,20 @@ import LeaderboardTable from './LeaderboardTable';
 const GlobalLeaderboardModal = ({ isOpen, onClose, players = [], onShowXPSystem }) => {
     if (!isOpen) return null;
 
-    return (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl">
+    return createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
             <motion.div
-                initial={{ scale: 0.95, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.95, opacity: 0 }}
-                className="w-full max-w-4xl h-[90vh] bg-surface border border-border rounded-[2.5rem] flex flex-col overflow-hidden shadow-2xl"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 bg-black/80 backdrop-blur-xl"
+                onClick={onClose}
+            />
+            <motion.div
+                initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                className="relative w-full max-w-4xl h-[90vh] bg-surface border border-border rounded-[2.5rem] flex flex-col overflow-hidden shadow-2xl z-10"
             >
                 {/* Header */}
                 <div className="p-6 sm:p-8 border-b border-border flex items-center justify-between shrink-0 bg-surface/50">
@@ -67,7 +75,8 @@ const GlobalLeaderboardModal = ({ isOpen, onClose, players = [], onShowXPSystem 
                     </p>
                 </div>
             </motion.div>
-        </div>
+        </div>,
+        document.body
     );
 };
 

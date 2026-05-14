@@ -3,6 +3,7 @@ const Course = require('../models/Course');
 const xpService = require('./xpService');
 const streakService = require('./streakService');
 const Roadmap = require('../models/Roadmap');
+const { XP_REWARDS } = require('../constants/xp');
 
 const getOrCreateProgress = async (userId, courseId) => {
     try {
@@ -200,10 +201,19 @@ const toggleLecture = async (userId, courseId, lectureId, isCompleted) => {
 };
 
 const markAllComplete = async (userId, courseId) => {
-    const course = await Course.findById(courseId);
+    // Handle potential populated object from frontend or previous calls
+    const actualCourseId = (courseId && typeof courseId === 'object' && courseId._id) 
+        ? courseId._id.toString() 
+        : courseId?.toString();
+
+    if (!actualCourseId || actualCourseId === '[object Object]') {
+        throw new Error('Invalid Course ID provided for bulk completion');
+    }
+
+    const course = await Course.findById(actualCourseId);
     if (!course) throw new Error('Course not found');
 
-    const progress = await getOrCreateProgress(userId, courseId);
+    const progress = await getOrCreateProgress(userId, actualCourseId);
     
     let totalXPEarned = 0;
     let newlyCompletedCount = 0;
@@ -214,6 +224,7 @@ const markAllComplete = async (userId, courseId) => {
     for (const section of course.sections) {
         for (const lecture of section.lectures) {
             const lectureIdStr = lecture._id.toString();
+            // Use find for Mongoose subdocuments
             let lectureProg = progress.lectureProgress.find(lp => lp.lecture.toString() === lectureIdStr);
 
             if (!lectureProg) {
@@ -224,6 +235,8 @@ const markAllComplete = async (userId, courseId) => {
                     completed: false
                 };
                 progress.lectureProgress.push(lectureProg);
+                // After pushing, find it again to ensure we have the Mongoose-wrapped version
+                lectureProg = progress.lectureProgress.find(lp => lp.lecture.toString() === lectureIdStr);
             }
 
             if (!lectureProg.completed) {
@@ -241,10 +254,10 @@ const markAllComplete = async (userId, courseId) => {
 
     if (newlyCompletedCount > 0) {
         // Award XP in bulk
-        if (totalXPEarned > 0) {
-            await xpService.award(userId, 'BULK_LECTURE_COMPLETION', courseId, totalXPEarned);
-        }
+        // We add the base reward for the bulk action too
+        const totalAward = totalXPEarned + (XP_REWARDS?.BULK_LECTURE_COMPLETION || 0);
         
+        await xpService.award(userId, 'BULK_LECTURE_COMPLETION', actualCourseId, totalAward);
         await streakService.recordActivity(userId);
 
         // Recalculate Course Completion
@@ -257,7 +270,7 @@ const markAllComplete = async (userId, courseId) => {
 
         // Sync with Roadmap
         try {
-            const roadmaps = await Roadmap.find({ userId, courseId });
+            const roadmaps = await Roadmap.find({ userId, courseId: actualCourseId });
             for (const roadmap of roadmaps) {
                 let changed = false;
                 for (const day of roadmap.days) {
@@ -268,7 +281,10 @@ const markAllComplete = async (userId, courseId) => {
                         }
                     }
                 }
-                if (changed) await roadmap.save();
+                if (changed) {
+                    roadmap.lastAccessedAt = now;
+                    await roadmap.save();
+                }
             }
         } catch (syncError) {
             console.error("[Sync] Failed to sync roadmap bulk completion:", syncError);
@@ -280,7 +296,10 @@ const markAllComplete = async (userId, courseId) => {
         newlyCompletedCount,
         totalXPEarned,
         completionPct: progress.completionPct,
-        totalCompleted: progress.completedCount
+        totalCompleted: progress.completedCount,
+        message: newlyCompletedCount > 0 
+            ? `Marked ${newlyCompletedCount} missions as complete!` 
+            : `All missions are already marked as complete.`
     };
 };
 

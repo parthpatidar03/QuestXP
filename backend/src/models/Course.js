@@ -19,7 +19,6 @@ const courseSchema = new Schema({
             thumbnailUrl: { type: String },
             aiStatus: {
                 transcription: { type: String, enum: ['pending', 'in_progress', 'complete', 'failed'], default: 'pending' },
-                notes: { type: String, enum: ['pending', 'in_progress', 'complete', 'failed'], default: 'pending' },
                 quiz: { type: String, enum: ['pending', 'in_progress', 'complete', 'failed'], default: 'pending' },
                 topics: { type: String, enum: ['pending', 'in_progress', 'complete', 'failed'], default: 'pending' },
                 embedding: { type: String, enum: ['pending', 'in_progress', 'complete', 'failed'], default: 'pending' },
