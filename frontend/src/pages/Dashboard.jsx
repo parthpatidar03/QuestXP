@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Flame, Zap, Trophy, Shield, BookOpen, Plus, ChevronRight, Star, Trash2, Target, MessageSquare, Share2, Copy, X } from 'lucide-react';
+import { Flame, Zap, Trophy, Shield, BookOpen, Plus, ChevronRight, Star, Trash2, Target, MessageSquare, Share2, Copy, X, PlayCircle, RefreshCw, Sparkles } from 'lucide-react';
 import useAuthStore from '../store/useAuthStore';
 import useGamificationStore from '../store/useGamificationStore';
 import api from '../services/api';
@@ -1001,7 +1001,7 @@ const Dashboard = () => {
                         </div>
                         <button 
                             onClick={handleUndoDelete}
-                            className="ml-2 px-6 py-2.5 bg-primary text-black text-xs font-black uppercase tracking-widest rounded-xl hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20"
+                            className="ml-2 px-6 py-2.5 bg-primary text-white text-xs font-black uppercase tracking-widest rounded-xl hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20"
                         >
                             Undo
                         </button>

@@ -52,7 +52,7 @@ const UsernameModal = ({ isOpen, onClose }) => {
                         <User className="w-8 h-8 text-primary" />
                     </div>
                     
-                    <h2 className="text-2xl font-black mb-3 uppercase tracking-tight text-text-primary">
+                    <h2 className="text-2xl font-black mb-3 uppercase tracking-tight text-white">
                         Choose Your Identity
                     </h2>
                     <p className="text-text-secondary text-sm mb-8 font-medium">
@@ -88,7 +88,7 @@ const UsernameModal = ({ isOpen, onClose }) => {
                         <button
                             type="submit"
                             disabled={isLoading || username.length < 3}
-                            className="w-full py-4 rounded-2xl bg-primary text-black font-black uppercase tracking-widest text-xs hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:hover:scale-100 shadow-lg shadow-primary/20"
+                            className="w-full py-4 rounded-2xl bg-primary text-white font-black uppercase tracking-widest text-xs hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:hover:scale-100 shadow-lg shadow-primary/20"
                         >
                             {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Claim Username'}
                         </button>

@@ -15,7 +15,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.12.0-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-1.13.0-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License">
   <img src="https://img.shields.io/badge/status-production-success.svg" alt="Status">
 </p>
@@ -31,9 +31,10 @@ QuestXP is a high-performance Learning Management System (LMS) designed to solve
 
 ## ✨ Core Features
 
-- **📺 Video Support**: Full support for One-Shot videos and playlists.
-- **✨ 3D Interactive UI**: Immersive parallax effects driven by mouse movement.
-- **🆕 What's New Hub**: Dedicated dashboard tab for tracking platform evolution.
+- **📺 Video Support**: Full support for One-Shot videos and playlists. [Read Docs →](docs/BACKEND_VIDEO_SUPPORT.md)
+- **✨ 3D Interactive UI**: Immersive parallax effects driven by mouse movement. [Read Docs →](docs/UI_EFFECTS.md)
+- **🛡️ Focus Guardian**: Burnout prevention and ad-free learning. [Read Docs →](docs/FOCUS_GUARDIAN.md)
+- **🆕 What's New Hub**: Dedicated dashboard tab for tracking platform evolution. [Read Docs →](docs/NEW_FEATURES.md)
 - **🎓 Smart AI Roadmaps**: Dynamic learning paths with 75% higher efficiency.
 
 ---

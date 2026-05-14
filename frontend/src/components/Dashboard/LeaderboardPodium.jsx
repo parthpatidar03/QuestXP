@@ -68,7 +68,7 @@ const LeaderboardPodium = ({ players = [] }) => {
                             {/* Rank Badge */}
                             <div className={`
                                 absolute -bottom-4 px-3 py-1 rounded-full text-[10px] font-black tracking-widest uppercase shadow-lg
-                                ${isFirst ? 'bg-gold text-black' : isSecond ? 'bg-slate-300 text-black' : 'bg-amber-600 text-white'}
+                                ${isFirst ? 'bg-gold text-white' : isSecond ? 'bg-slate-300 text-white' : 'bg-amber-600 text-white'}
                             `}>
                                 #{rank}
                             </div>

@@ -954,7 +954,7 @@ const OnboardingModal = ({ onClose }) => {
                             )}
                             <button 
                                 onClick={() => step < steps.length - 1 ? setStep(step + 1) : onClose()}
-                                className="px-8 py-4 rounded-2xl bg-[var(--color-primary)] text-black font-black uppercase tracking-widest text-xs hover:scale-105 active:scale-95 transition-all flex items-center gap-2 shadow-lg shadow-primary/20"
+                                className="px-8 py-4 rounded-2xl bg-[var(--color-primary)] text-white font-black uppercase tracking-widest text-xs hover:scale-105 active:scale-95 transition-all flex items-center gap-2 shadow-lg shadow-primary/20"
                             >
                                 {step < steps.length - 1 ? (
                                     <>Next <ChevronRight className="w-4 h-4" /></>
