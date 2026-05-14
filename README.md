@@ -66,6 +66,12 @@ To ensure a "Zero-Latency" feel, QuestXP implements a custom **Tab-Aware Synchro
 - **Source Filtering**: Each browser tab is assigned a unique `window.name` ID. When a tab receives a "Progress Updated" event, it checks the `sourceId`. If it was the initiator, it skips redundant re-fetches to prevent UI flicker.
 - **Local Persistence Sync**: Uses `localStorage` events to maintain state parity across multiple open tabs without the overhead of WebSockets.
 
+### 5. Bulk Progress Completion
+Enables users to batch-complete course modules, synchronizing XP rewards and roadmap states instantly.
+- **Atomic Batch Updates**: The backend processes bulk completion in a single database transaction, recalculating cumulative XP based on the progressive formula.
+- **Cross-Tab Synchronization**: Triggers a global `questxp_progress_updated` event to ensure all open views (Dashboard, Roadmap, Player) reflect the completed state without a manual refresh.
+- **Visual Reinforcement**: Integrated with the confetti utility to celebrate major milestones.
+
 ---
 
 ## 🛠️ Technical Stack
@@ -85,6 +91,7 @@ To ensure a "Zero-Latency" feel, QuestXP implements a custom **Tab-Aware Synchro
 | :--- | :--- | :--- | :--- |
 | `/api/courses/generate` | POST | Course Generation | Triggers the AI pipeline (Chapters + Summaries) |
 | `/api/progress/toggle` | PATCH | Progress Update | atomic $addToSet/$pull with total XP calculation |
+| `/api/progress/:id/mark-all` | POST | Bulk Completion | Atomic batch update with cumulative XP rewards |
 | `/api/roadmaps/sync` | POST | Bidirectional Sync | Merges Player progress with Roadmap schedule |
 | `/api/auth/google` | POST | Identity Sync | OAuth2 flow with internal JWT generation |
 

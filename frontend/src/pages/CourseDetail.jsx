@@ -352,6 +352,34 @@ const CourseDetail = () => {
         }
     };
 
+    const handleMarkAllComplete = async () => {
+        if (courseId?.startsWith('demo-')) return;
+        if (!window.confirm("Mark all missions in this course as complete? This will award you full XP!")) return;
+
+        try {
+            const { data } = await api.post(`/progress/${courseId}/mark-all`);
+            if (data.success) {
+                // Refresh course and progress
+                const [cRes, pRes] = await Promise.all([
+                    api.get(`/courses/${courseId}`),
+                    api.get(`/progress/${courseId}`)
+                ]);
+                setCourse(cRes.data.course);
+                setProgress(pRes.data.progress);
+                
+                if (data.totalXPEarned > 0) {
+                    shootConfetti();
+                    alert(`Success! Marked ${data.newlyCompletedCount} missions as complete. Earned ${data.totalXPEarned} XP!`);
+                }
+                broadcastProgressUpdate(getTabId());
+            }
+        } catch (err) {
+            console.error("Failed to mark all complete:", err);
+            alert("Failed to update progress.");
+        }
+    };
+
+
     useEffect(() => {
         const hasOnboarded = localStorage.getItem('questxp_onboarded');
         if (!hasOnboarded) {
@@ -664,6 +692,16 @@ const CourseDetail = () => {
                                             Path to Mastery
                                         </p>
                                     </div>
+
+                                    {!courseId?.startsWith('demo-') && (
+                                        <button 
+                                            onClick={handleMarkAllComplete}
+                                            className="flex items-center gap-2 px-4 py-2 bg-success/10 hover:bg-success/20 border border-success/30 rounded-xl text-success text-[10px] font-black uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98]"
+                                        >
+                                            <CheckCircle2 className="w-3.5 h-3.5" />
+                                            Mark All Complete
+                                        </button>
+                                    )}
                                     <div className="flex min-h-[68px] w-[9.5rem] shrink-0 flex-col items-start justify-center gap-1 py-2 pr-0 sm:w-[12.5rem] sm:items-end sm:self-stretch sm:gap-2 sm:pl-8 sm:pr-3 sm:text-right">
                                         <div
                                             className="text-3xl sm:text-4xl md:text-[2.75rem] font-black text-primary leading-[0.92] tabular-nums"

@@ -38,7 +38,7 @@ const formatTime = (value, unit = 'seconds') => {
     return `${h % 1 === 0 ? h : h.toFixed(1)} hr`;
 };
 
-
+import api from '../services/api';
 import { getCurrentRoadmap, adjustRoadmap, partialShiftRoadmap, toggleVideoCompletion, getAllRoadmaps, updateRoadmapTitle, deleteRoadmap } from '../services/roadmapApi';
 import { shootConfetti, shootLighterConfetti } from '../utils/confetti';
 import { broadcastProgressUpdate, getTabId } from '../utils/sync';
@@ -586,7 +586,7 @@ const Roadmap = () => {
         partialShiftTimeoutRef.current = setTimeout(async () => {
             const entries = Array.from(pendingPartialShiftsRef.current.entries());
             pendingPartialShiftsRef.current.clear();
-            for (const [idx, amt] of entries) {
+            for (const [idx, amt] of entries) {
                 if (amt === 0) continue;
                 try {
                     const updated = await partialShiftRoadmap(roadmap._id, idx, amt);
@@ -640,6 +640,24 @@ const Roadmap = () => {
             fetchRoadmap();
         }
     }, [roadmap, roadmap?._id, fetchRoadmap]);
+
+    const handleMarkAllComplete = async () => {
+        if (!roadmap || !roadmap.courseId) return;
+        if (!window.confirm("Mark all missions in this roadmap as complete? This will sync your course progress and award full XP!")) return;
+
+        try {
+            const { data } = await api.post(`/progress/${roadmap.courseId}/mark-all`);
+            if (data.success) {
+                shootConfetti();
+                alert(`Success! Marked ${data.newlyCompletedCount} missions as complete. Earned ${data.totalXPEarned} XP!`);
+                fetchRoadmap(); // Refresh current roadmap view
+                broadcastProgressUpdate();
+            }
+        } catch (err) {
+            console.error("Failed to mark all complete on roadmap:", err);
+            alert("Failed to update progress.");
+        }
+    };
 
     const handleUpdateTitle = useCallback(async (newTitle) => {
         if (!roadmap) return;
@@ -763,15 +781,25 @@ const Roadmap = () => {
                         
                         <div className="mb-6 flex items-center justify-between">
                             <h3 className="text-xs font-black text-text-muted uppercase tracking-[0.2em]">Learning Milestones</h3>
-                            <button 
-                                onClick={() => {
-                                    setModalCourseId(courseId);
-                                    setIsGenerateModalOpen(true);
-                                }}
-                                className="text-[10px] font-bold text-primary hover:underline uppercase tracking-wider"
-                            >
-                                Regenerate Plan
-                            </button>
+                            <div className="flex items-center gap-4">
+                                {roadmap.courseId && (
+                                    <button 
+                                        onClick={handleMarkAllComplete}
+                                        className="text-[10px] font-black text-success hover:text-success/80 uppercase tracking-widest bg-success/10 px-3 py-1.5 rounded-lg border border-success/20 transition-all hover:scale-105 active:scale-95"
+                                    >
+                                        Mark All Done
+                                    </button>
+                                )}
+                                <button 
+                                    onClick={() => {
+                                        setModalCourseId(courseId);
+                                        setIsGenerateModalOpen(true);
+                                    }}
+                                    className="text-[10px] font-bold text-primary hover:underline uppercase tracking-wider"
+                                >
+                                    Regenerate Plan
+                                </button>
+                            </div>
                         </div>
 
                         <div className="space-y-4">

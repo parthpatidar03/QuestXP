@@ -161,6 +161,16 @@ const toggleLecture = async (req, res, next) => {
     }
 };
 
+const markAllComplete = async (req, res, next) => {
+    try {
+        const { courseId } = req.params;
+        const result = await progressService.markAllComplete(req.user._id, courseId);
+        res.json(result);
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     savePosition,
     getProgress,
@@ -170,4 +180,5 @@ module.exports = {
     getWeeklyTargets,
     deletePlan,
     toggleLecture,
+    markAllComplete,
 };

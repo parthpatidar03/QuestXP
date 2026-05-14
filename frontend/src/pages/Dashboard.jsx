@@ -407,11 +407,18 @@ const Dashboard = () => {
     // Features list (top 5)
     const newFeatures = [
         {
+            id: 'bulk-completion',
+            title: 'Bulk Progress Completion',
+            description: 'Mark entire courses as complete with a single click. Instant XP recalculation and roadmap sync.',
+            icon: <Check className="w-5 h-5 text-success" />,
+            date: 'New'
+        },
+        {
             id: 'optimistic-ui',
             title: 'Optimistic UI & Tab Sync',
             description: 'Zero-flicker progress updates with intelligent cross-tab state synchronization.',
             icon: <Zap className="w-5 h-5 text-warning" />,
-            date: 'New'
+            date: 'Latest'
         },
         {
             id: 'video-support',
@@ -432,14 +439,7 @@ const Dashboard = () => {
             title: 'Live Progress Sync',
             description: 'Track your learning across all devices with real-time state persistence.',
             icon: <RefreshCw className="w-5 h-5 text-info" />,
-            date: 'Latest'
-        },
-        {
-            id: 'gamification-v2',
-            title: 'Dynamic Gamification Engine',
-            description: 'New progressive XP rewards, hidden study quests, and detailed level progression analytics.',
-            icon: <Trophy className="w-5 h-5 text-gold" />,
-            date: 'Live'
+            date: 'Stable'
         }
     ];
 
@@ -503,6 +503,13 @@ const Dashboard = () => {
                 seenFeatures.push('enhanced_stability_v1');
                 localStorage.setItem('seenFeatures', JSON.stringify(seenFeatures));
             }, 14000);
+        }
+        if (!seenFeatures.includes('bulk_completion_v1')) {
+            setTimeout(() => {
+                addBadgeToast('New: Bulk Completion!', 'Level up faster! Mark entire courses as done in one click.', 'check');
+                seenFeatures.push('bulk_completion_v1');
+                localStorage.setItem('seenFeatures', JSON.stringify(seenFeatures));
+            }, 17000);
         }
     }, [addBadgeToast]);
 

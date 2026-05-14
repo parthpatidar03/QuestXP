@@ -199,7 +199,93 @@ const toggleLecture = async (userId, courseId, lectureId, isCompleted) => {
     };
 };
 
+const markAllComplete = async (userId, courseId) => {
+    const course = await Course.findById(courseId);
+    if (!course) throw new Error('Course not found');
+
+    const progress = await getOrCreateProgress(userId, courseId);
+    
+    let totalXPEarned = 0;
+    let newlyCompletedCount = 0;
+    const now = new Date();
+
+    // Flatten all lectures to check completion and calculate XP
+    let lectureIndex = 0;
+    for (const section of course.sections) {
+        for (const lecture of section.lectures) {
+            const lectureIdStr = lecture._id.toString();
+            let lectureProg = progress.lectureProgress.find(lp => lp.lecture.toString() === lectureIdStr);
+
+            if (!lectureProg) {
+                lectureProg = {
+                    lecture: lecture._id,
+                    lastPosition: 0,
+                    watchedSeconds: 0,
+                    completed: false
+                };
+                progress.lectureProgress.push(lectureProg);
+            }
+
+            if (!lectureProg.completed) {
+                lectureProg.completed = true;
+                lectureProg.completedAt = now;
+                
+                // Formula: 50 + (index * 10)
+                const dynamicXP = 50 + (lectureIndex * 10);
+                totalXPEarned += dynamicXP;
+                newlyCompletedCount++;
+            }
+            lectureIndex++;
+        }
+    }
+
+    if (newlyCompletedCount > 0) {
+        // Award XP in bulk
+        if (totalXPEarned > 0) {
+            await xpService.award(userId, 'BULK_LECTURE_COMPLETION', courseId, totalXPEarned);
+        }
+        
+        await streakService.recordActivity(userId);
+
+        // Recalculate Course Completion
+        const completedCount = progress.lectureProgress.filter(lp => lp.completed).length;
+        progress.completedCount = completedCount;
+        progress.completionPct = course.totalLectures > 0 ? Math.round((completedCount / course.totalLectures) * 100) : 0;
+        progress.lastAccessedAt = now;
+
+        await progress.save();
+
+        // Sync with Roadmap
+        try {
+            const roadmaps = await Roadmap.find({ userId, courseId });
+            for (const roadmap of roadmaps) {
+                let changed = false;
+                for (const day of roadmap.days) {
+                    for (const vid of day.plannedVideos) {
+                        if (!vid.completed) {
+                            vid.completed = true;
+                            changed = true;
+                        }
+                    }
+                }
+                if (changed) await roadmap.save();
+            }
+        } catch (syncError) {
+            console.error("[Sync] Failed to sync roadmap bulk completion:", syncError);
+        }
+    }
+
+    return {
+        success: true,
+        newlyCompletedCount,
+        totalXPEarned,
+        completionPct: progress.completionPct,
+        totalCompleted: progress.completedCount
+    };
+};
+
 module.exports = {
     savePosition,
-    toggleLecture
+    toggleLecture,
+    markAllComplete
 };
