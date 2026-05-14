@@ -80,30 +80,70 @@ export default function StreakCalendar({ history = [] }) {
     const nextMonth = () => setCurrentDate(new Date(year, month + 1, 1));
     const prevMonth = () => setCurrentDate(new Date(year, month - 1, 1));
 
+    const calendarRef = useRef(null);
+
+    const takeScreenshot = async () => {
+        if (!calendarRef.current) return;
+        
+        try {
+            const { toPng } = await import('html-to-image');
+            const monthName = currentDate.toLocaleString('default', { month: 'long' });
+            const fileName = `${user?.name || 'User'}-${monthName}-${year}.png`;
+            
+            // Temporary hide elements we don't want in screenshot
+            const elementsToHide = calendarRef.current.querySelectorAll('.no-export');
+            elementsToHide.forEach(el => el.style.opacity = '0');
+
+            const dataUrl = await toPng(calendarRef.current, {
+                cacheBust: true,
+                backgroundColor: '#0a0a0a',
+                style: {
+                    borderRadius: '12px'
+                }
+            });
+            
+            elementsToHide.forEach(el => el.style.opacity = '1');
+
+            const link = document.createElement('a');
+            link.download = fileName;
+            link.href = dataUrl;
+            link.click();
+        } catch (err) {
+            console.error('oops, something went wrong!', err);
+        }
+    };
+
     return (
-        <div className="w-full max-w-[320px] mx-auto py-2 relative">
+        <div ref={calendarRef} className="w-full max-w-[320px] mx-auto py-2 relative bg-surface p-4 rounded-2xl">
             <div className="flex items-center justify-between mb-6">
-                <button 
-                    onClick={() => setShowInfo(!showInfo)} 
-                    className="w-8 h-8 rounded-full bg-surface-2 border border-white/5 flex items-center justify-center hover:bg-surface-3 transition-colors text-text-secondary hover:text-text-primary"
-                    aria-label="Streak information"
-                >
-                    <Info className="w-4 h-4" />
-                </button>
+                <div className="flex items-center gap-2 no-export">
+                    <button 
+                        onClick={() => setShowInfo(!showInfo)} 
+                        className="w-8 h-8 rounded-full bg-surface-2 border border-white/5 flex items-center justify-center hover:bg-surface-3 transition-colors text-text-secondary hover:text-text-primary"
+                        aria-label="Streak information"
+                    >
+                        <Info className="w-4 h-4" />
+                    </button>
+                    <button 
+                        onClick={takeScreenshot}
+                        className="w-8 h-8 rounded-full bg-surface-2 border border-white/5 flex items-center justify-center hover:bg-surface-3 transition-colors text-text-secondary hover:text-text-primary"
+                        title="Download Calendar Screenshot"
+                    >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    </button>
+                </div>
                 
                 <div className="flex items-center gap-3">
-                    <button onClick={prevMonth} className="w-8 h-8 rounded-full bg-surface-2 flex items-center justify-center hover:bg-surface-3 transition-colors border border-white/5 text-text-secondary hover:text-text-primary">
+                    <button onClick={prevMonth} className="no-export w-8 h-8 rounded-full bg-surface-2 flex items-center justify-center hover:bg-surface-3 transition-colors border border-white/5 text-text-secondary hover:text-text-primary">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                     </button>
                     <div className="px-4 py-1.5 rounded-full bg-surface-2 border border-white/5 text-sm font-semibold tracking-wide text-text-primary shadow-sm shadow-black/20 min-w-[100px] text-center">
                         {currentDate.toLocaleString('default', { month: 'long' })}
                     </div>
-                    <button onClick={nextMonth} className="w-8 h-8 rounded-full bg-surface-2 flex items-center justify-center hover:bg-surface-3 transition-colors border border-white/5 text-text-secondary hover:text-text-primary">
+                    <button onClick={nextMonth} className="no-export w-8 h-8 rounded-full bg-surface-2 flex items-center justify-center hover:bg-surface-3 transition-colors border border-white/5 text-text-secondary hover:text-text-primary">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
                     </button>
                 </div>
-
-                <div className="w-8 h-8 opacity-0 pointer-events-none" /> {/* Spacer for balance */}
             </div>
 
             {/* Info Modal */}
