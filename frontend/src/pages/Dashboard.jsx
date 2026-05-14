@@ -382,6 +382,57 @@ const Dashboard = () => {
     const [optimisticHiddenIds, setOptimisticHiddenIds] = useState(new Set());
     const [showUndo, setShowUndo] = useState(null); // { id, title, timer }
     const [undoCountdown, setUndoCountdown] = useState(0);
+    const [activeTab, setActiveTab] = useState('courses');
+
+    // Features list (top 5)
+    const newFeatures = [
+        {
+            id: 'tilt-3d',
+            title: 'Interactive 3D UI',
+            description: 'Experience immersive 3D parallax effects on your dashboard and roadmap previews.',
+            icon: <Zap className="w-5 h-5 text-warning" />,
+            date: 'New'
+        },
+        {
+            id: 'video-support',
+            title: 'Video Lectures & One-Shots',
+            description: 'Full support for video lectures and one-shot tutorials in your roadmaps.',
+            icon: <PlayCircle className="w-5 h-5 text-primary" />,
+            date: 'New'
+        },
+        {
+            id: 'smart-roadmaps',
+            title: 'Smart AI Roadmaps',
+            description: 'Generated learning paths now include multi-source curation and dynamic difficulty scaling.',
+            icon: <Target className="w-5 h-5 text-success" />,
+            date: 'Updated'
+        },
+        {
+            id: 'live-sync',
+            title: 'Live Progress Sync',
+            description: 'Track your learning across all devices with real-time state persistence.',
+            icon: <RefreshCw className="w-5 h-5 text-info" />,
+            date: 'Latest'
+        },
+        {
+            id: 'focus-guardian',
+            title: 'Focus Guardian',
+            description: 'Smart notifications to keep you on track and prevent burnout during deep work.',
+            icon: <Shield className="w-5 h-5 text-danger" />,
+            date: 'Stable'
+        }
+    ];
+
+    useEffect(() => {
+        const hasSeenVideoFeature = localStorage.getItem('seen_feature_video_v1');
+        if (!hasSeenVideoFeature) {
+            toast.success("New Feature: Video Lectures & One-Shots are now supported!", {
+                duration: 5000,
+                icon: '🎬',
+            });
+            localStorage.setItem('seen_feature_video_v1', 'true');
+        }
+    }, []);
 
     useEffect(() => {
         if (localStorage.getItem('justSignedUp') === 'true') {
@@ -712,7 +763,10 @@ const Dashboard = () => {
 
                     <section>
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                            <h2 className="text-xl font-bold tracking-tight text-text-primary uppercase">Dashboard</h2>
+                            <div className="flex items-center gap-4">
+                                <h2 onClick={() => setActiveTab('courses')} className={`text-xl font-bold tracking-tight uppercase cursor-pointer ${activeTab === 'courses' ? 'text-text-primary' : 'text-text-muted'}`}>Dashboard</h2>
+                                <h2 onClick={() => setActiveTab('features')} className={`text-xl font-bold tracking-tight uppercase cursor-pointer ${activeTab === 'features' ? 'text-text-primary' : 'text-text-muted'}`}>New Features</h2>
+                            </div>
                             <div className="flex items-center gap-2">
                                 <button id="tour-new-course" onClick={() => setShowCreate(v => !v)} className="btn-primary py-2.5 px-5 text-[10px] font-black uppercase tracking-widest flex items-center gap-2 flex-1 sm:flex-none justify-center">
                                     {showCreate ? <X className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
@@ -729,62 +783,105 @@ const Dashboard = () => {
                                 )}
                             </div>
                         </div>
-                        {deleteError && (
-                            <div className="mb-4 rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-                                {deleteError}
-                            </div>
-                        )}
-                        {showCreate && (
-                            <div className="mb-6">
-                                <CourseCreationForm onSuccess={(courseId) => {
-                                    setShowCreate(false);
-                                    setRoadmapCourseId(courseId);
-                                    queryClient.invalidateQueries({ queryKey: ['courses'] });
-                                }} />
-                            </div>
-                        )}
-                        {coursesLoading ? (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                                {Array(6).fill(0).map((_, i) => <CourseCardSkeleton key={i} />)}
-                            </div>
-                        ) : courses.length === 0 && !showCreate ? (
-                            <div className="glass-card flex flex-col items-center justify-center py-20 text-center border-dashed">
-                                <BookOpen className="w-12 h-12 mb-4 text-text-muted" />
-                                <h3 className="text-lg font-semibold text-text-primary mb-2">No courses yet</h3>
-                                <p className="text-sm mb-6 text-text-secondary">
-                                    {isGuest 
-                                        ? "Try creating your first course to see how it works!" 
-                                        : "Paste a YouTube playlist to generate your first course."}
-                                </p>
-                                <button onClick={() => setShowCreate(true)} className="btn-esports">Create your first course</button>
-                            </div>
-                        ) : (
-                            <div className="space-y-6">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                                    {courses
-                                        .filter(c => !optimisticHiddenIds.has(c._id))
-                                        .slice(0, visibleCount)
-                                        .map(c => (
-                                            <CourseCard
-                                                key={c._id}
-                                                course={c}
-                                                progress={progressMap[c._id]}
-                                                onDelete={handleDeleteCourse}
-                                                isDeleting={deletingCourseId === c._id}
-                                            />
-                                        ))}
-                                </div>
-                                {visibleCount < courses.length && (
-                                    <div className="flex justify-center pt-4">
-                                        <button 
-                                            onClick={() => setVisibleCount(prev => prev + 6)}
-                                            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg border border-border bg-surface text-sm font-semibold text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-all shadow-sm"
-                                        >
-                                            Load More Missions
-                                            <ChevronRight className="w-4 h-4 rotate-90" />
-                                        </button>
+                        {activeTab === 'courses' ? (
+                            <>
+                                {deleteError && (
+                                    <div className="mb-4 rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+                                        {deleteError}
                                     </div>
                                 )}
+                                {showCreate && (
+                                    <div className="mb-6">
+                                        <CourseCreationForm onSuccess={(courseId) => {
+                                            setShowCreate(false);
+                                            setRoadmapCourseId(courseId);
+                                            queryClient.invalidateQueries({ queryKey: ['courses'] });
+                                        }} />
+                                    </div>
+                                )}
+                                {coursesLoading ? (
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                                        {Array(6).fill(0).map((_, i) => <CourseCardSkeleton key={i} />)}
+                                    </div>
+                                ) : courses.length === 0 && !showCreate ? (
+                                    <div className="glass-card flex flex-col items-center justify-center py-20 text-center border-dashed">
+                                        <BookOpen className="w-12 h-12 mb-4 text-text-muted" />
+                                        <h3 className="text-lg font-semibold text-text-primary mb-2">No courses yet</h3>
+                                        <p className="text-sm mb-6 text-text-secondary">
+                                            {isGuest 
+                                                ? "Try creating your first course to see how it works!" 
+                                                : "Paste a YouTube playlist to generate your first course."}
+                                        </p>
+                                        <button onClick={() => setShowCreate(true)} className="btn-esports">Create your first course</button>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-6">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                                            {courses
+                                                .filter(c => !optimisticHiddenIds.has(c._id))
+                                                .slice(0, visibleCount)
+                                                .map(c => (
+                                                    <CourseCard
+                                                        key={c._id}
+                                                        course={c}
+                                                        progress={progressMap[c._id]}
+                                                        onDelete={handleDeleteCourse}
+                                                        isDeleting={deletingCourseId === c._id}
+                                                    />
+                                                ))}
+                                        </div>
+                                        {visibleCount < courses.length && (
+                                            <div className="flex justify-center pt-4">
+                                                <button 
+                                                    onClick={() => setVisibleCount(prev => prev + 6)}
+                                                    className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg border border-border bg-surface text-sm font-semibold text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-all shadow-sm"
+                                                >
+                                                    Load More Missions
+                                                    <ChevronRight className="w-4 h-4 rotate-90" />
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </>
+                        ) : (
+                            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                <div className="glass-card overflow-hidden border-primary/20">
+                                    <div className="bg-primary/10 p-6 border-b border-primary/20">
+                                        <h3 className="text-lg font-bold text-text-primary">What's New</h3>
+                                        <p className="text-sm text-text-secondary mt-1">Stay updated with the latest QuestXP enhancements.</p>
+                                    </div>
+                                    <div className="divide-y divide-border">
+                                        {newFeatures.map((feature) => (
+                                            <div key={feature.id} className="p-6 hover:bg-surface-2 transition-colors group">
+                                                <div className="flex items-start gap-4">
+                                                    <div className="p-3 rounded-xl bg-surface border border-border group-hover:border-primary/30 transition-all">
+                                                        {feature.icon}
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex items-center justify-between mb-1">
+                                                            <h4 className="text-sm font-bold text-text-primary uppercase tracking-wider">{feature.title}</h4>
+                                                            <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-tighter">
+                                                                {feature.date}
+                                                            </span>
+                                                        </div>
+                                                        <p className="text-sm text-text-secondary leading-relaxed">
+                                                            {feature.description}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="glass-card p-8 text-center bg-gradient-to-br from-primary/5 to-transparent">
+                                    <Sparkles className="w-10 h-10 text-primary mx-auto mb-4" />
+                                    <h3 className="text-xl font-black text-text-primary uppercase mb-2">More coming soon</h3>
+                                    <p className="text-sm text-text-secondary max-w-md mx-auto">
+                                        We are constantly evolving to make your learning journey more epic. Have a suggestion? Let us know!
+                                    </p>
+                                </div>
                             </div>
                         )}
 

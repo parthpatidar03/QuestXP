@@ -25,14 +25,16 @@ QuestXP is a high-performance Learning Management System (LMS) designed to solve
 ---
 
 ## 🚀 Recent Updates
-- **3D Parallax Previews**: Added interactive mouse-tracking tilt effects to dashboard and feature previews for a premium, immersive experience. [Read more →](docs/UI_EFFECTS.md)
-- **One-Shot Support**: Convert single long videos into structured missions automatically.
-- **Bi-Directional Sync**: Instant synchronization between Player and Roadmap Hub.
+- **v1.13.0**: Added "What's New" feature tracking, Video Lecture support, and One-Shot parsing.
+- **v1.12.0**: Implemented 3D Interactive UI with parallax tilt effects.
+- **v1.11.0**: Added Celebratory Effects (Confetti/Fireworks) and Enhanced Stability.
 
 ## ✨ Core Features
-- **Dynamic Roadmaps**: AI-generated visual paths that adapt to your pace.
-- **Focus Guardian**: Ad-free, recommendation-free player to keep you in the flow.
-- **Interactive 3D UI**: Smooth parallax effects following cursor movement for visual excellence.
+
+- **📺 Video Support**: Full support for One-Shot videos and playlists.
+- **✨ 3D Interactive UI**: Immersive parallax effects driven by mouse movement.
+- **🆕 What's New Hub**: Dedicated dashboard tab for tracking platform evolution.
+- **🎓 Smart AI Roadmaps**: Dynamic learning paths with 75% higher efficiency.
 
 ---
 
