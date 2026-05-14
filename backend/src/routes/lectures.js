@@ -23,6 +23,7 @@ const LEVEL_QUIZ = 1;
 
 const { quizLimiter, summaryLimiter } = require('../middleware/rateLimiter');
 
+/*
 // T020: GET /api/lectures/:lectureId/notes
 router.get('/:lectureId/notes', summaryLimiter, [
     param('lectureId').isMongoId().withMessage('Invalid lecture ID')
@@ -63,7 +64,9 @@ router.get('/:lectureId/notes', summaryLimiter, [
         next(error);
     }
 });
+*/
 
+/*
 // T021: PATCH /api/lectures/:lectureId/notes/edit
 router.patch('/:lectureId/notes/edit', [
     param('lectureId').isMongoId().withMessage('Invalid lecture ID'),
@@ -105,6 +108,7 @@ router.patch('/:lectureId/notes/edit', [
         next(error);
     }
 });
+*/
 
 // T025: GET /api/lectures/:lectureId/topics
 router.get('/:lectureId/topics', [
@@ -313,6 +317,7 @@ const notesQueue = require('../queues/notesQueue');
 const quizQueue = require('../queues/quizQueue');
 const jobOptions = require('../queues/jobOptions');
 
+/*
 // T033: POST /api/lectures/:lectureId/summary/generate
 router.post('/:lectureId/summary/generate', summaryLimiter, [
     param('lectureId').isMongoId().withMessage('Invalid lecture ID')
@@ -334,6 +339,7 @@ router.post('/:lectureId/summary/generate', summaryLimiter, [
         next(error);
     }
 });
+*/
 
 // T034: POST /api/lectures/:lectureId/quiz/generate
 router.post('/:lectureId/quiz/generate', quizLimiter, [

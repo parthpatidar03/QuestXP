@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import api from '../services/api';
 import VideoPlayer from '../components/Player/VideoPlayer';
 import TimelineSidebar from '../components/Player/TimelineSidebar';
-import NotesTab from '../components/Lecture/NotesTab';
+
 import QuizTab from '../components/Lecture/QuizTab';
 import DoubtChatbot from '../components/Lecture/DoubtChatbot';
 import useGamificationStore from '../store/useGamificationStore';
@@ -17,7 +17,6 @@ import { broadcastProgressUpdate, getTabId } from '../utils/sync';
 
 const TABS = [
     { key: 'timeline', label: 'Timeline' },
-    { key: 'notes',    label: 'Summary' },
     { key: 'quiz',     label: 'Quiz' },
 ];
 
@@ -276,8 +275,7 @@ const Player = () => {
     }, [loading, shouldStartQuiz]);
 
     const aiStatus = useLectureStatus(currentLecture?._id, 
-        (['pending', 'in_progress'].includes(currentAiStatus.quiz) && activeTab === 'quiz') ||
-        (['pending', 'in_progress'].includes(currentAiStatus.notes) && activeTab === 'notes')
+        (['pending', 'in_progress'].includes(currentAiStatus.quiz) && activeTab === 'quiz')
     );
 
     useEffect(() => {
@@ -538,16 +536,7 @@ const PLAYER_THEME = {
                                 courseId={courseId}
                             />
                         )}
-                        {activeTab === 'notes' && (
-                            <NotesTab
-                                lectureId={currentLecture._id}
-                                courseId={courseId}
-                                onSeek={handleTopicClick}
-                                notesStatus={currentAiStatus.notes || 'pending'}
-                                errorReason={currentAiStatus.errorReason}
-                                aiStatus={currentAiStatus}
-                            />
-                        )}
+
                         {activeTab === 'quiz' && (
                             <QuizTab
                                 lectureId={currentLecture._id}

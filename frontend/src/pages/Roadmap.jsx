@@ -782,14 +782,6 @@ const Roadmap = () => {
                         <div className="mb-6 flex items-center justify-between">
                             <h3 className="text-xs font-black text-text-muted uppercase tracking-[0.2em]">Learning Milestones</h3>
                             <div className="flex items-center gap-4">
-                                {roadmap.courseId && (
-                                    <button 
-                                        onClick={handleMarkAllComplete}
-                                        className="text-[10px] font-black text-success hover:text-success/80 uppercase tracking-widest bg-success/10 px-3 py-1.5 rounded-lg border border-success/20 transition-all hover:scale-105 active:scale-95"
-                                    >
-                                        Mark All Done
-                                    </button>
-                                )}
                                 <button 
                                     onClick={() => {
                                         setModalCourseId(courseId);
@@ -801,6 +793,26 @@ const Roadmap = () => {
                                 </button>
                             </div>
                         </div>
+
+                        {/* Global Bulk Action Row */}
+                        {roadmap.courseId && (
+                            <div className="flex items-center gap-4 px-4 py-4 bg-primary/5 border border-border/40 rounded-xl mb-4 group/bulk">
+                                <div className="shrink-0">
+                                    <button
+                                        type="button"
+                                        onClick={handleMarkAllComplete}
+                                        className="w-10 h-10 rounded-xl border-2 border-primary/40 bg-primary/10 flex items-center justify-center text-primary transition-all hover:scale-110 active:scale-95 shadow-[0_0_15px_rgba(var(--color-primary-rgb),0.1)] hover:bg-primary hover:text-white hover:border-primary"
+                                        title="Mark All Complete"
+                                    >
+                                        <CheckCircle2 className="w-6 h-6 stroke-[3]" />
+                                    </button>
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em] leading-none mb-1">Bulk Mastery</span>
+                                    <span className="text-xs font-bold text-text-primary uppercase tracking-widest">Mark Entire Roadmap Complete</span>
+                                </div>
+                            </div>
+                        )}
 
                         <div className="space-y-4">
                             {playlistIds.map(id => (

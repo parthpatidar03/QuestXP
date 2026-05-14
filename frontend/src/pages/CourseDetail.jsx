@@ -693,15 +693,6 @@ const CourseDetail = () => {
                                         </p>
                                     </div>
 
-                                    {!courseId?.startsWith('demo-') && (
-                                        <button 
-                                            onClick={handleMarkAllComplete}
-                                            className="flex items-center gap-2 px-4 py-2 bg-success/10 hover:bg-success/20 border border-success/30 rounded-xl text-success text-[10px] font-black uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98]"
-                                        >
-                                            <CheckCircle2 className="w-3.5 h-3.5" />
-                                            Mark All Complete
-                                        </button>
-                                    )}
                                     <div className="flex min-h-[68px] w-[9.5rem] shrink-0 flex-col items-start justify-center gap-1 py-2 pr-0 sm:w-[12.5rem] sm:items-end sm:self-stretch sm:gap-2 sm:pl-8 sm:pr-3 sm:text-right">
                                         <div
                                             className="text-3xl sm:text-4xl md:text-[2.75rem] font-black text-primary leading-[0.92] tabular-nums"
@@ -763,6 +754,26 @@ const CourseDetail = () => {
                                     </div>
                                 </div>
                             </div>
+
+                            {/* Bulk Actions / Mark All Row */}
+                            {!courseId?.startsWith('demo-') && (
+                                <div className="flex items-center gap-3 sm:gap-6 px-3 sm:px-6 py-4 bg-primary/5 border-b border-border/50 group/bulk">
+                                    <div className="shrink-0">
+                                        <button
+                                            type="button"
+                                            onClick={handleMarkAllComplete}
+                                            className="w-10 h-10 rounded-xl border-2 border-primary/40 bg-primary/10 flex items-center justify-center text-primary transition-all hover:scale-110 active:scale-95 shadow-[0_0_15px_rgba(var(--color-primary-rgb),0.1)] hover:bg-primary hover:text-white hover:border-primary"
+                                            title="Mark All Complete"
+                                        >
+                                            <CheckCircle2 className="w-6 h-6 stroke-[3]" />
+                                        </button>
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em] leading-none mb-1">Bulk Action</span>
+                                        <span className="text-xs font-bold text-text-primary uppercase tracking-widest">Mark All Missions Complete</span>
+                                    </div>
+                                </div>
+                            )}
 
                             {course.sections.map((section, sIdx) => {
                                 const isCollapsed = !!collapsedSections[sIdx];
@@ -840,24 +851,6 @@ const CourseDetail = () => {
                             </div>
                         </div>
 
-                        {/* AI Notes Panel */}
-                        <div className="glass-card-cyan p-5">
-                            <div className="flex items-center gap-2 mb-3">
-                                <StickyNote className="w-4 h-4 text-cyan" />
-                                <h3 className="text-xs font-bold uppercase tracking-widest text-cyan">⚡ AI Smart Notes</h3>
-                            </div>
-                            <p className="text-xs leading-relaxed mb-3 text-text-secondary">
-                                AI-generated notes appear here as you complete missions. Start a lesson to unlock notes.
-                            </p>
-                            {startLec && (
-                                <Link
-                                    to={`/courses/${courseId}/lectures/${startLec._id}`}
-                                    className="text-xs font-bold flex items-center gap-1 hover:underline text-cyan"
-                                >
-                                    Open Notes for Next Mission <ChevronRight className="w-3 h-3" />
-                                </Link>
-                            )}
-                        </div>
 
                         {/* Doubt Chatbot CTA */}
                         <div className="glass-card p-5 text-center border-cyan/20">

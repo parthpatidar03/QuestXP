@@ -30,7 +30,7 @@ QuestXP utilizes a **Decoupled Monolith** architecture with an **Event-Driven AI
 
 ### Backend (Node.js/Express)
 - **Layered Pattern**: `Routes` -> `Middleware` -> `Services` -> `Controllers` -> `Models`.
-- **Worker Tier**: BullMQ + Redis cluster for non-blocking execution of intensive AI tasks (Transcription, Summarization, Chapterization).
+- **Worker Tier**: BullMQ + Redis cluster for non-blocking execution of intensive AI tasks (Transcription, Chapterization).
 - **Identity & Security**: JWT-based authentication with a Dual-Mode System supporting both `HttpOnly` cookies and `Authorization: Bearer` headers.
 
 ### Frontend (React/Vite)
@@ -89,7 +89,7 @@ Enables users to batch-complete course modules, synchronizing XP rewards and roa
 
 | Endpoint | Method | Function | Technical Context |
 | :--- | :--- | :--- | :--- |
-| `/api/courses/generate` | POST | Course Generation | Triggers the AI pipeline (Chapters + Summaries) |
+| `/api/courses/generate` | POST | Course Generation | Triggers the AI pipeline (Chapters) |
 | `/api/progress/toggle` | PATCH | Progress Update | atomic $addToSet/$pull with total XP calculation |
 | `/api/progress/:id/mark-all` | POST | Bulk Completion | Atomic batch update with cumulative XP rewards |
 | `/api/roadmaps/sync` | POST | Bidirectional Sync | Merges Player progress with Roadmap schedule |
