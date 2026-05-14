@@ -305,7 +305,7 @@ const RoadmapPlaylistCard = React.memo(({ playlistId, days, dayLabelsMap, onPart
                                         </motion.button>
                                     </div>
                                     <div className="px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/30">
-                                        <span className="text-[11px] font-black text-primary uppercase tracking-tight">Target: {formatTime(day.totalMinutes, 'minutes')}</span>
+                                        <span className="text-[11px] font-black text-primary uppercase tracking-tight">Target: {formatTime(day.totalMinutes)}</span>
                                     </div>
 
 
@@ -385,9 +385,7 @@ const UniversalRoadmapCard = React.memo(({ roadmap, onDelete }) => {
                             <span className="flex items-center gap-1"><Play className="w-3 h-3" /> {totalVideos} Videos</span>
                             <span className="flex items-center gap-1">
                                 <Clock className="w-3 h-3" /> 
-                                {totalMinutes >= 60 
-                                    ? `${(totalMinutes / 60).toFixed(1)} hr` 
-                                    : `${Math.round(totalMinutes)} mins`}
+                                {formatTime(totalMinutes)}
                             </span>
                             <span className="flex items-center gap-1 text-primary/70">{dateRange}</span>
                         </div>

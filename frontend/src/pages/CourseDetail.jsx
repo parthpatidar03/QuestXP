@@ -583,6 +583,7 @@ const CourseDetail = () => {
     const pct = allLectures.length ? Math.round((completedCount / allLectures.length) * 100) : 0;
     const totalXpPool = allLectures.length * XP_PER_LECTURE;
     const totalDurMins = Math.floor((course.totalDuration || 0) / 60);
+    const totalDurDisplay = fmtDuration(course.totalDuration || 0);
     const heroThumb = course.sections?.[0]?.lectures?.[0]?.thumbnailUrl;
 
     // First incomplete lecture for "Start / Resume"
@@ -626,7 +627,7 @@ const CourseDetail = () => {
                             <div className="relative z-10 p-7">
                                 <div className="flex items-center gap-3 mb-3">
                                     <span className="badge-epic text-[10px] py-1 px-3">EPIC QUEST</span>
-                                    <span className="text-sm font-bold text-text-secondary">{allLectures.length} Missions · {totalDurMins} Minutes</span>
+                                    <span className="text-sm font-bold text-text-secondary">{allLectures.length} Missions · {totalDurDisplay}</span>
                                 </div>
                                 <h1 className="text-2xl sm:text-5xl font-black text-text-primary mb-5 leading-[1.1] max-w-xl">
                                     {course.title}
