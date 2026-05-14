@@ -35,7 +35,7 @@ class ErrorBoundary extends React.Component {
                             An unexpected error occurred. Your progress has been saved.
                         </p>
                         {import.meta.env.DEV && this.state.error && (
-                            <pre className="text-xs text-danger/80 bg-surface-2 rounded-lg p-3 text-left mb-6 overflow-auto max-h-32">
+                            <pre className="text-xs text-[#ff4444] bg-surface-2 rounded-lg p-3 text-left mb-6 overflow-auto max-h-32 border border-[#ff4444]/20 font-mono">
                                 {this.state.error.toString()}
                             </pre>
                         )}
