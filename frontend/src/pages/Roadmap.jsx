@@ -53,16 +53,6 @@ const ProgressHeader = React.memo(({ roadmap, onShift, totalCalendarDays, onUpda
     const [isEditing, setIsEditing] = useState(false);
     const [tempTitle, setTempTitle] = useState(roadmap?.title || "Your Mastery Journey");
 
-    if (!roadmap) return null;
-
-    const handleTitleSave = () => {
-        onUpdateTitle(tempTitle);
-        setIsEditing(false);
-    };
-    
-    const currentDayIndex = differenceInDays(new Date(), new Date(roadmap.config.startDate)) + 1;
-    const timeProgressPercent = Math.min(100, Math.max(0, (currentDayIndex / totalCalendarDays) * 100));
-
     const learningStats = useMemo(() => {
         if (!roadmap || !roadmap.days) return { total: 0, completed: 0, percent: 0 };
         let total = 0;
@@ -81,6 +71,16 @@ const ProgressHeader = React.memo(({ roadmap, onShift, totalCalendarDays, onUpda
             percent: total > 0 ? Math.round((completed / total) * 100) : 0
         };
     }, [roadmap]);
+
+    if (!roadmap) return null;
+
+    const handleTitleSave = () => {
+        onUpdateTitle(tempTitle);
+        setIsEditing(false);
+    };
+    
+    const currentDayIndex = differenceInDays(new Date(), new Date(roadmap.config.startDate)) + 1;
+    const timeProgressPercent = Math.min(100, Math.max(0, (currentDayIndex / totalCalendarDays) * 100));
 
     return (
         <div className="glass-card p-5 mb-5 relative overflow-hidden group">
@@ -196,7 +196,7 @@ const ProgressHeader = React.memo(({ roadmap, onShift, totalCalendarDays, onUpda
     );
 });
 
-const RoadmapPlaylistCard = React.memo(({ playlistId, days, dayLabelsMap, totalCalendarDays, roadmapId, courseId, onPartialShift, onToggleCompletion }) => {
+const RoadmapPlaylistCard = React.memo(({ playlistId, days, dayLabelsMap, onPartialShift, onToggleCompletion }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     
     const playlistName = useMemo(() => {
@@ -437,7 +437,8 @@ const Roadmap = () => {
     const partialShiftTimeoutRef = useRef(null);
     const pendingPartialShiftsRef = useRef(new Map()); // dayIndex -> totalShift
     
-    const { user } = useAuthStore();
+    
+    // const { user } = useAuthStore();
 
     const fetchRoadmap = useCallback(async () => {
         setLoading(true);
@@ -450,7 +451,7 @@ const Roadmap = () => {
                 setAllRoadmaps(data);
                 setRoadmap(null);
             }
-        } catch (err) {
+        } catch (e) {
             console.error("No active roadmap found");
             setRoadmap(null);
             setAllRoadmaps([]);
@@ -463,7 +464,7 @@ const Roadmap = () => {
         try {
             const data = await getAllRoadmaps();
             setAllRoadmaps(data);
-        } catch (err) {
+        } catch (e) {
             console.error("Failed to fetch roadmaps");
             setAllRoadmaps([]);
         }
@@ -496,7 +497,7 @@ const Roadmap = () => {
                 try {
                     const data = JSON.parse(e.newValue);
                     if (data.sourceId === getTabId()) return;
-                } catch (err) {}
+                } catch (e) {}
                 fetchRoadmap();
                 fetchAllRoadmaps();
             }

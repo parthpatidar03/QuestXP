@@ -13,6 +13,7 @@ import {
     BookOpen, Layers, Zap, Lock, CheckCircle2, ChevronRight,
     MessageSquareText, StickyNote, BarChart3, ChevronDown, Trophy, Flag, HelpCircle, Edit2, Share2, Copy, Check, X
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 
 import { BGPattern } from '../components/ui/bg-pattern';
@@ -421,7 +422,7 @@ const CourseDetail = () => {
                 else setError('Failed to load course.');
                 if (pRes.status === 'fulfilled' && pRes.value.data.progress)
                     setProgress(pRes.value.data.progress);
-            } catch (_) { setError('Failed to load.'); }
+            } catch (err) { setError('Failed to load.'); }
         };
         fetchAll();
 
@@ -446,7 +447,7 @@ const CourseDetail = () => {
                 try {
                     const data = JSON.parse(e.newValue);
                     if (data.sourceId === getTabId()) return;
-                } catch (err) {}
+                } catch (e) {}
                 fetchAll();
             }
         };
@@ -474,7 +475,7 @@ const CourseDetail = () => {
                     }
                     clearInterval(iv);
                 }
-            } catch (_) {}
+            } catch (err) {}
         }, 3000);
         return () => clearInterval(iv);
     }, [course, courseId]);
