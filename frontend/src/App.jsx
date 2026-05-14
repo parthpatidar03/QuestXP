@@ -1,4 +1,5 @@
 import React, { useEffect, lazy, Suspense } from 'react';
+import { Toaster } from 'react-hot-toast';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import useAuthStore from './store/useAuthStore';
 import GamificationOverlay from './components/Gamification/GamificationOverlay';
@@ -82,6 +83,19 @@ const AppContent = () => {
 
     return (
         <div className="relative min-h-screen bg-bg cursor-crosshair">
+            <Toaster 
+                position="top-center" 
+                reverseOrder={false}
+                toastOptions={{
+                    style: {
+                        background: '#1a1a1a',
+                        color: '#fff',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        fontSize: '14px',
+                        fontFamily: 'inherit'
+                    }
+                }}
+            />
             <GlobalInteractiveEffect />
             <GamificationOverlay />
             {showPomodoro && <PomodoroTimer />}
