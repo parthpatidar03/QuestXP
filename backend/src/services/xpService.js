@@ -8,12 +8,12 @@ class XPService {
     /**
      * Award XP to a user for a specific action
      */
-    async award(userId, actionType, resourceId = null) {
-        if (!XP_REWARDS[actionType]) {
+    async award(userId, actionType, resourceId = null, customXP = null) {
+        if (!XP_REWARDS[actionType] && customXP === null) {
             throw new Error(`Invalid actionType: ${actionType}`);
         }
 
-        const baseXP = XP_REWARDS[actionType];
+        const baseXP = customXP !== null ? customXP : XP_REWARDS[actionType];
 
         const user = await User.findById(userId);
         if (!user) {

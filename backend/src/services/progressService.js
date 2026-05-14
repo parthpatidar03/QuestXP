@@ -32,20 +32,9 @@ const getOrCreateProgress = async (userId, courseId) => {
 
 const savePosition = async (userId, courseId, lectureId, { position, watchedSeconds }) => {
     const course = await Course.findById(courseId);
-
     if (!course) throw new Error('Course not found');
 
     const progress = await getOrCreateProgress(userId, courseId);
-
-    // Find the lecture in the course to get its total duration
-    let lectureDuration = 0;
-    for (const section of course.sections) {
-        const lecture = section.lectures.find(l => l._id.toString() === lectureId.toString());
-        if (lecture) {
-            lectureDuration = lecture.duration;
-            break;
-        }
-    }
 
     let lectureProg = progress.lectureProgress.find(lp => lp.lecture.toString() === lectureId.toString());
 
@@ -59,7 +48,6 @@ const savePosition = async (userId, courseId, lectureId, { position, watchedSeco
         progress.lectureProgress.push(lectureProg);
     }
 
-    // Debounce/avoid spam (e.g. only update if watchedSeconds > 0)
     if (watchedSeconds > 0) {
         lectureProg.watchedSeconds += watchedSeconds;
     }
@@ -67,9 +55,6 @@ const savePosition = async (userId, courseId, lectureId, { position, watchedSeco
     lectureProg.lastAccessedAt = new Date();
     progress.lastLectureId = lectureId;
 
-    let newlyCompleted = false;
-
-    // Append study session for today
     const todayStr = streakService.getISTDateString();
     let session = progress.studySessions.find(s => streakService.getISTDateString(s.date) === todayStr);
 
@@ -82,40 +67,28 @@ const savePosition = async (userId, courseId, lectureId, { position, watchedSeco
         session.minutesStudied = (session.minutesStudied || 0) + (watchedSeconds / 60);
     }
 
-    // Save changes to progress before doing side-effects
     await progress.save();
 
     // Side-effects
-    let xpAwarded = 0;
-    let awardResult = null;
-    
-    if (newlyCompleted) {
-        awardResult = await xpService.award(userId, 'LECTURE_COMPLETED');
-        if (awardResult && awardResult.xpEarned) {
-            xpAwarded += awardResult.xpEarned;
-        }
+    if (watchedSeconds > 0) {
         await streakService.recordActivity(userId);
-
-        // Recalculate course completion %
-        const completedCount = progress.lectureProgress.filter(lp => lp.completed).length;
-        progress.completionPct = course.totalLectures > 0 ? Math.round((completedCount / course.totalLectures) * 100) : 0;
-        progress.lastAccessedAt = new Date();
-        await progress.save();
-    } else if (watchedSeconds > 0) {
-        await streakService.recordActivity(userId); // Any watch time counts for streak
     }
 
     if (progress.studyPlan?.dailyGoalMins && session.minutesStudied >= progress.studyPlan.dailyGoalMins) {
-        // Assuming xpService handles dedup logic per day per user based on resourceId/date
-        const streakResult = await xpService.award(userId, 'GOAL_MET', todayStr);
-        if (streakResult && streakResult.xpEarned && !awardResult) {
-            // Only purely add if we returned numeric xpEarned above too, or maybe just ignore returning this back to Player directly since Player only cares about lecture xp
-        }
+        await xpService.award(userId, 'GOAL_MET', todayStr);
+    }
+
+    // Screen Time Bonuses (1hr and 3hrs)
+    if (session.minutesStudied >= 60) {
+        await xpService.award(userId, 'SCREEN_TIME_1HR', `1hr_${todayStr}`);
+    }
+    if (session.minutesStudied >= 180) {
+        await xpService.award(userId, 'SCREEN_TIME_3HR', `3hr_${todayStr}`);
     }
 
     return {
-        completed: newlyCompleted,
-        xpAwarded,
+        completed: false, // savePosition doesn't complete lectures anymore, toggleLecture does
+        xpAwarded: 0,
         completionPct: progress.completionPct,
         lectureProgress: lectureProg
     };
@@ -154,10 +127,28 @@ const toggleLecture = async (userId, courseId, lectureId, isCompleted) => {
     let xpAwarded = 0;
     // Award XP ONLY if it was not completed before and now it is
     if (nextCompleted && !wasCompleted) {
-        const awardResult = await xpService.award(userId, 'LECTURE_COMPLETED');
-        xpAwarded = awardResult?.xpEarned || 50;
+        // Calculate flat index of the lecture
+        let lectureIndex = 0;
+        let found = false;
+        for (const section of course.sections) {
+            for (const lecture of section.lectures) {
+                if (lecture._id.toString() === lectureId.toString()) {
+                    found = true;
+                    break;
+                }
+                lectureIndex++;
+            }
+            if (found) break;
+        }
+        
+        // Formula: 50 + (index * 10)
+        const dynamicXP = 50 + (lectureIndex * 10);
+        
+        const awardResult = await xpService.award(userId, 'LECTURE_COMPLETED', lectureId, dynamicXP);
+        xpAwarded = awardResult?.xpEarned || dynamicXP;
         await streakService.recordActivity(userId);
     }
+
 
     // Recalculate Course Completion
     const completedCount = progress.lectureProgress.filter(lp => lp.completed).length;
