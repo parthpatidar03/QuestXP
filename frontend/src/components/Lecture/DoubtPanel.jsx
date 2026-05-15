@@ -24,7 +24,7 @@ const DoubtPanel = ({ lectureId }) => {
 
             try {
                 // T019 Check Embedding Status
-                const statusRes = await api.get(`/api/doubts/${lectureId}/status`);
+                const statusRes = await api.get(`/doubts/${lectureId}/status`);
                 if (statusRes.data.embeddingStatus !== 'complete') {
                     setStatus('indexing');
                     return;
@@ -33,7 +33,7 @@ const DoubtPanel = ({ lectureId }) => {
                 setStatus('ready');
 
                 // US4: T026 history fetch
-                const historyRes = await api.get(`/api/doubts/${lectureId}/history`);
+                const historyRes = await api.get(`/doubts/${lectureId}/history`);
                 if (historyRes.data?.data?.exchanges) {
                     setHistory(historyRes.data.data.exchanges);
                 }
@@ -65,7 +65,7 @@ const DoubtPanel = ({ lectureId }) => {
         setLoading(true);
 
         try {
-            const res = await api.post(`/api/doubts/${lectureId}/query`, { questionText });
+            const res = await api.post(`/doubts/${lectureId}/query`, { questionText });
             const answerData = res.data.data;
 
             setHistory(prev => prev.map(msg => 
