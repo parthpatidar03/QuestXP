@@ -124,7 +124,7 @@ const embeddingWorker = new Worker('embedding', async job => {
             
             if (validBatch.length > 0) {
                 console.log(`[EmbeddingWorker] Upserting batch of ${validBatch.length} to namespace ${lectureId}`);
-                await ns.upsert(validBatch);
+                await ns.upsert({ records: validBatch });
             } else {
                 console.warn(`[EmbeddingWorker] Skipping empty or invalid batch at index ${i}`);
             }

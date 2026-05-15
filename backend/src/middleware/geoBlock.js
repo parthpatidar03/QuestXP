@@ -47,11 +47,24 @@ const extractClientIP = (req) => {
     // Azure App Service / standard proxies
     const forwarded = req.headers['x-forwarded-for'];
     if (typeof forwarded === 'string') {
-        return forwarded.split(',')[0].trim();
+        let firstIP = forwarded.split(',')[0].trim();
+        // Strip port
+        if (firstIP.includes(']')) {
+            // IPv6 with brackets e.g., [::1]:8080
+            firstIP = firstIP.split(']')[0].replace('[', '');
+        } else if (firstIP.includes('.') && firstIP.includes(':')) {
+            // IPv4 with port e.g., 106.219.86.5:22675
+            firstIP = firstIP.split(':')[0];
+        }
+        return firstIP;
     }
 
     // Direct connection
-    return req.ip || req.socket?.remoteAddress || null;
+    let directIP = req.ip || req.socket?.remoteAddress || null;
+    if (directIP && directIP.includes('.') && directIP.includes(':') && !directIP.startsWith('::ffff:')) {
+        directIP = directIP.split(':')[0];
+    }
+    return directIP;
 };
 
 /**
