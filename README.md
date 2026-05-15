@@ -22,7 +22,7 @@
   <img src="https://img.shields.io/badge/Cloud-Azure_App_Service-0078D4?style=flat&logo=microsoft-azure" alt="Azure">
   <img src="https://img.shields.io/badge/CI%2FCD-GitHub_Actions-2088FF?style=flat&logo=github-actions" alt="GitHub Actions">
   <img src="https://img.shields.io/badge/DB-MongoDB_Atlas-47A248?style=flat&logo=mongodb" alt="MongoDB">
-  <img src="https://img.shields.io/badge/Queue-Redis_%2B_BullMQ-DC382D?style=flat&logo=redis" alt="Redis">
+  <img src="https://img.shields.io/badge/Queue-Valkey_%2B_BullMQ-D1312E?style=flat&logo=valkey" alt="Valkey">
 </p>
 
 QuestXP is a high-performance Learning Management System engineered to eliminate "Playlist Fatigue." It programmatically transforms unstructured YouTube content — from massive playlists to 10-hour "one-shot" lectures — into structured, modular curricula using an AI-orchestrated background pipeline, Redis-backed job queues, and a pure-JavaScript adaptive scheduling engine.
@@ -67,7 +67,7 @@ QuestXP is a high-performance Learning Management System engineered to eliminate
   ├── quizWorker       — GPT quiz generation
   └── notificationWorker — FCM push dispatch
 
-[MongoDB Atlas]  ←→  [Redis (Upstash)]  ←→  [Pinecone]
+[MongoDB Atlas]  ←→  [Valkey (Aiven)]  ←→  [Pinecone]
 ```
 
 ---
@@ -171,7 +171,7 @@ When a lecture is toggled complete in the Course Player, the backend simultaneou
 | **Frontend** | Vercel | Auto-deploys from `main` branch |
 | **Backend API** | Azure App Service (Linux) | Node.js 22 LTS runtime |
 | **Database** | MongoDB Atlas | M0/M2 cluster, TLS |
-| **Cache / Queue** | Upstash Redis | Serverless Redis, TLS required |
+| **Cache / Queue** | Aiven Valkey | High-performance open-source Redis fork |
 | **Vectors** | Pinecone | Serverless index, per-lecture namespaces |
 | **Push** | Firebase Cloud Messaging | Via `firebase-admin` |
 
@@ -228,7 +228,7 @@ API data (courses, progress, leaderboard) is managed by TanStack Query with conf
 | **Runtime** | Node.js v22 LTS |
 | **API Framework** | Express.js 4 |
 | **Database** | MongoDB Atlas + Mongoose |
-| **Cache / Queue Broker** | Redis (Upstash) via ioredis |
+| **Cache / Queue Broker** | Valkey (Aiven) via ioredis |
 | **Job Queues** | BullMQ |
 | **AI / LLM** | OpenAI GPT-4o-mini, `text-embedding-3-small` |
 | **Vector DB** | Pinecone (serverless) |

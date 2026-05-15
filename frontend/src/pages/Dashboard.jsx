@@ -408,6 +408,13 @@ const Dashboard = () => {
     // Features list (top 5)
     const newFeatures = [
         {
+            id: 'valkey-infra',
+            title: 'High-Speed Valkey Infra',
+            description: 'Upgraded background processing engine to Valkey. Zero request-throttling and ultra-low latency for AI pipelines.',
+            icon: <Zap className="w-5 h-5 text-warning" />,
+            date: 'Latest'
+        },
+        {
             id: 'streak-capture',
             title: 'Achievement Capture 2.0',
             description: 'Share your progress in style! New high-fidelity achievement cards with backdrop-blur and premium TUF-inspired aesthetics.',
@@ -434,13 +441,6 @@ const Dashboard = () => {
             description: 'Compete with the top 1% of learners. Track your rank, percentile, and trending position in real-time.',
             icon: <Trophy className="w-5 h-5 text-warning" />,
             date: 'Updated'
-        },
-        {
-            id: 'sync-engine',
-            title: 'Zero-Latency Sync',
-            description: 'Every progress toggle is now reflected across all open tabs instantly with zero flickering using Broadcast Channels.',
-            icon: <Zap className="w-5 h-5 text-primary" />,
-            date: 'Stable'
         }
     ];
 
@@ -452,6 +452,17 @@ const Dashboard = () => {
                 icon: '📺'
             });
             localStorage.setItem('seen_feature_video_support_v1', 'true');
+        }
+
+        const hasSeenValkey = localStorage.getItem('seen_feature_valkey_v1');
+        if (!hasSeenValkey) {
+            setTimeout(() => {
+                toast.success("Infrastructure Upgraded: Higher capacity processing enabled! ⚡", {
+                    duration: 6000,
+                    icon: '⚡'
+                });
+                localStorage.setItem('seen_feature_valkey_v1', 'true');
+            }, 3000);
         }
     }, []);
 
