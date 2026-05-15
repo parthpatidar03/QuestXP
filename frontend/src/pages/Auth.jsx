@@ -25,6 +25,15 @@ const Auth = () => {
     // Map API failures to messages users can act on, not raw stack traces.
     const friendlyError = (err) => {
         if (!err) return 'Authentication failed. Please try again.';
+
+        // Handle Network Errors (likely CORS blocks or backend down)
+        if (!err.response) {
+            if (err.code === 'ERR_NETWORK') {
+                return 'Network failure. This is likely a CORS block. Ensure the backend is redeployed with the latest CORS fixes.';
+            }
+            return 'Could not reach server. Please check your internet connection.';
+        }
+
         if (err.response?.data?.code === 'GEO_BLOCKED') {
             return 'QuestXP is available only in India right now.';
         }
