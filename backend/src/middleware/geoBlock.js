@@ -37,14 +37,19 @@ const setCache = (ip, value) => {
         fallbackCache.delete(oldestKey);
     }
 };
+// Sentinel returned on cache miss so callers can distinguish "no entry" from
+// "negative-cached as failed (value: null)". Caching failures matters because
+// repeated geo lookups for non-routable / unknown IPs would otherwise hammer
+// the ip-api endpoint on every request.
+const CACHE_MISS = Symbol('cacheMiss');
 const getCache = (ip) => {
     const hit = fallbackCache.get(ip);
-    if (!hit) return null;
+    if (!hit) return CACHE_MISS;
     if (Date.now() - hit.ts > FALLBACK_CACHE_TTL_MS) {
         fallbackCache.delete(ip);
-        return null;
+        return CACHE_MISS;
     }
-    return hit.value;
+    return hit.value; // may be null (negative) or a geo object (positive)
 };
 
 const isPrivateIP = (ip) => {
@@ -91,29 +96,43 @@ const normalizeIP = (raw) => {
 };
 
 /**
- * Extract real client IP from request. Order of preference:
- *   1. cf-connecting-ip (Cloudflare)
- *   2. x-real-ip (nginx)
- *   3. x-forwarded-for (first hop)
- *   4. req.ip (Express, honors trust proxy)
- *   5. socket.remoteAddress
+ * Extract real client IP from request.
+ *
+ * Order of preference:
+ *   1. req.ip — Express resolves this through `trust proxy` (configured as
+ *      TRUST_PROXY_HOPS hops in app.js). This is the ONLY value an attacker
+ *      cannot spoof: Express only honors x-forwarded-for from a trusted hop.
+ *   2. cf-connecting-ip / x-real-ip / x-forwarded-for — raw headers, used
+ *      ONLY when req.ip is somehow unavailable (extremely rare). Honoring
+ *      these blindly is what lets an attacker spoof their IP by simply
+ *      adding a header, so we keep them as last-resort fallbacks.
+ *   3. socket.remoteAddress — direct TCP peer.
  */
 const extractClientIP = (req) => {
+    if (req.ip) {
+        const norm = normalizeIP(req.ip);
+        if (norm) return norm;
+    }
+
+    // Fallbacks below — only reached when req.ip is missing (e.g. running
+    // outside Express like in a worker). Order chosen to match common proxy
+    // chains.
     const cfIP = req.headers['cf-connecting-ip'];
-    if (cfIP) return normalizeIP(cfIP);
+    if (cfIP) {
+        const norm = normalizeIP(cfIP);
+        if (norm) return norm;
+    }
 
     const xRealIP = req.headers['x-real-ip'];
-    if (xRealIP) return normalizeIP(xRealIP);
+    if (xRealIP) {
+        const norm = normalizeIP(xRealIP);
+        if (norm) return norm;
+    }
 
     const forwarded = req.headers['x-forwarded-for'];
     if (typeof forwarded === 'string' && forwarded.length > 0) {
         const first = forwarded.split(',')[0];
         const norm = normalizeIP(first);
-        if (norm) return norm;
-    }
-
-    if (req.ip) {
-        const norm = normalizeIP(req.ip);
         if (norm) return norm;
     }
 
@@ -149,7 +168,7 @@ const resolveGeoOffline = (ip) => {
 const resolveGeoOnline = async (ip) => {
     if (FALLBACK_DISABLED || !ip) return null;
     const cached = getCache(ip);
-    if (cached !== null) return cached;
+    if (cached !== CACHE_MISS) return cached; // honors both positive and negative cache
 
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), FALLBACK_LOOKUP_TIMEOUT_MS);

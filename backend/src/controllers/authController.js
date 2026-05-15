@@ -333,6 +333,19 @@ const googleLogin = async (req, res, next) => {
             });
         }
 
+        // SHADOW-LINK DEFENSE: never auto-link a Google identity to an
+        // existing local account unless Google has verified the email. An
+        // attacker who pre-registered an email/password account with the
+        // victim's email could otherwise hijack it when the victim signs in
+        // with Google.
+        if (payload.email_verified !== true) {
+            authLogger.warn('Google login rejected: unverified email', { email: payload.email });
+            return res.status(401).json({
+                error: 'Your Google email is not verified. Please verify it with Google before signing in.',
+                code: 'GOOGLE_EMAIL_UNVERIFIED',
+            });
+        }
+
         const clientIP = extractClientIP(req);
         const geoData = {
             country: req.geoInfo?.country || null,

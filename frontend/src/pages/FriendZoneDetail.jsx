@@ -9,8 +9,18 @@ import {
     generateJoinOtp, buildInviteUrl,
 } from '../services/friendZonesApi';
 
+// Tailwind's JIT compiler can't see classes built from template literals like
+// `bg-${color}/10`, so those styles never get emitted in production. Use a
+// static map that the compiler can scan.
+const PILL_COLORS = {
+    primary: 'bg-primary/10 text-primary',
+    warning: 'bg-warning/10 text-warning',
+    danger:  'bg-danger/10 text-danger',
+    success: 'bg-success/10 text-success',
+};
+
 const Pill = ({ children, color = 'primary' }) => (
-    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest bg-${color}/10 text-${color}`}>
+    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest ${PILL_COLORS[color] || PILL_COLORS.primary}`}>
         {children}
     </span>
 );

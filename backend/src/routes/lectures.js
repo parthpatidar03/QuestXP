@@ -186,7 +186,11 @@ router.post('/:lectureId/quiz/submit', [
     quizLimiter,
     param('lectureId').isMongoId().withMessage('Invalid lecture ID'),
     body('answers').isArray().withMessage('Answers must be an array'),
-    body('timeTakenSecs').isNumeric({ min: 0 }).withMessage('Valid time taken is required'),
+    // isNumeric() silently ignores `min` — only isInt/isFloat respect it.
+    // Without this, negative timeTakenSecs would pass validation and skew
+    // analytics + XP.
+    body('timeTakenSecs').isFloat({ min: 0, max: 24 * 60 * 60 })
+        .withMessage('Valid time taken is required (0 - 86400 seconds)'),
 ], async (req, res, next) => {
     try {
         if ((req.user.level ?? 1) < LEVEL_QUIZ) {

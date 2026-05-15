@@ -99,6 +99,9 @@ const isLocked = (entry) => {
 };
 
 const checkLockout = (req, res, next) => {
+    // Integration tests intentionally exercise wrong-password paths; skip the
+    // 8-failure lockout in test env so the suite isn't poisoned across cases.
+    if (process.env.NODE_ENV === 'test') return next();
     const email = String(req.body?.email || '').toLowerCase().trim();
     const ip = req.ip || 'unknown';
 
