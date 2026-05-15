@@ -409,6 +409,13 @@ const Dashboard = () => {
     // Features list (top 5)
     const newFeatures = [
         {
+            id: 'ai-timestamps',
+            title: 'AI Timestamp Engine',
+            description: 'Tutorial has no chapters? Our AI automatically generates timestamps to break long chapter-less videos into logical, bite-sized study missions.',
+            icon: <Clock className="w-5 h-5 text-primary" />,
+            date: 'New'
+        },
+        {
             id: 'friend-zones',
             title: 'Friend Zones',
             description: 'Create a private squad with a 6-digit join code. Compete with friends on a shared XP leaderboard and watch each other\'s activity feed in real time.',
@@ -435,20 +442,6 @@ const Dashboard = () => {
             description: 'Upgraded background processing engine to Valkey. Zero request-throttling and ultra-low latency for AI pipelines.',
             icon: <Zap className="w-5 h-5 text-primary" />,
             date: 'Speed'
-        },
-        {
-            id: 'streak-capture',
-            title: 'Achievement Capture 2.0',
-            description: 'Share your progress in style! New high-fidelity achievement cards with backdrop-blur and premium TUF-inspired aesthetics.',
-            icon: <Camera className="w-5 h-5 text-secondary" />,
-            date: 'Major'
-        },
-        {
-            id: 'video-support',
-            title: 'AI Video Chapterization',
-            description: 'Full support for single long-form "One-Shot" videos. Paste any tutorial and we\'ll split it into logical missions.',
-            icon: <PlayCircle className="w-5 h-5 text-success" />,
-            date: 'Popular'
         }
     ];
 
@@ -508,6 +501,16 @@ const Dashboard = () => {
                 localStorage.setItem('seen_feature_friendzones_v1', 'true');
             }, 1500);
         }
+        const hasSeenTimestamps = localStorage.getItem('seen_feature_timestamps_v1');
+        if (!hasSeenTimestamps) {
+            setTimeout(() => {
+                toast.success("New: AI-Generated Timestamps for chapter-less videos! ⏱️", {
+                    duration: 6000,
+                    icon: '⏱️'
+                });
+                localStorage.setItem('seen_feature_timestamps_v1', 'true');
+            }, 4500);
+        }
 
     }, []);
 
@@ -542,6 +545,13 @@ const Dashboard = () => {
                 seenFeatures.push('bulk_completion_v1');
                 localStorage.setItem('seenFeatures', JSON.stringify(seenFeatures));
             }, 12000);
+        }
+        if (!seenFeatures.includes('ai_timestamps_v1')) {
+            setTimeout(() => {
+                addBadgeToast('New: AI Timestamps!', 'We now auto-split videos even if they have no YouTube chapters!', 'clock');
+                seenFeatures.push('ai_timestamps_v1');
+                localStorage.setItem('seenFeatures', JSON.stringify(seenFeatures));
+            }, 5000);
         }
     }, [addBadgeToast]);
 
