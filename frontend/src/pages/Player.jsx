@@ -289,8 +289,11 @@ const Player = () => {
             const { xpEarned, lectureId: completedLecId } = e.detail;
             setXpEarned(xpEarned);
             setShowCompletionCard(true);
+
+            // Optimistic XP bump so NavBar updates immediately — no waiting for
+            // the server. We still reconcile with /gamification/profile below.
             if (xpEarned > 0) {
-                addXPToast(xpEarned, 'Mission Complete');
+                applyAward({ xpEarned });
                 shootConfetti();
             }
 
@@ -303,14 +306,16 @@ const Player = () => {
             }
             broadcastProgressUpdate();
 
-            // Refresh gamification profile so NavBar XP updates
-            import('../services/gamificationApi').then(({ getGamificationProfile }) => {
+            // Reconcile in the background — corrects any drift, picks up
+            // level-up / badge unlocks that the optimistic update couldn't
+            // know about.
+            import('../services/gamificationApi').then(({ getGamificationProfile }) =>
                 getGamificationProfile().then(profile => {
                     import('../store/useGamificationStore').then(m => {
                         m.default.getState().setProfile(profile);
                     });
-                });
-            }).catch(() => {});
+                })
+            ).catch(() => { /* non-critical */ });
         };
 
         window.addEventListener('mission-completed', handleMissionComplete);

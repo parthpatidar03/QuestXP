@@ -19,6 +19,9 @@ const Profile = lazy(() => import('./pages/Profile'));
 const Roadmap = lazy(() => import('./pages/Roadmap'));
 const AdminFeedback = lazy(() => import('./pages/AdminFeedback'));
 const SharePage = lazy(() => import('./pages/SharePage'));
+const FriendZones = lazy(() => import('./pages/FriendZones'));
+const FriendZoneDetail = lazy(() => import('./pages/FriendZoneDetail'));
+const JoinFriendZone = lazy(() => import('./pages/JoinFriendZone'));
 
 const PageLoader = () => (
     <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-bg">
@@ -32,14 +35,21 @@ const ProtectedRoute = ({ children }) => {
     const location = useLocation();
     const isDemo = new URLSearchParams(location.search).get('demo') === 'true';
 
-    if (isLoading) return (
+    // Mirror the AppContent safety net: never spin longer than 5s here either.
+    const [bailout, setBailout] = React.useState(false);
+    React.useEffect(() => {
+        const t = setTimeout(() => setBailout(true), 5000);
+        return () => clearTimeout(t);
+    }, []);
+
+    if (isLoading && !bailout) return (
         <div className="min-h-screen flex items-center justify-center bg-bg">
             <div className="w-10 h-10 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: 'var(--color-primary)', borderTopColor: 'transparent' }} />
         </div>
     );
-    
+
     if (isAuthenticated || isDemo) return children;
-    
+
     return <Navigate to="/login" replace />;
 };
 
@@ -49,6 +59,16 @@ const AppContent = () => {
     const { checkAuth, isLoading, isAuthenticated } = useAuthStore();
     const location = useLocation();
     useHeartbeat();
+
+    // Safety net: if checkAuth() never resolves (backend down, hung Mongo,
+    // network blackhole) the UI used to spin forever. After 5 seconds we
+    // force the store out of the loading state so the user lands on /login
+    // and can at least take action.
+    const [hardLoaded, setHardLoaded] = React.useState(false);
+    React.useEffect(() => {
+        const t = setTimeout(() => setHardLoaded(true), 5000);
+        return () => clearTimeout(t);
+    }, []);
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -71,7 +91,7 @@ const AppContent = () => {
     const isPublicPage = ['/', '/login', '/register'].includes(location.pathname) || location.pathname.startsWith('/share/');
     const showPomodoro = isAuthenticated && !isPublicPage;
 
-    if (isLoading && !isPublicPage) {
+    if (isLoading && !isPublicPage && !hardLoaded) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-bg">
                 <div className="w-12 h-12 rounded-full border-4 border-t-transparent animate-spin" style={{ borderColor: 'var(--color-primary)', borderTopColor: 'transparent' }} />
@@ -123,6 +143,13 @@ const AppContent = () => {
                         <ProtectedRoute><AdminFeedback /></ProtectedRoute>
                     } />
                     <Route path="/share/:courseId" element={<SharePage />} />
+                    <Route path="/friendzones" element={
+                        <ProtectedRoute><FriendZones /></ProtectedRoute>
+                    } />
+                    <Route path="/friendzones/:zoneId" element={
+                        <ProtectedRoute><FriendZoneDetail /></ProtectedRoute>
+                    } />
+                    <Route path="/join/:inviteCode" element={<JoinFriendZone />} />
                 </Routes>
             </Suspense>
         </div>
