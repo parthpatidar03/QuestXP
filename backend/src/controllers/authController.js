@@ -302,13 +302,36 @@ const googleLogin = async (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
+        if (!process.env.GOOGLE_CLIENT_ID) {
+            authLogger.error('GOOGLE_CLIENT_ID not configured on backend');
+            return res.status(500).json({
+                error: 'Server is not configured for Google sign-in. Please contact support.',
+                code: 'GOOGLE_CLIENT_NOT_CONFIGURED',
+            });
+        }
+
         const { credential } = req.body;
-        const ticket = await googleClient.verifyIdToken({
-            idToken: credential,
-            audience: process.env.GOOGLE_CLIENT_ID,
-        });
-        const payload = ticket.getPayload();
-        const { email, name, sub: googleId } = payload;
+        let payload;
+        try {
+            const ticket = await googleClient.verifyIdToken({
+                idToken: credential,
+                audience: process.env.GOOGLE_CLIENT_ID,
+            });
+            payload = ticket.getPayload();
+        } catch (verifyErr) {
+            authLogger.warn('Google credential verification failed', { error: verifyErr.message });
+            return res.status(401).json({
+                error: 'Could not verify your Google sign-in. Please retry.',
+                code: 'GOOGLE_TOKEN_INVALID',
+            });
+        }
+
+        if (!payload?.email) {
+            return res.status(401).json({
+                error: 'Google did not return an email address. Please use email signup.',
+                code: 'GOOGLE_NO_EMAIL',
+            });
+        }
 
         const clientIP = extractClientIP(req);
         const geoData = {
@@ -319,50 +342,44 @@ const googleLogin = async (req, res, next) => {
             lastUpdated: new Date(),
         };
 
-        let user = await User.findOne({ email: email.toLowerCase() });
+        const emailLower = String(payload.email).toLowerCase();
+        let user = await User.findOne({ email: emailLower });
         if (!user) {
             user = new User({
-                email: payload.email.toLowerCase(),
+                email: emailLower,
                 googleId: payload.sub,
                 username: generateRandomUsername(),
                 usernameSet: false,
                 geo: geoData,
             });
-            user.name = user.username; // Sync name with generated identity
-            await user.save();
-        } else if (!user.googleId) {
-            user.googleId = payload.sub;
+            user.name = user.username;
+        } else {
+            if (!user.googleId) user.googleId = payload.sub;
             if (!user.username) {
                 user.username = generateRandomUsername();
                 user.usernameSet = false;
             }
-            user.geo = geoData;
-            await user.save();
-        } else {
-            // Existing Google user — update geo on each login
-            user.geo = geoData;
-            await user.save();
+            user.geo = geoData; // always refresh geo on login
         }
+        await user.save();
 
         const { accessToken, refreshToken } = await issueSession(req, res, user);
 
-        // T040: Recalculate study plans on login (Background - non-blocking)
         triggerPlanRecalculation(user._id).catch(err => {
-            authLogger.error('Background plan recalculation failed', { error: err.message, stack: err.stack });
+            authLogger.error('Background plan recalculation failed', { error: err.message });
         });
 
-        res.json({ 
-            success: true, 
-            data: { user: userResponse(user), accessToken, refreshToken }, 
+        res.json({
+            success: true,
+            data: { user: userResponse(user), accessToken, refreshToken },
             user: userResponse(user),
             accessToken,
-            refreshToken
+            refreshToken,
         });
     } catch (error) {
-        console.error('[Auth] Google Login Failure Details:', {
+        authLogger.error('Google login failed', {
             error: error.message,
-            stack: error.stack?.split('\n')[0],
-            body: !!req.body.credential
+            hasCredential: !!req.body?.credential,
         });
         next(error);
     }

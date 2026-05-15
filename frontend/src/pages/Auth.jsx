@@ -20,42 +20,81 @@ const Auth = () => {
         }
     }, [isAuthenticated, isLoading, navigate]);
 
+    const [submitting, setSubmitting] = useState(false);
+
+    // Map API failures to messages users can act on, not raw stack traces.
+    const friendlyError = (err) => {
+        if (!err) return 'Authentication failed. Please try again.';
+        if (err.response?.data?.code === 'GEO_BLOCKED') {
+            return 'QuestXP is available only in India right now.';
+        }
+        if (err.response?.data?.code === 'GEO_LOOKUP_FAILED') {
+            return 'We could not verify your location. Please disable any VPN/proxy and retry.';
+        }
+        if (err.response?.status === 429) {
+            return 'Too many attempts. Please wait a minute and try again.';
+        }
+        if (err.response?.status >= 500) {
+            return 'Our servers are having a hiccup. Please retry in a moment.';
+        }
+        return (
+            err.response?.data?.error ||
+            err.response?.data?.errors?.[0]?.msg ||
+            err.message ||
+            'Authentication failed. Please try again.'
+        );
+    };
+
+    const goNext = () => {
+        const redirect = localStorage.getItem('redirectAfterLogin');
+        if (redirect) {
+            localStorage.removeItem('redirectAfterLogin');
+            navigate(redirect);
+        } else {
+            navigate('/dashboard');
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (submitting) return;
         setError(null);
+        setSubmitting(true);
         try {
             if (isLogin) {
-                await login(email, password);
+                await login(email.trim(), password);
             } else {
-                await register(name, email, password);
+                await register(name.trim(), email.trim(), password);
                 localStorage.setItem('justSignedUp', 'true');
             }
-            const redirect = localStorage.getItem('redirectAfterLogin');
-            if (redirect) {
-                localStorage.removeItem('redirectAfterLogin');
-                navigate(redirect);
-            } else {
-                navigate('/dashboard');
-            }
+            setPassword('');
+            goNext();
         } catch (err) {
-            setError(err.response?.data?.error || err.response?.data?.errors?.[0]?.msg || 'Authentication failed');
+            setError(friendlyError(err));
+        } finally {
+            setSubmitting(false);
         }
     };
 
     const handleGoogleSuccess = async (credentialResponse) => {
         setError(null);
+        if (!credentialResponse?.credential) {
+            setError('Google did not return a credential. Please retry.');
+            return;
+        }
         try {
             await googleLogin(credentialResponse.credential);
-            const redirect = localStorage.getItem('redirectAfterLogin');
-            if (redirect) {
-                localStorage.removeItem('redirectAfterLogin');
-                navigate(redirect);
-            } else {
-                navigate('/dashboard');
-            }
+            goNext();
         } catch (err) {
-            setError(err.response?.data?.error || 'Google Authentication failed');
+            setError(friendlyError(err));
         }
+    };
+
+    const handleGoogleError = () => {
+        setError(
+            'Google sign-in could not start. If you are on iOS Safari, please ' +
+            'allow third-party cookies for accounts.google.com, or use email signup instead.'
+        );
     };
 
     return (
@@ -114,8 +153,12 @@ const Auth = () => {
                         />
                     </div>
                     
-                    <button type="submit" className="btn-primary w-full py-3 mt-4 text-[15px]">
-                        {isLogin ? 'Sign In' : 'Create Account'}
+                    <button
+                        type="submit"
+                        disabled={submitting}
+                        className="btn-primary w-full py-3 mt-4 text-[15px] disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                        {submitting ? (isLogin ? 'Signing in…' : 'Creating account…') : (isLogin ? 'Sign In' : 'Create Account')}
                     </button>
                 </form>
 
@@ -128,11 +171,13 @@ const Auth = () => {
                     <div className="w-full flex justify-center">
                         <GoogleLogin
                             onSuccess={handleGoogleSuccess}
-                            onError={() => setError('Google Authentication Failed')}
+                            onError={handleGoogleError}
                             theme="outline"
                             shape="rectangular"
                             size="large"
                             text={isLogin ? "signin_with" : "signup_with"}
+                            useOneTap={false}
+                            auto_select={false}
                         />
                     </div>
                 </div>

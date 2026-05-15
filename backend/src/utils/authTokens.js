@@ -47,12 +47,23 @@ const createRefreshToken = (user, sessionId) => jwt.sign(
     { expiresIn: REFRESH_TOKEN_TTL }
 );
 
-const isProd = process.env.NODE_ENV === 'production' || 
-               process.env.RAILWAY_ENVIRONMENT || 
-               (process.env.FRONTEND_URL && process.env.FRONTEND_URL.includes('https'));
+// Treat anything that is clearly a server-side hosted environment as "prod"
+// for cookie-flag purposes. We deliberately do NOT key off FRONTEND_URL —
+// a missing/misconfigured FRONTEND_URL must never silently downgrade cookies
+// to insecure values.
+const isProd = Boolean(
+    process.env.NODE_ENV === 'production' ||
+    process.env.RAILWAY_ENVIRONMENT ||
+    process.env.WEBSITE_INSTANCE_ID ||      // Azure App Service
+    process.env.VERCEL ||                    // Vercel
+    process.env.RENDER                       // Render
+);
 
 const cookieOptions = (maxAge) => ({
     httpOnly: true,
+    // `sameSite: 'none'` is REQUIRED when frontend and backend are on different
+    // domains (which is our prod setup). Browsers will reject 'none' without
+    // 'secure: true', so the two MUST flip together.
     secure: isProd,
     sameSite: isProd ? 'none' : 'lax',
     maxAge,
