@@ -30,7 +30,6 @@ const queryClient = new QueryClient({
 // a visible banner on the page in production builds when it's absent.
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 if (!GOOGLE_CLIENT_ID) {
-  // eslint-disable-next-line no-console
   console.error(
     '[QuestXP] VITE_GOOGLE_CLIENT_ID is NOT set at build time. ' +
     'Google sign-in will fail. Set it in the Vercel project env vars ' +

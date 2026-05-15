@@ -29,7 +29,7 @@ const useAuthStore = create((set) => ({
                 const { data } = await api.get('/auth/me');
                 if (version !== authVersion) return;
                 set({ user: data.user, isAuthenticated: true, isLoading: false });
-            } catch (error) {
+            } catch {
                 if (version !== authVersion) return;
                 set({ user: null, isAuthenticated: false, isLoading: false });
             } finally {
@@ -40,45 +40,33 @@ const useAuthStore = create((set) => ({
     },
 
     login: async (email, password) => {
-        try {
-            const { data } = await api.post('/auth/login', { email, password });
-            authVersion += 1;
-            persistTokens(data);
-            set({ user: data.user, isAuthenticated: true, isLoading: false });
-            return data;
-        } catch (error) {
-            throw error;
-        }
+        const { data } = await api.post('/auth/login', { email, password });
+        authVersion += 1;
+        persistTokens(data);
+        set({ user: data.user, isAuthenticated: true, isLoading: false });
+        return data;
     },
 
     googleLogin: async (credential) => {
-        try {
-            const { data } = await api.post('/auth/google', { credential });
-            authVersion += 1;
-            persistTokens(data);
-            set({ user: data.user, isAuthenticated: true, isLoading: false });
-            return data;
-        } catch (error) {
-            throw error;
-        }
+        const { data } = await api.post('/auth/google', { credential });
+        authVersion += 1;
+        persistTokens(data);
+        set({ user: data.user, isAuthenticated: true, isLoading: false });
+        return data;
     },
 
     register: async (name, email, password) => {
-        try {
-            const { data } = await api.post('/auth/register', { name, email, password });
-            authVersion += 1;
-            persistTokens(data);
-            set({ user: data.user, isAuthenticated: true, isLoading: false });
-            return data;
-        } catch (error) {
-            throw error;
-        }
+        const { data } = await api.post('/auth/register', { name, email, password });
+        authVersion += 1;
+        persistTokens(data);
+        set({ user: data.user, isAuthenticated: true, isLoading: false });
+        return data;
     },
 
     logout: async () => {
         try {
             await api.post('/auth/logout');
-        } catch (_) { /* ignore — local cleanup must still happen */ }
+        } catch { /* ignore — local cleanup must still happen */ }
         clearTokens();
         authVersion += 1;
         set({ user: null, isAuthenticated: false });

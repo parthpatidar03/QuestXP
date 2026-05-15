@@ -377,6 +377,7 @@ function CourseCard({ course, progress, onDelete, isDeleting }) {
 /* ── Dashboard ──────────────────────────────────────────────────────── */
 const Dashboard = () => {
     const { user: authUser } = useAuthStore();
+    const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
     const isDemo = searchParams.get('demo') === 'true';
 

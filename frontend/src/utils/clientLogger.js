@@ -96,7 +96,7 @@ const flush = async () => {
                 keepalive: true,
                 credentials: 'include',
             });
-        } catch (_) {
+        } catch {
             // If shipping fails (offline, backend down), drop quietly —
             // we already have the entry in localStorage for manual recovery.
         }
