@@ -51,7 +51,7 @@ const FriendZoneDetail = () => {
     // returned by the backend once and never persisted; we keep it locally
     // until it expires or the page is reloaded.
     const [otp, setOtp] = useState(null);        // { code, expiresAt }
-    const [otpRemain, setOtpRemain] = useState(0);
+    const [otpRemain, setOtpRemain] = useState(null);
 
     const refresh = useCallback(async () => {
         try {
@@ -82,7 +82,7 @@ const FriendZoneDetail = () => {
 
     // OTP countdown — re-renders every second so the owner sees expiry tick.
     useEffect(() => {
-        if (!otp?.expiresAt) { setOtpRemain(0); return; }
+        if (!otp?.expiresAt) { setOtpRemain(null); return; }
         const tick = () => setOtpRemain(new Date(otp.expiresAt).getTime() - Date.now());
         tick();
         const id = setInterval(tick, 1000);
@@ -91,7 +91,7 @@ const FriendZoneDetail = () => {
 
     // Auto-clear OTP when it expires so we don't show a stale code.
     useEffect(() => {
-        if (otp && otpRemain <= 0) setOtp(null);
+        if (otp && otpRemain !== null && otpRemain <= 0) setOtp(null);
     }, [otp, otpRemain]);
 
     const copyInvite = async () => {
@@ -300,7 +300,7 @@ const FriendZoneDetail = () => {
                                     </button>
                                 )}
                                 <p className="text-[10px] text-text-muted mt-1.5">
-                                    {otp
+                                    {otp && otpRemain !== null
                                         ? `Expires in ${fmtMMSS(otpRemain)} · single use`
                                         : '6-digit code · expires in 10 min · single use'}
                                 </p>
