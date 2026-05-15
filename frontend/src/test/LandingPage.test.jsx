@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { describe, it, expect, vi } from 'vitest';
+import { HelmetProvider } from 'react-helmet-async';
 import LandingPage from '../pages/LandingPage';
 
 describe('LandingPage Smoke Test', () => {
@@ -14,9 +15,11 @@ describe('LandingPage Smoke Test', () => {
         );
 
         render(
-            <BrowserRouter>
-                <LandingPage />
-            </BrowserRouter>
+            <HelmetProvider>
+                <BrowserRouter>
+                    <LandingPage />
+                </BrowserRouter>
+            </HelmetProvider>
         );
         
         // Check for key hero text using role to avoid collision with testimonials
@@ -26,9 +29,11 @@ describe('LandingPage Smoke Test', () => {
 
     it('renders CTA buttons', () => {
         render(
-            <BrowserRouter>
-                <LandingPage />
-            </BrowserRouter>
+            <HelmetProvider>
+                <BrowserRouter>
+                    <LandingPage />
+                </BrowserRouter>
+            </HelmetProvider>
         );
         
         // Buttons in the hero section
