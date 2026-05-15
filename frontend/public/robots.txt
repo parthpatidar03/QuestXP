@@ -1,8 +1,24 @@
 User-agent: *
 Allow: /
+Allow: /login
+Allow: /register
+
+# Private app surface — keep out of search results.
 Disallow: /api/
 Disallow: /admin/
+Disallow: /dashboard
 Disallow: /dashboard/
+Disallow: /roadmap
 Disallow: /roadmap/
+Disallow: /courses/
+Disallow: /player/
+Disallow: /profile
+Disallow: /profile/
+Disallow: /friendzones
+Disallow: /friendzones/
+Disallow: /join/
+
+# Don't waste crawl budget on legacy query strings.
+Disallow: /*?*
 
 Sitemap: https://questxp.in/sitemap.xml

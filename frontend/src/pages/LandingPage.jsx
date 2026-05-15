@@ -38,13 +38,11 @@ const LandingPage = () => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [feedbackOpen, setFeedbackOpen] = useState(false);
     const [videoOpen, setVideoOpen] = useState(false);
-    const [stats, setStats] = useState({ 
-        learners: 80, 
-        quizzes: 250, 
-        missions: 600, 
-        xp: 75000,
-        visits: 1200
-    });
+    // Stats are loaded from /api/public/stats. Each metric arrives in the
+    // shape { value, raw, show }. We never seed inflated defaults — until
+    // the API responds (or if it fails) we just render nothing in the stats
+    // block, which is preferable to showing fake numbers.
+    const [stats, setStats] = useState(null);
     const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
     const [isClicked, setIsClicked] = useState(false);
 
@@ -84,6 +82,17 @@ const LandingPage = () => {
         if (num >= 1000) return `${(num / 1000).toFixed(1)}k+`;
         return `${num}+`;
     };
+
+    // Build the metrics list dynamically — we only render entries with show:true.
+    // This avoids displaying "5+ Active Learners" before the product has scale.
+    const visibleMetrics = stats
+        ? [
+            { key: 'learners', label: ['Active', 'Learners'],          color: 'text-primary',      stat: stats.learners },
+            { key: 'missions', label: ['Missions', 'Finished'],        color: 'text-text-primary', stat: stats.missions },
+            { key: 'xp',       label: ['Knowledge', 'XP Distributed'], color: 'text-text-primary', stat: stats.xp },
+            { key: 'visits',   label: ['Global', 'Interactions'],      color: 'text-text-primary', stat: stats.visits },
+        ].filter(m => m.stat?.show && m.stat?.value > 0)
+        : [];
 
 
     useEffect(() => {
@@ -125,23 +134,68 @@ const LandingPage = () => {
     return (
         <div className="min-h-screen bg-bg relative overflow-hidden flex flex-col">
             <Helmet>
-                <title>QuestXP | Gamified Learning Platform for Master Skills</title>
-                <meta name="description" content="Level up your skills with QuestXP. A gamified roadmap-based learning platform. Earn XP, complete missions, and master new technologies." />
-                <meta name="keywords" content="QuestXP, gamified learning, skill development, roadmaps, coding platform, XP, missions, learning path" />
-                
+                <title>QuestXP — Gamified Learning from YouTube Playlists | AI Quizzes, XP, Streaks</title>
+                <meta name="description" content="QuestXP turns any YouTube playlist into a structured course with AI-generated quizzes, notes, and study roadmaps. Earn XP, level up, build streaks, and learn with friends in private squads." />
+                <meta name="keywords" content="QuestXP, gamified learning, YouTube to course, AI study assistant, study roadmap, XP, study streak, learning platform India, AI quiz generator, coding roadmap" />
+                <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+                <meta name="author" content="Parth Patidar" />
+                <link rel="canonical" href="https://questxp.in/" />
+
                 {/* Open Graph / Facebook */}
                 <meta property="og:type" content="website" />
+                <meta property="og:site_name" content="QuestXP" />
                 <meta property="og:url" content="https://questxp.in/" />
-                <meta property="og:title" content="QuestXP | Gamified Learning Platform" />
-                <meta property="og:description" content="Level up your skills with QuestXP. Gamified roadmaps, missions, and rewards." />
+                <meta property="og:title" content="QuestXP — Gamified Learning from YouTube Playlists" />
+                <meta property="og:description" content="Turn any YouTube playlist into a structured course with AI quizzes, notes, and a study roadmap. Earn XP and level up." />
                 <meta property="og:image" content="https://questxp.in/og-image.png" />
+                <meta property="og:image:alt" content="QuestXP — A gamified learning dashboard" />
+                <meta property="og:locale" content="en_IN" />
 
                 {/* Twitter */}
-                <meta property="twitter:card" content="summary_large_image" />
-                <meta property="twitter:url" content="https://questxp.in/" />
-                <meta property="twitter:title" content="QuestXP | Gamified Learning Platform" />
-                <meta property="twitter:description" content="Level up your skills with QuestXP. Gamified roadmaps, missions, and rewards." />
-                <meta property="twitter:image" content="https://questxp.in/og-image.png" />
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:url" content="https://questxp.in/" />
+                <meta name="twitter:title" content="QuestXP — Gamified Learning from YouTube Playlists" />
+                <meta name="twitter:description" content="AI quizzes, structured roadmaps, XP & streaks. Built for serious self-learners in India." />
+                <meta name="twitter:image" content="https://questxp.in/og-image.png" />
+
+                {/* Structured data — gives Google rich-result eligibility. */}
+                <script type="application/ld+json">{JSON.stringify({
+                    '@context': 'https://schema.org',
+                    '@type': 'SoftwareApplication',
+                    'name': 'QuestXP',
+                    'applicationCategory': 'EducationalApplication',
+                    'operatingSystem': 'Web',
+                    'url': 'https://questxp.in/',
+                    'description': 'Gamified learning platform that converts YouTube playlists into structured courses with AI-generated quizzes, notes, and study roadmaps.',
+                    'offers': { '@type': 'Offer', 'price': '0', 'priceCurrency': 'INR' },
+                    'creator': {
+                        '@type': 'Person',
+                        'name': 'Parth Patidar',
+                        'url': 'https://www.linkedin.com/in/patidar-parth/',
+                    },
+                })}</script>
+                <script type="application/ld+json">{JSON.stringify({
+                    '@context': 'https://schema.org',
+                    '@type': 'Organization',
+                    'name': 'QuestXP',
+                    'url': 'https://questxp.in/',
+                    'logo': 'https://questxp.in/favicon.png',
+                    'sameAs': [
+                        'https://www.linkedin.com/in/patidar-parth/',
+                        'https://github.com/parthpatidar03',
+                    ],
+                })}</script>
+                <script type="application/ld+json">{JSON.stringify({
+                    '@context': 'https://schema.org',
+                    '@type': 'WebSite',
+                    'url': 'https://questxp.in/',
+                    'name': 'QuestXP',
+                    'potentialAction': {
+                        '@type': 'SearchAction',
+                        'target': 'https://questxp.in/?q={search_term_string}',
+                        'query-input': 'required name=search_term_string',
+                    },
+                })}</script>
             </Helmet>
             {/* Interactive Spotlight */}
             <motion.div 
@@ -341,33 +395,36 @@ const LandingPage = () => {
                     </div>
                 </section>
 
-                <section className="py-8 relative overflow-hidden">
-                    <div className="max-w-5xl mx-auto px-4 sm:px-6">
-                        <div className="bg-surface/40 backdrop-blur-md border border-border rounded-[2.5rem] p-8 shadow-2xl relative group overflow-hidden">
-                            {/* Inner glow on hover */}
-                            <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                            
-                            <div className="grid grid-cols-2 md:grid-cols-4 relative z-10">
-                                <div className="flex flex-col items-center justify-center text-center p-6 md:p-8 border-r border-b md:border-b-0 border-border/20">
-                                    <p className="text-3xl sm:text-5xl font-black text-primary font-display mb-2">{formatMetric(stats.learners)}</p>
-                                    <p className="text-[9px] sm:text-[10px] font-bold text-text-secondary uppercase tracking-[0.2em] leading-tight">Active <br/> Learners</p>
-                                </div>
-                                <div className="flex flex-col items-center justify-center text-center p-6 md:p-8 border-b md:border-b-0 md:border-r border-border/20">
-                                    <p className="text-3xl sm:text-5xl font-black text-text-primary font-display mb-2">{formatMetric(stats.missions)}</p>
-                                    <p className="text-[9px] sm:text-[10px] font-bold text-text-secondary uppercase tracking-[0.2em] leading-tight">Missions <br/> Finished</p>
-                                </div>
-                                <div className="flex flex-col items-center justify-center text-center p-6 md:p-8 border-r md:border-b-0 border-border/20">
-                                    <p className="text-3xl sm:text-5xl font-black text-text-primary font-display mb-2">{formatMetric(stats.xp)}</p>
-                                    <p className="text-[9px] sm:text-[10px] font-bold text-text-secondary uppercase tracking-[0.2em] leading-tight">Knowledge <br/> XP Distributed</p>
-                                </div>
-                                <div className="flex flex-col items-center justify-center text-center p-6 md:p-8">
-                                    <p className="text-3xl sm:text-5xl font-black text-text-primary font-display mb-2">{formatMetric(stats.visits || 1200)}</p>
-                                    <p className="text-[9px] sm:text-[10px] font-bold text-text-secondary uppercase tracking-[0.2em] leading-tight">Global <br/> Interactions</p>
+                {visibleMetrics.length > 0 && (
+                    <section className="py-8 relative overflow-hidden">
+                        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+                            <div className="bg-surface/40 backdrop-blur-md border border-border rounded-[2.5rem] p-8 shadow-2xl relative group overflow-hidden">
+                                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                                <div
+                                    className="grid relative z-10"
+                                    style={{
+                                        gridTemplateColumns: `repeat(${Math.min(visibleMetrics.length, 4)}, minmax(0, 1fr))`,
+                                    }}
+                                >
+                                    {visibleMetrics.map((m, idx) => (
+                                        <div
+                                            key={m.key}
+                                            className={`flex flex-col items-center justify-center text-center p-6 md:p-8 ${idx < visibleMetrics.length - 1 ? 'border-r border-border/20' : ''}`}
+                                        >
+                                            <p className={`text-3xl sm:text-5xl font-black ${m.color} font-display mb-2`}>
+                                                {formatMetric(m.stat.value)}
+                                            </p>
+                                            <p className="text-[9px] sm:text-[10px] font-bold text-text-secondary uppercase tracking-[0.2em] leading-tight">
+                                                {m.label[0]} <br/> {m.label[1]}
+                                            </p>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
+                )}
 
                 <section className="max-w-screen-xl mx-auto px-4 sm:px-6 py-8">
                                 <div className="relative overflow-hidden bg-black rounded-[2.5rem] border border-white/10 py-12 px-6 flex flex-col items-center justify-center shadow-2xl">

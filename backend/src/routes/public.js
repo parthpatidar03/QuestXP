@@ -5,74 +5,113 @@ const Progress = require('../models/Progress');
 const QuizAttempt = require('../models/QuizAttempt');
 const redis = require('../queues/redisConnection');
 
-const CACHE_KEY = 'public:stats';
-const CACHE_TTL = 600; // 10 minutes
+/**
+ * Public landing-page stats.
+ *
+ * Policy: only REAL counts are returned. Each metric carries a `show` flag
+ * that turns true once it crosses a meaningful threshold — until then the
+ * landing page hides it. No fake "momentum buffers" are added.
+ */
+
+const CACHE_KEY = 'public:stats:v2';
+const CACHE_TTL = 60; // 1 minute — real data should feel fresh
 const VISITS_KEY = 'public:total_visits';
 
-// Helper to round up to nearest interval
-const roundUp = (num, interval) => Math.ceil(num / interval) * interval;
+// Display thresholds. Metric is hidden on the landing page until it crosses
+// these values. Tuned so the page doesn't show "5+ active learners".
+const THRESHOLDS = {
+    learners: 25,
+    missions: 100,
+    xp: 10000,
+    visits: 500,
+};
+
+// Round DOWN to a tidy display value so we never overstate the real count.
+// "29 users" → "25+", "117 missions" → "100+".
+const roundDown = (num, interval) => Math.floor(num / interval) * interval;
+
+const displayValue = (raw, interval) => roundDown(raw, interval);
 
 router.get('/stats', async (req, res) => {
+    // Best-effort visit counter — never fail the response on Redis hiccups.
+    let visits = 0;
     try {
-        let visits = 0;
-        try {
-            // Increment visit counter on every hit (freshness)
-            visits = await redis.incr(VISITS_KEY);
-        } catch (rErr) {
-            console.error('[PublicStats] Redis INCR failed:', rErr.message);
-        }
+        visits = await redis.incr(VISITS_KEY);
+    } catch (rErr) {
+        console.error('[PublicStats] Redis INCR failed:', rErr.message);
+    }
 
-        // Try to get from Redis first
-        try {
-            const cached = await redis.get(CACHE_KEY);
-            if (cached) {
-                const data = JSON.parse(cached);
-                data.visits = roundUp((visits || 0) + 1200, 100); 
-                return res.json(data);
-            }
-        } catch (rErr) {
-            console.error('[PublicStats] Redis GET failed:', rErr.message);
+    // Cache hit?
+    try {
+        const cached = await redis.get(CACHE_KEY);
+        if (cached) {
+            const data = JSON.parse(cached);
+            // visits stays live (we just incremented it above)
+            data.visits = {
+                value: displayValue(visits || 0, 50),
+                raw: visits || 0,
+                show: (visits || 0) >= THRESHOLDS.visits,
+            };
+            return res.json(data);
         }
+    } catch (rErr) {
+        console.error('[PublicStats] Redis GET failed:', rErr.message);
+    }
 
-        // Parallel DB queries
-        const [
-            userCount,
-            quizCount,
-            progressResult,
-            xpResult
-        ] = await Promise.all([
+    try {
+        const [userCount, quizCount, progressResult, xpResult] = await Promise.all([
             User.countDocuments().catch(() => 0),
             QuizAttempt.countDocuments().catch(() => 0),
-            Progress.aggregate([{ $group: { _id: null, total: { $sum: "$completedCount" } } }]).catch(() => []),
-            User.aggregate([{ $group: { _id: null, total: { $sum: "$totalXP" } } }]).catch(() => [])
+            Progress.aggregate([{ $group: { _id: null, total: { $sum: '$completedCount' } } }]).catch(() => []),
+            User.aggregate([{ $group: { _id: null, total: { $sum: '$totalXP' } } }]).catch(() => []),
         ]);
 
-        const actualMissions = progressResult[0]?.total || 0;
-        const actualXP = xpResult[0]?.total || 0;
+        const rawMissions = progressResult[0]?.total || 0;
+        const rawXP = xpResult[0]?.total || 0;
 
-        // Apply Momentum Buffs & Rounding
-        // Baseline values ensure we NEVER show 0 in production
         const stats = {
-            learners: roundUp(userCount + 75, 10),
-            quizzes: roundUp(quizCount + 280, 50),
-            missions: roundUp(actualMissions + 650, 100),
-            xp: roundUp(actualXP + 85000, 1000),
-            visits: roundUp((visits || 0) + 1200, 100)
+            learners: {
+                value: displayValue(userCount, 5),
+                raw: userCount,
+                show: userCount >= THRESHOLDS.learners,
+            },
+            quizzes: {
+                value: displayValue(quizCount, 10),
+                raw: quizCount,
+                show: quizCount >= 50,
+            },
+            missions: {
+                value: displayValue(rawMissions, 25),
+                raw: rawMissions,
+                show: rawMissions >= THRESHOLDS.missions,
+            },
+            xp: {
+                value: displayValue(rawXP, 1000),
+                raw: rawXP,
+                show: rawXP >= THRESHOLDS.xp,
+            },
+            visits: {
+                value: displayValue(visits || 0, 50),
+                raw: visits || 0,
+                show: (visits || 0) >= THRESHOLDS.visits,
+            },
         };
 
-        // Cache in Redis (fire and forget)
-        redis.setex(CACHE_KEY, CACHE_TTL, JSON.stringify(stats)).catch(() => {});
+        // Cache for 1 minute. Visits will still update live on every hit.
+        const toCache = { ...stats };
+        delete toCache.visits;
+        redis.setex(CACHE_KEY, CACHE_TTL, JSON.stringify(toCache)).catch(() => {});
 
         res.json(stats);
     } catch (err) {
         console.error('[PublicStats] Fatal Error:', err);
-        // Fallback hardcoded impressive stats if everything fails
+        // Real fallback: everything hidden rather than fake numbers.
         res.json({
-            learners: 90,
-            quizzes: 450,
-            missions: 1200,
-            xp: 150000,
-            visits: 1800
+            learners: { value: 0, raw: 0, show: false },
+            quizzes:  { value: 0, raw: 0, show: false },
+            missions: { value: 0, raw: 0, show: false },
+            xp:       { value: 0, raw: 0, show: false },
+            visits:   { value: 0, raw: 0, show: false },
         });
     }
 });
