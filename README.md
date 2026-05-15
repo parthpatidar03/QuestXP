@@ -259,18 +259,7 @@ API data (courses, progress, leaderboard) is managed by TanStack Query with conf
 | `/api/roadmap/sync` | POST | Bi-directional Player ↔ Roadmap sync |
 | `/api/health` | GET | Health check (no auth required) |
 
----
 
-## 📚 Documentation (`docs/`)
-
-| File | Topic |
-| :--- | :--- |
-| `docs/CI_CD_AND_AZURE_DEPLOYMENT.md` | GitHub Actions + Azure deep-dive (beginner → advanced) |
-| `docs/BACKEND_ENGINEERING_DEEP_DIVE.md` | AI pipeline, XP engine, rate limiting internals |
-| `docs/025-azure-cloud-deployment.md` | Azure App Service setup, env vars, Redis config |
-| `docs/GAMIFICATION_ENGINE.md` | XP math, streak multipliers, badge system |
-| `docs/backend-features.md` | All backend features with implementation details |
-| `docs/backend-features/logging-and-error-handling.md` | Structured Winston logging architecture & error handler |
 
 ---
 
