@@ -3,6 +3,7 @@ const axios = require('axios');
 
 const courseService = require('../services/courseService');
 const Course = require('../models/Course');
+const { apiLogger } = require('../utils/logger');
 const Progress = require('../models/Progress');
 const Transcript = require('../models/Transcript');
 const Notes = require('../models/Notes');
@@ -129,7 +130,7 @@ const addCourseSection = async (req, res, next) => {
                 newEndDateMessage = planRes.newEndDateMessage;
             }
         } catch (err) {
-            console.error('[StudyPlan] section added recalc error:', err);
+            apiLogger.error('StudyPlan section added recalc error', { error: err.message, stack: err.stack });
         }
 
         res.status(201).json({
@@ -219,7 +220,7 @@ const getPlaylistInfo = async (req, res, next) => {
         if (!title) return res.status(404).json({ error: 'Resource not found' });
         res.json({ title });
     } catch (error) {
-        console.error('[PlaylistInfo] Error:', error.message);
+        apiLogger.error('PlaylistInfo Error', { error: error.message, stack: error.stack });
         res.status(500).json({ error: 'Failed to fetch resource info' });
     }
 };

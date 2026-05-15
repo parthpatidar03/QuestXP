@@ -145,7 +145,14 @@ When a lecture is toggled complete in the Course Player, the backend simultaneou
 - **JWT:** HttpOnly cookie + `Authorization` header dual-mode; all protected routes require valid JWT via `auth.js` middleware
 - **Input Validation:** `express-validator` on all write endpoints; AJV schema validation on AI responses
 
-### 8. Push Notification System (Firebase + node-cron)
+### 8. Structured Logging & Error Handling
+
+- **Winston + Morgan:** Replaced all `console.log` with structured, prefixed (`[API]`, `[AUTH]`, etc.) Winston loggers. HTTP requests tracked via Morgan middleware.
+- **Sensitive Data Redaction:** Custom formatter automatically masks `password`, `token`, and `apiKey` fields before outputting to Azure Log Stream.
+- **Centralized Express Error Middleware:** Replaced scattered inline try/catches. Central middleware formats stack traces (in dev) and catches Express-Validator errors. Process-level `unhandledRejection` catchers prevent silent crashes.
+- **File:** `backend/src/utils/logger.js`, `backend/src/middleware/errorMiddleware.js`
+
+### 9. Push Notification System (Firebase + node-cron)
 
 - Backend uses `firebase-admin` SDK to send FCM push notifications
 - `notificationScheduler.js` runs a `node-cron` job daily to dispatch streak reminders and study nudges
@@ -262,6 +269,7 @@ API data (courses, progress, leaderboard) is managed by TanStack Query with conf
 | `docs/025-azure-cloud-deployment.md` | Azure App Service setup, env vars, Redis config |
 | `docs/GAMIFICATION_ENGINE.md` | XP math, streak multipliers, badge system |
 | `docs/backend-features.md` | All backend features with implementation details |
+| `docs/backend-features/logging-and-error-handling.md` | Structured Winston logging architecture & error handler |
 
 ---
 

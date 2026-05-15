@@ -41,6 +41,7 @@
     "nodemailer": "^8.0.7",
     "openai": "^6.25.0",
     "rate-limit-redis": "^5.0.0",
+    "winston": "^3.19.0",
     "youtube-transcript": "^1.2.1"
   },
   "devDependencies": {

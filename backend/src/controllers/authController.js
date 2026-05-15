@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
+const { authLogger, aiLogger } = require('../utils/logger');
 const Session = require('../models/Session');
 const { validationResult } = require('express-validator');
 const { OAuth2Client } = require('google-auth-library');
@@ -29,7 +30,7 @@ const triggerPlanRecalculation = async (userId) => {
             }
         }
     } catch (err) {
-        console.error('[StudyPlan] Recalculation error during login:', err);
+        authLogger.error('StudyPlan Recalculation error during login', { error: err.message, stack: err.stack });
     }
 };
 
@@ -127,7 +128,7 @@ const login = async (req, res, next) => {
 
         // T040: Recalculate study plans on login (Background - non-blocking)
         triggerPlanRecalculation(user._id).catch(err => {
-            console.error('[Auth] Background plan recalculation failed:', err);
+            authLogger.error('Background plan recalculation failed', { error: err.message, stack: err.stack });
         });
 
         res.json({ 
@@ -146,7 +147,7 @@ const getMe = async (req, res, next) => {
     try {
         // T040: Recalculate study plans on app load (Background - non-blocking)
         triggerPlanRecalculation(req.user._id).catch(err => {
-            console.error('[Auth] Background plan recalculation failed:', err);
+            authLogger.error('Background plan recalculation failed', { error: err.message, stack: err.stack });
         });
 
         const sessions = await Session.countDocuments({
@@ -310,7 +311,7 @@ const googleLogin = async (req, res, next) => {
 
         // T040: Recalculate study plans on login (Background - non-blocking)
         triggerPlanRecalculation(user._id).catch(err => {
-            console.error('[Auth] Background plan recalculation failed:', err);
+            authLogger.error('Background plan recalculation failed', { error: err.message, stack: err.stack });
         });
 
         res.json({ 

@@ -1,4 +1,5 @@
 const { Worker } = require('bullmq');
+const { jobLogger } = require('../utils/logger');
 const { Pinecone } = require('@pinecone-database/pinecone');
 const { RecursiveCharacterTextSplitter } = require('@langchain/textsplitters');
 const aiProvider = require('../services/ai-provider');
@@ -16,7 +17,7 @@ const embeddingWorker = new Worker('embedding', async job => {
     try {
         // T027 [P] Implement atomic index rebuild - delete namespace before processing
         const index = pc.Index(indexName);
-        console.log(`Clearing existing vectors for lecture ${lectureId}`);
+        jobLogger.info(`Clearing existing vectors for lecture ${lectureId}`);
         try {
             await index.namespace(lectureId.toString()).deleteAll();
         } catch (deleteError) {

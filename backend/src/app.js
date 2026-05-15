@@ -20,6 +20,9 @@ const gamificationRoutes = require('./routes/gamification');
 const feedbackRoutes = require('./routes/feedback');
 const dashboardRoutes = require('./routes/hub');
 const roadmapRoutes = require('./routes/roadmap');
+const requestLogger = require('./middleware/requestLogger');
+const errorMiddleware = require('./middleware/errorMiddleware');
+const { logger } = require('./utils/logger');
 
 const app = express();
 
@@ -68,6 +71,9 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(compression());
 
+// Request logger
+app.use(requestLogger);
+
 // 5. Routes
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
@@ -94,34 +100,7 @@ app.use((req, res) => {
 });
 
 // Central robust error handler
-app.use((err, req, res, next) => {
-    const status = err.status || err.statusCode || 500;
-    const isProd = process.env.NODE_ENV === 'production';
-
-    // Detailed logging
-    console.error(`[${new Date().toISOString()}] ${req.method} ${req.path} - Error ${status}:`, {
-        message: err.message,
-        stack: !isProd ? err.stack : undefined,
-        user: req.user?._id,
-        body: req.body
-    });
-
-    // Specific handling for Validation Errors (Express Validator)
-    if (err.array && typeof err.array === 'function') {
-        return res.status(400).json({
-            error: 'VALIDATION_ERROR',
-            message: 'Invalid input data',
-            details: err.array()
-        });
-    }
-
-    // Default Error Response
-    res.status(status).json({
-        error: err.name || 'INTERNAL_SERVER_ERROR',
-        message: isProd && status === 500 ? 'An unexpected error occurred' : err.message,
-        details: !isProd ? err.stack : undefined
-    });
-});
+app.use(errorMiddleware);
 
 module.exports = app;
 
