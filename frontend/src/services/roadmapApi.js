@@ -21,7 +21,12 @@ export const partialShiftRoadmap = async (roadmapId, fromDayIndex, shiftAmount) 
 };
 export const toggleVideoCompletion = async (roadmapId, videoId, completed) => {
     const response = await api.patch(`/roadmap/${roadmapId}/video/${videoId}/complete`, { completed });
-    return response.data;
+    // Backend now returns { roadmap, progress } — unwrap to the roadmap so
+    // existing call sites keep working. Older deployments returned the
+    // roadmap directly, so handle both shapes defensively.
+    const data = response.data;
+    if (data && typeof data === 'object' && 'roadmap' in data) return data.roadmap;
+    return data;
 };
 export const getAllRoadmaps = async () => {
     const response = await api.get('/roadmap/all');
