@@ -59,12 +59,16 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
     const handleManualStart = async () => {
         try {
             setIsTriggering(true);
-            await api.post(`/internal/lectures/${lectureId}/process`);
-            // Status will be updated via polling in Player.jsx
+            setError(null);
+            // Use the user-accessible quiz/generate endpoint. The route now
+            // also kicks off transcription if not yet done, so this single
+            // call covers both "transcription pending" and "ready for quiz"
+            // cases.
+            await api.post(`/lectures/${lectureId}/quiz/generate`);
         } catch (err) {
-            const msg = err.response?.status === 429 
-                ? err.response.data.message 
-                : 'Failed to start quiz generation.';
+            const msg = err.response?.status === 429
+                ? err.response.data?.message || 'Quiz limit reached. Please wait.'
+                : err.response?.data?.error || 'Failed to start quiz generation.';
             setError(msg);
             setIsTriggering(false);
         }
@@ -123,7 +127,7 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
         const shouldAutoStart = params.get('startQuiz') === 'true' || autoStart;
         if (shouldAutoStart && quizStatus === 'pending' && transcriptionStatus === 'pending' && processingRequestRef.current !== lectureId) {
             processingRequestRef.current = lectureId;
-            api.post(`/internal/lectures/${lectureId}/process`).catch(() => {});
+            api.post(`/lectures/${lectureId}/process`).catch(() => {});
         }
 
         if (shouldAutoStart && quizStatus === 'complete') {
