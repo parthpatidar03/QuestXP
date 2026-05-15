@@ -41,6 +41,7 @@ QuestXP is a high-performance Learning Management System engineered to eliminate
 | **Bi-directional Sync** | Player progress ↔ Roadmap, cross-tab | Atomic MongoDB writes + BroadcastChannel API |
 | **One-Shot Chapterization** | Timestamp parsing → logical chapters | Description regex + YouTube Data API |
 | **Push Notifications** | Firebase Cloud Messaging via backend scheduler | `node-cron` + `firebase-admin` |
+| **Structured Logging** | Centralized, clean, and masked observability | `winston`, `morgan`, custom Express middleware |
 
 ---
 
