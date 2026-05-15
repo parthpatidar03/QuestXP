@@ -81,6 +81,13 @@ const scheduleFlush = () => {
     flushTimer = setTimeout(flush, FLUSH_INTERVAL_MS);
 };
 
+const RAW_BASE = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL)
+    ? import.meta.env.VITE_API_URL.replace(/\/$/, '')
+    : '';
+const API_BASE = RAW_BASE
+    ? (RAW_BASE.endsWith('/api') ? RAW_BASE : `${RAW_BASE}/api`)
+    : '/api';
+
 const flush = async () => {
     flushTimer = null;
     if (queue.length === 0) return;
@@ -89,7 +96,7 @@ const flush = async () => {
     // We deliberately use fetch + keepalive so logs survive a page unload.
     for (const entry of batch) {
         try {
-            await fetch('/api/logs/client', {
+            await fetch(`${API_BASE}/logs/client`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(entry),

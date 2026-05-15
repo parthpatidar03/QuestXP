@@ -45,12 +45,11 @@ console.log('[Debug] CORS Allowed Origins:', allowedOrigins, { allowVercelPrevie
 // 3. Global CORS
 app.use(cors({
     origin: (origin, cb) => {
-        if (!origin) return cb(null, true); // server-to-server / curl / native apps
+        if (!origin) return cb(null, true);
 
         const isAllowed =
             allowedOrigins.includes(origin) ||
-            origin === 'https://questxp.in' ||
-            origin.endsWith('.questxp.in') ||
+            /^https:\/\/([a-z0-9-]+\.)?questxp\.in$/i.test(origin) ||
             (allowVercelPreviews && /^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(origin)) ||
             (process.env.NODE_ENV !== 'production'
                 && /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(origin));
@@ -60,7 +59,7 @@ app.use(cors({
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'X-Request-Id'],
 }));
 
 // Handle Preflight for all routes
