@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useSearchParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Flame, Zap, Trophy, Shield, BookOpen, Plus, CheckCircle2, ChevronRight, Star, Trash2, Target, MessageSquare, Share2, Copy, Github, Monitor, Smartphone, Layout, Bell, Sparkles, Check, Clock, Info, X, PlayCircle, RefreshCw, Camera, Search } from 'lucide-react';
+import { Flame, Zap, Trophy, Shield, BookOpen, Plus, CheckCircle2, ChevronRight, Star, Trash2, Target, MessageSquare, Share2, Copy, Github, Monitor, Smartphone, Layout, Bell, Sparkles, Check, Clock, Info, X, PlayCircle, RefreshCw, Camera, Search, Users } from 'lucide-react';
 import toast from 'react-hot-toast';
 import useAuthStore from '../store/useAuthStore';
 import useGamificationStore from '../store/useGamificationStore';
@@ -408,6 +408,13 @@ const Dashboard = () => {
     // Features list (top 5)
     const newFeatures = [
         {
+            id: 'friend-zones',
+            title: 'Friend Zones',
+            description: 'Create a private squad with a 6-digit join code. Compete with friends on a shared XP leaderboard and watch each other\'s activity feed in real time.',
+            icon: <Users className="w-5 h-5 text-primary" />,
+            date: 'New'
+        },
+        {
             id: 'seo-engine',
             title: 'Search Engine Visibility',
             description: 'QuestXP is now discoverable! Optimized meta-engines, dynamic sitemaps, and indexing protocols for top Google ranking.',
@@ -472,6 +479,33 @@ const Dashboard = () => {
                 });
                 localStorage.setItem('seen_feature_video_support_v1', 'true');
             }, 3000);
+        }
+
+        // Friend Zones launch announcement — surfaces the new "Friends" nav.
+        const hasSeenFriendZones = localStorage.getItem('seen_feature_friendzones_v1');
+        if (!hasSeenFriendZones) {
+            setTimeout(() => {
+                toast(
+                    (t) => (
+                        <span className="flex items-center gap-3">
+                            <span className="text-xs sm:text-sm">
+                                <strong>New:</strong> Friend Zones — squad up & compete privately
+                            </span>
+                            <button
+                                onClick={() => {
+                                    toast.dismiss(t.id);
+                                    navigate('/friendzones');
+                                }}
+                                className="px-2 py-1 rounded-md bg-primary text-bg text-[10px] font-bold"
+                            >
+                                Open
+                            </button>
+                        </span>
+                    ),
+                    { duration: 9000, icon: '👥' }
+                );
+                localStorage.setItem('seen_feature_friendzones_v1', 'true');
+            }, 1500);
         }
 
     }, []);

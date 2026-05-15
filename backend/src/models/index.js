@@ -6,5 +6,6 @@ module.exports = {
     EmbeddingStatus: require('./EmbeddingStatus'),
     DoubtQuery: require('./DoubtQuery'),
     DoubtAnswer: require('./DoubtAnswer'),
-    Feedback: require('./Feedback')
+    Feedback: require('./Feedback'),
+    FriendZone: require('./FriendZone'),
 };
