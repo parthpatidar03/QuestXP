@@ -408,18 +408,25 @@ const Dashboard = () => {
     // Features list (top 5)
     const newFeatures = [
         {
+            id: 'india-geo-block',
+            title: 'India-Only Security Guard',
+            description: 'New regional firewall active. QuestXP is now restricted to Indian IP addresses to eliminate unauthorized foreign access attempts.',
+            icon: <Shield className="w-5 h-5 text-primary" />,
+            date: 'Latest'
+        },
+        {
             id: 'valkey-infra',
             title: 'High-Speed Valkey Infra',
             description: 'Upgraded background processing engine to Valkey. Zero request-throttling and ultra-low latency for AI pipelines.',
             icon: <Zap className="w-5 h-5 text-warning" />,
-            date: 'Latest'
+            date: 'New'
         },
         {
             id: 'streak-capture',
             title: 'Achievement Capture 2.0',
             description: 'Share your progress in style! New high-fidelity achievement cards with backdrop-blur and premium TUF-inspired aesthetics.',
             icon: <Camera className="w-5 h-5 text-primary" />,
-            date: 'New'
+            date: 'Major'
         },
         {
             id: 'video-support',
@@ -433,37 +440,31 @@ const Dashboard = () => {
             title: 'Bulk Mastery Protocol',
             description: 'Level up faster! Mark entire courses as complete in one click. Automatic XP batching and global sync enabled.',
             icon: <CheckCircle2 className="w-5 h-5 text-success" />,
-            date: 'Major'
-        },
-        {
-            id: 'global-leaderboard',
-            title: 'Global Elite Ranks',
-            description: 'Compete with the top 1% of learners. Track your rank, percentile, and trending position in real-time.',
-            icon: <Trophy className="w-5 h-5 text-warning" />,
             date: 'Updated'
         }
     ];
 
     useEffect(() => {
-        const hasSeenVideoSupport = localStorage.getItem('seen_feature_video_support_v1');
-        if (!hasSeenVideoSupport) {
-            toast.success("New: 10hr+ One-Shot Video Support is now LIVE! 🚀", {
-                duration: 6000,
-                icon: '📺'
+        const hasSeenGeoBlock = localStorage.getItem('seen_feature_geoblock_v1');
+        if (!hasSeenGeoBlock) {
+            toast.success("Security Update: India-Only access is now enforced! 🛡️🇮🇳", {
+                duration: 7000,
+                icon: '🛡️'
             });
-            localStorage.setItem('seen_feature_video_support_v1', 'true');
+            localStorage.setItem('seen_feature_geoblock_v1', 'true');
         }
 
-        const hasSeenValkey = localStorage.getItem('seen_feature_valkey_v1');
-        if (!hasSeenValkey) {
+        const hasSeenVideoSupport = localStorage.getItem('seen_feature_video_support_v1');
+        if (!hasSeenVideoSupport) {
             setTimeout(() => {
-                toast.success("Infrastructure Upgraded: Higher capacity processing enabled! ⚡", {
+                toast.success("New: 10hr+ One-Shot Video Support is LIVE! 🚀", {
                     duration: 6000,
-                    icon: '⚡'
+                    icon: '📺'
                 });
-                localStorage.setItem('seen_feature_valkey_v1', 'true');
+                localStorage.setItem('seen_feature_video_support_v1', 'true');
             }, 3000);
         }
+
     }, []);
 
     useEffect(() => {
