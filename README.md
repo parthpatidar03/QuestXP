@@ -43,6 +43,7 @@ QuestXP is a high-performance Learning Management System engineered to eliminate
 | **Push Notifications** | Firebase Cloud Messaging via backend scheduler | `node-cron` + `firebase-admin` |
 | **Structured Logging** | Centralized, clean, and masked observability | `winston`, `morgan`, custom Express middleware |
 | **Geo-Blocking** | India-only access, blocks foreign IPs at auth layer | `geoip-lite` offline MaxMind DB, per-user/session geo storage |
+| **SEO Optimization** | Dynamic meta tags, sitemap, and robots.txt | `react-helmet-async`, static sitemap, search-engine crawling configs |
 
 ---
 
@@ -220,6 +221,13 @@ A lightweight global store (`useGamificationStore`) manages XP, level, streak, t
 
 ### TanStack Query for Server State
 API data (courses, progress, leaderboard) is managed by TanStack Query with configured `staleTime` and cache invalidation. Progress toggles call `queryClient.invalidateQueries()` to surgically refetch only affected data, not the entire app state.
+
+### SEO & Discoverability Architecture
+Implemented a comprehensive SEO engine to improve search visibility and indexing.
+- **Dynamic Meta Injection:** Using `react-helmet-async` for page-specific titles, descriptions, and Open Graph tags.
+- **Automated Indexing:** Dedicated `sitemap.xml` and `robots.txt` for search engine crawler guidance.
+- **Social Metadata:** Optimized OG/Twitter cards for consistent branding across social shares.
+- **Semantic HTML:** Strict adherence to HTML5 landmark elements for structural clarity.
 
 ---
 

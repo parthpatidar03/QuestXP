@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import {
@@ -123,6 +124,25 @@ const LandingPage = () => {
 
     return (
         <div className="min-h-screen bg-bg relative overflow-hidden flex flex-col">
+            <Helmet>
+                <title>QuestXP | Gamified Learning Platform for Master Skills</title>
+                <meta name="description" content="Level up your skills with QuestXP. A gamified roadmap-based learning platform. Earn XP, complete missions, and master new technologies." />
+                <meta name="keywords" content="QuestXP, gamified learning, skill development, roadmaps, coding platform, XP, missions, learning path" />
+                
+                {/* Open Graph / Facebook */}
+                <meta property="og:type" content="website" />
+                <meta property="og:url" content="https://questxp.in/" />
+                <meta property="og:title" content="QuestXP | Gamified Learning Platform" />
+                <meta property="og:description" content="Level up your skills with QuestXP. Gamified roadmaps, missions, and rewards." />
+                <meta property="og:image" content="https://questxp.in/og-image.png" />
+
+                {/* Twitter */}
+                <meta property="twitter:card" content="summary_large_image" />
+                <meta property="twitter:url" content="https://questxp.in/" />
+                <meta property="twitter:title" content="QuestXP | Gamified Learning Platform" />
+                <meta property="twitter:description" content="Level up your skills with QuestXP. Gamified roadmaps, missions, and rewards." />
+                <meta property="twitter:image" content="https://questxp.in/og-image.png" />
+            </Helmet>
             {/* Interactive Spotlight */}
             <motion.div 
                 className="pointer-events-none fixed inset-0 z-[1] overflow-hidden"

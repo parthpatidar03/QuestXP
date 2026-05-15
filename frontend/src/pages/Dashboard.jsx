@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useSearchParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Flame, Zap, Trophy, Shield, BookOpen, Plus, CheckCircle2, ChevronRight, Star, Trash2, Target, MessageSquare, Share2, Copy, Github, Monitor, Smartphone, Layout, Bell, Sparkles, Check, Clock, Info, X, PlayCircle, RefreshCw, Camera } from 'lucide-react';
+import { Flame, Zap, Trophy, Shield, BookOpen, Plus, CheckCircle2, ChevronRight, Star, Trash2, Target, MessageSquare, Share2, Copy, Github, Monitor, Smartphone, Layout, Bell, Sparkles, Check, Clock, Info, X, PlayCircle, RefreshCw, Camera, Search } from 'lucide-react';
 import toast from 'react-hot-toast';
 import useAuthStore from '../store/useAuthStore';
 import useGamificationStore from '../store/useGamificationStore';
@@ -408,43 +408,52 @@ const Dashboard = () => {
     // Features list (top 5)
     const newFeatures = [
         {
+            id: 'seo-engine',
+            title: 'Search Engine Visibility',
+            description: 'QuestXP is now discoverable! Optimized meta-engines, dynamic sitemaps, and indexing protocols for top Google ranking.',
+            icon: <Search className="w-5 h-5 text-primary" />,
+            date: 'Latest'
+        },
+        {
             id: 'india-geo-block',
             title: 'India-Only Security Guard',
             description: 'New regional firewall active. QuestXP is now restricted to Indian IP addresses to eliminate unauthorized foreign access attempts.',
-            icon: <Shield className="w-5 h-5 text-primary" />,
-            date: 'Latest'
+            icon: <Shield className="w-5 h-5 text-warning" />,
+            date: 'New'
         },
         {
             id: 'valkey-infra',
             title: 'High-Speed Valkey Infra',
             description: 'Upgraded background processing engine to Valkey. Zero request-throttling and ultra-low latency for AI pipelines.',
-            icon: <Zap className="w-5 h-5 text-warning" />,
-            date: 'New'
+            icon: <Zap className="w-5 h-5 text-primary" />,
+            date: 'Speed'
         },
         {
             id: 'streak-capture',
             title: 'Achievement Capture 2.0',
             description: 'Share your progress in style! New high-fidelity achievement cards with backdrop-blur and premium TUF-inspired aesthetics.',
-            icon: <Camera className="w-5 h-5 text-primary" />,
+            icon: <Camera className="w-5 h-5 text-secondary" />,
             date: 'Major'
         },
         {
             id: 'video-support',
             title: 'AI Video Chapterization',
             description: 'Full support for single long-form "One-Shot" videos. Paste any tutorial and we\'ll split it into logical missions.',
-            icon: <PlayCircle className="w-5 h-5 text-secondary" />,
+            icon: <PlayCircle className="w-5 h-5 text-success" />,
             date: 'Popular'
-        },
-        {
-            id: 'bulk-mastery',
-            title: 'Bulk Mastery Protocol',
-            description: 'Level up faster! Mark entire courses as complete in one click. Automatic XP batching and global sync enabled.',
-            icon: <CheckCircle2 className="w-5 h-5 text-success" />,
-            date: 'Updated'
         }
     ];
 
     useEffect(() => {
+        const hasSeenSEO = localStorage.getItem('seen_feature_seo_v1');
+        if (!hasSeenSEO) {
+            toast.success("SEO Upgrade: QuestXP is now optimized for Google Search! 🔍🚀", {
+                duration: 6000,
+                icon: '🔍'
+            });
+            localStorage.setItem('seen_feature_seo_v1', 'true');
+        }
+
         const hasSeenGeoBlock = localStorage.getItem('seen_feature_geoblock_v1');
         if (!hasSeenGeoBlock) {
             toast.success("Security Update: India-Only access is now enforced! 🛡️🇮🇳", {
