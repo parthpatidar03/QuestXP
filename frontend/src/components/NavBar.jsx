@@ -78,6 +78,9 @@ const NavBar = () => {
                         <Trophy className="w-3.5 h-3.5 text-gold" />
                         Leaderboard
                     </Link>
+                    <Link to="/friendzones" className="px-3 py-1.5 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-lg transition-colors">
+                        Friends
+                    </Link>
 
                 </nav>
 

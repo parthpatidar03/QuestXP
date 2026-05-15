@@ -9,6 +9,7 @@ on:
 jobs:
   backend-tests:
     runs-on: ubuntu-latest
+    timeout-minutes: 8         # fail fast on hangs; tests should finish in <2m
     services:
       redis:
         image: redis
@@ -19,6 +20,18 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+      # MongoDB is no longer pre-installed on ubuntu-latest (removed Feb 2024).
+      # Provide it as a service container so the integration test can connect
+      # via MONGO_TEST_URI without spawning its own mongod.
+      mongo:
+        image: mongo:7
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'db.runCommand({ ping: 1 })' || mongo --quiet --eval 'db.runCommand({ ping: 1 })'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js
@@ -40,8 +53,12 @@ jobs:
         working-directory: ./backend
         run: npm test
         env:
+          NODE_ENV: test
           JWT_SECRET: ${{ secrets.JWT_SECRET || 'test_secret' }}
           JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET || 'test_refresh_secret' }}
+          # When this is set, the integration test connects to the service
+          # container above instead of spawning its own mongod.
+          MONGO_TEST_URI: mongodb://localhost:27017/questxp-auth-test
 
   frontend-tests:
     runs-on: ubuntu-latest

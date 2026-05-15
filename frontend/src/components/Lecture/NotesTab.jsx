@@ -112,13 +112,14 @@ const NotesTab = ({ lectureId, courseId, onSeek, notesStatus, errorReason, aiSta
         if (!editContent.trim()) return;
         try {
             setSaving(true);
-            const { data } = await api.post(`/lectures/${lectureId}/notes/edit`, {
+            const { data } = await api.patch(`/lectures/${lectureId}/notes/edit`, {
                 content: editContent
             });
-            setNotes(prev => ({
-                ...prev,
-                userEdits: [data.edit, ...(prev.userEdits || [])]
-            }));
+            // Backend returns { message, notes }. Trust the updated notes
+            // document and let it become the new local state.
+            if (data?.notes) {
+                setNotes(data.notes);
+            }
             setEditContent('');
             setIsEditing(false);
         } catch (err) {

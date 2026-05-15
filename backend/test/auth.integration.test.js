@@ -35,6 +35,16 @@ const getFreePort = () => new Promise((resolve, reject) => {
 });
 
 const startMongo = async () => {
+    // CI provides a MongoDB service container; honour that and skip the
+    // expensive local spawn. This also fixes hangs on GitHub Actions runners
+    // since `mongod` was removed from ubuntu-latest in Feb 2024.
+    if (process.env.MONGO_TEST_URI) {
+        await mongoose.connect(process.env.MONGO_TEST_URI, {
+            serverSelectionTimeoutMS: 5000,
+        });
+        return;
+    }
+
     const port = await getFreePort();
     dbPath = fs.mkdtempSync(path.join(os.tmpdir(), 'questxp-auth-test-'));
     mongod = spawn('mongod', [
@@ -44,11 +54,19 @@ const startMongo = async () => {
         '--bind_ip', '127.0.0.1',
     ], { stdio: 'ignore' });
 
+    // If spawning fails outright (binary missing), bail loudly rather than
+    // wait 50×30s = 25 min for serverSelection to give up.
+    mongod.on('error', (err) => {
+        throw new Error(`Failed to spawn mongod (is the binary installed?): ${err.message}`);
+    });
+
     const uri = `mongodb://127.0.0.1:${port}/questxp-auth-test`;
     let lastError;
     for (let i = 0; i < 50; i += 1) {
         try {
-            await mongoose.connect(uri);
+            // Cap each attempt at 1s so a broken environment fails in <1 min
+            // instead of dozens of minutes.
+            await mongoose.connect(uri, { serverSelectionTimeoutMS: 1000 });
             return;
         } catch (error) {
             lastError = error;

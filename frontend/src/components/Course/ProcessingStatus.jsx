@@ -9,7 +9,7 @@ const ProcessingStatus = ({ lectureId }) => {
         const fetchStatus = async () => {
             try {
                 // T029 [US2] Display Embedding Status
-                const res = await api.get(`/api/doubts/${lectureId}/status`);
+                const res = await api.get(`/doubts/${lectureId}/status`);
                 setStatus(res.data);
                 
                 if (res.data.embeddingStatus === 'complete' || res.data.embeddingStatus === 'failed') {

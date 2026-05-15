@@ -1,22 +1,45 @@
 import axios from 'axios';
+import clientLog from '../utils/clientLogger';
 
-// T064 — In dev, Vite proxies /api/* to localhost:5000 so we can use a
-// relative base URL. In production, VITE_API_URL must be set to the full backend URL.
+// Dev: Vite proxies /api/* to the backend (see vite.config.js).
+// Prod: VITE_API_URL must be set to the full backend origin (without /api).
+//       e.g. https://api.questxp.in   →   baseURL becomes https://api.questxp.in/api
+const RAW_BASE = import.meta.env.VITE_API_URL?.replace(/\/$/, '') || '';
+const baseURL = RAW_BASE
+    ? (RAW_BASE.endsWith('/api') ? RAW_BASE : `${RAW_BASE}/api`)
+    : '/api';
+
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || '/api',
+    baseURL,
     withCredentials: true,
+    // 12s is generous enough for slow mobile networks but fast enough that a
+    // dead backend can't trap the UI in an indefinite spinner.
+    timeout: 12000,
 });
 
-// Helper to get tokens from localStorage
-const getLocalAccessToken = () => localStorage.getItem('accessToken');
-const getLocalRefreshToken = () => localStorage.getItem('refreshToken');
+const getLocalAccessToken = () => {
+    try { return localStorage.getItem('accessToken'); } catch { return null; }
+};
+const getLocalRefreshToken = () => {
+    try { return localStorage.getItem('refreshToken'); } catch { return null; }
+};
+const clearLocalTokens = () => {
+    try {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+    } catch { /* private-mode quotas etc. */ }
+};
 
-// Request Interceptor: Attach Bearer token if available in LocalStorage
 api.interceptors.request.use(
     (config) => {
         const token = getLocalAccessToken();
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
+        }
+        // Send the tab's clientRequestId so backend logs can be correlated
+        // with frontend error reports. Per-request override is honored.
+        if (!config.headers['X-Request-Id']) {
+            config.headers['X-Request-Id'] = clientLog.requestId;
         }
         return config;
     },
@@ -27,46 +50,45 @@ let isRefreshing = false;
 let failedQueue = [];
 
 const processQueue = (error, token = null) => {
-    failedQueue.forEach((prom) => {
-        if (error) {
-            prom.reject(error);
-        } else {
-            prom.resolve(token);
-        }
+    failedQueue.forEach((p) => {
+        if (error) p.reject(error);
+        else p.resolve(token);
     });
     failedQueue = [];
 };
 
-// Response Interceptor: Handle Token Refresh and persistence
 api.interceptors.response.use(
     (response) => {
-        // Capture and persist tokens fallback
         const { accessToken, refreshToken } = response.data || {};
-        if (accessToken) localStorage.setItem('accessToken', accessToken);
-        if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
+        try {
+            if (accessToken) localStorage.setItem('accessToken', accessToken);
+            if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
+        } catch { /* private-mode quotas etc. */ }
         return response;
     },
     async (error) => {
-        const originalRequest = error.config;
-        const status = error.response ? error.response.status : 'NETWORK_ERROR';
-        const url = error.config ? error.config.url : 'UNKNOWN_URL';
-        const method = error.config ? error.config.method?.toUpperCase() : 'UNKNOWN_METHOD';
-        const responseData = error.response ? error.response.data : null;
+        const originalRequest = error.config || {};
+        const status = error.response?.status;
+        const url = originalRequest.url || '';
 
-        console.error(`[API ERROR] ${method} ${url} | Status: ${status}`, {
-            message: error.message,
-            details: responseData,
-            stack: error.stack
-        });
+        // Network failure (no response). Don't try to refresh — surface it.
+        if (!error.response) {
+            clientLog.warn('Network error (no response)', {
+                url,
+                method: originalRequest.method,
+                code: error.code,
+                message: error.message,
+            });
+            return Promise.reject(error);
+        }
 
-        if (
-            error.response &&
-            error.response.status === 401 &&
-            !originalRequest._retry &&
-            !originalRequest.url.includes('/auth/login') &&
-            !originalRequest.url.includes('/auth/register') &&
-            !originalRequest.url.includes('/auth/refresh')
-        ) {
+        const isAuthEntryPoint =
+            url.includes('/auth/login') ||
+            url.includes('/auth/register') ||
+            url.includes('/auth/google') ||
+            url.includes('/auth/refresh');
+
+        if (status === 401 && !originalRequest._retry && !isAuthEntryPoint) {
             if (isRefreshing) {
                 return new Promise((resolve, reject) => {
                     failedQueue.push({ resolve, reject });
@@ -74,8 +96,7 @@ api.interceptors.response.use(
                     .then((token) => {
                         originalRequest.headers.Authorization = `Bearer ${token}`;
                         return api(originalRequest);
-                    })
-                    .catch((err) => Promise.reject(err));
+                    });
             }
 
             originalRequest._retry = true;
@@ -83,45 +104,50 @@ api.interceptors.response.use(
 
             try {
                 const rToken = getLocalRefreshToken();
-                if (!rToken) {
-                    throw new Error('No refresh token available');
-                }
+                // Even without a local refresh token, the backend may have a
+                // cookie-based refresh token (withCredentials: true). Try anyway.
+                const { data } = await api.post('/auth/refresh', rToken ? { refreshToken: rToken } : {});
+                if (!data?.accessToken) throw new Error('No accessToken in refresh response');
 
-                const { data } = await api.post('/auth/refresh', { refreshToken: rToken });
-                
-                if (data.accessToken) {
-                    localStorage.setItem('accessToken', data.accessToken);
-                    if (data.refreshToken) localStorage.setItem('refreshToken', data.refreshToken);
-                    
-                    processQueue(null, data.accessToken);
-                    
-                    originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
-                    return api(originalRequest);
+                try { localStorage.setItem('accessToken', data.accessToken); } catch { /* noop */ }
+                if (data.refreshToken) {
+                    try { localStorage.setItem('refreshToken', data.refreshToken); } catch { /* noop */ }
                 }
+                processQueue(null, data.accessToken);
+                originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
+                return api(originalRequest);
             } catch (refreshError) {
                 processQueue(refreshError, null);
-                localStorage.removeItem('accessToken');
-                localStorage.removeItem('refreshToken');
-                
-                const isPublicPage = ['/', '/login', '/register'].includes(window.location.pathname) || window.location.pathname.startsWith('/share/');
+                clearLocalTokens();
+
+                const isPublicPage =
+                    ['/', '/login', '/register'].includes(window.location.pathname) ||
+                    window.location.pathname.startsWith('/share/');
                 if (!isPublicPage) {
                     window.location.href = '/login?reason=session_expired';
                 }
-                
                 return Promise.reject(refreshError);
             } finally {
                 isRefreshing = false;
             }
         }
 
-        if (error.response && error.response.status === 401) {
-            console.warn('[API] 401 Unauthorized detected - redirecting or clearing state');
+        if (status === 403) {
+            window.dispatchEvent(new CustomEvent('feature-locked', {
+                detail: { url: originalRequest.url, message: error.response.data?.error },
+            }));
         }
 
-        if (error.response && error.response.status === 403) {
-            window.dispatchEvent(new CustomEvent('feature-locked', {
-                detail: { url: error.config?.url, message: error.response.data?.error }
-            }));
+        // 5xx is genuinely broken — record so backend log + client log can be
+        // joined by requestId for diagnosis.
+        if (status >= 500) {
+            clientLog.error('Server error response', {
+                url,
+                method: originalRequest.method,
+                status,
+                serverRequestId: error.response.headers?.['x-request-id'],
+                body: error.response.data,
+            });
         }
 
         return Promise.reject(error);
