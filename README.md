@@ -42,6 +42,7 @@ QuestXP is a high-performance Learning Management System engineered to eliminate
 | **One-Shot Chapterization** | Timestamp parsing → logical chapters | Description regex + YouTube Data API |
 | **Push Notifications** | Firebase Cloud Messaging via backend scheduler | `node-cron` + `firebase-admin` |
 | **Structured Logging** | Centralized, clean, and masked observability | `winston`, `morgan`, custom Express middleware |
+| **Geo-Blocking** | India-only access, blocks foreign IPs at auth layer | `geoip-lite` offline MaxMind DB, per-user/session geo storage |
 
 ---
 
@@ -144,6 +145,7 @@ When a lecture is toggled complete in the Course Player, the backend simultaneou
 - **HPP:** HTTP Parameter Pollution protection
 - **CORS:** Dynamic origin validator — whitelist + wildcard for `*.vercel.app` and `*.questxp.in`; localhost allowed in non-production only
 - **JWT:** HttpOnly cookie + `Authorization` header dual-mode; all protected routes require valid JWT via `auth.js` middleware
+- **Geo-Blocking (India-Only):** `geoip-lite` offline IP→country lookup on all auth routes; non-Indian IPs get `403 GEO_BLOCKED`; country metadata stored per user and per session for audit trail. See `docs/geo-blocking.md`
 - **Input Validation:** `express-validator` on all write endpoints; AJV schema validation on AI responses
 
 ### 8. Structured Logging & Error Handling

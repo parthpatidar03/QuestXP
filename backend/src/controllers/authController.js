@@ -7,6 +7,7 @@ const { OAuth2Client } = require('google-auth-library');
 const Progress = require('../models/Progress');
 const studyPlanService = require('../services/studyPlanService');
 const { generateRandomUsername } = require('../utils/nameGenerator');
+const { extractClientIP } = require('../middleware/geoBlock');
 const {
     ACCESS_TOKEN_COOKIE,
     REFRESH_TOKEN_COOKIE,
@@ -57,11 +58,13 @@ const getRequestIp = (req) => {
 };
 
 const issueSession = async (req, res, user) => {
+    const geoCountry = req.geoInfo?.country || null;
     const session = await Session.create({
         user: user._id,
         refreshTokenHash: 'pending',
         userAgent: req.get('user-agent') || null,
         ip: getRequestIp(req),
+        country: geoCountry,
         expiresAt: new Date(Date.now() + REFRESH_TOKEN_MAX_AGE_MS),
     });
 
@@ -86,11 +89,19 @@ const register = async (req, res, next) => {
 
         const passwordHash = await bcrypt.hash(password, 12);
 
+        const clientIP = extractClientIP(req);
         const user = new User({
             email: email.toLowerCase(),
             passwordHash,
             username: generateRandomUsername(),
-            usernameSet: false
+            usernameSet: false,
+            geo: {
+                country: req.geoInfo?.country || null,
+                region: req.geoInfo?.region || null,
+                city: req.geoInfo?.city || null,
+                lastLoginIP: clientIP,
+                lastUpdated: new Date(),
+            },
         });
         user.name = user.username; // Ensure name equals username for V1 identity
 
@@ -123,6 +134,17 @@ const login = async (req, res, next) => {
 
         const isMatch = await bcrypt.compare(password, user.passwordHash);
         if (!isMatch) return res.status(400).json({ error: 'Invalid credentials' });
+
+        // Update geo metadata on login
+        const clientIP = extractClientIP(req);
+        user.geo = {
+            country: req.geoInfo?.country || user.geo?.country || null,
+            region: req.geoInfo?.region || user.geo?.region || null,
+            city: req.geoInfo?.city || user.geo?.city || null,
+            lastLoginIP: clientIP,
+            lastUpdated: new Date(),
+        };
+        await user.save();
 
         const { accessToken, refreshToken } = await issueSession(req, res, user);
 
@@ -288,13 +310,23 @@ const googleLogin = async (req, res, next) => {
         const payload = ticket.getPayload();
         const { email, name, sub: googleId } = payload;
 
+        const clientIP = extractClientIP(req);
+        const geoData = {
+            country: req.geoInfo?.country || null,
+            region: req.geoInfo?.region || null,
+            city: req.geoInfo?.city || null,
+            lastLoginIP: clientIP,
+            lastUpdated: new Date(),
+        };
+
         let user = await User.findOne({ email: email.toLowerCase() });
         if (!user) {
             user = new User({
                 email: payload.email.toLowerCase(),
                 googleId: payload.sub,
                 username: generateRandomUsername(),
-                usernameSet: false
+                usernameSet: false,
+                geo: geoData,
             });
             user.name = user.username; // Sync name with generated identity
             await user.save();
@@ -304,6 +336,11 @@ const googleLogin = async (req, res, next) => {
                 user.username = generateRandomUsername();
                 user.usernameSet = false;
             }
+            user.geo = geoData;
+            await user.save();
+        } else {
+            // Existing Google user — update geo on each login
+            user.geo = geoData;
             await user.save();
         }
 

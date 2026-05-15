@@ -72,5 +72,6 @@ module.exports = {
     apiLogger: createLogger('API'),
     playlistLogger: createLogger('PLAYLIST'),
     aiLogger: createLogger('AI'),
-    jobLogger: createLogger('JOB')
+    jobLogger: createLogger('JOB'),
+    geoLogger: createLogger('GEO-BLOCK')
 };

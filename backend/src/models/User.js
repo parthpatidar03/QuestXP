@@ -29,6 +29,16 @@ const userSchema = new Schema({
     tourCompleted: { type: Boolean, default: false },
     totalStudyTime: { type: Number, default: 0 }, // in seconds
 
+    // Geo-location metadata (populated on login/register)
+    geo: {
+        country: { type: String, default: null },       // ISO 3166-1 alpha-2 (e.g. 'IN', 'US')
+        region: { type: String, default: null },
+        city: { type: String, default: null },
+        lastLoginIP: { type: String, default: null },
+        lastUpdated: { type: Date, default: null },
+    },
+    geoBlocked: { type: Boolean, default: false },      // Flagged if non-Indian IP detected
+
     createdAt: { type: Date, default: Date.now },
 });
 
