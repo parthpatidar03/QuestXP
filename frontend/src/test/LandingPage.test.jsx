@@ -2,10 +2,11 @@ import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { describe, it, expect, vi } from 'vitest';
 import { HelmetProvider } from 'react-helmet-async';
+import { act } from 'react';
 import LandingPage from '../pages/LandingPage';
 
 describe('LandingPage Smoke Test', () => {
-    it('renders hero section with primary value proposition', () => {
+    it('renders hero section with primary value proposition', async () => {
         // Mock fetch for stats
         global.fetch = vi.fn().mockImplementation(() =>
             Promise.resolve({
@@ -14,27 +15,31 @@ describe('LandingPage Smoke Test', () => {
             })
         );
 
-        render(
-            <HelmetProvider>
-                <BrowserRouter>
-                    <LandingPage />
-                </BrowserRouter>
-            </HelmetProvider>
-        );
+        await act(async () => {
+            render(
+                <HelmetProvider>
+                    <BrowserRouter>
+                        <LandingPage />
+                    </BrowserRouter>
+                </HelmetProvider>
+            );
+        });
         
         // Check for key hero text using role to avoid collision with testimonials
         expect(screen.getByRole('heading', { name: /Turn/i, level: 1 })).toBeInTheDocument();
         expect(screen.getByText(/playlists into courses you can actually finish/i)).toBeInTheDocument();
     });
 
-    it('renders CTA buttons', () => {
-        render(
-            <HelmetProvider>
-                <BrowserRouter>
-                    <LandingPage />
-                </BrowserRouter>
-            </HelmetProvider>
-        );
+    it('renders CTA buttons', async () => {
+        await act(async () => {
+            render(
+                <HelmetProvider>
+                    <BrowserRouter>
+                        <LandingPage />
+                    </BrowserRouter>
+                </HelmetProvider>
+            );
+        });
         
         // Buttons in the hero section
         expect(screen.getByText(/Start Learning/i)).toBeInTheDocument();

@@ -90,18 +90,18 @@ const LandingPage = () => {
         const theme = localStorage.getItem('theme') || 'dark';
         const nextDark = theme === 'dark';
         setIsDark(nextDark);
-        if (nextDark) document.documentElement.classList.add('dark');
-        else document.documentElement.classList.remove('dark');
+        if (nextDark) document.documentElement.classList?.add('dark');
+        else document.documentElement.classList?.remove('dark');
     }, []);
 
     const toggleTheme = () => {
         const nextDark = !isDark;
         setIsDark(nextDark);
         if (nextDark) {
-            document.documentElement.classList.add('dark');
+            document.documentElement.classList?.add('dark');
             localStorage.setItem('theme', 'dark');
         } else {
-            document.documentElement.classList.remove('dark');
+            document.documentElement.classList?.remove('dark');
             localStorage.setItem('theme', 'light');
         }
     };

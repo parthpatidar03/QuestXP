@@ -202,6 +202,9 @@ test('reused refresh token is rejected and revokes active sessions', async () =>
     const refreshed = await request('post', '/auth/refresh', { jar: signup.jar });
     assert.equal(refreshed.response.status, 200);
 
+    // Fast-forward lastUsedAt to bypass the 30-second grace period
+    await Session.updateMany({}, { lastUsedAt: new Date(Date.now() - 35000) });
+
     const reused = await request('post', '/auth/refresh', { jar: staleJar });
     assert.equal(reused.response.status, 401);
 
