@@ -96,8 +96,9 @@ const geoBlock = (req, res, next) => {
         if (process.env.NODE_ENV === 'production') {
             geoLogger.warn('Geo lookup failed — blocked unknown IP', { ip: clientIP });
             return res.status(403).json({ 
-                error: 'Access denied. This service is only available in India.',
-                code: 'GEO_BLOCKED'
+                error: `Access denied. Could not verify your location (IP: ${clientIP}).`,
+                code: 'GEO_LOOKUP_FAILED',
+                detectedIP: clientIP
             });
         }
         // Dev: allow unknown IPs
@@ -118,9 +119,10 @@ const geoBlock = (req, res, next) => {
         });
         
         return res.status(403).json({
-            error: 'Access denied. This service is only available in India.',
+            error: `Access denied. This service is only available in India. Detected: ${geo.country} from IP: ${clientIP}`,
             code: 'GEO_BLOCKED',
-            country: geo.country,
+            detectedCountry: geo.country,
+            detectedIP: clientIP
         });
     }
 
