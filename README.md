@@ -45,6 +45,8 @@ QuestXP is a high-performance Learning Management System engineered to eliminate
 | **Geo-Blocking** | **India-Only Security Guard** | Regional firewall active | `geoip-lite` offline IP filter |
 | **FriendZones (OTP)** | Private squads with shared leaderboards | `bcrypt` OTP hashing, IP throttling, atomic member sync |
 | **Simple Chat** | Fast, history-aware AI teaching assistant | Context-injected LLM prompt, history state tracking |
+| **Granular Roadmap** | Select specific sections/videos for plans | Backend tiered filter + Nested UI |
+| **Notification Throttling** | Only top 3 major updates pop on login | Frontend dispatcher with 1.5s staggered delay |
 | **SEO Optimization** | Dynamic meta tags and sitemap | `react-helmet-async`, automated indexing |
 
 ---
@@ -294,3 +296,14 @@ Implemented a comprehensive SEO engine to improve search visibility and indexing
 ## 📄 License
 
 MIT License. Developed by **Parth Patidar**.
+### 6. Notification UX Throttling
+To prevent notification overload for returning users, we implement a **Throttled Dispatcher** in the `Dashboard`. 
+- **Mechanism**: The top 5 features are tracked via `localStorage`.
+- **Constraint**: Only the first 3 unseen features trigger a popup toast.
+- **Persistence**: All 5 features remain visible in the "What's New" Dashboard tab for passive discovery.
+- **Staggering**: Popups are staggered by 1.5s to ensure visual clarity.
+
+### 7. Granular Roadmap Generation
+Refactored roadmap engine to support sub-section and video-level selection.
+- **Backend**: `POST /api/roadmap/generate` supports `lectureIds` for surgical precision.
+- **Logic**: Filters out unselected content from the generated schedule, allowing students to skip known material.

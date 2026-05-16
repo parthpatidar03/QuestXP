@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Flame, Trophy, Shield, Plus, ChevronRight, Trash2, Target, MessageSquare, Share2, Copy, Layout, Sparkles, Clock, Info, X, Search, Users, BookOpen, Zap } from 'lucide-react';
+import { Flame, Trophy, Plus, ChevronRight, Trash2, Target, MessageSquare, Share2, Copy, Layout, Sparkles, Clock, Info, X, Users, BookOpen, Zap } from 'lucide-react';
 import toast from 'react-hot-toast';
 import useAuthStore from '../store/useAuthStore';
 import useGamificationStore from '../store/useGamificationStore';
@@ -374,7 +374,7 @@ const Dashboard = () => {
         guest: true 
     } : null), [authUser, isDemo]);
 
-    const { level, levelTitle, xpProgress, xpToNextLevel, setProfile, addBadgeToast } = useGamificationStore();
+    const { level, levelTitle, xpProgress, xpToNextLevel, setProfile } = useGamificationStore();
     const queryClient = useQueryClient();
 
     const [showCreate, setShowCreate] = useState(false);
@@ -390,162 +390,112 @@ const Dashboard = () => {
     const [undoCountdown, setUndoCountdown] = useState(0);
     const [activeTab, setActiveTab] = useState('courses');
 
-    // Features list (top 5)
-    const newFeatures = [
+    // Features list (top 5) - Source of truth for tab and popups
+    const newFeatures = useMemo(() => [
         {
-            id: 'granular-roadmap',
+            id: 'granular-roadmap-v2',
             title: 'Granular Roadmap Control',
             description: 'Total control over your study plan. Select specific sections or individual videos to generate a roadmap tailored exactly to what you need to learn.',
             icon: <Sparkles className="w-5 h-5 text-primary" />,
-            date: 'New'
+            date: 'New',
+            toast: {
+                msg: "New: Granular Roadmap Control! Select individual videos for your plan. 🎯",
+                icon: '🎯'
+            }
         },
         {
-            id: 'ai-timestamps',
+            id: 'one-shot-videos-v1',
+            title: 'One-Shot Video Support',
+            description: 'Now supporting 10hr+ marathon lectures. Create full study roadmaps from a single long video with ease.',
+            icon: <Plus className="w-5 h-5 text-primary" />,
+            date: 'New',
+            toast: {
+                msg: "New: 10hr+ One-Shot Video Support is LIVE! 🚀",
+                icon: '📺'
+            }
+        },
+        {
+            id: 'ai-timestamps-v1',
             title: 'AI Timestamp Engine',
             description: 'Tutorial has no chapters? Our AI automatically generates timestamps to break long chapter-less videos into logical, bite-sized study missions.',
             icon: <Clock className="w-5 h-5 text-primary" />,
-            date: 'New'
+            date: 'New',
+            toast: {
+                msg: "New: AI-Generated Timestamps for chapter-less videos! ⏱️",
+                icon: '⏱️'
+            }
         },
         {
-            id: 'friend-zones',
+            id: 'friend-zones-v1',
             title: 'Friend Zones',
             description: 'Create a private squad with a 6-digit join code. Compete with friends on a shared XP leaderboard and watch each other\'s activity feed in real time.',
             icon: <Users className="w-5 h-5 text-primary" />,
-            date: 'New'
-        },
-        {
-            id: 'seo-engine',
-            title: 'Search Engine Visibility',
-            description: 'QuestXP is now discoverable! Optimized meta-engines, dynamic sitemaps, and indexing protocols for top Google ranking.',
-            icon: <Search className="w-5 h-5 text-primary" />,
-            date: 'Latest'
-        },
-        {
-            id: 'india-geo-block',
-            title: 'India-Only Security Guard',
-            description: 'New regional firewall active. QuestXP is now restricted to Indian IP addresses to eliminate unauthorized foreign access attempts.',
-            icon: <Shield className="w-5 h-5 text-warning" />,
-            date: 'New'
-        }
-    ];
-
-    useEffect(() => {
-        const hasSeenGranular = localStorage.getItem('seen_feature_granular_roadmap_v1');
-        if (!hasSeenGranular) {
-            toast.success("New: Granular Roadmap Control! Select individual videos for your plan. 🎯", {
-                duration: 6000,
-                icon: '🎯'
-            });
-            localStorage.setItem('seen_feature_granular_roadmap_v1', 'true');
-        }
-
-        const hasSeenSEO = localStorage.getItem('seen_feature_seo_v1');
-        if (!hasSeenSEO) {
-            toast.success("SEO Upgrade: QuestXP is now optimized for Google Search! 🔍🚀", {
-                duration: 6000,
-                icon: '🔍'
-            });
-            localStorage.setItem('seen_feature_seo_v1', 'true');
-        }
-
-        const hasSeenGeoBlock = localStorage.getItem('seen_feature_geoblock_v1');
-        if (!hasSeenGeoBlock) {
-            toast.success("Security Update: India-Only access is now enforced! 🛡️🇮🇳", {
-                duration: 7000,
-                icon: '🛡️'
-            });
-            localStorage.setItem('seen_feature_geoblock_v1', 'true');
-        }
-
-        const hasSeenVideoSupport = localStorage.getItem('seen_feature_video_support_v1');
-        if (!hasSeenVideoSupport) {
-            setTimeout(() => {
-                toast.success("New: 10hr+ One-Shot Video Support is LIVE! 🚀", {
-                    duration: 6000,
-                    icon: '📺'
-                });
-                localStorage.setItem('seen_feature_video_support_v1', 'true');
-            }, 3000);
-        }
-
-        // Friend Zones launch announcement — surfaces the new "Friends" nav.
-        const hasSeenFriendZones = localStorage.getItem('seen_feature_friendzones_v1');
-        if (!hasSeenFriendZones) {
-            setTimeout(() => {
-                toast(
-                    (t) => (
-                        <span className="flex items-center gap-3">
-                            <span className="text-xs sm:text-sm">
-                                <strong>New:</strong> Friend Zones — squad up & compete privately
-                            </span>
-                            <button
-                                onClick={() => {
-                                    toast.dismiss(t.id);
-                                    navigate('/friendzones');
-                                }}
-                                className="px-2 py-1 rounded-md bg-primary text-bg text-[10px] font-bold"
-                            >
-                                Open
-                            </button>
+            date: 'New',
+            toast: {
+                custom: (t, nav) => (
+                    <span className="flex items-center gap-3">
+                        <span className="text-xs sm:text-sm">
+                            <strong>New:</strong> Friend Zones — squad up & compete privately
                         </span>
-                    ),
-                    { duration: 9000, icon: '👥' }
-                );
-                localStorage.setItem('seen_feature_friendzones_v1', 'true');
-            }, 1500);
+                        <button
+                            onClick={() => {
+                                toast.dismiss(t.id);
+                                nav('/friendzones');
+                            }}
+                            className="px-2 py-1 rounded-md bg-primary text-bg text-[10px] font-bold"
+                        >
+                            Open
+                        </button>
+                    </span>
+                ),
+                icon: '👥'
+            }
+        },
+        {
+            id: 'streak-capture-v1',
+            title: 'Achievement Capture',
+            description: 'Share your progress in style. Export high-fidelity streak cards to show off your learning momentum to the world.',
+            icon: <Share2 className="w-5 h-5 text-primary" />,
+            date: 'New',
+            toast: {
+                msg: "New: Achievement Capture! Share your streaks with premium export cards! 📸",
+                icon: '📸'
+            }
         }
-        const hasSeenTimestamps = localStorage.getItem('seen_feature_timestamps_v1');
-        if (!hasSeenTimestamps) {
-            setTimeout(() => {
-                toast.success("New: AI-Generated Timestamps for chapter-less videos! ⏱️", {
-                    duration: 6000,
-                    icon: '⏱️'
-                });
-                localStorage.setItem('seen_feature_timestamps_v1', 'true');
-            }, 4500);
-        }
-    }, [navigate]);
+    ], []);
 
     useEffect(() => {
+        // POPUP LOGIC: Only fire top 3 unread features
+        let popped = 0;
+        newFeatures.forEach((feat) => {
+            if (popped >= 3) return;
+            const key = `seen_feature_${feat.id}`;
+            if (!localStorage.getItem(key)) {
+                setTimeout(() => {
+                    if (feat.toast.custom) {
+                        toast((t) => feat.toast.custom(t, navigate), { duration: 9000, icon: feat.toast.icon });
+                    } else {
+                        toast.success(feat.toast.msg, { duration: 6000, icon: feat.toast.icon });
+                    }
+                    localStorage.setItem(key, 'true');
+                }, 1500 * (popped + 1));
+                popped++;
+            }
+        });
+
+        // Background / Security Announcements (Legacy or silent check)
+        const hasSeenSEO = localStorage.getItem('seen_feature_seo_v1');
+        if (!hasSeenSEO) localStorage.setItem('seen_feature_seo_v1', 'true');
+        
+        const hasSeenGeoBlock = localStorage.getItem('seen_feature_geoblock_v1');
+        if (!hasSeenGeoBlock) localStorage.setItem('seen_feature_geoblock_v1', 'true');
+
+        // Fireworks for sign-up
         if (localStorage.getItem('justSignedUp') === 'true') {
             shootFireworks();
             localStorage.removeItem('justSignedUp');
         }
-        
-        // Feature Announcements
-        const seenFeatures = JSON.parse(localStorage.getItem('seenFeatures') || '[]');
-        
-        if (!seenFeatures.includes('streak_capture_v1')) {
-            setTimeout(() => {
-                addBadgeToast('New: Achievement Capture!', 'Share your streaks with premium, high-fidelity export cards!', 'camera');
-                seenFeatures.push('streak_capture_v1');
-                localStorage.setItem('seenFeatures', JSON.stringify(seenFeatures));
-            }, 3000);
-        }
-
-        if (!seenFeatures.includes('one_shot_videos')) {
-            setTimeout(() => {
-                addBadgeToast('New: One-Shot Support!', 'Create courses from single long videos now!', 'video');
-                seenFeatures.push('one_shot_videos');
-                localStorage.setItem('seenFeatures', JSON.stringify(seenFeatures));
-            }, 7000);
-        }
-
-        if (!seenFeatures.includes('bulk_completion_v1')) {
-            setTimeout(() => {
-                addBadgeToast('New: Bulk Completion!', 'Level up faster! Mark entire courses as done in one click.', 'check');
-                seenFeatures.push('bulk_completion_v1');
-                localStorage.setItem('seenFeatures', JSON.stringify(seenFeatures));
-            }, 12000);
-        }
-        if (!seenFeatures.includes('ai_timestamps_v1')) {
-            setTimeout(() => {
-                addBadgeToast('New: AI Timestamps!', 'We now auto-split videos even if they have no YouTube chapters!', 'clock');
-                seenFeatures.push('ai_timestamps_v1');
-                localStorage.setItem('seenFeatures', JSON.stringify(seenFeatures));
-            }, 5000);
-        }
-    }, [addBadgeToast]);
+    }, [navigate, newFeatures]);
 
     useEffect(() => {
         if (user && !user.usernameSet) {
