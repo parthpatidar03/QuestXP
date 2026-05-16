@@ -20,6 +20,7 @@ export const shootConfetti = (origin) => {
   fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
   fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
   fire(0.1, { spread: 120, startVelocity: 45 });
+  fire(0.1, { spread: 120, startVelocity: 65, scalar: 1.5 });
 };
 
 export const shootLighterConfetti = () => {
@@ -33,7 +34,7 @@ export const shootLighterConfetti = () => {
 };
 
 export const shootFireworks = () => {
-  const duration = 5 * 1000; // Increased to 5s to be more celebratory
+  const duration = 5 * 1000;
   const end = Date.now() + duration;
 
   const colors = ["#a786ff", "#fd8bbc", "#eca184", "#f8deb1"];
