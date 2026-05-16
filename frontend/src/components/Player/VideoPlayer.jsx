@@ -5,6 +5,14 @@ const VideoPlayer = ({ _courseId, _lectureId, youtubeId, onEnded, onTimeUpdate, 
     const containerRef = useRef(null);
     const [isPlayerReady, setIsPlayerReady] = useState(false);
 
+    const onEndedRef = useRef(onEnded);
+    const onTimeUpdateRef = useRef(onTimeUpdate);
+
+    useEffect(() => {
+        onEndedRef.current = onEnded;
+        onTimeUpdateRef.current = onTimeUpdate;
+    }, [onEnded, onTimeUpdate]);
+
     useEffect(() => {
         // Load YouTube IFrame API if not already loaded
         if (!window.YT) {
@@ -31,6 +39,7 @@ const VideoPlayer = ({ _courseId, _lectureId, youtubeId, onEnded, onTimeUpdate, 
                     rel: 0,
                     modestbranding: 1,
                     enablejsapi: 1,
+                    origin: window.location.origin,
                 },
                 events: {
                     onReady: (event) => {
@@ -39,7 +48,7 @@ const VideoPlayer = ({ _courseId, _lectureId, youtubeId, onEnded, onTimeUpdate, 
                     },
                     onStateChange: (event) => {
                         if (event.data === window.YT.PlayerState.ENDED) {
-                            if (onEnded) onEnded();
+                            if (onEndedRef.current) onEndedRef.current();
                         }
                     },
                 },
@@ -47,8 +56,8 @@ const VideoPlayer = ({ _courseId, _lectureId, youtubeId, onEnded, onTimeUpdate, 
         }
 
         const interval = setInterval(() => {
-            if (playerRef.current && playerRef.current.getCurrentTime && onTimeUpdate) {
-                onTimeUpdate(playerRef.current.getCurrentTime());
+            if (playerRef.current && playerRef.current.getCurrentTime && onTimeUpdateRef.current) {
+                onTimeUpdateRef.current(playerRef.current.getCurrentTime());
             }
         }, 1000);
 
@@ -56,7 +65,7 @@ const VideoPlayer = ({ _courseId, _lectureId, youtubeId, onEnded, onTimeUpdate, 
             clearInterval(interval);
             if (playerRef.current) playerRef.current.destroy();
         };
-    }, [youtubeId, startTime, endTime, onEnded, onTimeUpdate]);
+    }, [youtubeId, startTime, endTime]);
 
     // Handle external seek requests via props
     useEffect(() => {

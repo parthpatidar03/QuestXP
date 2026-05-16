@@ -47,6 +47,7 @@ QuestXP is a high-performance Learning Management System engineered to eliminate
 | **Simple Chat** | Fast, history-aware AI teaching assistant | Context-injected LLM prompt, history state tracking |
 | **Granular Roadmap** | Select specific sections/videos for plans | Backend tiered filter + Nested UI |
 | **Notification Throttling** | Only top 3 major updates pop on login | Frontend dispatcher with 1.5s staggered delay |
+| **Video Stability** | Zero-refresh playback | Ref-based callback stabilization, origin-locked IFrame |
 | **SEO Optimization** | Dynamic meta tags and sitemap | `react-helmet-async`, automated indexing |
 
 ---

@@ -452,14 +452,14 @@ const Dashboard = () => {
             }
         },
         {
-            id: 'streak-capture-v1',
-            title: 'Achievement Capture',
-            description: 'Share your progress in style. Export high-fidelity streak cards to show off your learning momentum to the world.',
-            icon: <Share2 className="w-5 h-5 text-primary" />,
-            date: 'New',
+            id: 'video-stability-v1',
+            title: 'Zero-Lag Video Engine',
+            description: 'Experience seamless playback on long-form lectures. We\'ve stabilized the player lifecycle to prevent refreshes and lag during deep study sessions.',
+            icon: <Zap className="w-5 h-5 text-primary" />,
+            date: 'Latest',
             toast: {
-                msg: "New: Achievement Capture! Share your streaks with premium export cards! 📸",
-                icon: '📸'
+                msg: "Engine Update: Zero-lag video playback for long sessions is now LIVE! ⚡",
+                icon: '⚡'
             }
         }
     ], []);
