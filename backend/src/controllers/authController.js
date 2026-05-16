@@ -107,6 +107,12 @@ const register = async (req, res, next) => {
 
         await user.save();
 
+        // Award Welcome XP
+        const xpService = require('../services/xpService');
+        await xpService.award(user._id, 'WELCOME_GIFT').catch(err => {
+            authLogger.error('Failed to award welcome XP', { error: err.message, userId: user._id });
+        });
+
         const { accessToken, refreshToken } = await issueSession(req, res, user);
 
         res.status(201).json({ 
@@ -333,11 +339,6 @@ const googleLogin = async (req, res, next) => {
             });
         }
 
-        // SHADOW-LINK DEFENSE: never auto-link a Google identity to an
-        // existing local account unless Google has verified the email. An
-        // attacker who pre-registered an email/password account with the
-        // victim's email could otherwise hijack it when the victim signs in
-        // with Google.
         if (payload.email_verified !== true) {
             authLogger.warn('Google login rejected: unverified email', { email: payload.email });
             return res.status(401).json({
@@ -357,7 +358,10 @@ const googleLogin = async (req, res, next) => {
 
         const emailLower = String(payload.email).toLowerCase();
         let user = await User.findOne({ email: emailLower });
+        let isNew = false;
+        
         if (!user) {
+            isNew = true;
             user = new User({
                 email: emailLower,
                 googleId: payload.sub,
@@ -375,6 +379,13 @@ const googleLogin = async (req, res, next) => {
             user.geo = geoData; // always refresh geo on login
         }
         await user.save();
+        
+        if (isNew) {
+            const xpService = require('../services/xpService');
+            await xpService.award(user._id, 'WELCOME_GIFT').catch(err => {
+                authLogger.error('Failed to award welcome XP', { error: err.message, userId: user._id });
+            });
+        }
 
         const { accessToken, refreshToken } = await issueSession(req, res, user);
 
