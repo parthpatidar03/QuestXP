@@ -471,13 +471,13 @@ const Dashboard = () => {
             if (popped >= 3) return;
             const key = `seen_feature_${feat.id}`;
             if (!localStorage.getItem(key)) {
+                localStorage.setItem(key, 'true'); 
                 setTimeout(() => {
                     if (feat.toast.custom) {
                         toast((t) => feat.toast.custom(t, navigate), { duration: 9000, icon: feat.toast.icon });
                     } else {
                         toast.success(feat.toast.msg, { duration: 6000, icon: feat.toast.icon });
                     }
-                    localStorage.setItem(key, 'true');
                 }, 1500 * (popped + 1));
                 popped++;
             }
