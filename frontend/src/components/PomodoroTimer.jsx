@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, RotateCcw, Coffee, Target, Brain, X, Maximize2, Minimize2, Edit3, Check, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Play, Pause, RotateCcw, Coffee, Target, Brain, Maximize2, Minimize2, Edit3, ChevronRight, ChevronLeft } from 'lucide-react';
 
 const MODES = {
     FOCUS: { label: 'Focus', time: 25 * 60, icon: Brain, color: 'var(--color-primary)' },
@@ -26,6 +26,17 @@ const PomodoroTimer = () => {
     const timerRef = useRef(null);
     const audioRef = useRef(new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg'));
 
+    const handleTimerComplete = React.useCallback(() => {
+        setIsActive(false);
+        audioRef.current.play().catch(() => {});
+        if (Notification.permission === 'granted') {
+            new Notification('Session Complete!', {
+                body: mode === 'FOCUS' ? 'Time for a break!' : 'Ready to focus?',
+                icon: '/favicon.png'
+            });
+        }
+    }, [mode]);
+
     useEffect(() => {
         if (isActive && timeLeft > 0) {
             timerRef.current = setInterval(() => {
@@ -37,26 +48,7 @@ const PomodoroTimer = () => {
             clearInterval(timerRef.current);
         }
         return () => clearInterval(timerRef.current);
-    }, [isActive, timeLeft]);
-
-    useEffect(() => {
-        localStorage.setItem('pomodoro_isOpen', JSON.stringify(isOpen));
-    }, [isOpen]);
-
-    useEffect(() => {
-        localStorage.setItem('pomodoro_isHidden', JSON.stringify(isHidden));
-    }, [isHidden]);
-
-    const handleTimerComplete = () => {
-        setIsActive(false);
-        audioRef.current.play().catch(() => {});
-        if (Notification.permission === 'granted') {
-            new Notification('Session Complete!', {
-                body: mode === 'FOCUS' ? 'Time for a break!' : 'Ready to focus?',
-                icon: '/favicon.png'
-            });
-        }
-    };
+    }, [isActive, timeLeft, handleTimerComplete]);
 
     const toggleTimer = () => setIsActive(!isActive);
     
@@ -88,7 +80,6 @@ const PomodoroTimer = () => {
         return `${m}:${s < 10 ? '0' : ''}${s}`;
     };
 
-    const progress = (timeLeft / (parseInt(customMins || 25) * 60)) * 100;
     const ActiveIcon = MODES[mode].icon;
 
     return (

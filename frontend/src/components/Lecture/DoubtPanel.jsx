@@ -3,7 +3,7 @@ import api from '../../../services/api'; // Provided by spec
 import DoubtCitation from './DoubtCitation';
 
 // Mock hook per spec 002
-const useFeatureGate = (featureKey) => {
+const useFeatureGate = () => {
     // Return true for testing purposes; in reality would query user level vs CONSTANTS
     return { isLocked: false, requiredLevel: 2 }; 
 };
@@ -37,9 +37,8 @@ const DoubtPanel = ({ lectureId }) => {
                 if (historyRes.data?.data?.exchanges) {
                     setHistory(historyRes.data.data.exchanges);
                 }
-            } catch (err) {
-                console.error(err);
-                if (err.response?.status === 503) setStatus('indexing');
+            } catch (_) {
+                if (_.response?.status === 503) setStatus('indexing');
                 else setStatus('error');
             }
         };
@@ -80,8 +79,7 @@ const DoubtPanel = ({ lectureId }) => {
                     }
                 } : msg
             ));
-        } catch (err) {
-            console.error('Query error:', err);
+        } catch (_) {
             // T023 [US3] 500 INTERNAL ERROR handler
             setHistory(prev => prev.map(msg => 
                 msg._id === tempId ? {

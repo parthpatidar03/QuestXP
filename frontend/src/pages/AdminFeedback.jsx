@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, MessageSquare, Clock, Globe, User, Mail, Trash2 } from 'lucide-react';
+import { ChevronLeft, MessageSquare, Clock, Globe, User, Mail } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
 import NavBar from '../components/NavBar';

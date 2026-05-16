@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Play, CheckCircle2, XCircle, Trophy, RotateCcw, Award } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { CheckCircle2, XCircle, Trophy, RotateCcw } from 'lucide-react';
 import useAuthStore from '../../store/useAuthStore';
 import api from '../../services/api';
 import LockedFeature from '../LockedFeature';
@@ -32,7 +31,7 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
     const errorReason = aiStatus.errorReason;
     const isInProgress = quizStatus === 'in_progress' || transcriptionStatus === 'in_progress' || isTriggering;
 
-    const fetchQuiz = async () => {
+    const fetchQuiz = React.useCallback(async () => {
         if (quizStatus !== 'complete') return;
         try {
             setLoading(true);
@@ -49,14 +48,14 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [lectureId, quizStatus]);
 
     const handleTrigger = () => {
         setTriggered(true);
         fetchQuiz();
     };
 
-    const handleManualStart = async () => {
+    const handleManualStart = React.useCallback(async () => {
         try {
             setIsTriggering(true);
             setError(null);
@@ -72,7 +71,7 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
             setError(msg);
             setIsTriggering(false);
         }
-    };
+    }, [lectureId]);
 
     // Simulated progress effect
     useEffect(() => {
@@ -111,7 +110,7 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
             setIsTriggering(false);
         }
         return () => clearInterval(interval);
-    }, [isInProgress, quizStatus, transcriptionStatus]);
+    }, [isInProgress, quizStatus, transcriptionStatus, isTriggering]);
 
     // Reset when lecture changes
     useEffect(() => {
@@ -138,7 +137,7 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
             }, 800);
             return () => clearTimeout(timer);
         }
-    }, [lectureId, quizStatus, transcriptionStatus, autoStart]);
+    }, [lectureId, quizStatus, transcriptionStatus, autoStart, fetchQuiz]);
 
     const handleOptionSelect = (questionIndex, optionIndex) => {
         if (result) return;
@@ -185,10 +184,10 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
                 }));
                 broadcastProgressUpdate();
             }
-        } catch (err) {
-            console.error('Failed to submit quiz', err);
-            if (err.response?.status === 429) {
-                setError(err.response.data.message);
+        } catch (_) {
+            console.error('Failed to submit quiz');
+            if (_.response?.status === 429) {
+                setError(_.response.data.message);
             } else {
                 setError('Failed to submit quiz. Please try again.');
             }

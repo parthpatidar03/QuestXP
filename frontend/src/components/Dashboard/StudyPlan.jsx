@@ -1,10 +1,8 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { 
-    Calendar, 
     ChevronRight, 
     Trophy, 
-    Zap, 
     Sparkles, 
     Layout,
     Clock,
@@ -30,33 +28,28 @@ const StudyPlan = ({ courseId, onOpenSetup }) => {
     const [roadmap, setRoadmap] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const fetchRoadmap = async () => {
+    const fetchRoadmap = useCallback(async () => {
         setLoading(true);
         try {
             const data = await getCurrentRoadmap(courseId);
 
             setRoadmap(data);
-        } catch (err) {
+        } catch (_) {
             console.error("No active roadmap found");
         } finally {
             setLoading(false);
         }
-    };
+    }, [courseId]);
 
     useEffect(() => {
         fetchRoadmap();
-    }, []);
+    }, [fetchRoadmap]);
 
     // Derived info for the preview
     const activeDay = useMemo(() => {
         if (!roadmap) return null;
         const currentDayIndex = Math.max(0, differenceInDays(new Date(), new Date(roadmap.config.startDate)));
         return roadmap.days[currentDayIndex] || roadmap.days[roadmap.days.length - 1];
-    }, [roadmap]);
-
-    const totalVideos = useMemo(() => {
-        if (!roadmap) return 0;
-        return roadmap.days.reduce((sum, day) => sum + day.plannedVideos.length, 0);
     }, [roadmap]);
 
     if (loading) {

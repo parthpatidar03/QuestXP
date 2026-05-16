@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Award, Lock, Star, Shield, Zap, Medal } from 'lucide-react';
+import { Award, Lock, Star, Shield } from 'lucide-react';
 import useAuthStore from '../../../store/useAuthStore';
 
 // Simple heuristic to assign icons

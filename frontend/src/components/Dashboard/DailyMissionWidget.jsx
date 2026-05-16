@@ -3,10 +3,7 @@ import { Link } from 'react-router-dom';
 import { 
     Zap, 
     Target, 
-    Clock, 
-    CheckCircle2, 
     ChevronRight,
-    Trophy,
     Play
 } from 'lucide-react';
 import { getCurrentRoadmap } from '../../services/roadmapApi';

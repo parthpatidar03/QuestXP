@@ -56,19 +56,39 @@ const UserTour = () => {
     const [isVisible, setIsVisible] = useState(false);
     const [targetRect, setTargetRect] = useState(null);
 
-    const startTour = () => {
+    const startTour = useCallback(() => {
         const completed = user?.tourCompleted;
         if (!completed) {
             setCurrentStep(0);
             setIsVisible(true);
         }
-    };
+    }, [user?.tourCompleted]);
 
     useEffect(() => {
         // Delay slightly to ensure layout is ready
         const timer = setTimeout(startTour, 1500);
         return () => clearTimeout(timer);
-    }, []);
+    }, [startTour]);
+
+    const completeTour = useCallback(async () => {
+        setIsVisible(false);
+        setCurrentStep(-1);
+        try {
+            await api.patch('/auth/tour-complete');
+            const { data } = await api.get('/auth/me');
+            if (data.user) setUser(data.user);
+        } catch (_) {
+            console.error('Failed to mark tour as complete');
+        }
+    }, [setUser]);
+
+    const handleNext = useCallback(() => {
+        if (currentStep < TOUR_STEPS.length - 1) {
+            setCurrentStep(prev => prev + 1);
+        } else {
+            completeTour();
+        }
+    }, [currentStep, completeTour]);
 
     const updateTargetRect = useCallback(() => {
         if (currentStep < 0 || currentStep >= TOUR_STEPS.length) return;
@@ -81,7 +101,7 @@ const UserTour = () => {
             // If target missing (e.g. hero when no course), skip to next
             handleNext();
         }
-    }, [currentStep]);
+    }, [currentStep, handleNext]);
 
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -106,35 +126,16 @@ const UserTour = () => {
         };
     }, [currentStep, updateTargetRect]);
 
-
-    const handleNext = () => {
-        if (currentStep < TOUR_STEPS.length - 1) {
-            setCurrentStep(prev => prev + 1);
-        } else {
-            completeTour();
-        }
-    };
-
-    const handleBack = () => {
+    const handleBack = useCallback(() => {
         if (currentStep > 0) {
             setCurrentStep(prev => prev - 1);
         }
-    };
+    }, [currentStep]);
 
-    const skipTour = () => {
+    const skipTour = useCallback(() => {
         completeTour();
-    };
+    }, [completeTour]);
 
-    const completeTour = async () => {
-        setIsVisible(false);
-        setCurrentStep(-1);
-        try {
-            const { data } = await api.patch('/auth/tour-complete');
-            if (data.user) setUser(data.user);
-        } catch (err) {
-            console.error('Failed to mark tour as complete', err);
-        }
-    };
     const step = currentStep >= 0 ? TOUR_STEPS[currentStep] : null;
     const [tooltipStyles, setTooltipStyles] = useState({ top: 0, left: 0, arrowPos: 'top' });
 
@@ -171,7 +172,7 @@ const UserTour = () => {
         }
 
         setTooltipStyles({ top, left, arrowPos });
-    }, [targetRect, step?.position]);
+    }, [targetRect, step]);
 
 
     if (!isVisible || !targetRect || !step) return null;

@@ -2,20 +2,6 @@ import React, { useState } from 'react';
 import { Calendar, Clock, X, Loader2, Sparkles, Target } from 'lucide-react';
 import api from '../../services/api';
 
-const PresetButton = ({ minutes, label, isSelected, onClick }) => (
-    <button
-        type="button"
-        onClick={onClick}
-        className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-            isSelected 
-                ? 'bg-primary text-bg font-bold shadow-[0_0_10px_rgba(56,189,248,0.3)] border border-primary/50' 
-                : 'bg-surface border border-border text-text-secondary hover:text-text-primary hover:border-primary/30'
-        }`}
-    >
-        {label || `${minutes} Minutes`}
-    </button>
-);
-
 const SetupPlanModal = ({ courseId, isOpen, onClose, onPlanGenerated }) => {
     // Tomorrow as minimum deadline
     const tomorrow = new Date();

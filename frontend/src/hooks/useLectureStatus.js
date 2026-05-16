@@ -34,8 +34,8 @@ export const useLectureStatus = (lectureId, enabled = true) => {
                         clearInterval(interval);
                     }
                 }
-            } catch (err) {
-                console.error('[useLectureStatus] Error:', err);
+            } catch (_) {
+                // Silently fail as it's polling
             }
         };
 
@@ -48,7 +48,7 @@ export const useLectureStatus = (lectureId, enabled = true) => {
             cancelled = true;
             clearInterval(interval);
         };
-    }, [lectureId, enabled]);
+    }, [lectureId, enabled, isAuthenticated]);
 
     return status;
 };

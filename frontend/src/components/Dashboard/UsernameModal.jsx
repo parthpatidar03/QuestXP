@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { User, ShieldCheck, Loader2 } from 'lucide-react';
 import api from '../../services/api';
 import useAuthStore from '../../store/useAuthStore';
@@ -9,7 +9,7 @@ const UsernameModal = ({ isOpen, onClose }) => {
     const [username, setUsername] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
-    const { user, checkAuth } = useAuthStore();
+    const { user } = useAuthStore();
 
     if (!isOpen) return null;
 
@@ -28,14 +28,14 @@ const UsernameModal = ({ isOpen, onClose }) => {
         try {
             await api.patch('/auth/username', { username: newUsername });
             // checkAuth() call removed to avoid redundant re-render if successful
-        } catch (err) {
+        } catch (_) {
             // Revert on error
             useAuthStore.setState({ user: oldUser });
-            setError(err.response?.data?.error || 'Failed to set username.');
+            setError(_.response?.data?.error || 'Failed to set username.');
             // Re-open modal if it was closed
             // Since this component is managed by parent visibility, 
             // we might need a toast instead or just let the user try again from Profile.
-            alert(err.response?.data?.error || 'Failed to set username. Reverting...');
+            alert(_.response?.data?.error || 'Failed to set username. Reverting...');
         } finally {
             setIsLoading(false);
         }

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Play, Edit2, Check, X, AlertCircle, Bot } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Play, Edit2, Check, AlertCircle, Bot } from 'lucide-react';
 import useAuthStore from '../../store/useAuthStore';
 import api from '../../services/api';
 import LockedFeature from '../LockedFeature';
@@ -15,7 +14,7 @@ const LEVEL_NOTES_EDIT = 3;
  * @param {function} onSeek - (seconds) => void (to seek video playback)
  * @param {string} notesStatus - 'pending' | 'in_progress' | 'complete' | 'failed'
  */
-const NotesTab = ({ lectureId, courseId, onSeek, notesStatus, errorReason, aiStatus = {} }) => {
+const NotesTab = ({ lectureId, onSeek, notesStatus, errorReason, aiStatus = {} }) => {
     const { user } = useAuthStore();
     const [triggered, setTriggered] = useState(false);
     const [notes, setNotes] = useState(null);
@@ -32,7 +31,7 @@ const NotesTab = ({ lectureId, courseId, onSeek, notesStatus, errorReason, aiSta
     const transcriptionStatus = aiStatus.transcription || 'pending';
     const isInProgress = notesStatus === 'in_progress' || transcriptionStatus === 'in_progress' || isTriggering;
 
-    const fetchNotes = async () => {
+    const fetchNotes = React.useCallback(async () => {
         if (notesStatus !== 'complete') return;
         try {
             setLoading(true);
@@ -49,14 +48,14 @@ const NotesTab = ({ lectureId, courseId, onSeek, notesStatus, errorReason, aiSta
         } finally {
             setLoading(false);
         }
-    };
+    }, [lectureId, notesStatus]);
 
     const handleGenerate = () => {
         setTriggered(true);
         fetchNotes();
     };
 
-    const handleManualStart = async () => {
+    const handleManualStart = React.useCallback(async () => {
         try {
             setIsTriggering(true);
             setError(null);
@@ -68,7 +67,7 @@ const NotesTab = ({ lectureId, courseId, onSeek, notesStatus, errorReason, aiSta
             setError(msg);
             setIsTriggering(false);
         }
-    };
+    }, [lectureId]);
 
     // Simulated progress effect
     useEffect(() => {
@@ -122,7 +121,7 @@ const NotesTab = ({ lectureId, courseId, onSeek, notesStatus, errorReason, aiSta
             }
             setEditContent('');
             setIsEditing(false);
-        } catch (err) {
+        } catch (_) {
             setError('Failed to save note.');
         } finally {
             setSaving(false);

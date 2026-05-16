@@ -42,7 +42,12 @@ export default [
       'react/display-name': 'off',
       'no-empty': 'off',
       'react/no-unescaped-entities': 'off',
-      'no-unused-vars': ['warn', { varsIgnorePattern: '^React$' }],
+      'no-unused-vars': ['warn', { 
+        varsIgnorePattern: '^[R_]', 
+        argsIgnorePattern: '^[R_]',
+        caughtErrorsIgnorePattern: '^[R_]',
+        ignoreRestSiblings: true 
+      }],
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true },

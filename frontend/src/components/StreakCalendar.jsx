@@ -1,8 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toPng } from 'html-to-image';
-import { Info, Flame, Trophy, Camera, Check, Download, X, Share2, RefreshCw } from 'lucide-react';
+import { Info, Camera, Check, Download, X, Trophy } from 'lucide-react';
 import useAuthStore from '../store/useAuthStore';
 
 const StreakInfoModal = ({ isOpen, onClose }) => {

@@ -10,8 +10,8 @@ import StudyPlan from '../components/Dashboard/StudyPlan';
 import GenerateRoadmapModal from '../components/Roadmap/GenerateRoadmapModal';
 import {
     ArrowLeft, PlayCircle, Loader2, AlertOctagon, Clock,
-    BookOpen, Layers, Zap, Lock, CheckCircle2, ChevronRight,
-    MessageSquareText, StickyNote, BarChart3, ChevronDown, Trophy, Flag, HelpCircle, Edit2, Share2, Copy, Check, X
+    BookOpen, Layers, Lock, CheckCircle2, ChevronRight,
+    MessageSquareText, BarChart3, ChevronDown, Trophy, Flag, HelpCircle, Share2, Copy, Check, X
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -221,7 +221,6 @@ function ShareModal({ isOpen, onClose, courseTitle, shareUrl }) {
 
 const CourseDetail = () => {
     const { courseId } = useParams();
-    const navigate = useNavigate();
     const [course, setCourse] = useState(null);
     const [progress, setProgress] = useState(null);
     const [statusData, setStatusData] = useState(null);
@@ -229,14 +228,6 @@ const CourseDetail = () => {
     const [showSetupModal, setShowSetupModal] = useState(false);
     const [showOnboarding, setShowOnboarding] = useState(false);
     const [collapsedSections, setCollapsedSections] = useState({});
-    const [showAddPlaylist, setShowAddPlaylist] = useState(false);
-    const [newPlaylistTitle, setNewPlaylistTitle] = useState('');
-    const [newPlaylistUrl, setNewPlaylistUrl] = useState('');
-    const [addingPlaylist, setAddingPlaylist] = useState(false);
-    const [editingSectionId, setEditingSectionId] = useState(null);
-    const [editSectionTitle, setEditSectionTitle] = useState('');
-    const [isEditingCourse, setIsEditingCourse] = useState(false);
-    const [editCourseTitle, setEditCourseTitle] = useState('');
     const [shareStatus, setShareStatus] = useState('');
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
     const [isBulkUpdating, setIsBulkUpdating] = useState(false);
@@ -256,63 +247,6 @@ const CourseDetail = () => {
         }));
     };
 
-    const handleRenameCourse = async () => {
-        if (!editCourseTitle.trim() || editCourseTitle === course.title) {
-            setIsEditingCourse(false);
-            return;
-        }
-        try {
-            await api.patch(`/courses/${courseId}`, { title: editCourseTitle });
-            setCourse({ ...course, title: editCourseTitle });
-            setIsEditingCourse(false);
-        } catch (err) {
-            console.error(err);
-            alert("Failed to rename course");
-        }
-    };
-
-    const handleRenameSection = async (sectionId) => {
-        if (!editSectionTitle.trim()) {
-            setEditingSectionId(null);
-            return;
-        }
-        try {
-            await api.patch(`/courses/${courseId}/sections/${sectionId}`, { title: editSectionTitle });
-            setCourse({
-                ...course,
-                sections: course.sections.map(s => s._id === sectionId ? { ...s, title: editSectionTitle } : s)
-            });
-            setEditingSectionId(null);
-        } catch (err) {
-            console.error(err);
-            alert("Failed to rename playlist");
-        }
-    };
-
-    const handleAddPlaylist = async (e) => {
-        e.preventDefault();
-        if (!newPlaylistTitle || !newPlaylistUrl) return;
-        
-        setAddingPlaylist(true);
-        try {
-            await api.patch(`/courses/${courseId}/sections`, {
-                title: newPlaylistTitle,
-                playlistUrl: newPlaylistUrl
-            });
-            setNewPlaylistTitle('');
-            setNewPlaylistUrl('');
-            setShowAddPlaylist(false);
-            // Refresh course data
-            const res = await api.get(`/courses/${courseId}`);
-            setCourse(res.data.course);
-            alert("New playlist added! Videos are being processed in the background.");
-        } catch (err) {
-            console.error(err);
-            alert("Failed to add playlist. Please check the URL.");
-        } finally {
-            setAddingPlaylist(false);
-        }
-    };
 
     const handleToggleCompletion = async (videoId, currentStatus) => {
         if (courseId?.startsWith('demo-')) return;
@@ -422,7 +356,7 @@ const CourseDetail = () => {
                 else setError('Failed to load course.');
                 if (pRes.status === 'fulfilled' && pRes.value.data.progress)
                     setProgress(pRes.value.data.progress);
-            } catch (err) { setError('Failed to load.'); }
+            } catch (_) { setError('Failed to load.'); }
         };
         fetchAll();
 
@@ -447,7 +381,7 @@ const CourseDetail = () => {
                 try {
                     const data = JSON.parse(e.newValue);
                     if (data.sourceId === getTabId()) return;
-                } catch (e) {}
+                } catch (_) {}
                 fetchAll();
             }
         };
@@ -475,7 +409,7 @@ const CourseDetail = () => {
                     }
                     clearInterval(iv);
                 }
-            } catch (err) {}
+            } catch (_) {}
         }, 3000);
         return () => clearInterval(iv);
     }, [course, courseId]);

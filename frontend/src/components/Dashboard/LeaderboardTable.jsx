@@ -1,7 +1,7 @@
 import React from 'react';
-import { Zap, ChevronRight, Flame } from 'lucide-react';
+import { Zap, Flame } from 'lucide-react';
 
-const LeaderboardTable = ({ players = [], limit = 50 }) => {
+const LeaderboardTable = ({ players = [] }) => {
     return (
         <div className="w-full overflow-hidden rounded-2xl border border-border bg-surface/30 backdrop-blur-sm">
             <div className="grid grid-cols-[50px_1fr_100px_80px_80px] px-6 py-4 border-b border-border bg-surface/50 text-[10px] font-black uppercase tracking-widest text-text-muted">

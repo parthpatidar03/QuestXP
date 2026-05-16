@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-const VideoPlayer = ({ courseId, lectureId, youtubeId, onEnded, onTimeUpdate, startTime = 0, endTime = null, seekTo = null }) => {
+const VideoPlayer = ({ _courseId, _lectureId, youtubeId, onEnded, onTimeUpdate, startTime = 0, endTime = null, seekTo = null }) => {
     const playerRef = useRef(null);
     const containerRef = useRef(null);
     const [isPlayerReady, setIsPlayerReady] = useState(false);
@@ -56,7 +56,7 @@ const VideoPlayer = ({ courseId, lectureId, youtubeId, onEnded, onTimeUpdate, st
             clearInterval(interval);
             if (playerRef.current) playerRef.current.destroy();
         };
-    }, [youtubeId, startTime, endTime]);
+    }, [youtubeId, startTime, endTime, onEnded, onTimeUpdate]);
 
     // Handle external seek requests via props
     useEffect(() => {

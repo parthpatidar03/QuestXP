@@ -43,8 +43,8 @@ const ProcessingStatus = ({ courseId, lectureId, initialStatus }) => {
                 if (!isAnyInProgress && !Object.values(data.aiStatus).includes('pending')) {
                     clearInterval(interval);
                 }
-            } catch (err) {
-                console.error('Failed to fetch AI status', err);
+            } catch (_) {
+                console.error('Failed to fetch AI status');
             }
         };
 
@@ -57,7 +57,7 @@ const ProcessingStatus = ({ courseId, lectureId, initialStatus }) => {
         }
 
         return () => clearInterval(interval);
-    }, [lectureId]);
+    }, [lectureId, status]);
 
     // Anticipating T033: Course level progress
     useEffect(() => {
@@ -68,7 +68,7 @@ const ProcessingStatus = ({ courseId, lectureId, initialStatus }) => {
                 setCourseProgress(data);
                 
                 if (data.percentage >= 100) clearInterval(interval);
-            } catch (err) {
+            } catch (_) {
                 // Ignore errors if endpoint not ready yet
             }
         };

@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import useAuthStore from '../../../store/useAuthStore';
 import useGamificationStore from '../../../store/useGamificationStore';
 import { motion } from 'framer-motion';
-import { Award, Zap, Lock, Unlock, Flame } from 'lucide-react';
+import { Zap, Lock, Unlock, Flame } from 'lucide-react';
 import BadgeGrid from './BadgeGrid';
 import XPHeatmap from './XPHeatmap';
 
@@ -14,7 +14,7 @@ const GamificationProfile = () => {
     const [error, setError] = useState(null);
     const [profileData, setProfileData] = useState(null);
 
-    const fetchProfile = async () => {
+    const fetchProfile = useCallback(async () => {
         try {
             setLoading(true);
             setError(null);
@@ -39,13 +39,13 @@ const GamificationProfile = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [token, setProfile]);
 
     useEffect(() => {
         if (token) {
             fetchProfile();
         }
-    }, [token]);
+    }, [token, fetchProfile]);
 
     if (loading) return <div className="p-6 text-center text-text-muted">Loading profile...</div>;
     if (error) return (

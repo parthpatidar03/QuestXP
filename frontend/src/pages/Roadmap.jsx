@@ -430,7 +430,7 @@ const Roadmap = () => {
                 setAllRoadmaps(data);
                 setRoadmap(null);
             }
-        } catch (__) {
+        } catch (_) {
             console.error("No active roadmap found");
             setRoadmap(null);
             setAllRoadmaps([]);
@@ -443,7 +443,7 @@ const Roadmap = () => {
         try {
             const data = await getAllRoadmaps();
             setAllRoadmaps(data);
-        } catch (__) {
+        } catch (_) {
             console.error("Failed to fetch roadmaps");
             setAllRoadmaps([]);
         }
@@ -476,7 +476,7 @@ const Roadmap = () => {
                 try {
                     const data = JSON.parse(e.newValue);
                     if (data.sourceId === getTabId()) return;
-                } catch (__) {}
+                } catch (_) {}
                 fetchRoadmap();
                 fetchAllRoadmaps();
             }

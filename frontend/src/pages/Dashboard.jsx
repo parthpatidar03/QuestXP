@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Flame, Trophy, Shield, Plus, ChevronRight, Star, Trash2, Target, MessageSquare, Share2, Copy, Layout, Sparkles, Clock, Info, X, Search, Users } from 'lucide-react';
+import { Flame, Trophy, Shield, Plus, ChevronRight, Trash2, Target, MessageSquare, Share2, Copy, Layout, Sparkles, Clock, Info, X, Search, Users, BookOpen, Zap } from 'lucide-react';
 import toast from 'react-hot-toast';
 import useAuthStore from '../store/useAuthStore';
 import useGamificationStore from '../store/useGamificationStore';
@@ -248,9 +248,9 @@ function CourseCard({ course, progress, onDelete, isDeleting }) {
     const [shareStatus, setShareStatus] = useState('');
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
-    const handleShare = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
+    const handleShare = (R_e) => {
+        R_e.preventDefault();
+        R_e.stopPropagation();
         const shareUrl = `${window.location.origin}/share/${course._id}`;
         navigator.clipboard.writeText(shareUrl);
         setShareStatus('Copied!');
@@ -660,7 +660,7 @@ const Dashboard = () => {
                 try {
                     const p = await api.get(`/progress/${c._id}`);
                     if (p.data.progress) pMap[c._id] = p.data.progress;
-                } catch (__) {}
+                } catch (_) {}
             }));
             return pMap;
         },

@@ -1,13 +1,11 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Zap, Search, BookOpenCheck, Moon, Sun, BookOpen, X, Loader2, Star, Menu, Trophy, Layout } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Zap, Moon, Sun, X, Star, Menu, Trophy, Layout } from 'lucide-react';
 import NotificationBell from './NotificationBell';
 import useAuthStore from '../store/useAuthStore';
 import useGamificationStore from '../store/useGamificationStore';
 import { getGamificationProfile } from '../services/gamificationApi';
 
-import { useQueryClient } from '@tanstack/react-query';
-import api from '../services/api';
 
 import CourseSearch from './Course/CourseSearch';
 

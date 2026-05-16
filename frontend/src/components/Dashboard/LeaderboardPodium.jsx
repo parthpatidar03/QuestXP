@@ -15,7 +15,6 @@ const LeaderboardPodium = ({ players = [] }) => {
                 const rank = players.indexOf(player) + 1;
                 const isFirst = rank === 1;
                 const isSecond = rank === 2;
-                const isThird = rank === 3;
 
                 return (
                     <motion.div

@@ -1,8 +1,8 @@
 import React from 'react';
-import { Play, CheckCircle2, Lock, Clock, List } from 'lucide-react';
+import { CheckCircle2, Clock, List } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-const TimelineSidebar = ({ allLectures, currentLectureId, completedLectures = [], onLectureClick, onToggleComplete, courseId }) => {
+const TimelineSidebar = ({ allLectures, currentLectureId, completedLectures = [], onLectureClick, onToggleComplete, _courseId }) => {
     const completedSet = new Set(completedLectures);
 
     return (

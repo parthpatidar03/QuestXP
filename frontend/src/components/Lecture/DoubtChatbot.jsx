@@ -1,3 +1,5 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Bot, X, Send, Loader2, MessageSquare, Minimize2, Lock, Zap } from 'lucide-react';
 import { useFeatureGate } from '../../hooks/useFeatureGate';
 import api from '../../services/api';
@@ -86,9 +88,9 @@ const DoubtChatbot = ({ lectureId, courseTitle = '', lectureTitle = '' }) => {
             });
 
             setMessages(prev => [...prev, { role: 'bot', text: res.data.answer || 'No response.' }]);
-        } catch (err) {
-            const msg = err.response?.status === 429
-                ? `⚠️ ${err.response.data.message || 'Rate limit reached — wait a moment before trying again.'}`
+        } catch (_) {
+            const msg = _.response?.status === 429
+                ? `⚠️ ${_.response.data.message || 'Rate limit reached — wait a moment before trying again.'}`
                 : '⚠️ Failed to get a response. Please try again.';
             setMessages(prev => [...prev, { role: 'bot', text: msg }]);
         } finally {
@@ -239,7 +241,5 @@ const DoubtChatbot = ({ lectureId, courseTitle = '', lectureTitle = '' }) => {
         </div>
     );
 };
-
-export default DoubtChatbot;
 
 export default DoubtChatbot;
