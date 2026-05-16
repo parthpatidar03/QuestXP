@@ -14,7 +14,7 @@ const redis = require('../queues/redisConnection');
  */
 
 const CACHE_KEY = 'public:stats:v2';
-const CACHE_TTL = 1 * 60 * 60; // 5 hours
+const CACHE_TTL = 1 * 60 * 60; // 1 hour
 const VISITS_KEY = 'public:total_visits';
 
 // Display thresholds. Metric is hidden on the landing page until it crosses
