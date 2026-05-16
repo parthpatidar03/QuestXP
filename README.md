@@ -103,11 +103,12 @@ Lecture-grounded question answering using Retrieval-Augmented Generation.
 
 A deterministic scheduling engine in `studyPlanService.js` (~740 lines, zero AI calls).
 
-- **75% Efficiency Factor:** User's stated study time is multiplied by `0.75` to account for note-taking, breaks, and cognitive overhead
-- **Greedy Forward-Fill:** Lectures distributed proportionally across available days using a capacity midpoint algorithm — not simple round-robin
-- **Feasibility Detection:** If total lecture minutes exceed total available capacity, returns `isFeasible: false` with `pushDeadlineDays` suggestion
-- **Daily Recalculation (Idempotent):** On each login, recalculates from today using only incomplete lectures; compares planned vs actual to compute `scheduleStatus: ahead | on_track | behind`
-- **File:** `backend/src/services/studyPlanService.js`
+- **Tiered Filtering (Curated Generation):** Supports three levels of selection: `playlistIds` (Courses), `sectionIds` (Playlists), and `lectureIds` (Individual Videos). This allows users to skip specific topics and generate plans for a curated list of missions.
+- **75% Efficiency Factor:** User's stated study time is multiplied by `0.75` to account for note-taking, breaks, and cognitive overhead.
+- **Greedy Forward-Fill:** Lectures distributed proportionally across available days using a capacity midpoint algorithm — not simple round-robin.
+- **Feasibility Detection:** If total lecture minutes exceed total available capacity, returns `isFeasible: false` with `pushDeadlineDays` suggestion.
+- **Daily Recalculation (Idempotent):** On each login, recalculates from today using only incomplete lectures; compares planned vs actual to compute `scheduleStatus: ahead | on_track | behind`.
+- **File:** `backend/src/routes/roadmap.js` (Filtering logic), `backend/src/services/studyPlanService.js` (Distribution logic)
 
 ### 4. XP Engine with Streak Multipliers (Idempotent Awards)
 
