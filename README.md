@@ -42,8 +42,10 @@ QuestXP is a high-performance Learning Management System engineered to eliminate
 | **One-Shot Chapterization** | Timestamp parsing → logical chapters | Description regex + YouTube Data API |
 | **Push Notifications** | Firebase Cloud Messaging via backend scheduler | `node-cron` + `firebase-admin` |
 | **Structured Logging** | Centralized, clean, and masked observability | `winston`, `morgan`, custom Express middleware |
-| **Geo-Blocking** | India-only access, blocks foreign IPs at auth layer | `geoip-lite` offline MaxMind DB, per-user/session geo storage |
-| **SEO Optimization** | Dynamic meta tags, sitemap, and robots.txt | `react-helmet-async`, static sitemap, search-engine crawling configs |
+| **Geo-Blocking** | **India-Only Security Guard** | Regional firewall active | `geoip-lite` offline IP filter |
+| **FriendZones (OTP)** | Private squads with shared leaderboards | `bcrypt` OTP hashing, IP throttling, atomic member sync |
+| **Simple Chat** | Fast, history-aware AI teaching assistant | Context-injected LLM prompt, history state tracking |
+| **SEO Optimization** | Dynamic meta tags and sitemap | `react-helmet-async`, automated indexing |
 
 ---
 
@@ -156,8 +158,21 @@ When a lecture is toggled complete in the Course Player, the backend simultaneou
 - **Centralized Express Error Middleware:** Replaced scattered inline try/catches. Central middleware formats stack traces (in dev) and catches Express-Validator errors. Process-level `unhandledRejection` catchers prevent silent crashes.
 - **File:** `backend/src/utils/logger.js`, `backend/src/middleware/errorMiddleware.js`
 
-### 9. Push Notification System (Firebase + node-cron)
+### 9. FriendZone OTP System (Security & Social)
+To prevent password fatigue, we implemented a short-lived (10m), single-use OTP system for private squads.
+- **Bcrypt Hashing**: Plaintext OTPs are never stored; only bcrypt(12) hashes are saved to MongoDB.
+- **IP-Based Throttling**: A custom in-memory bucket limiter prevents brute-force OTP guessing.
+- **Atomic Member Sync**: `memberCount` and `members` array are updated atomically to prevent zone over-filling race conditions.
+- **File:** `backend/src/routes/friendZones.js`
 
+### 10. Simple Chat & Activity Feed
+A non-RAG, history-aware LLM chat for instant educational clarifications.
+- **Context Injection**: Current course and lecture titles are injected into the system prompt to ground responses without expensive vector searches.
+- **Multi-Turn History**: Supports up to 20 conversation turns via client-side state propagation.
+- **Event-Driven Feed**: Friend activity is aggregated from `XPAward` documents, providing a live social feed of achievements.
+- **File:** `backend/src/controllers/simpleChatController.js`
+
+### 11. Push Notification System (Firebase + node-cron)
 - Backend uses `firebase-admin` SDK to send FCM push notifications
 - `notificationScheduler.js` runs a `node-cron` job daily to dispatch streak reminders and study nudges
 - `notificationWorker.js` processes notification jobs from BullMQ queue
