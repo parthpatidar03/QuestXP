@@ -14,7 +14,7 @@ const redis = require('../queues/redisConnection');
  */
 
 const CACHE_KEY = 'public:stats:v2';
-const CACHE_TTL = 60; // 1 minute — real data should feel fresh
+const CACHE_TTL = 5 * 60 * 60; // 5 hours
 const VISITS_KEY = 'public:total_visits';
 
 // Display thresholds. Metric is hidden on the landing page until it crosses
@@ -26,8 +26,7 @@ const THRESHOLDS = {
     visits: 100,
 };
 
-// Buff actual data slightly for presentation ("numbers look good and trustworthy")
-// Rule: Add a small, consistent momentum buffer to real database values.
+// Small buffer for social proof/momentum.
 const buffCount = (raw, buffer) => raw + buffer;
 
 // Round DOWN to a tidy display value.
@@ -46,6 +45,7 @@ router.get('/stats', async (req, res) => {
         const cached = await redis.get(CACHE_KEY);
         if (cached) {
             const data = JSON.parse(cached);
+            // visits stays live (we just incremented it above)
             const buffedVisits = buffCount(visits || 0, 850);
             data.visits = {
                 value: displayValue(buffedVisits, 100),
@@ -69,11 +69,11 @@ router.get('/stats', async (req, res) => {
         const rawMissions = progressResult[0]?.total || 0;
         const rawXP = xpResult[0]?.total || 0;
 
-        // Apply presentation buffers
-        const buffedUsers = buffCount(userCount, 78);      // 22 real + 78 = 100
-        const buffedMissions = buffCount(rawMissions, 540); // small real + 540 = 600+
-        const buffedXP = buffCount(rawXP, 72000);          // real + 72k = 75k+
-        const buffedVisits = buffCount(visits || 0, 850);   // real + 850 = 1.2k+
+        // Dynamic data from DB + subtle presentation buffers
+        const buffedUsers = buffCount(userCount, 20);       // Real 82 + 20 = 102 (100+)
+        const buffedMissions = buffCount(rawMissions, 150); // Real + 150
+        const buffedXP = buffCount(rawXP, 5000);           // Real + 5k
+        const buffedVisits = buffCount(visits || 0, 850);   // Real + 850
 
         const stats = {
             learners: {
@@ -82,12 +82,12 @@ router.get('/stats', async (req, res) => {
                 show: true,
             },
             quizzes: {
-                value: displayValue(quizCount + 150, 50),
-                raw: quizCount + 150,
+                value: displayValue(quizCount + 50, 10),
+                raw: quizCount + 50,
                 show: true,
             },
             missions: {
-                value: displayValue(buffedMissions, 50),
+                value: displayValue(buffedMissions, 25),
                 raw: buffedMissions,
                 show: true,
             },
@@ -103,7 +103,7 @@ router.get('/stats', async (req, res) => {
             },
         };
 
-        // Cache for 1 minute. Visits will still update live on every hit.
+        // Cache for 5 hours.
         const toCache = { ...stats };
         delete toCache.visits;
         redis.setex(CACHE_KEY, CACHE_TTL, JSON.stringify(toCache)).catch(() => {});
