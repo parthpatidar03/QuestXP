@@ -393,6 +393,13 @@ const Dashboard = () => {
     // Features list (top 5)
     const newFeatures = [
         {
+            id: 'granular-roadmap',
+            title: 'Granular Roadmap Control',
+            description: 'Total control over your study plan. Select specific sections or individual videos to generate a roadmap tailored exactly to what you need to learn.',
+            icon: <Sparkles className="w-5 h-5 text-primary" />,
+            date: 'New'
+        },
+        {
             id: 'ai-timestamps',
             title: 'AI Timestamp Engine',
             description: 'Tutorial has no chapters? Our AI automatically generates timestamps to break long chapter-less videos into logical, bite-sized study missions.',
@@ -419,17 +426,19 @@ const Dashboard = () => {
             description: 'New regional firewall active. QuestXP is now restricted to Indian IP addresses to eliminate unauthorized foreign access attempts.',
             icon: <Shield className="w-5 h-5 text-warning" />,
             date: 'New'
-        },
-        {
-            id: 'valkey-infra',
-            title: 'High-Speed Valkey Infra',
-            description: 'Upgraded background processing engine to Valkey. Zero request-throttling and ultra-low latency for AI pipelines.',
-            icon: <Zap className="w-5 h-5 text-primary" />,
-            date: 'Speed'
         }
     ];
 
     useEffect(() => {
+        const hasSeenGranular = localStorage.getItem('seen_feature_granular_roadmap_v1');
+        if (!hasSeenGranular) {
+            toast.success("New: Granular Roadmap Control! Select individual videos for your plan. 🎯", {
+                duration: 6000,
+                icon: '🎯'
+            });
+            localStorage.setItem('seen_feature_granular_roadmap_v1', 'true');
+        }
+
         const hasSeenSEO = localStorage.getItem('seen_feature_seo_v1');
         if (!hasSeenSEO) {
             toast.success("SEO Upgrade: QuestXP is now optimized for Google Search! 🔍🚀", {

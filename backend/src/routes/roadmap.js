@@ -12,7 +12,7 @@ const { addDays } = require('date-fns');
 // @desc    Generate a new roadmap
 router.post('/generate', auth, async (req, res, next) => {
     try {
-        const { playlistIds, sectionIds, weekdayHours = 2, weekendHours = 4, startDate, courseId = null } = req.body;
+        const { playlistIds, sectionIds, lectureIds, weekdayHours = 2, weekendHours = 4, startDate, courseId = null } = req.body;
 
         // 1. Fetch relevant courses (securely)
         const playlists = await Course.find({ _id: { $in: playlistIds }, owner: req.user.id });
@@ -37,14 +37,18 @@ router.post('/generate', auth, async (req, res, next) => {
                 // If sectionIds is provided, filter to only include those. Otherwise include all.
                 if (!sectionIds || sectionIds.length === 0 || sectionIds.some(sid => sid.toString() === sectionIdStr)) {
                     sec.lectures.forEach(lec => {
-                        allVideos.push({
-                            _id: lec._id,
-                            title: lec.title,
-                            duration: lec.duration || 10,
-                            playlistId: pl._id,
-                            playlistName: pl.title,
-                            sectionId: sec._id
-                        });
+                        const lectureIdStr = lec._id.toString();
+                        // If lectureIds is provided, filter down to individual videos
+                        if (!lectureIds || lectureIds.length === 0 || lectureIds.some(lid => lid.toString() === lectureIdStr)) {
+                            allVideos.push({
+                                _id: lec._id,
+                                title: lec.title,
+                                duration: lec.duration || 10,
+                                playlistId: pl._id,
+                                playlistName: pl.title,
+                                sectionId: sec._id
+                            });
+                        }
                     });
                 }
             });

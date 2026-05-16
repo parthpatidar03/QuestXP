@@ -9,7 +9,9 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
     const [courses, setCourses] = useState([]);
     const [selectedCourseIds, setSelectedCourseIds] = useState([]);
     const [selectedSectionIds, setSelectedSectionIds] = useState([]);
+    const [selectedLectureIds, setSelectedLectureIds] = useState([]);
     const [expandedCourses, setExpandedCourses] = useState([]);
+    const [expandedSections, setExpandedSections] = useState([]);
     
     const [weekdayHours, setWeekdayHours] = useState(2);
     const [weekendHours, setWeekendHours] = useState(4);
@@ -33,6 +35,9 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
                         const targetCourse = fetchedCourses.find(c => c._id === courseId);
                         if (targetCourse) {
                             setSelectedSectionIds(targetCourse.sections.map(s => s._id));
+                            // Select all lectures by default when a course is focused
+                            const allLecIds = targetCourse.sections.flatMap(s => s.lectures.map(l => l._id));
+                            setSelectedLectureIds(allLecIds);
                         }
                     }
                 })
@@ -69,23 +74,53 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
         setExpandedCourses(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
     };
 
+    const toggleSection = (id) => {
+        setExpandedSections(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
+    };
+
     const toggleCourseSelection = (course) => {
         const isSelected = selectedCourseIds.includes(course._id);
+        const sectionIds = course.sections.map(s => s._id);
+        const lectureIds = course.sections.flatMap(s => s.lectures.map(l => l._id));
+
         if (isSelected) {
             setSelectedCourseIds(selectedCourseIds.filter(id => id !== course._id));
-            setSelectedSectionIds(selectedSectionIds.filter(id => !course.sections.map(s => s._id).includes(id)));
+            setSelectedSectionIds(selectedSectionIds.filter(id => !sectionIds.includes(id)));
+            setSelectedLectureIds(selectedLectureIds.filter(id => !lectureIds.includes(id)));
         } else {
             setSelectedCourseIds([...selectedCourseIds, course._id]);
-            setSelectedSectionIds([...selectedSectionIds, ...course.sections.map(s => s._id)]);
+            setSelectedSectionIds([...new Set([...selectedSectionIds, ...sectionIds])]);
+            setSelectedLectureIds([...new Set([...selectedLectureIds, ...lectureIds])]);
         }
     };
 
-    const toggleSectionSelection = (sectionId, parentCourseId) => {
-        const isSelected = selectedSectionIds.includes(sectionId);
+    const toggleSectionSelection = (section, parentCourseId) => {
+        const isSelected = selectedSectionIds.includes(section._id);
+        const lectureIds = section.lectures.map(l => l._id);
+
         if (isSelected) {
-            setSelectedSectionIds(selectedSectionIds.filter(id => id !== sectionId));
+            setSelectedSectionIds(selectedSectionIds.filter(id => id !== section._id));
+            setSelectedLectureIds(selectedLectureIds.filter(id => !lectureIds.includes(id)));
         } else {
-            setSelectedSectionIds([...selectedSectionIds, sectionId]);
+            setSelectedSectionIds([...selectedSectionIds, section._id]);
+            setSelectedLectureIds([...new Set([...selectedLectureIds, ...lectureIds])]);
+            if (!selectedCourseIds.includes(parentCourseId)) {
+                setSelectedCourseIds([...selectedCourseIds, parentCourseId]);
+            }
+        }
+    };
+
+    const toggleLectureSelection = (lectureId, sectionId, parentCourseId) => {
+        const isSelected = selectedLectureIds.includes(lectureId);
+        if (isSelected) {
+            setSelectedLectureIds(selectedLectureIds.filter(id => id !== lectureId));
+            // Note: We keep the section and course selected even if one lecture is deselected
+            // The backend logic handles "if lectureIds is provided, use them"
+        } else {
+            setSelectedLectureIds([...selectedLectureIds, lectureId]);
+            if (!selectedSectionIds.includes(sectionId)) {
+                setSelectedSectionIds([...selectedSectionIds, sectionId]);
+            }
             if (!selectedCourseIds.includes(parentCourseId)) {
                 setSelectedCourseIds([...selectedCourseIds, parentCourseId]);
             }
@@ -99,6 +134,7 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
             const config = {
                 playlistIds: selectedCourseIds,
                 sectionIds: selectedSectionIds,
+                lectureIds: selectedLectureIds,
                 weekdayHours: parseFloat(weekdayHours),
                 weekendHours: parseFloat(weekendHours),
                 startDate,
@@ -209,15 +245,44 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
                                         {expandedCourses.includes(course._id) && (
                                             <div className="bg-black/20 border-t border-border/50 p-2 space-y-1">
                                                 {course.sections?.map(section => (
-                                                    <div 
-                                                        key={section._id} 
-                                                        onClick={() => toggleSectionSelection(section._id, course._id)}
-                                                        className={`flex items-center gap-3 p-2.5 rounded-lg cursor-pointer transition-all ${selectedSectionIds.includes(section._id) ? 'bg-primary/10' : 'hover:bg-white/5'}`}
-                                                    >
-                                                        <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${selectedSectionIds.includes(section._id) ? 'bg-primary border-primary' : 'border-border'}`}>
-                                                            {selectedSectionIds.includes(section._id) && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                                                    <div key={section._id} className="space-y-1">
+                                                        <div 
+                                                            className={`flex items-center gap-2 p-2 rounded-lg transition-all ${selectedSectionIds.includes(section._id) ? 'bg-primary/10' : 'hover:bg-white/5'}`}
+                                                        >
+                                                            <button 
+                                                                type="button"
+                                                                onClick={() => toggleSectionSelection(section, course._id)}
+                                                                className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${selectedSectionIds.includes(section._id) ? 'bg-primary border-primary' : 'border-border bg-surface'}`}
+                                                            >
+                                                                {selectedSectionIds.includes(section._id) && <Check className="w-2.5 h-2.5 text-white" />}
+                                                            </button>
+                                                            
+                                                            <div className="flex-1 cursor-pointer flex items-center gap-2" onClick={() => toggleSection(section._id)}>
+                                                                <span className="text-xs font-medium text-text-secondary truncate">{section.title}</span>
+                                                                <span className="text-[10px] text-text-muted">({section.lectures?.length || 0})</span>
+                                                            </div>
+
+                                                            <button type="button" onClick={() => toggleSection(section._id)} className="p-1 hover:bg-surface-3 rounded">
+                                                                {expandedSections.includes(section._id) ? <ChevronDown className="w-3.5 h-3.5 text-text-muted" /> : <ChevronRight className="w-3.5 h-3.5 text-text-muted" />}
+                                                            </button>
                                                         </div>
-                                                        <span className="text-xs font-medium text-text-secondary truncate">{section.title}</span>
+
+                                                        {expandedSections.includes(section._id) && (
+                                                            <div className="pl-7 pr-2 py-1 space-y-1">
+                                                                {section.lectures?.map(lecture => (
+                                                                    <div 
+                                                                        key={lecture._id}
+                                                                        onClick={() => toggleLectureSelection(lecture._id, section._id, course._id)}
+                                                                        className={`flex items-center gap-2 p-1.5 rounded-md cursor-pointer transition-all ${selectedLectureIds.includes(lecture._id) ? 'text-primary' : 'text-text-muted hover:text-text-secondary'}`}
+                                                                    >
+                                                                        <div className={`w-3 h-3 rounded-sm border flex items-center justify-center ${selectedLectureIds.includes(lecture._id) ? 'bg-primary border-primary' : 'border-border'}`}>
+                                                                            {selectedLectureIds.includes(lecture._id) && <Check className="w-2 h-2 text-white" />}
+                                                                        </div>
+                                                                        <span className="text-[11px] truncate">{lecture.title}</span>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 ))}
                                             </div>
@@ -290,7 +355,7 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
                     </button>
                     <button 
                         onClick={handleSubmit}
-                        disabled={loading || selectedSectionIds.length === 0}
+                        disabled={loading || selectedLectureIds.length === 0}
                         className="flex-[2] px-4 py-4 rounded-xl bg-primary text-white text-xs font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
                     >
                         {loading ? (
