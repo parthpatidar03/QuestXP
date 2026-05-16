@@ -328,7 +328,7 @@ const LandingPage = () => {
                                 <span className="text-primary italic font-bold"> structure, gamification, and personalization </span> 
                                 you need to finish.
                                 <span className="block mt-4 text-white font-black tracking-tight">
-                                    QuestXP transforms Playlists or single long videos into structured courses.
+                                    QuestXP transforms Playlists & single long videos into structured courses.
                                 </span>
                             </p>
 
