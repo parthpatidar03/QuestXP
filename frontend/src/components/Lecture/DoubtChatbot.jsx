@@ -1,12 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Bot, X, Send, Loader2, MessageSquare, Minimize2 } from 'lucide-react';
+import { Bot, X, Send, Loader2, MessageSquare, Minimize2, Lock, Zap } from 'lucide-react';
+import { useFeatureGate } from '../../hooks/useFeatureGate';
 import api from '../../services/api';
 import { MAINTENANCE_CONFIG } from '../../constants/maintenance';
 
 /**
  * Renders markdown-like text: **bold**, *italic*, `code`, bullet/numbered lists, line breaks.
- * No extra library needed.
  */
 function MarkdownText({ text }) {
     const lines = text.split('\n');
@@ -14,9 +12,7 @@ function MarkdownText({ text }) {
         <div className="space-y-1">
             {lines.map((line, i) => {
                 if (!line.trim()) return <br key={i} />;
-                // Render inline formatting: **bold**, *italic*, `code`
                 const renderInline = (str) => {
-                    // Split on bold, italic, code
                     const parts = str.split(/(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/g);
                     return parts.map((part, j) => {
                         if (/^\*\*[^*]+\*\*$/.test(part)) {
@@ -31,16 +27,13 @@ function MarkdownText({ text }) {
                         return part;
                     });
                 };
-                // Bullet list
                 if (/^[-•]\s/.test(line)) {
                     return <div key={i} className="flex gap-2 items-start"><span className="text-primary">•</span><span>{renderInline(line.replace(/^[-•]\s/, ''))}</span></div>;
                 }
-                // Numbered list
                 if (/^\d+\.\s/.test(line)) {
                     const [num, ...rest] = line.split(/\.\s/);
                     return <div key={i} className="flex gap-2 items-start"><span className="text-primary min-w-[1rem] font-bold">{num}.</span><span>{renderInline(rest.join('. '))}</span></div>;
                 }
-                // Heading (## or ###)
                 if (/^#{2,3}\s/.test(line)) {
                     return <p key={i} className="font-bold text-text-primary mt-2">{renderInline(line.replace(/^#{2,3}\s/, ''))}</p>;
                 }
@@ -50,16 +43,9 @@ function MarkdownText({ text }) {
     );
 }
 
-/**
- * Simple LLM Chatbot — no RAG, uses GPT-4o-mini with course/lecture context.
- * Props:
- *   lectureId  — MongoDB ID of the current lecture
- *   courseTitle — name of the course (for system prompt context)
- *   lectureTitle — name of the current lecture
- */
 const DoubtChatbot = ({ lectureId, courseTitle = '', lectureTitle = '' }) => {
+    const { locked, requiredLevel, xpToUnlock } = useFeatureGate('DOUBT_CHATBOT_LIMITED');
     const [open, setOpen] = useState(false);
-    // messages: { role: 'user' | 'bot', text: string }
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
@@ -78,17 +64,15 @@ const DoubtChatbot = ({ lectureId, courseTitle = '', lectureTitle = '' }) => {
     }, [lectureId]);
 
     const handleSend = async () => {
-        if (!input.trim() || loading) return;
+        if (!input.trim() || loading || locked) return;
         const question = input.trim();
         setInput('');
         
-        // Optimistic: Pop the user message in with zero delay
         const userMsg = { role: 'user', text: question };
         setMessages(prev => [...prev, userMsg]);
         setLoading(true);
 
         try {
-            // Build history in OpenAI format for multi-turn
             const history = messages.map(m => ({
                 role: m.role === 'user' ? 'user' : 'assistant',
                 content: m.text
@@ -118,7 +102,7 @@ const DoubtChatbot = ({ lectureId, courseTitle = '', lectureTitle = '' }) => {
 
     return (
         <div ref={constraintsRef} className="fixed inset-0 pointer-events-none z-50">
-            {/* FAB Button - Draggable */}
+            {/* FAB Button */}
             <motion.button
                 drag
                 dragConstraints={constraintsRef}
@@ -130,15 +114,11 @@ const DoubtChatbot = ({ lectureId, courseTitle = '', lectureTitle = '' }) => {
                 style={{
                     animation: open ? 'none' : 'glow-pulse 2.5s ease-in-out infinite'
                 }}
-                title="Ask Doubt Bot (Drag to move)"
             >
-                {open
-                    ? <Minimize2 className="w-5 h-5" />
-                    : <Bot className="w-6 h-6" />
-                }
+                {open ? <Minimize2 className="w-5 h-5" /> : <Bot className="w-6 h-6" />}
             </motion.button>
 
-            {/* Panel - Draggable */}
+            {/* Panel */}
             <AnimatePresence>
                 {open && (
                     <motion.div
@@ -146,11 +126,9 @@ const DoubtChatbot = ({ lectureId, courseTitle = '', lectureTitle = '' }) => {
                         dragConstraints={constraintsRef}
                         dragMomentum={false}
                         dragElastic={0.1}
-                        whileDrag={{ scale: 1.02, zIndex: 60 }}
                         initial={{ opacity: 0, y: 28, scale: 0.94 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 28, scale: 0.94 }}
-                        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                         className="pointer-events-auto fixed bottom-40 right-6 flex flex-col rounded-2xl overflow-hidden shadow-2xl border border-border bg-surface-2/95 backdrop-blur-md z-40"
                         style={{
                             width: 'min(380px, calc(100vw - 2rem))',
@@ -168,31 +146,43 @@ const DoubtChatbot = ({ lectureId, courseTitle = '', lectureTitle = '' }) => {
                                     {lectureTitle ? `📺 ${lectureTitle}` : 'Ask anything about this lecture'}
                                 </p>
                             </div>
-                            {messages.length > 0 && (
-                                <button
-                                    onClick={() => setMessages([])}
-                                    className="text-xs px-2 py-1 rounded-lg transition-all text-red-500 bg-red-500/10 border border-red-500/20 hover:bg-red-500/20"
-                                    title="Clear chat"
-                                >
-                                    Clear
-                                </button>
-                            )}
                             <button onClick={() => setOpen(false)} className="text-text-muted hover:text-text-primary transition-colors ml-1">
                                 <X className="w-4 h-4" />
                             </button>
                         </div>
 
-                        {/* Messages */}
-                        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
-                            {MAINTENANCE_CONFIG.AI_FEATURES_DOWN ? (
+                        {/* Messages / Locked State */}
+                        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 relative min-h-[300px]">
+                            {locked ? (
+                                <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-surface-2/50 backdrop-blur-[2px]">
+                                    <div className="w-14 h-14 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mb-4">
+                                        <Lock className="w-6 h-6 text-primary" />
+                                    </div>
+                                    <h3 className="text-lg font-bold text-text-primary mb-2">Feature Locked</h3>
+                                    <p className="text-sm text-text-secondary mb-6 leading-relaxed">
+                                        Doubt Bot unlocks at <span className="text-primary font-bold">Level {requiredLevel}</span>. 
+                                        You need <span className="text-primary font-bold">{xpToUnlock} XP</span> more.
+                                    </p>
+                                    
+                                    <div className="w-full space-y-3 bg-primary/5 border border-primary/10 rounded-xl p-4">
+                                        <p className="text-xs font-bold text-primary uppercase tracking-widest">How to Unlock</p>
+                                        <div className="flex items-start gap-3 text-left">
+                                            <Zap className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                                            <p className="text-xs text-text-secondary">Watch lectures to earn <span className="text-text-primary font-semibold">50 XP</span> each.</p>
+                                        </div>
+                                        <div className="flex items-start gap-3 text-left">
+                                            <Zap className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                                            <p className="text-xs text-text-secondary">Complete quizzes to earn up to <span className="text-text-primary font-semibold">100 XP</span>.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : MAINTENANCE_CONFIG.AI_FEATURES_DOWN ? (
                                 <div className="flex flex-col items-center justify-center py-10 text-center px-4">
                                     <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-4">
                                         <Bot className="w-6 h-6 text-amber-500" />
                                     </div>
                                     <p className="text-sm font-bold text-text-primary mb-2">Service Maintenance</p>
-                                    <p className="text-xs text-text-secondary leading-relaxed">
-                                        {MAINTENANCE_CONFIG.MESSAGE}
-                                    </p>
+                                    <p className="text-xs text-text-secondary leading-relaxed">{MAINTENANCE_CONFIG.MESSAGE}</p>
                                 </div>
                             ) : (
                                 <>
@@ -200,89 +190,56 @@ const DoubtChatbot = ({ lectureId, courseTitle = '', lectureTitle = '' }) => {
                                         <div className="flex flex-col items-center justify-center py-10 text-center">
                                             <MessageSquare className="w-8 h-8 mb-3 text-text-muted" />
                                             <p className="text-sm font-semibold text-text-primary mb-1">Ask Anything</p>
-                                            <p className="text-xs text-text-secondary">
-                                                I'm your AI tutor for this lecture. Ask me to explain concepts, solve problems, or clarify doubts.
-                                            </p>
+                                            <p className="text-xs text-text-secondary">I'm your AI tutor for this lecture. Ask me anything!</p>
                                         </div>
                                     )}
-
                                     {messages.map((msg, i) => (
-                                        <motion.div 
-                                            key={i} 
-                                            initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                                            transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-                                            className={`flex gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                                        >
+                                        <div key={i} className={`flex gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                                             {msg.role === 'bot' && (
                                                 <div className="w-6 h-6 rounded-full shrink-0 mt-1 flex items-center justify-center bg-primary/10 border border-primary/20">
                                                     <Bot className="w-3.5 h-3.5 text-primary" />
                                                 </div>
                                             )}
-                                            <div
-                                                className={`max-w-[82%] px-3 py-2.5 rounded-2xl text-sm leading-relaxed ${
-                                                    msg.role === 'user' 
-                                                    ? 'bg-primary/10 border border-primary/20 text-text-primary rounded-br-sm' 
-                                                    : 'bg-surface border border-border text-text-secondary rounded-bl-sm'
-                                                }`}
-                                            >
-                                                {msg.role === 'bot'
-                                                    ? <MarkdownText text={msg.text} />
-                                                    : msg.text
-                                                }
-                                            </div>
-                                        </motion.div>
-                                    ))}
-
-                                    {loading && (
-                                        <div className="flex gap-2 items-center">
-                                            <div className="w-6 h-6 rounded-full shrink-0 flex items-center justify-center bg-primary/10">
-                                                <Bot className="w-3.5 h-3.5 text-primary" />
-                                            </div>
-                                            <div className="flex gap-1.5 px-4 py-3 rounded-2xl bg-surface border border-border">
-                                                {[0, 150, 300].map(d => (
-                                                    <span key={d} className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: `${d}ms` }} />
-                                                ))}
+                                            <div className={`max-w-[82%] px-3 py-2.5 rounded-2xl text-sm leading-relaxed ${msg.role === 'user' ? 'bg-primary/10 border border-primary/20 text-text-primary rounded-br-sm' : 'bg-surface border border-border text-text-secondary rounded-bl-sm'}`}>
+                                                {msg.role === 'bot' ? <MarkdownText text={msg.text} /> : msg.text}
                                             </div>
                                         </div>
-                                    )}
+                                    ))}
+                                    {loading && <div className="flex gap-2 items-center"><div className="w-6 h-6 rounded-full shrink-0 flex items-center justify-center bg-primary/10"><Bot className="w-3.5 h-3.5 text-primary" /></div><div className="flex gap-1.5 px-4 py-3 rounded-2xl bg-surface border border-border">{[0, 150, 300].map(d => <span key={d} className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: `${d}ms` }} />)}</div></div>}
                                 </>
                             )}
                             <div ref={bottomRef} />
                         </div>
 
                         {/* Input */}
-                        <div className="px-4 pb-4 pt-2 flex gap-2 shrink-0 border-t border-border bg-surface-2/95">
-                            <textarea
-                                value={input}
-                                onChange={e => setInput(e.target.value)}
-                                onKeyDown={handleKeyDown}
-                                placeholder={MAINTENANCE_CONFIG.AI_FEATURES_DOWN ? "Service offline…" : "Ask a doubt…"}
-                                rows={1}
-                                disabled={loading || MAINTENANCE_CONFIG.AI_FEATURES_DOWN}
-                                className="flex-1 px-3 py-2.5 rounded-xl text-sm outline-none resize-none transition-colors bg-surface border border-border text-text-primary placeholder:text-text-muted focus:border-primary/50 disabled:opacity-50"
-                                style={{
-                                    maxHeight: 80,
-                                    fontFamily: "'Space Grotesk', sans-serif"
-                                }}
-                            />
-                            <button
-                                onClick={handleSend}
-                                disabled={!input.trim() || loading || MAINTENANCE_CONFIG.AI_FEATURES_DOWN}
-                                className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all shrink-0 self-end ${
-                                    (!input.trim() || loading || MAINTENANCE_CONFIG.AI_FEATURES_DOWN) 
-                                    ? 'bg-surface border border-border text-text-muted opacity-50' 
-                                    : 'bg-primary text-white shadow-sm hover:scale-105'
-                                }`}
-                            >
-                                {loading ? <Loader2 className="w-4 h-4 animate-spin text-white" /> : <Send className="w-4 h-4 text-white" />}
-                            </button>
-                        </div>
+                        {!locked && (
+                            <div className="px-4 pb-4 pt-2 flex gap-2 shrink-0 border-t border-border bg-surface-2/95">
+                                <textarea
+                                    value={input}
+                                    onChange={e => setInput(e.target.value)}
+                                    onKeyDown={handleKeyDown}
+                                    placeholder={MAINTENANCE_CONFIG.AI_FEATURES_DOWN ? "Service offline…" : "Ask a doubt…"}
+                                    rows={1}
+                                    disabled={loading || MAINTENANCE_CONFIG.AI_FEATURES_DOWN}
+                                    className="flex-1 px-3 py-2.5 rounded-xl text-sm outline-none resize-none transition-colors bg-surface border border-border text-text-primary placeholder:text-text-muted focus:border-primary/50 disabled:opacity-50"
+                                    style={{ maxHeight: 80, fontFamily: "'Space Grotesk', sans-serif" }}
+                                />
+                                <button
+                                    onClick={handleSend}
+                                    disabled={!input.trim() || loading || MAINTENANCE_CONFIG.AI_FEATURES_DOWN}
+                                    className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all shrink-0 self-end ${(!input.trim() || loading || MAINTENANCE_CONFIG.AI_FEATURES_DOWN) ? 'bg-surface border border-border text-text-muted opacity-50' : 'bg-primary text-white shadow-sm hover:scale-105'}`}
+                                >
+                                    {loading ? <Loader2 className="w-4 h-4 animate-spin text-white" /> : <Send className="w-4 h-4 text-white" />}
+                                </button>
+                            </div>
+                        )}
                     </motion.div>
                 )}
             </AnimatePresence>
         </div>
     );
 };
+
+export default DoubtChatbot;
 
 export default DoubtChatbot;
