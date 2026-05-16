@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Zap, Flame, Trophy, Shield, Star, BookOpen, BarChart3, Calendar, LogOut, ShieldCheck, User } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Flame, Trophy, Shield, Star, BarChart3, LogOut, ShieldCheck, User } from 'lucide-react';
 import useAuthStore from '../store/useAuthStore';
 import useGamificationStore from '../store/useGamificationStore';
 import { getGamificationProfile, getXPHistory, markBadgesSeen } from '../services/gamificationApi';
 import NavBar from '../components/NavBar';
 import UsernameModal from '../components/Dashboard/UsernameModal';
 import { BGPattern } from '../components/ui/bg-pattern';
-import StreakCalendar from '../components/StreakCalendar';
 
 /* ── Hex Badge ──────────────────────────────────────────────────────── */
 function HexBadge({ name, earned, iconColor = 'var(--color-text-muted)' }) {
@@ -34,7 +33,6 @@ const Profile = () => {
     const { user, logout } = useAuthStore();
     const { totalXP, level, levelTitle, streak, badges, xpToNextLevel, setProfile } = useGamificationStore();
     const [history, setHistory] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [isLoggingOut, setIsLoggingOut] = useState(false);
     const [logoutError, setLogoutError] = useState('');
 
@@ -45,7 +43,7 @@ const Profile = () => {
             getGamificationProfile().then(d => setProfile(d)),
             getXPHistory().then(d => setHistory(d)),
             markBadgesSeen()
-        ]).finally(() => setLoading(false));
+        ]).finally(() => {});
     }, [setProfile]);
 
     useEffect(() => {
@@ -68,7 +66,7 @@ const Profile = () => {
         setIsLoggingOut(true);
         try {
             await logout();
-        } catch (_) {
+        } catch (__) {
             setLogoutError('Logout failed. Please try again.');
             setIsLoggingOut(false);
         }

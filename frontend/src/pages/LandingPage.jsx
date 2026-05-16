@@ -3,7 +3,6 @@ import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import {
-    BookOpen,
     ChevronRight,
     Flame,
     Sun,
@@ -11,14 +10,10 @@ import {
     Menu,
     X,
     CheckCircle2,
-    Target,
     Sparkles,
     Trophy,
-    Crown,
-    Zap,
     ShieldCheck,
     Bell,
-    Share2,
     Map,
 } from 'lucide-react';
 import { BGPattern } from '../components/ui/bg-pattern';
@@ -125,11 +120,7 @@ const LandingPage = () => {
         navigate(isAuthenticated ? '/dashboard' : '/login');
     };
 
-    const keyPoints = [
-        'Curate your own technical mastery',
-        'Built-in focus guardian',
-        'Surgical study plan adjustments',
-    ];
+
 
     return (
         <div className="min-h-screen bg-bg relative overflow-hidden flex flex-col">

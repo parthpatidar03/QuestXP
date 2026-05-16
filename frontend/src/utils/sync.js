@@ -26,7 +26,7 @@ export const useProgressSync = (onUpdate) => {
                 try {
                     const data = JSON.parse(e.newValue);
                     onUpdate(data.sourceId);
-                } catch (err) {
+                } catch (_) {
                     onUpdate();
                 }
             }

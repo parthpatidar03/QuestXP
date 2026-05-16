@@ -9,7 +9,7 @@ import TimelineSidebar from '../components/Player/TimelineSidebar';
 import QuizTab from '../components/Lecture/QuizTab';
 import DoubtChatbot from '../components/Lecture/DoubtChatbot';
 import useGamificationStore from '../store/useGamificationStore';
-import { ArrowLeft, CheckCircle2, ChevronRight, ChevronLeft, Zap } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, ChevronRight, ChevronLeft } from 'lucide-react';
 import { BGPattern } from '../components/ui/bg-pattern';
 import { useLectureStatus } from '../hooks/useLectureStatus';
 import { shootConfetti } from '../utils/confetti';
@@ -38,7 +38,6 @@ const Player = () => {
     const [xpEarned, setXpEarned] = useState(null); // golden XP toast value
     const [seekTo, setSeekTo] = useState(null);
     const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 640 : false));
-    const [isDark, setIsDark] = useState(() => (typeof window !== 'undefined' ? document.documentElement.classList.contains('dark') : true));
     const positionTimerRef = useRef(null);
     const autoCompleteInFlightRef = useRef(false);
     const currentTimeRef = useRef(0);
@@ -67,7 +66,7 @@ const Player = () => {
                 if (cRes.status === 'fulfilled') setCourse(cRes.value.data.course);
                 if (pRes.status === 'fulfilled' && pRes.value.data.progress)
                     setProgress(pRes.value.data.progress);
-            } catch (err) {
+            } catch (_) {
                 setError('Failed to load course details.');
             } finally {
                 setLoading(false);
@@ -103,7 +102,7 @@ const Player = () => {
                 try {
                     const data = JSON.parse(e.newValue);
                     if (data.sourceId === getTabId()) return;
-                } catch (err) {}
+                } catch (_) {}
                 fetchCourse();
             }
         };
@@ -123,14 +122,7 @@ const Player = () => {
         return () => window.removeEventListener('resize', onResize);
     }, []);
 
-    useEffect(() => {
-        const root = document.documentElement;
-        const observer = new MutationObserver(() => {
-            setIsDark(root.classList.contains('dark'));
-        });
-        observer.observe(root, { attributes: true, attributeFilter: ['class'] });
-        return () => observer.disconnect();
-    }, []);
+
 
     // Auto-save position every 30s
     useEffect(() => {
@@ -156,10 +148,7 @@ const Player = () => {
         return course.sections.flatMap(s => s.lectures);
     }, [course]);
 
-    const currentSectionIndex = useMemo(() => {
-        if (!course) return -1;
-        return course.sections.findIndex(s => s.lectures.some(l => l._id === lectureId));
-    }, [course, lectureId]);
+
 
     const currentLectureIndex = useMemo(() => allLectures.findIndex(l => l._id === lectureId), [allLectures, lectureId]);
     const currentLecture = allLectures[currentLectureIndex];
@@ -167,7 +156,7 @@ const Player = () => {
     const nextLecture = currentLectureIndex < allLectures.length - 1 ? allLectures[currentLectureIndex + 1] : null;
     const currentAiStatus = lectureAiStatus || currentLecture?.aiStatus || {};
 
-    const handleTopicClick = (t) => setSeekTo({ time: t, version: Date.now() });
+
 
     const handleTimeUpdate = (time) => {
         currentTimeRef.current = time;
@@ -325,7 +314,7 @@ const Player = () => {
             window.removeEventListener('mission-completed', handleMissionComplete);
             window.removeEventListener('switch-tab', handleSwitchTab);
         };
-    }, []);
+    }, [applyAward]);
 
     const handleVideoEnd = () => {
         setQuizAutoStart(true);

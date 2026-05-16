@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { 
     CheckCircle2, 
-    Circle, 
     ChevronDown, 
     ChevronRight, 
     Calendar, 
@@ -18,7 +17,6 @@ import {
     Play,
     MinusCircle,
     PlusCircle,
-    Square,
     CheckSquare,
     Loader2,
     Edit2,
@@ -46,31 +44,14 @@ import { broadcastProgressUpdate, getTabId } from '../utils/sync';
 import NavBar from '../components/NavBar';
 import { BGPattern } from '../components/ui/bg-pattern';
 import GenerateRoadmapModal from '../components/Roadmap/GenerateRoadmapModal';
-import useAuthStore from '../store/useAuthStore';
+
 
 /* ── Components ──────────────────────────────────────────────────────── */
 const ProgressHeader = React.memo(({ roadmap, onShift, totalCalendarDays, onUpdateTitle }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [tempTitle, setTempTitle] = useState(roadmap?.title || "Your Mastery Journey");
 
-    const learningStats = useMemo(() => {
-        if (!roadmap || !roadmap.days) return { total: 0, completed: 0, percent: 0 };
-        let total = 0;
-        let completed = 0;
-        roadmap.days.forEach(day => {
-            if (day.plannedVideos) {
-                day.plannedVideos.forEach(v => {
-                    total++;
-                    if (v.completed) completed++;
-                });
-            }
-        });
-        return {
-            total,
-            completed,
-            percent: total > 0 ? Math.round((completed / total) * 100) : 0
-        };
-    }, [roadmap]);
+
 
     if (!roadmap) return null;
 
@@ -449,7 +430,7 @@ const Roadmap = () => {
                 setAllRoadmaps(data);
                 setRoadmap(null);
             }
-        } catch (e) {
+        } catch (__) {
             console.error("No active roadmap found");
             setRoadmap(null);
             setAllRoadmaps([]);
@@ -462,7 +443,7 @@ const Roadmap = () => {
         try {
             const data = await getAllRoadmaps();
             setAllRoadmaps(data);
-        } catch (e) {
+        } catch (__) {
             console.error("Failed to fetch roadmaps");
             setAllRoadmaps([]);
         }
@@ -495,7 +476,7 @@ const Roadmap = () => {
                 try {
                     const data = JSON.parse(e.newValue);
                     if (data.sourceId === getTabId()) return;
-                } catch (e) {}
+                } catch (__) {}
                 fetchRoadmap();
                 fetchAllRoadmaps();
             }
@@ -603,7 +584,7 @@ const Roadmap = () => {
             }
             setAdjusting(false);
         }, 400);
-    }, [roadmap, roadmap?._id, fetchRoadmap]);
+    }, [roadmap, fetchRoadmap]);
 
     const handleToggleCompletion = useCallback(async (videoId, completed) => {
         if (!roadmap) return;
@@ -640,7 +621,7 @@ const Roadmap = () => {
             // Re-fetch on error
             fetchRoadmap();
         }
-    }, [roadmap, roadmap?._id, fetchRoadmap]);
+    }, [roadmap, fetchRoadmap]);
 
     const handleMarkAllComplete = async () => {
         if (!roadmap || !roadmap.courseId) return;
@@ -682,7 +663,7 @@ const Roadmap = () => {
             });
             setRoadmap(prev => ({ ...prev, title: oldTitle }));
         }
-    }, [roadmap, roadmap?._id]);
+    }, [roadmap]);
 
     const handleDeleteRoadmap = async (roadmapId) => {
         try {

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { useSearchParams, Link, useNavigate, useLocation } from 'react-router-dom';
+import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Flame, Zap, Trophy, Shield, BookOpen, Plus, CheckCircle2, ChevronRight, Star, Trash2, Target, MessageSquare, Share2, Copy, Github, Monitor, Smartphone, Layout, Bell, Sparkles, Check, Clock, Info, X, PlayCircle, RefreshCw, Camera, Search, Users } from 'lucide-react';
+import { Flame, Trophy, Shield, Plus, ChevronRight, Star, Trash2, Target, MessageSquare, Share2, Copy, Layout, Sparkles, Clock, Info, X, Search, Users } from 'lucide-react';
 import toast from 'react-hot-toast';
 import useAuthStore from '../store/useAuthStore';
 import useGamificationStore from '../store/useGamificationStore';
@@ -21,7 +21,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { StatCardSkeleton, CourseCardSkeleton } from '../components/ui/Skeleton';
 import Footer from '../components/ui/Footer';
 import UsernameModal from '../components/Dashboard/UsernameModal';
-import { BarChart3, Calendar, ArrowUpRight, TrendingUp, Crown } from 'lucide-react';
+import { Calendar, TrendingUp, Crown } from 'lucide-react';
 import GlobalLeaderboardModal from '../components/Dashboard/GlobalLeaderboardModal';
 import GenerateRoadmapModal from '../components/Roadmap/GenerateRoadmapModal';
 
@@ -35,23 +35,7 @@ function calcCourseProgress(course, progress) {
     return Math.round((done / total) * 100);
 }
 
-/* ── Bonus Rewards Widget ───────────────────────────────────────────── */
-function BonusRewardsWidget() {
-    return (
-        <div className="glass-card p-5 border-l-4 border-l-warning flex items-center justify-between">
-            <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-warning/10 flex items-center justify-center text-warning">
-                    <Star className="w-5 h-5 fill-warning/20" />
-                </div>
-                <div>
-                    <h4 className="text-sm font-black text-text-primary uppercase tracking-widest">Bonus Rewards</h4>
-                    <p className="text-xs text-text-secondary">Complete 3 missions today for a +200 XP multiplier!</p>
-                </div>
-            </div>
-            <button className="text-xs font-bold text-warning hover:underline uppercase">View Details</button>
-        </div>
-    );
-}
+
 
 /* ── Productivity Cards ─────────────────────────────────────────────── */
 function RankCard({ rank, percentile, trend }) {
@@ -382,15 +366,15 @@ const Dashboard = () => {
     const isDemo = searchParams.get('demo') === 'true';
 
     // Mock user for demo mode
-    const user = authUser || (isDemo ? { 
+    const user = useMemo(() => authUser || (isDemo ? { 
         name: 'Guest Explorer', 
         role: 'guest', 
         level: 1, 
         usernameSet: true,
         guest: true 
-    } : null);
+    } : null), [authUser, isDemo]);
 
-    const { totalXP, level, levelTitle, streak, xpProgress, xpToNextLevel, setProfile, addBadgeToast } = useGamificationStore();
+    const { level, levelTitle, xpProgress, xpToNextLevel, setProfile, addBadgeToast } = useGamificationStore();
     const queryClient = useQueryClient();
 
     const [showCreate, setShowCreate] = useState(false);
@@ -511,8 +495,7 @@ const Dashboard = () => {
                 localStorage.setItem('seen_feature_timestamps_v1', 'true');
             }, 4500);
         }
-
-    }, []);
+    }, [navigate]);
 
     useEffect(() => {
         if (localStorage.getItem('justSignedUp') === 'true') {
@@ -635,7 +618,7 @@ const Dashboard = () => {
 
     // ── Queries ──────────────────────────────────────────────────────────
 
-    const { data: profile, isLoading: profileLoading } = useQuery({
+    useQuery({
         queryKey: ['profile'],
         queryFn: async () => {
             const data = await getGamificationProfile();
@@ -668,7 +651,7 @@ const Dashboard = () => {
         }
     });
 
-    const { data: progressMap = {}, isLoading: progressLoading } = useQuery({
+    const { data: progressMap = {} } = useQuery({
         queryKey: ['progress', user?.guest, coursesData?.map(c => c._id).join('|') || 'none'],
         queryFn: async () => {
             const courses = coursesData || [];
@@ -677,7 +660,7 @@ const Dashboard = () => {
                 try {
                     const p = await api.get(`/progress/${c._id}`);
                     if (p.data.progress) pMap[c._id] = p.data.progress;
-                } catch (_) {}
+                } catch (__) {}
             }));
             return pMap;
         },
