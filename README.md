@@ -266,6 +266,7 @@ Implemented a comprehensive SEO engine to improve search visibility and indexing
 | **Scheduling** | node-cron |
 | **Cloud** | Azure App Service (Backend), Vercel (Frontend) |
 | **CI/CD** | GitHub Actions (OIDC → Azure) |
+| **Validation** | `express-validator` (API), `AJV` (AI JSON Schemas) |
 | **Frontend** | React 18 + Vite, Zustand, TanStack Query |
 
 ---
