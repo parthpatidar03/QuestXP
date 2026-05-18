@@ -30,7 +30,8 @@ try {
 const registerMessagingServiceWorker = async () => {
     if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return null;
     if (!serviceWorkerRegistrationPromise) {
-        serviceWorkerRegistrationPromise = navigator.serviceWorker.register(MESSAGING_SW_PATH)
+        const swUrl = `${MESSAGING_SW_PATH}?apiKey=${encodeURIComponent(firebaseConfig.apiKey || '')}&authDomain=${encodeURIComponent(firebaseConfig.authDomain || '')}&projectId=${encodeURIComponent(firebaseConfig.projectId || '')}&messagingSenderId=${encodeURIComponent(firebaseConfig.messagingSenderId || '')}&appId=${encodeURIComponent(firebaseConfig.appId || '')}`;
+        serviceWorkerRegistrationPromise = navigator.serviceWorker.register(swUrl)
             .then(async (registration) => {
                 await navigator.serviceWorker.ready;
                 return registration;

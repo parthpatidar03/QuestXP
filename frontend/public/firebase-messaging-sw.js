@@ -1,13 +1,21 @@
 importScripts('https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.13.2/firebase-messaging-compat.js');
 
-firebase.initializeApp({
-    apiKey: "AIzaSyD1xVn_7Yg9fvis3emserxElqSgYKYBz1I",
-    authDomain: "questxp-52faf.firebaseapp.com",
-    projectId: "questxp-52faf",
-    messagingSenderId: "371903063687",
-    appId: "1:371903063687:web:25e094945096c294163a22"
-});
+// Parse configuration from URL query params (avoids hardcoding keys/secrets in public directory)
+const params = new URLSearchParams(self.location.search);
+const apiKey = params.get('apiKey');
+
+if (apiKey) {
+    firebase.initializeApp({
+        apiKey: apiKey,
+        authDomain: params.get('authDomain'),
+        projectId: params.get('projectId'),
+        messagingSenderId: params.get('messagingSenderId'),
+        appId: params.get('appId')
+    });
+} else {
+    console.warn('[SW] No credentials received. Background push notifications disabled.');
+}
 
 const messaging = firebase.messaging();
 
