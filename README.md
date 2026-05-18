@@ -48,6 +48,7 @@ QuestXP is a high-performance Learning Management System engineered to eliminate
 | **Granular Roadmap** | Select specific sections/videos for plans | Backend tiered filter + Nested UI |
 | **Notification Throttling** | Only top 3 major updates pop on login | Frontend dispatcher with 1.5s staggered delay |
 | **Video Stability** | Zero-refresh playback | Ref-based callback stabilization, origin-locked IFrame |
+| **Fullscreen Stabilization** | Auto-exit native fullscreen & trigger system popup on completion | Standard Fullscreen API + HTML5 Desktop Web Notifications |
 | **SEO Optimization** | Dynamic meta tags and sitemap | `react-helmet-async`, automated indexing |
 
 ---
@@ -308,3 +309,9 @@ To prevent notification overload for returning users, we implement a **Throttled
 Refactored roadmap engine to support sub-section and video-level selection.
 - **Backend**: `POST /api/roadmap/generate` supports `lectureIds` for surgical precision.
 - **Logic**: Filters out unselected content from the generated schedule, allowing students to skip known material.
+
+### 8. Fullscreen Autoplay Stabilization & System Notifications
+Stabilized native full-screen video playback transitions and added desktop web notifications to secure visual feedback on mission completions.
+- **Auto-Exit Fullscreen**: Listens to course completions and calls `document.exitFullscreen()` to gracefully return user to interactive normal view.
+- **Desktop Push Overlays**: Employs the HTML5 `Notification` API to push OS-level overlay alerts, bypassing the isolated context of the cross-origin fullscreen YouTube iframe.
+- **Dismissible High-Density Modals**: Enhanced bottom completion cards and new top banners with explicit close buttons for maximum UX agency.

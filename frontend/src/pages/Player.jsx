@@ -9,7 +9,7 @@ import TimelineSidebar from '../components/Player/TimelineSidebar';
 import QuizTab from '../components/Lecture/QuizTab';
 import DoubtChatbot from '../components/Lecture/DoubtChatbot';
 import useGamificationStore from '../store/useGamificationStore';
-import { ArrowLeft, CheckCircle2, ChevronRight, ChevronLeft } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, ChevronRight, ChevronLeft, X } from 'lucide-react';
 import { BGPattern } from '../components/ui/bg-pattern';
 import { useLectureStatus } from '../hooks/useLectureStatus';
 import { shootConfetti } from '../utils/confetti';
@@ -316,6 +316,31 @@ const Player = () => {
         };
     }, [applyAward]);
 
+    // Request notification permission on page load
+    useEffect(() => {
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission().catch(() => {});
+        }
+    }, []);
+
+    // Auto-exit fullscreen and trigger browser system notification on mission completion
+    useEffect(() => {
+        if (showCompletionCard) {
+            if (document.fullscreenElement) {
+                document.exitFullscreen().catch((err) => {
+                    console.warn("[Player] Auto-exit fullscreen failed:", err);
+                });
+            }
+            // Trigger desktop notification if allowed
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification("QuestXP: Mission Completed! 🏆", {
+                    body: `You earned +${xpEarned || 50} XP! Exit fullscreen to claim your rewards!`,
+                    icon: '/favicon.png'
+                });
+            }
+        }
+    }, [showCompletionCard, xpEarned]);
+
     const handleVideoEnd = () => {
         setQuizAutoStart(true);
         setActiveTab('quiz');
@@ -468,9 +493,16 @@ const PLAYER_THEME = {
                                     animate={{ y: 0, opacity: 1 }}
                                     exit={{ y: 80, opacity: 0 }}
                                     transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-                                    className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 w-[94%] sm:w-[90%] max-w-md rounded-2xl p-4 sm:p-6 flex flex-col items-center text-center z-50 shadow-2xl"
+                                    className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 w-[94%] sm:w-[90%] max-w-md rounded-2xl p-4 sm:p-6 flex flex-col items-center text-center z-50 shadow-2xl relative"
                                     style={{ background: PLAYER_THEME.completionBg, border: PLAYER_THEME.completionBorder, backdropFilter: 'blur(20px)' }}
                                 >
+                                    <button
+                                        onClick={() => setShowCompletionCard(false)}
+                                        className="absolute top-4 right-4 p-1.5 rounded-lg bg-surface-2 hover:bg-surface-3 border border-border text-text-muted hover:text-text-primary transition-colors cursor-pointer"
+                                    >
+                                        <X className="w-4 h-4" />
+                                    </button>
+                                    
                                     <div className="w-14 h-14 rounded-full flex items-center justify-center mb-4" style={{ background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)' }}>
                                         <CheckCircle2 className="w-7 h-7 text-[#10B981]" />
                                     </div>
@@ -489,6 +521,48 @@ const PLAYER_THEME = {
                                             className="flex-[2] py-3 px-4 rounded-xl text-sm font-bold transition-all btn-esports"
                                         >
                                             {nextLecture ? '⚡ Continue' : '🏆 Finish Course'}
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+
+                        {/* Top Notification Banner (ideal for fullscreen exit prompt / notification) */}
+                        <AnimatePresence>
+                            {showCompletionCard && (
+                                <motion.div
+                                    initial={{ y: -100, opacity: 0 }}
+                                    animate={{ y: 0, opacity: 1 }}
+                                    exit={{ y: -100, opacity: 0 }}
+                                    className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] w-[92%] sm:w-full sm:max-w-md p-4 rounded-xl shadow-2xl border flex items-center justify-between gap-4"
+                                    style={{
+                                        background: 'rgba(18, 21, 42, 0.95)',
+                                        borderColor: 'var(--color-primary)',
+                                        backdropFilter: 'blur(20px)',
+                                        boxShadow: '0 8px 32px rgba(0, 255, 128, 0.15)'
+                                    }}
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-primary/10 border border-primary/20 shrink-0">
+                                            <CheckCircle2 className="w-5 h-5 text-primary animate-pulse" />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-xs font-black text-white uppercase tracking-wider">Mission Complete!</h4>
+                                            <p className="text-[10px] font-bold text-[#f5a524]">+{xpEarned || 50} XP Earned</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            onClick={handleNextLecture}
+                                            className="btn-esports text-[10px] py-1.5 px-3 shadow-[0_0_10px_rgba(0,255,128,0.2)] font-black uppercase tracking-wider cursor-pointer"
+                                        >
+                                            Continue ⚡
+                                        </button>
+                                        <button
+                                            onClick={() => setShowCompletionCard(false)}
+                                            className="p-1 rounded-lg bg-surface-2 hover:bg-surface-3 border border-border text-text-muted hover:text-text-primary transition-colors cursor-pointer"
+                                        >
+                                            <X className="w-3.5 h-3.5" />
                                         </button>
                                     </div>
                                 </motion.div>
