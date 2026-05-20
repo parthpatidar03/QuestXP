@@ -3,12 +3,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { ChevronRight, Unlock } from 'lucide-react';
 import useGamificationStore from '../../store/useGamificationStore';
+import { playSound } from '../../utils/soundEffects';
 
 const LevelUpModal = () => {
     const { levelUpData, clearLevelUp } = useGamificationStore();
 
     useEffect(() => {
         if (levelUpData) {
+            // Play victory sound
+            playSound('levelup');
+
             // Trigger confetti burst
             const duration = 3000;
             const end = Date.now() + duration;
@@ -57,7 +61,7 @@ const LevelUpModal = () => {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 10 }}
                         transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                        className="relative w-[90%] max-w-md bg-surface border border-border rounded-2xl p-8 flex flex-col items-center text-center shadow-[0_25px_50px_rgba(0,0,0,0.6)]"
+                        className="relative w-[90%] max-w-md bg-surface border-2 border-border border-b-[8px] border-b-border-shadow rounded-[32px] p-8 flex flex-col items-center text-center shadow-[0_25px_50px_rgba(0,0,0,0.6)]"
                     >
                         <div className="absolute -top-32 w-64 h-64 bg-primary/20 rounded-full blur-[80px] pointer-events-none"></div>
 

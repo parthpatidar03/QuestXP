@@ -13,17 +13,27 @@ export default {
         'surface-2': 'var(--color-surface-2)',
         'surface-3': 'var(--color-surface-3)',
         border: 'var(--color-border)',
+        'border-shadow': 'var(--color-border-shadow)',
 
         primary: { 
           DEFAULT: 'var(--color-primary)', 
-          hover: 'var(--color-primary-hover)' 
+          hover: 'var(--color-primary-hover)',
+          shadow: 'var(--color-primary-shadow)',
         },
-        cyan: 'var(--color-cyan)',
-        gold: 'var(--color-gold)',
-        'gold-dim': 'var(--color-gold-dim)',
+        cyan: {
+          DEFAULT: 'var(--color-cyan)',
+          shadow: 'var(--color-cyan-shadow)',
+        },
+        gold: {
+          DEFAULT: 'var(--color-gold)',
+          dim: 'var(--color-gold-dim)',
+        },
         success: 'var(--color-success)',
         warning: 'var(--color-warning)',
-        danger: 'var(--color-danger)',
+        danger: {
+          DEFAULT: 'var(--color-danger)',
+          shadow: 'var(--color-danger-shadow)',
+        },
         'xp-gold': 'var(--color-xp-gold)',
 
         text: {

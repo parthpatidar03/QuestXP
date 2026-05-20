@@ -6,6 +6,7 @@ import LockedFeature from '../LockedFeature';
 import { MAINTENANCE_CONFIG } from '../../constants/maintenance';
 import AILoadingState from './AILoadingState';
 import { broadcastProgressUpdate } from '../../utils/sync';
+import { playSound } from '../../utils/soundEffects';
 
 const LEVEL_QUIZ = 1;
 
@@ -141,6 +142,7 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
 
     const handleOptionSelect = (questionIndex, optionIndex) => {
         if (result) return;
+        playSound('click');
         const q = quiz.questions[questionIndex];
         const current = answers[questionIndex] || [];
         
@@ -177,12 +179,15 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
             setResult(data);
 
             // Celebration Logic
-            if (data.progress?.success || data.progress?.alreadyCompleted) {
+            if (data.progress?.success || data.progress?.alreadyCompleted || data.score >= 60) {
+                playSound('correct');
                 const xp = data.progress?.xpAwarded || 50;
                 window.dispatchEvent(new CustomEvent('mission-completed', { 
                     detail: { xpEarned: xp, lectureId }
                 }));
                 broadcastProgressUpdate();
+            } else {
+                playSound('incorrect');
             }
         } catch (_) {
             console.error('Failed to submit quiz');
@@ -434,19 +439,19 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
                                         <button
                                             key={oIndex}
                                             onClick={() => handleOptionSelect(qIndex, oIndex)}
-                                            className={`w-full text-left p-4 rounded-xl border transition-all duration-200 flex items-center gap-3 ${
+                                            className={`w-full text-left p-4 rounded-xl border-2 transition-all duration-100 flex items-center gap-3 ${
                                                 isSelected 
-                                                    ? 'bg-primary/10 border-primary text-text-primary scale-[1.01]' 
-                                                    : 'bg-surface border-border text-text-secondary hover:border-text-muted hover:bg-surface-3 hover:text-text-primary'
-                                            }`}
+                                                    ? 'bg-cyan/10 border-cyan border-b-[6px] border-b-cyan-shadow text-text-primary translate-y-[-2px]' 
+                                                    : 'bg-surface border-border border-b-[6px] border-b-border-shadow text-text-secondary hover:translate-y-[-2px] hover:border-text-muted hover:bg-surface-3 hover:text-text-primary'
+                                            } active:border-b-2 active:translate-y-[2px]`}
                                         >
                                             <div className={`w-5 h-5 rounded-lg border-2 flex items-center justify-center shrink-0 transition-colors ${
-                                                isSelected ? 'border-primary' : 'border-text-muted'
+                                                isSelected ? 'border-cyan' : 'border-text-muted'
                                             } ${!q.isMultipleChoice ? 'rounded-full' : 'rounded-md'}`}>
                                                 {isSelected && (
                                                     q.isMultipleChoice 
-                                                        ? <div className="w-2.5 h-2.5 bg-primary rounded-sm" />
-                                                        : <div className="w-2.5 h-2.5 bg-primary rounded-full" />
+                                                        ? <div className="w-2.5 h-2.5 bg-cyan rounded-sm" />
+                                                        : <div className="w-2.5 h-2.5 bg-cyan rounded-full" />
                                                 )}
                                             </div>
                                             <span className="text-sm font-medium">{opt}</span>
@@ -466,10 +471,10 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
                         <button
                             onClick={handleSubmit}
                             disabled={!isAllAnswered || submitting}
-                            className={`w-full py-4 rounded-xl font-bold shadow-lg transition-all flex items-center justify-center gap-2 ${
+                            className={`w-full py-4 rounded-xl font-bold shadow-lg transition-all flex items-center justify-center gap-2 border-2 ${
                                 isAllAnswered && !submitting
-                                    ? 'bg-primary hover:bg-primary-hover hover:scale-105 cursor-pointer shadow-primary/30 text-[oklch(0.16_0.025_155)]'
-                                    : 'bg-surface-3 text-text-muted cursor-not-allowed border border-border'
+                                    ? 'bg-primary border-primary border-b-[6px] border-b-primary-shadow text-white hover:bg-primary-hover active:border-b-2 active:translate-y-[4px]'
+                                    : 'bg-surface-3 text-text-muted cursor-not-allowed border-border border-b-[6px] border-b-border-shadow'
                             }`}
                         >
                             {submitting ? (

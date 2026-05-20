@@ -65,21 +65,20 @@ const NavBar = () => {
 
                 <div className="flex-1 md:hidden" />
 
-                <nav className="hidden md:flex items-center gap-1 mr-2">
-                    <Link to={`/dashboard${demoQuery}`} className="px-3 py-1.5 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-lg transition-colors">
+                <nav className="hidden md:flex items-center gap-1.5 mr-2">
+                    <Link to={`/dashboard${demoQuery}`} className="px-4 py-2 text-sm font-bold text-text-secondary border-2 border-transparent hover:border-border hover:border-b-border-shadow hover:border-b-[4px] hover:bg-surface-2 hover:-translate-y-[1px] active:translate-y-[2px] active:border-b-[2px] rounded-xl transition-all duration-100">
                         Dashboard
                     </Link>
-                    <Link id="tour-roadmap" to={`/roadmap${demoQuery}`} className="px-3 py-1.5 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-lg transition-colors">
+                    <Link id="tour-roadmap" to={`/roadmap${demoQuery}`} className="px-4 py-2 text-sm font-bold text-text-secondary border-2 border-transparent hover:border-border hover:border-b-border-shadow hover:border-b-[4px] hover:bg-surface-2 hover:-translate-y-[1px] active:translate-y-[2px] active:border-b-[2px] rounded-xl transition-all duration-100">
                         Roadmap
                     </Link>
-                    <Link id="tour-leaderboard" to={`/dashboard${demoQuery}${isDemo ? '&' : '?'}open=leaderboard`} className="px-3 py-1.5 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-lg transition-colors flex items-center gap-1.5">
+                    <Link id="tour-leaderboard" to={`/dashboard${demoQuery}${isDemo ? '&' : '?'}open=leaderboard`} className="px-4 py-2 text-sm font-bold text-text-secondary border-2 border-transparent hover:border-gold/50 hover:border-b-gold hover:border-b-[4px] hover:bg-gold/5 hover:-translate-y-[1px] active:translate-y-[2px] active:border-b-[2px] rounded-xl transition-all duration-100 flex items-center gap-1.5">
                         <Trophy className="w-3.5 h-3.5 text-gold" />
                         Leaderboard
                     </Link>
-                    <Link to="/friendzones" className="px-3 py-1.5 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-lg transition-colors">
+                    <Link to="/friendzones" className="px-4 py-2 text-sm font-bold text-text-secondary border-2 border-transparent hover:border-cyan/50 hover:border-b-cyan hover:border-b-[4px] hover:bg-cyan/5 hover:-translate-y-[1px] active:translate-y-[2px] active:border-b-[2px] rounded-xl transition-all duration-100">
                         Friends
                     </Link>
-
                 </nav>
 
                 <div className="hidden sm:flex items-center gap-2">
