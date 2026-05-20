@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Moon, Sun, X, Star, Menu, Trophy, Layout } from 'lucide-react';
+import { Moon, Sun, X, Star, Menu, Trophy, Layout, Zap } from 'lucide-react';
 import XPCurrency from './XPCurrency';
 import NotificationBell from './NotificationBell';
 import useAuthStore from '../store/useAuthStore';
