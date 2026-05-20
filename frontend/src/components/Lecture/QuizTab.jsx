@@ -292,7 +292,7 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
         return (
             <div className="p-8 flex flex-col items-center justify-center min-h-[300px]">
                 <div className="w-8 h-8 rounded-full border-2 border-[#2a2f52] border-t-[#f5a524] animate-spin mb-4" />
-                <p className="text-xs font-bold uppercase tracking-widest" style={{ color: '#4a5480' }}>Loading Quiz…</p>
+                <p className="text-xs font-bold uppercase tracking-widest text-text-muted">Loading Quiz…</p>
             </div>
         );
     }

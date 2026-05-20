@@ -375,7 +375,7 @@ const PLAYER_THEME = {
     patternFill: 'var(--color-primary)',
     progressTrack: 'var(--color-surface-2)',
     shadow: '0 8px 32px rgba(0, 255, 128, 0.1)',
-    completionBg: 'rgba(18, 21, 42, 0.95)',
+    completionBg: 'var(--color-surface)',
     completionBorder: '1px solid var(--color-primary)',
     completionBtnBg: 'var(--color-surface-2)',
     completionBtnBorder: 'var(--color-border)',
@@ -393,7 +393,7 @@ const PLAYER_THEME = {
 
     if (error || !currentLecture) return (
         <div className="min-h-screen flex flex-col items-center justify-center p-8" style={{ background: PLAYER_THEME.pageBg }}>
-            <p className="text-lg font-semibold mb-4" style={{ color: '#ef4444' }}>{error || 'Lecture not found'}</p>
+            <p className="text-lg font-semibold mb-4 text-danger">{error || 'Lecture not found'}</p>
             <Link to="/dashboard" className="btn-primary">Return to Dashboard</Link>
         </div>
     );
@@ -450,7 +450,7 @@ const PLAYER_THEME = {
                             <button
                                 onClick={handleNextLecture}
                                 className="flex items-center gap-1.5 px-5 py-2 rounded-lg sm:rounded-xl text-[10px] sm:text-[11px] font-black uppercase tracking-[0.1em] sm:tracking-[0.15em] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/20"
-                                style={{ background: 'var(--color-primary)', border: 'none', color: '#000' }}
+                                style={{ background: 'var(--color-primary)', border: 'none', color: 'var(--color-bg)' }}
                             >
                                 <span className="hidden xs:inline">Next</span>
                                 <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[3px]" />
@@ -490,8 +490,7 @@ const PLAYER_THEME = {
                                     animate={{ opacity: 1, y: -20, scale: 1 }}
                                     exit={{ opacity: 0, y: -60, scale: 0.9 }}
                                     transition={{ duration: 0.4 }}
-                                    className="absolute top-3 sm:top-8 right-3 sm:right-8 flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-black text-sm sm:text-lg pointer-events-none"
-                                    style={{ background: 'rgba(245,165,36,0.2)', border: '1px solid rgba(245,165,36,0.6)', color: '#f5a524', boxShadow: '0 0 20px rgba(245,165,36,0.4)' }}
+                                    className="absolute top-3 sm:top-8 right-3 sm:right-8 flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-black text-sm sm:text-lg pointer-events-none bg-gold/20 border border-gold/60 text-gold shadow-[0_0_20px_rgba(255,200,0,0.4)]"
                                 >
                                     <img src="/favicon.png" alt="" className="w-4 h-4 sm:w-5 sm:h-5 object-contain" /> +{xpEarned} XP
                                 </motion.div>
@@ -520,7 +519,7 @@ const PLAYER_THEME = {
                                         <CheckCircle2 className="w-7 h-7 text-[#10B981]" />
                                     </div>
                                     <h3 className="text-2xl font-black mb-1" style={{ color: PLAYER_THEME.text }}>Mission Complete!</h3>
-                                    <p className="text-sm font-bold mb-6" style={{ color: '#f5a524' }}>+{xpEarned || 50} XP Earned</p>
+                                    <p className="text-sm font-bold mb-6 text-gold">+{xpEarned || 50} XP Earned</p>
                                     <div className="flex gap-3 w-full">
                                         <button
                                             onClick={() => navigate(`/courses/${courseId}`)}

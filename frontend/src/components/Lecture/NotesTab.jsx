@@ -182,7 +182,7 @@ const NotesTab = ({ lectureId, onSeek, notesStatus, errorReason, aiStatus = {} }
                 )}
 
                 <p className="text-base font-bold text-white mb-2">⚡ AI Smart Summary</p>
-                <p className="text-sm mb-6" style={{ color: '#8b9cc8' }}>
+                <p className="text-sm mb-6 text-text-secondary">
                     {isReady 
                         ? 'AI has generated a structured summary for this lesson.' 
                         : 'Summary not ready yet — watch more of the lecture first.'}
@@ -196,7 +196,7 @@ const NotesTab = ({ lectureId, onSeek, notesStatus, errorReason, aiStatus = {} }
 
                 {!isReady && (
                     <div className="flex flex-col items-center gap-4">
-                        <div className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold" style={{ background: 'rgba(0,180,255,0.1)', border: '1px solid rgba(0,180,255,0.3)', color: '#00b4ff' }}>
+                        <div className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold bg-cyan/10 border border-cyan/30 text-cyan">
                             <span className="w-2 h-2 rounded-full bg-[#00b4ff] animate-pulse" />
                             Ready to Generate
                         </div>
@@ -216,7 +216,7 @@ const NotesTab = ({ lectureId, onSeek, notesStatus, errorReason, aiStatus = {} }
         return (
             <div className="p-8 flex flex-col items-center justify-center min-h-[300px]">
                 <div className="w-8 h-8 rounded-full border-2 border-[#2a2f52] border-t-[#00b4ff] animate-spin mb-4" />
-                <p className="text-xs font-bold uppercase tracking-widest" style={{ color: '#4a5480' }}>Loading Notes…</p>
+                <p className="text-xs font-bold uppercase tracking-widest text-text-muted">Loading Notes…</p>
             </div>
         );
     }

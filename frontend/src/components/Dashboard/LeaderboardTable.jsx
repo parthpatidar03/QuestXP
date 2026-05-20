@@ -1,5 +1,6 @@
 import React from 'react';
-import { Zap, Flame } from 'lucide-react';
+import { Flame } from 'lucide-react';
+import XPCurrency from '../XPCurrency';
 
 const LeaderboardTable = ({ players = [] }) => {
     return (
@@ -7,7 +8,7 @@ const LeaderboardTable = ({ players = [] }) => {
             <div className="grid grid-cols-[50px_1fr_100px_80px_80px] px-6 py-4 border-b border-border bg-surface/50 text-[10px] font-black uppercase tracking-widest text-text-muted">
                 <span>Rank</span>
                 <span>Learner</span>
-                <span className="text-right">Total XP</span>
+                <span className="text-right">🪙 XP</span>
                 <span className="text-right">Current</span>
                 <span className="text-right">Max</span>
             </div>
@@ -18,7 +19,7 @@ const LeaderboardTable = ({ players = [] }) => {
                         key={p._id || i}
                         className={`grid grid-cols-[50px_1fr_100px_80px_80px] px-6 py-4 items-center transition-colors hover:bg-primary/5 ${i < 3 ? 'bg-primary/5' : ''}`}
                     >
-                        <span className={`text-sm font-black ${i === 0 ? 'text-gold' : i === 1 ? 'text-slate-300' : i === 2 ? 'text-amber-600' : 'text-text-muted'}`}>
+                        <span className={`text-sm font-black ${i === 0 ? 'text-gold' : i === 1 ? 'text-text-secondary' : i === 2 ? 'text-warning' : 'text-text-muted'}`}>
                             #{i + 1}
                         </span>
                         
@@ -30,8 +31,7 @@ const LeaderboardTable = ({ players = [] }) => {
                         </div>
 
                         <div className="flex items-center justify-end gap-1 text-right">
-                            <Zap className="w-3 h-3 text-gold" />
-                            <span className="text-sm font-black text-text-primary">{(p.totalXP || 0).toLocaleString()}</span>
+                            <XPCurrency amount={p.totalXP || 0} size="sm" />
                         </div>
 
                         <div className="flex items-center justify-end gap-1 text-right">

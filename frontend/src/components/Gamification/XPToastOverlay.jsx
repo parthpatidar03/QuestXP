@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Zap } from 'lucide-react';
 import useGamificationStore from '../../store/useGamificationStore';
 import { playSound } from '../../utils/soundEffects';
+import XPCurrency from '../XPCurrency';
 
 const ToastItem = ({ toast }) => {
     useEffect(() => {
@@ -17,12 +17,9 @@ const ToastItem = ({ toast }) => {
             transition={{ type: "spring", stiffness: 400, damping: 25 }}
             className="bg-surface-2 border-2 border-gold rounded-xl px-4 py-3 shadow-[0_4px_0_rgba(230,180,0,1)] flex items-center gap-3 w-max self-end mb-2"
         >
-            <div className="w-8 h-8 rounded-full bg-gold/20 flex items-center justify-center flex-shrink-0">
-                <Zap className="w-4 h-4 text-gold" />
-            </div>
             <div>
                 <p className="text-sm font-bold text-text-primary m-0 flex items-center gap-1.5">
-                    +{toast.amount} XP 
+                    <XPCurrency amount={toast.amount} size="sm" sign="+" />
                     {toast.multiplier > 1 && <span className="text-xs text-gold bg-gold/10 px-1.5 rounded">× {toast.multiplier}</span>}
                 </p>
                 {toast.reason && <p className="text-xs text-text-muted mt-0.5 font-semibold">{toast.reason}</p>}

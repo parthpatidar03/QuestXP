@@ -1,5 +1,6 @@
 import React from 'react';
-import { Crown, Zap } from 'lucide-react';
+import { Crown } from 'lucide-react';
+import XPCurrency from '../XPCurrency';
 
 const RANK_COLORS = ['var(--color-gold)', 'var(--color-primary)', 'var(--color-secondary)', 'var(--color-text-muted)', 'var(--color-text-muted)'];
 const RANK_LABELS = ['1', '2', '3', '4', '5'];
@@ -52,9 +53,8 @@ const XPLeaderboardSidebar = ({ players = [] }) => {
                             </div>
 
                             {/* XP */}
-                            <div className="flex items-center gap-1 shrink-0">
-                                <Zap className="w-3 h-3 text-gold" />
-                                <span className="text-xs font-semibold text-text-primary">{(p.totalXP || 0).toLocaleString()}</span>
+                            <div className="shrink-0">
+                                <XPCurrency amount={p.totalXP || 0} size="xs" />
                             </div>
                         </div>
                     ))}

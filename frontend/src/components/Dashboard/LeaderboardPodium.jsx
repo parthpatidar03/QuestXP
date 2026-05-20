@@ -1,6 +1,7 @@
 import React from 'react';
-import { Trophy, Zap, Crown, Flame } from 'lucide-react';
+import { Trophy, Crown, Flame } from 'lucide-react';
 import { motion } from 'framer-motion';
+import XPCurrency from '../XPCurrency';
 
 const LeaderboardPodium = ({ players = [] }) => {
     if (players.length === 0) return null;
@@ -29,13 +30,13 @@ const LeaderboardPodium = ({ players = [] }) => {
                             {isFirst && <Crown className="w-10 h-10 text-gold absolute -top-8 left-1/2 -translate-x-1/2 drop-shadow-[0_0_15px_rgba(255,215,0,0.5)]" />}
                             <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center border-2 ${
                                 isFirst ? 'border-gold bg-gold/20' : 
-                                isSecond ? 'border-slate-300 bg-slate-300/20' : 
-                                'border-amber-600 bg-amber-600/20'
+                                isSecond ? 'border-text-muted bg-text-muted/20' : 
+                                'border-warning bg-warning/20'
                             }`}>
                                 <Trophy className={`w-8 h-8 sm:w-10 sm:h-10 ${
                                     isFirst ? 'text-gold' : 
-                                    isSecond ? 'text-slate-300' : 
-                                    'text-amber-600'
+                                    isSecond ? 'text-text-muted' : 
+                                    'text-warning'
                                 }`} />
                             </div>
                         </div>
@@ -46,13 +47,12 @@ const LeaderboardPodium = ({ players = [] }) => {
                             ${isFirst ? 'w-32 sm:w-40 h-40 sm:h-48 bg-gold/10 border-gold/30' : 'w-28 sm:w-36 h-32 sm:h-40 bg-surface/50'}
                         `}>
                             <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-surface border border-border flex items-center justify-center mb-2 overflow-hidden shadow-inner">
-                                <span className="text-xs font-bold uppercase">{player.name[0]}</span>
+                                <span className="text-xs font-bold uppercase text-text-primary">{player.name[0]}</span>
                             </div>
                             <span className="text-xs sm:text-sm font-bold text-text-primary truncate w-full text-center px-1 mb-1">{player.name}</span>
                             <div className="flex flex-col items-center gap-0.5">
                                 <div className="flex items-center gap-1">
-                                    <Zap className="w-3 h-3 text-gold" />
-                                    <span className="text-[10px] sm:text-xs font-black text-text-primary">{player.totalXP?.toLocaleString() || 0} XP</span>
+                                    <XPCurrency amount={player.totalXP || 0} size="xs" />
                                 </div>
                                 <div className="flex items-center gap-2 mt-1">
                                     <div className="flex items-center gap-1">
@@ -67,7 +67,7 @@ const LeaderboardPodium = ({ players = [] }) => {
                             {/* Rank Badge */}
                             <div className={`
                                 absolute -bottom-4 px-3 py-1 rounded-full text-[10px] font-black tracking-widest uppercase shadow-lg
-                                ${isFirst ? 'bg-gold text-white' : isSecond ? 'bg-slate-300 text-white' : 'bg-amber-600 text-white'}
+                                ${isFirst ? 'bg-gold text-[#1a1a1a]' : isSecond ? 'bg-text-muted text-surface' : 'bg-warning text-[#1a1a1a]'}
                             `}>
                                 #{rank}
                             </div>

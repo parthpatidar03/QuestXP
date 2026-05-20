@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Zap, Moon, Sun, X, Star, Menu, Trophy, Layout } from 'lucide-react';
+import { Moon, Sun, X, Star, Menu, Trophy, Layout } from 'lucide-react';
+import XPCurrency from './XPCurrency';
 import NotificationBell from './NotificationBell';
 import useAuthStore from '../store/useAuthStore';
 import useGamificationStore from '../store/useGamificationStore';
@@ -82,9 +83,8 @@ const NavBar = () => {
                 </nav>
 
                 <div className="hidden sm:flex items-center gap-2">
-                    <div className="flex items-center gap-1.5 bg-surface-2 border border-border rounded-xl px-3 py-1.5">
-                        <img src="/favicon.png" alt="" className="w-4 h-4 object-contain" />
-                        <span className="text-sm font-semibold text-text-primary">{(totalXP || user?.totalXP || 0).toLocaleString()} XP</span>
+                    <div className="flex items-center gap-1.5 bg-surface-2 border-2 border-gold/30 border-b-[3px] border-b-gold/60 rounded-xl px-3 py-1.5">
+                        <XPCurrency amount={totalXP || user?.totalXP || 0} size="sm" />
                     </div>
 
                     <button
@@ -188,7 +188,7 @@ const NavBar = () => {
                             <div className="p-4 rounded-xl bg-surface-2 border border-border flex items-center justify-between">
                                 <div className="flex flex-col">
                                     <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Mastery</span>
-                                    <span className="text-lg font-black text-text-primary">{(totalXP || user?.totalXP || 0).toLocaleString()} XP</span>
+                                    <XPCurrency amount={totalXP || user?.totalXP || 0} size="lg" />
                                 </div>
                             </div>
                             <div className="p-4 rounded-xl bg-surface-2 border border-border flex items-center justify-between">
