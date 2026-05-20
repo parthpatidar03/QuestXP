@@ -21,7 +21,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { StatCardSkeleton, CourseCardSkeleton } from '../components/ui/Skeleton';
 import Footer from '../components/ui/Footer';
 import UsernameModal from '../components/Dashboard/UsernameModal';
-import { Calendar, TrendingUp, Crown } from 'lucide-react';
+import { Calendar, TrendingUp, Crown, Smartphone } from 'lucide-react';
 import GlobalLeaderboardModal from '../components/Dashboard/GlobalLeaderboardModal';
 import GenerateRoadmapModal from '../components/Roadmap/GenerateRoadmapModal';
 
@@ -390,8 +390,18 @@ const Dashboard = () => {
     const [undoCountdown, setUndoCountdown] = useState(0);
     const [activeTab, setActiveTab] = useState('courses');
 
-    // Features list (top 5) - Source of truth for tab and popups
     const newFeatures = useMemo(() => [
+        {
+            id: 'mobile-player-v1',
+            title: 'Mobile Player & Doubt Bot',
+            description: 'Study on the go! A brand new native-feeling edge-to-edge mobile player layout with the AI Doubt Tutor integrated directly inside the sidebar tabs.',
+            icon: <Smartphone className="w-5 h-5 text-primary" />,
+            date: 'New',
+            toast: {
+                msg: "New: Edge-to-edge Mobile Player & AI Doubt Bot sidebar tab is LIVE! 📱",
+                icon: '📱'
+            }
+        },
         {
             id: 'granular-roadmap-v2',
             title: 'Granular Roadmap Control',
@@ -449,17 +459,6 @@ const Dashboard = () => {
                     </span>
                 ),
                 icon: '👥'
-            }
-        },
-        {
-            id: 'video-stability-v1',
-            title: 'Zero-Lag Video Engine',
-            description: 'Experience seamless playback on long-form lectures. We\'ve stabilized the player lifecycle to prevent refreshes and lag during deep study sessions.',
-            icon: <Zap className="w-5 h-5 text-primary" />,
-            date: 'Latest',
-            toast: {
-                msg: "Engine Update: Zero-lag video playback for long sessions is now LIVE! ⚡",
-                icon: '⚡'
             }
         }
     ], []);

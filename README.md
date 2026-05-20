@@ -183,6 +183,15 @@ A non-RAG, history-aware LLM chat for instant educational clarifications.
 - `notificationWorker.js` processes notification jobs from BullMQ queue
 - **File:** `backend/src/workers/notificationWorker.js`, `notificationScheduler.js`
 
+### 12. Viewport-Locked Responsive Player Page & Sidebar Integration (UX Performance)
+
+Native app-like experience on mobile screens (`< 640px`) using strict `100dvh` viewport height constraints and page-level `overflow-hidden` to completely prevent double-scrollbar body scroll.
+
+- Stacks video at `aspect-video shrink-0` (edge-to-edge) and allocates exactly the remaining viewport space to the sidebar panel (`flex-grow flex-1 min-h-0`).
+- Re-architected RAG Doubt Chatbot to dynamically switch between absolute draggable floating bubble mode on desktop, and a static flex-grow tab inside the mobile sidebar tabbed panel via `isSidebarMode={true}` prop, keeping the video persistent while providing zero-lag internal scrolling.
+- Automatically handles fallback to timeline tab on desktop resize to prevent blank panels.
+- **File:** `frontend/src/pages/Player.jsx`, `frontend/src/components/Lecture/DoubtChatbot.jsx`
+
 ---
 
 ## 🚀 Cloud Infrastructure & CI/CD
