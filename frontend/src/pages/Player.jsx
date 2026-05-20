@@ -424,7 +424,7 @@ const PLAYER_THEME = {
                         <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-text-muted group-hover:text-text-primary transition-colors">Overview</span>
                     </Link>
                     <div className="flex items-center gap-2">
-                        <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.12em] px-2.5 py-0.5 rounded-full border border-primary/20 bg-primary/5 text-primary">
+                        <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.15em] px-3.5 py-1 rounded-full border border-[#00ff8b]/40 bg-[#00ff8b]/10 text-[#00ff8b] shadow-[0_0_12px_rgba(0,255,139,0.25)] flex items-center justify-center">
                             M {currentLectureIndex + 1} / {allLectures.length}
                         </span>
                     </div>
