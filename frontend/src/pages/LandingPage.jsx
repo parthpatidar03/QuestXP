@@ -25,7 +25,7 @@ import Footer from '../components/ui/Footer';
 import LeaderboardPodium from '../components/Dashboard/LeaderboardPodium';
 import FeaturesStack from '../components/Landing/FeaturesStack';
 import useAuthStore from '../store/useAuthStore';
-import TiltCard from '../components/ui/TiltCard';
+import { CardContainer, CardBody, CardItem } from '../components/ui/3d-card';
 
 
 // Conservative floor values — always shown if API fails or is slow.
@@ -353,40 +353,42 @@ const LandingPage = () => {
                             {/* Decorative glow behind image */}
                             <div className="absolute -inset-4 bg-primary/10 rounded-[2.5rem] blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                             
-                            <TiltCard intensity={12} className="relative z-10">
-                                <div className="relative rounded-2xl border border-border bg-surface shadow-2xl overflow-hidden transform group-hover:scale-[1.02] transition-transform duration-500" style={{ transform: "translateZ(20px)" }}>
-                                    <img 
-                                        src="/Images/dashboard_landing_page.png" 
-                                        alt="QuestXP Dashboard" 
-                                        className="w-full h-auto object-cover block"
-                                    />
-                                    
-                                    {/* Glass overlay on bottom */}
-                                    <div className="absolute bottom-0 inset-x-0 p-4 bg-gradient-to-t from-black/80 to-transparent backdrop-blur-sm flex items-center justify-between" style={{ transform: "translateZ(30px)" }}>
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                                            <span className="text-[10px] font-bold text-white uppercase tracking-widest">Live Dashboard Preview</span>
+                            <CardContainer className="inter-var relative z-10">
+                                <CardBody className="relative group/card w-full h-auto rounded-2xl p-0">
+                                    <CardItem translateZ="50" className="relative rounded-2xl border border-border bg-surface shadow-2xl overflow-hidden group-hover/card:shadow-xl w-full">
+                                        <img 
+                                            src="/Images/dashboard_landing_page.png" 
+                                            alt="QuestXP Dashboard" 
+                                            className="w-full h-auto object-cover block"
+                                        />
+                                        
+                                        {/* Glass overlay on bottom */}
+                                        <div className="absolute bottom-0 inset-x-0 p-4 bg-gradient-to-t from-black/80 to-transparent backdrop-blur-sm flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                                                <span className="text-[10px] font-bold text-white uppercase tracking-widest">Live Dashboard Preview</span>
+                                            </div>
+                                            <Sparkles className="w-4 h-4 text-primary" />
                                         </div>
-                                        <Sparkles className="w-4 h-4 text-primary" />
-                                    </div>
-                                </div>
+                                    </CardItem>
 
-                                {/* Floating badge with extra depth */}
-                                <div 
-                                    className="absolute -top-4 -right-4 bg-surface-2 border border-border p-3 rounded-xl shadow-xl hidden md:block z-20"
-                                    style={{ transform: "translateZ(60px)", transformStyle: "preserve-3d" }}
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                                            <Flame className="w-6 h-6 text-primary" />
+                                    {/* Floating badge with extra depth */}
+                                    <CardItem 
+                                        translateZ="100"
+                                        className="absolute -top-4 -right-4 bg-surface-2 border border-border p-3 rounded-xl shadow-xl hidden md:block z-20"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                                                <Flame className="w-6 h-6 text-primary" />
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] text-text-muted uppercase font-bold tracking-tight">Active Mission</p>
+                                                <p className="text-xs font-black text-text-primary">Master ML in 6h</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <p className="text-[10px] text-text-muted uppercase font-bold tracking-tight">Active Mission</p>
-                                            <p className="text-xs font-black text-text-primary">Master ML in 6h</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </TiltCard>
+                                    </CardItem>
+                                </CardBody>
+                            </CardContainer>
                         </motion.div>
                     </div>
                 </section>
@@ -523,30 +525,33 @@ const LandingPage = () => {
                             className="relative"
                         >
                             <div className="absolute inset-0 bg-primary/10 blur-[80px] rounded-full opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity duration-500" />
-                            <TiltCard intensity={8} className="relative z-10">
-                                <img 
-                                    src="/Images/Roadmap_landingpage.png" 
-                                    alt="Dynamic Roadmap Feature" 
-                                    className="relative z-10 rounded-3xl border border-border shadow-2xl hover:scale-[1.02] transition-transform duration-500"
-                                    style={{ transform: "translateZ(20px)" }}
-                                />
-                                
-                                {/* Decorative Badge with depth */}
-                                <div 
-                                    className="absolute -bottom-6 -left-6 z-20 bg-surface border border-border p-4 rounded-2xl shadow-xl hidden sm:block animate-bounce-slow"
-                                    style={{ transform: "translateZ(40px)", transformStyle: "preserve-3d" }}
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-lg bg-success/10 flex items-center justify-center text-success">
-                                            <Trophy className="w-5 h-5" />
+                            <CardContainer className="inter-var relative z-10">
+                                <CardBody className="relative group/card w-full h-auto rounded-3xl p-0">
+                                    <CardItem translateZ="50" className="w-full relative z-10 rounded-3xl border border-border shadow-2xl overflow-hidden group-hover/card:shadow-xl">
+                                        <img 
+                                            src="/Images/Roadmap_landingpage.png" 
+                                            alt="Dynamic Roadmap Feature" 
+                                            className="w-full h-auto object-cover block"
+                                        />
+                                    </CardItem>
+                                    
+                                    {/* Decorative Badge with depth */}
+                                    <CardItem 
+                                        translateZ="100"
+                                        className="absolute -bottom-6 -left-6 z-20 bg-surface border border-border p-4 rounded-2xl shadow-xl hidden sm:block animate-bounce-slow"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-lg bg-success/10 flex items-center justify-center text-success">
+                                                <Trophy className="w-5 h-5" />
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Level Progress</p>
+                                                <p className="text-sm font-black text-text-primary">85% Completed</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <p className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Level Progress</p>
-                                            <p className="text-sm font-black text-text-primary">85% Completed</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </TiltCard>
+                                    </CardItem>
+                                </CardBody>
+                            </CardContainer>
                         </motion.div>
                     </div>
                 </section>
@@ -593,28 +598,29 @@ const LandingPage = () => {
                             className="relative"
                         >
                             <div className="absolute -inset-10 bg-primary/10 blur-[100px] rounded-full opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity duration-500" />
-                            <TiltCard intensity={10} className="relative z-10">
-                                <div className="relative rounded-3xl border border-border p-2 bg-bg shadow-2xl overflow-hidden group">
-                                    <img 
-                                        src="/Images/notificatiions questXP.jpeg" 
-                                        alt="QuestXP Focus Notification" 
-                                        className="w-full h-auto rounded-2xl group-hover:scale-[1.03] transition-transform duration-700"
-                                        style={{ transform: "translateZ(20px)" }}
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
-                                </div>
-                                
-                                {/* Floating Badge with depth */}
-                                <div 
-                                    className="absolute -bottom-6 -right-6 bg-surface-3 border border-border p-4 rounded-2xl shadow-xl flex items-center gap-3 animate-bounce"
-                                    style={{ transform: "translateZ(50px)", transformStyle: "preserve-3d" }}
-                                >
-                                    <div className="w-8 h-8 rounded-full bg-success/20 flex items-center justify-center p-1.5">
-                                        <img src="/favicon.png" alt="" className="w-full h-full object-contain" />
-                                    </div>
-                                    <span className="text-xs font-black text-text-primary uppercase tracking-tighter">Focus Safeguard Active</span>
-                                </div>
-                            </TiltCard>
+                            <CardContainer className="inter-var relative z-10">
+                                <CardBody className="relative group/card w-full h-auto rounded-3xl p-0">
+                                    <CardItem translateZ="50" className="w-full relative rounded-3xl border border-border p-2 bg-bg shadow-2xl overflow-hidden group-hover/card:shadow-xl">
+                                        <img 
+                                            src="/Images/notificatiions questXP.jpeg" 
+                                            alt="QuestXP Focus Notification" 
+                                            className="w-full h-auto rounded-2xl block"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
+                                    </CardItem>
+                                    
+                                    {/* Floating Badge with depth */}
+                                    <CardItem 
+                                        translateZ="100"
+                                        className="absolute -bottom-6 -right-6 bg-surface-3 border border-border p-4 rounded-2xl shadow-xl flex items-center gap-3 animate-bounce"
+                                    >
+                                        <div className="w-8 h-8 rounded-full bg-success/20 flex items-center justify-center p-1.5">
+                                            <img src="/favicon.png" alt="" className="w-full h-full object-contain" />
+                                        </div>
+                                        <span className="text-xs font-black text-text-primary uppercase tracking-tighter">Focus Safeguard Active</span>
+                                    </CardItem>
+                                </CardBody>
+                            </CardContainer>
                         </motion.div>
                     </div>
                 </section>
