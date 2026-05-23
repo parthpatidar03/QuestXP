@@ -28,12 +28,12 @@ const LeaderboardPodium = ({ players = [] }) => {
                         {/* Trophy / Icon */}
                         <div className={`relative mb-3 ${isFirst ? 'scale-125 -translate-y-4' : 'scale-100'}`}>
                             {isFirst && <Crown className="w-10 h-10 text-gold absolute -top-8 left-1/2 -translate-x-1/2 drop-shadow-[0_0_15px_rgba(255,215,0,0.5)]" />}
-                            <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center border-2 ${
+                            <div className={`w-14 h-14 sm:w-20 sm:h-20 rounded-full flex items-center justify-center border-2 ${
                                 isFirst ? 'border-gold bg-gold/20' : 
                                 isSecond ? 'border-text-muted bg-text-muted/20' : 
                                 'border-warning bg-warning/20'
                             }`}>
-                                <Trophy className={`w-8 h-8 sm:w-10 sm:h-10 ${
+                                <Trophy className={`w-8 h-8 sm:w-12 sm:h-12 ${
                                     isFirst ? 'text-gold' : 
                                     isSecond ? 'text-text-muted' : 
                                     'text-warning'
@@ -43,13 +43,13 @@ const LeaderboardPodium = ({ players = [] }) => {
 
                         {/* Player Card */}
                         <div className={`
-                            relative flex flex-col items-center p-3 sm:p-4 rounded-t-2xl border-x border-t border-border/50 backdrop-blur-md
-                            ${isFirst ? 'w-32 sm:w-40 h-40 sm:h-48 bg-gold/10 border-gold/30' : 'w-28 sm:w-36 h-32 sm:h-40 bg-surface/50'}
+                            relative flex flex-col items-center p-3 sm:p-5 rounded-t-2xl border-x border-t border-border/50 backdrop-blur-md
+                            ${isFirst ? 'w-32 sm:w-48 h-40 sm:h-60 bg-gold/10 border-gold/30' : 'w-28 sm:w-40 h-32 sm:h-48 bg-surface/50'}
                         `}>
-                            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-surface border border-border flex items-center justify-center mb-2 overflow-hidden shadow-inner">
-                                <span className="text-xs font-bold uppercase text-text-primary">{player.name[0]}</span>
+                            <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-surface border border-border flex items-center justify-center mb-3 overflow-hidden shadow-inner">
+                                <span className="text-xs sm:text-base font-bold uppercase text-text-primary">{player.name[0]}</span>
                             </div>
-                            <span className="text-xs sm:text-sm font-bold text-text-primary truncate w-full text-center px-1 mb-1">{player.name}</span>
+                            <span className="text-xs sm:text-base font-bold text-text-primary truncate w-full text-center px-1 mb-2">{player.name}</span>
                             <div className="flex flex-col items-center gap-0.5">
                                 <div className="flex items-center gap-1">
                                     <XPCurrency amount={player.totalXP || 0} size="xs" />

@@ -23,6 +23,7 @@ import VideoModal from '../components/VideoModal';
 import { Play } from 'lucide-react';
 import Footer from '../components/ui/Footer';
 import LeaderboardPodium from '../components/Dashboard/LeaderboardPodium';
+import FeaturesStack from '../components/Landing/FeaturesStack';
 import useAuthStore from '../store/useAuthStore';
 import TiltCard from '../components/ui/TiltCard';
 
@@ -322,7 +323,7 @@ const LandingPage = () => {
                                 We buy expensive courses but end up on YouTube. It has the content, but lacks the 
                                 <span className="text-primary italic font-bold"> structure, gamification, and personalization </span> 
                                 you need to finish.
-                                <span className="block mt-4 text-white font-black tracking-tight">
+                                <span className="block mt-4 text-text-primary font-black tracking-tight">
                                     QuestXP combines multiple playlists from different creators into one structured course you can finish and track.
                                 </span>
                             </p>
@@ -396,21 +397,16 @@ const LandingPage = () => {
                             <div className="bg-surface/40 backdrop-blur-md border border-border rounded-[2.5rem] p-8 shadow-2xl relative group overflow-hidden">
                                 <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-                                <div
-                                    className="grid relative z-10"
-                                    style={{
-                                        gridTemplateColumns: `repeat(${Math.min(visibleMetrics.length, 4)}, minmax(0, 1fr))`,
-                                    }}
-                                >
+                                <div className="grid relative z-10 grid-cols-2 md:grid-cols-4 gap-y-6 md:gap-y-0">
                                     {visibleMetrics.map((m, idx) => (
                                         <div
                                             key={m.key}
-                                            className={`flex flex-col items-center justify-center text-center p-6 md:p-8 ${idx < visibleMetrics.length - 1 ? 'border-r border-border/20' : ''}`}
+                                            className="flex flex-col items-center justify-center text-center p-4 md:p-8 md:border-r border-border/20 md:last:border-r-0"
                                         >
                                             <p className={`text-3xl sm:text-5xl font-black ${m.color} font-display mb-2`}>
                                                 {formatMetric(m.stat.value)}
                                             </p>
-                                            <p className="text-[9px] sm:text-[10px] font-bold text-text-secondary uppercase tracking-[0.2em] leading-tight">
+                                            <p className="text-[10px] sm:text-[10px] font-bold text-text-primary/80 dark:text-text-secondary uppercase tracking-[0.2em] leading-tight">
                                                 {m.label[0]} <br/> {m.label[1]}
                                             </p>
                                         </div>
@@ -634,37 +630,8 @@ const LandingPage = () => {
                         </p>
                     </div>
 
-                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        <article className="glass-card p-6 group border-primary/20 bg-primary/5">
-                            <div className="w-10 h-10 rounded-lg bg-primary text-white flex items-center justify-center mb-4">
-                                <Sparkles className="w-5 h-5" />
-                            </div>
-                            <h3 className="text-lg font-bold text-text-primary mb-2">AI Adaptive Roadmaps</h3>
-                            <p className="text-sm text-text-secondary leading-relaxed">
-                                Missed a day? Hit <span className="font-bold text-primary">+</span>. 
-                                QuestXP instantly recalculates your entire study path in real-time.
-                            </p>
-                        </article>
-
-                        <article className="glass-card p-6 group">
-                            <div className="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-4">
-                                <ShieldCheck className="w-5 h-5" />
-                            </div>
-                            <h3 className="text-lg font-bold text-text-primary mb-2">Focus Guardian</h3>
-                            <p className="text-sm text-text-secondary leading-relaxed">
-                                Specialized player with zero ads or recommendations. Keeps you in the flow.
-                            </p>
-                        </article>
-
-                        <article className="glass-card p-6 group">
-                            <div className="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-4">
-                                <Trophy className="w-5 h-5" />
-                            </div>
-                            <h3 className="text-lg font-bold text-text-primary mb-2">Gamified Mastery</h3>
-                            <p className="text-sm text-text-secondary leading-relaxed">
-                                Earn XP, maintain streaks, and climb the Global Hall of Fame as you learn.
-                            </p>
-                        </article>
+                    <div className="flex justify-center w-full">
+                        <FeaturesStack />
                     </div>
                 </section>
 

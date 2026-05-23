@@ -8,6 +8,8 @@ import PomodoroTimer from './components/PomodoroTimer';
 import useHeartbeat from './hooks/useHeartbeat';
 import GlobalInteractiveEffect from './components/ui/GlobalInteractiveEffect';
 import { requestNotificationPermission } from './services/firebase';
+import Lenis from 'lenis';
+import 'lenis/dist/lenis.css';
 
 // Lazy load pages for performance
 const Auth = lazy(() => import('./pages/Auth'));
@@ -157,6 +159,25 @@ const AppContent = () => {
 };
 
 const App = () => {
+    useEffect(() => {
+        const lenis = new Lenis({
+            autoRaf: true,
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            orientation: 'vertical',
+            gestureOrientation: 'vertical',
+            smoothWheel: true,
+            wheelMultiplier: 1,
+            smoothTouch: false,
+            touchMultiplier: 2,
+            infinite: false,
+        });
+
+        return () => {
+            lenis.destroy();
+        };
+    }, []);
+
     return (
         <BrowserRouter>
             <AppContent />

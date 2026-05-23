@@ -14,19 +14,24 @@
     --color-border: #E5E5E5;
     --color-border-shadow: #D1D5DB;
 
-    --color-primary: #58CC02; /* Duolingo Green */
+    --color-primary: #58CC02;
+    /* Duolingo Green */
     --color-primary-hover: #61E002;
     --color-primary-shadow: #46A302;
-    
-    --color-cyan: #1CB0F6; /* Duolingo Blue */
+
+    --color-cyan: #1CB0F6;
+    /* Duolingo Blue */
     --color-cyan-shadow: #1899D6;
-    
-    --color-gold: #FFC800; /* Duolingo Gold */
+
+    --color-gold: #FFC800;
+    /* Duolingo Gold */
     --color-gold-dim: #E6B400;
-    
+
     --color-success: #58CC02;
-    --color-warning: #FF9600; /* Duolingo Orange */
-    --color-danger: #FF4B4B; /* Duolingo Red */
+    --color-warning: #FF9600;
+    /* Duolingo Orange */
+    --color-danger: #FF4B4B;
+    /* Duolingo Red */
     --color-danger-shadow: #EA2B2B;
     --color-xp-gold: #FFC800;
 
@@ -48,7 +53,8 @@
   }
 
   .dark {
-    --color-bg: #0F172A; /* Deep slate / midnight */
+    --color-bg: #0F172A;
+    /* Deep slate / midnight */
     --color-surface: #1E293B;
     --color-surface-2: #334155;
     --color-surface-3: #475569;
@@ -61,10 +67,10 @@
 
     --color-cyan: #1CB0F6;
     --color-cyan-shadow: #1899D6;
-    
+
     --color-gold: #FFC800;
     --color-gold-dim: #E6B400;
-    
+
     --color-success: #58CC02;
     --color-warning: #FF9600;
     --color-danger: #FF4B4B;
@@ -353,19 +359,25 @@
 }
 
 @keyframes glow-pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 0 8px rgba(0, 229, 255, 0.4);
   }
+
   50% {
     box-shadow: 0 0 24px rgba(0, 229, 255, 0.9);
   }
 }
 
 @keyframes blink-blue {
-  0%, 100% { 
+
+  0%,
+  100% {
     box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
   }
-  50% { 
+
+  50% {
     box-shadow: 0 0 35px 8px rgba(59, 130, 246, 0.8);
   }
 }
@@ -429,8 +441,13 @@
 }
 
 @keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .animate-spin-slow {
