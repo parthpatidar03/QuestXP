@@ -4,7 +4,7 @@ export const shootConfetti = (origin) => {
   const count = 200;
   const defaults = {
     origin: origin || { x: 0.5, y: 0.5 },
-    zIndex: 9999,
+    zIndex: 10005,
   };
 
   function fire(particleRatio, opts) {
@@ -29,7 +29,7 @@ export const shootLighterConfetti = () => {
     spread: 70,
     origin: { y: 0.6 },
     colors: ['#a786ff', '#fd8bbc', '#eca184'],
-    zIndex: 9999,
+    zIndex: 10005,
   });
 };
 
@@ -49,7 +49,7 @@ export const shootFireworks = () => {
       startVelocity: 60,
       origin: { x: 0, y: 0.5 },
       colors,
-      zIndex: 9999,
+      zIndex: 10005,
     });
     confetti({
       particleCount: 2,
@@ -58,7 +58,7 @@ export const shootFireworks = () => {
       startVelocity: 60,
       origin: { x: 1, y: 0.5 },
       colors,
-      zIndex: 9999,
+      zIndex: 10005,
     });
 
     requestAnimationFrame(frame);

@@ -23,14 +23,16 @@ const LevelUpModal = () => {
                     angle: 60,
                     spread: 55,
                     origin: { x: 0 },
-                    colors: ['#38BDF8', '#10B981', '#F59E0B']
+                    colors: ['#38BDF8', '#10B981', '#F59E0B'],
+                    zIndex: 10005
                 });
                 confetti({
                     particleCount: 5,
                     angle: 120,
                     spread: 55,
                     origin: { x: 1 },
-                    colors: ['#38BDF8', '#10B981', '#F59E0B']
+                    colors: ['#38BDF8', '#10B981', '#F59E0B'],
+                    zIndex: 10005
                 });
 
                 if (Date.now() < end) {
