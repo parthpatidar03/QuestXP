@@ -253,6 +253,9 @@ const CourseDetail = () => {
         
         // Optimistic UI
         const nextStatus = !currentStatus;
+        if (nextStatus) {
+            shootConfetti();
+        }
         setProgress(prev => {
             const newList = nextStatus 
                 ? [...new Set([...(prev?.completedLectures || []), videoId])]

@@ -14,7 +14,7 @@ import UserTour from '../components/Dashboard/UserTour';
 
 import StreakCalendar from '../components/StreakCalendar';
 import CourseCreationForm from '../components/Course/CourseCreationForm';
-import { shootFireworks } from '../utils/confetti';
+import { shootFireworks, shootConfetti } from '../utils/confetti';
 import { BGPattern } from '../components/ui/bg-pattern';
 import FeedbackModal from '../components/FeedbackModal';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -493,6 +493,12 @@ const Dashboard = () => {
         if (localStorage.getItem('justSignedUp') === 'true') {
             shootFireworks();
             localStorage.removeItem('justSignedUp');
+        }
+
+        // Confetti for login
+        if (localStorage.getItem('justLoggedIn') === 'true') {
+            shootConfetti();
+            localStorage.removeItem('justLoggedIn');
         }
     }, [navigate, newFeatures]);
 

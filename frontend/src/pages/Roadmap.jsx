@@ -589,9 +589,9 @@ const Roadmap = () => {
     const handleToggleCompletion = useCallback(async (videoId, completed) => {
         if (!roadmap) return;
 
-        // Play light confetti if marking as completed
+        // Play confetti if marking as completed
         if (completed) {
-            shootLighterConfetti();
+            shootConfetti();
         }
 
         // Optimistic UI Update (Functional to avoid closure issues)

@@ -72,6 +72,7 @@ const Auth = () => {
         try {
             if (isLogin) {
                 await login(email.trim(), password);
+                localStorage.setItem('justLoggedIn', 'true');
             } else {
                 await register(name.trim(), email.trim(), password);
                 localStorage.setItem('justSignedUp', 'true');
@@ -93,6 +94,7 @@ const Auth = () => {
         }
         try {
             await googleLogin(credentialResponse.credential);
+            localStorage.setItem('justLoggedIn', 'true');
             goNext();
         } catch (err) {
             setError(friendlyError(err));
