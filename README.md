@@ -251,6 +251,13 @@ A lightweight global store (`useGamificationStore`) manages XP, level, streak, t
 ### TanStack Query for Server State
 API data (courses, progress, leaderboard) is managed by TanStack Query with configured `staleTime` and cache invalidation. Progress toggles call `queryClient.invalidateQueries()` to surgically refetch only affected data, not the entire app state.
 
+### Frontend Performance & Paint Optimization
+The frontend architecture underwent significant optimization to eliminate scroll jank, reduce memory leaks, and prevent CPU spikes:
+- **GPU Offloading:** Replaced global `useState` hooks with Framer Motion `useMotionValue` to prevent 60fps React re-renders during mouse movement.
+- **Throttled Listeners:** Global scroll event listeners (e.g., in `UserTour`) are wrapped in `requestAnimationFrame` and dynamically unmounted when not visible to prevent continuous Layout Thrashing.
+- **Glassmorphism Penalty Elimination:** Removed computationally expensive CSS `backdrop-blur` from large scrolling containers (like the sticky NavBar and landing page cards) to prevent the browser from recalculating blur geometry on every pixel scroll, drastically reducing GPU paint time.
+- **Query Batching & Polling:** Refactored aggressive `setInterval` AI polling (`useLectureStatus`) into TanStack React Query to ensure deduplicated polling, automatic garbage collection on unmount, and pause-on-blur capabilities.
+
 ### Scroll & Mouse Event Optimization (GPU Offloading)
 Global interactive effects and scroll listeners have been heavily optimized. React state updates (`useState`) for `mousemove` events were replaced with Framer Motion's `useMotionValue` to bypass React's render cycle completely, offloading work to the GPU. Global scroll listeners are throttled via `requestAnimationFrame` and dynamically attached only when actively needed to prevent continuous Layout Thrashing and scroll jank.
 

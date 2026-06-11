@@ -203,7 +203,7 @@ const LandingPage = () => {
             />
             <BGPattern variant="grid" mask="fade-edges" fill="var(--color-text-muted)" className="opacity-20 z-0" />
 
-            <header className="relative z-20 border-b border-border bg-surface/90 backdrop-blur">
+            <header className="relative z-20 border-b border-border bg-surface/90">
                 <div className="max-w-screen-xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
                     <Link to="/" className="flex items-center gap-2.5 group cursor-pointer shrink-0">
                         <img src="/favicon.png" alt="QuestXP" className="w-10 h-10 object-contain transition-transform group-hover:scale-105 rounded-xl shadow-sm" />

@@ -39,7 +39,7 @@ const NavBar = () => {
     };
 
     return (
-        <header className="sticky top-0 z-50 w-full border-b border-border bg-surface/95 backdrop-blur">
+        <header className="sticky top-0 z-50 w-full border-b border-border bg-surface/95">
             <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 flex items-center h-16 gap-4">
 
                 <Link to="/" className="flex items-center gap-2.5 shrink-0 mr-4">

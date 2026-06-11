@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import api from '../services/api';
 import useAuthStore from '../store/useAuthStore';
 
@@ -12,43 +12,24 @@ import useAuthStore from '../store/useAuthStore';
  */
 export const useLectureStatus = (lectureId, enabled = true) => {
     const { isAuthenticated } = useAuthStore();
-    const [status, setStatus] = useState(null);
 
-    useEffect(() => {
-        if (!lectureId || !enabled || !isAuthenticated) return;
+    const { data: status } = useQuery({
+        queryKey: ['lectureStatus', lectureId],
+        queryFn: async () => {
+            const { data } = await api.get(`/lectures/${lectureId}/ai-status`);
+            return data.aiStatus || {};
+        },
+        enabled: Boolean(lectureId && enabled && isAuthenticated),
+        refetchInterval: (query) => {
+            if (!query.state.data) return 5000;
+            const aiStatus = query.state.data;
+            const isFinished = Object.values(aiStatus).every(s => 
+                s === 'completed' || s === 'failed' || s === 'ready'
+            );
+            return isFinished ? false : 5000;
+        },
+        refetchOnWindowFocus: false
+    });
 
-        let cancelled = false;
-        const fetchStatus = async () => {
-            try {
-                const { data } = await api.get(`/lectures/${lectureId}/ai-status`);
-                if (!cancelled) {
-                    const aiStatus = data.aiStatus || {};
-                    setStatus(aiStatus);
-                    
-                    // Stop polling if all AI tasks are finished
-                    const isFinished = Object.values(aiStatus).every(s => 
-                        s === 'completed' || s === 'failed' || s === 'ready'
-                    );
-                    
-                    if (isFinished) {
-                        clearInterval(interval);
-                    }
-                }
-            } catch (_) {
-                // Silently fail as it's polling
-            }
-        };
-
-        // Initial fetch
-        fetchStatus();
-        
-        const interval = setInterval(fetchStatus, 3000);
-
-        return () => {
-            cancelled = true;
-            clearInterval(interval);
-        };
-    }, [lectureId, enabled, isAuthenticated]);
-
-    return status;
+    return status || null;
 };
