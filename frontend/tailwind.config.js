@@ -43,10 +43,11 @@ export default {
         }
       },
       fontFamily: {
-        display: ["'Josefin Sans'", 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        body: ["'Josefin Sans'", 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        display: ["'Playfair Display'", 'serif'],
+        body: ["'Inter'", 'sans-serif'],
         mono: ["'JetBrains Mono'", 'monospace'],
-        sans: ["'Josefin Sans'", 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ["'Inter'", 'sans-serif'],
+        serif: ["'Playfair Display'", 'serif'],
       },
       screens: {
         'xs': '400px',
