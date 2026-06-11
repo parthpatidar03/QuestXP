@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 
 import { motion, AnimatePresence } from 'framer-motion';
@@ -232,6 +232,24 @@ const CourseDetail = () => {
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
     const [isBulkUpdating, setIsBulkUpdating] = useState(false);
 
+    // Debounced write queue: videoId -> boolean (target state)
+    const pendingTogglesRef = useRef({});
+    const flushTimerRef = useRef(null);
+
+    // Flush all pending toggles to the API after 5s of inactivity
+    const flushPendingToggles = useCallback(async (courseIdParam) => {
+        const entries = Object.entries(pendingTogglesRef.current);
+        if (entries.length === 0) return;
+        pendingTogglesRef.current = {};
+
+        await Promise.allSettled(
+            entries.map(([videoId, isCompleted]) =>
+                api.post(`/progress/${courseIdParam}/video/${videoId}/toggle`, { isCompleted })
+            )
+        );
+        broadcastProgressUpdate(getTabId());
+    }, []);
+
     const handleShare = () => {
         const shareUrl = `${window.location.origin}/share/${courseId}`;
         navigator.clipboard.writeText(shareUrl);
@@ -248,48 +266,29 @@ const CourseDetail = () => {
     };
 
 
-    const handleToggleCompletion = async (videoId, currentStatus) => {
+    const handleToggleCompletion = useCallback((videoId, currentStatus) => {
         if (courseId?.startsWith('demo-')) return;
         
-        // Optimistic UI
         const nextStatus = !currentStatus;
-        if (nextStatus) {
-            shootConfetti();
-        }
+        if (nextStatus) shootConfetti();
+
+        // 1. Instant optimistic UI update — no waiting for network
         setProgress(prev => {
-            const newList = nextStatus 
+            const newList = nextStatus
                 ? [...new Set([...(prev?.completedLectures || []), videoId])]
                 : (prev?.completedLectures || []).filter(id => id !== videoId);
             return { ...prev, completedLectures: newList };
         });
 
-        try {
-            const { data } = await api.post(`/progress/${courseId}/video/${videoId}/toggle`, {
-                isCompleted: nextStatus
-            });
-            setProgress(prev => ({
-                ...(prev || {}),
-                completedLectures: nextStatus 
-                    ? [...new Set([...(prev?.completedLectures || []), videoId])]
-                    : (prev?.completedLectures || []).filter(id => id !== videoId),
-                completionPct: data?.completionPct ?? prev?.completionPct
-            }));
-            broadcastProgressUpdate(getTabId());
-        } catch (err) {
-            console.error("[CourseDetail] Failed to toggle completion:", {
-                message: err.message,
-                response: err.response?.data,
-                stack: err.stack
-            });
-            // Revert on error
-            setProgress(prev => {
-                const revertList = !nextStatus 
-                    ? [...new Set([...(prev?.completedLectures || []), videoId])]
-                    : (prev?.completedLectures || []).filter(id => id !== videoId);
-                return { ...prev, completedLectures: revertList };
-            });
-        }
-    };
+        // 2. Queue toggle — most recent value for this videoId wins
+        pendingTogglesRef.current[videoId] = nextStatus;
+
+        // 3. Debounce: only flush to API after 5s of inactivity
+        if (flushTimerRef.current) clearTimeout(flushTimerRef.current);
+        flushTimerRef.current = setTimeout(() => {
+            flushPendingToggles(courseId);
+        }, 5000);
+    }, [courseId, flushPendingToggles]);
 
     const handleMarkAllComplete = async () => {
         if (courseId?.startsWith('demo-')) return;
@@ -373,12 +372,7 @@ const CourseDetail = () => {
         };
         window.addEventListener('focus', handleFocus);
         
-        // Listen for same-tab and cross-tab progress updates
-        const handleProgressSync = (e) => {
-            if (e.detail?.sourceId === getTabId()) return;
-            fetchAll();
-        };
-        window.addEventListener('questxp_progress_updated', handleProgressSync);
+        // Listen for cross-tab progress updates only (same-tab updates are already reflected optimistically)
         const handleStorageSync = (e) => {
             if (e.key === 'questxp_progress_sync') {
                 try {
@@ -392,8 +386,12 @@ const CourseDetail = () => {
 
         return () => {
             window.removeEventListener('focus', handleFocus);
-            window.removeEventListener('questxp_progress_updated', handleProgressSync);
             window.removeEventListener('storage', handleStorageSync);
+            // Flush any pending toggles on unmount so data isn't lost
+            if (flushTimerRef.current) {
+                clearTimeout(flushTimerRef.current);
+                flushPendingToggles(courseId);
+            }
         };
     }, [courseId]);
 

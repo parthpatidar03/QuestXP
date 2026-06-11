@@ -464,9 +464,9 @@ const Roadmap = () => {
         };
         window.addEventListener('focus', handleFocus);
         
-        // Listen for same-tab and cross-tab progress updates
-        const handleProgressSync = (e) => {
-            if (e.detail?.sourceId === getTabId()) return;
+        // Listen for progress updates from ALL tabs including this one
+        // (CourseDetail updates must be reflected here immediately)
+        const handleProgressSync = () => {
             fetchRoadmap();
             fetchAllRoadmaps();
         };
@@ -586,42 +586,43 @@ const Roadmap = () => {
         }, 400);
     }, [roadmap, fetchRoadmap]);
 
-    const handleToggleCompletion = useCallback(async (videoId, completed) => {
+    // Debounced write queue for roadmap toggles: videoId -> boolean
+    const pendingRoadmapTogglesRef = useRef({});
+    const roadmapFlushTimerRef = useRef(null);
+
+    const handleToggleCompletion = useCallback((videoId, completed) => {
         if (!roadmap) return;
 
-        // Play confetti if marking as completed
-        if (completed) {
-            shootConfetti();
-        }
+        if (completed) shootConfetti();
 
-        // Optimistic UI Update (Functional to avoid closure issues)
+        // 1. Instant optimistic update
         setRoadmap(prev => {
             if (!prev) return prev;
             return {
                 ...prev,
                 days: prev.days.map(day => ({
                     ...day,
-                    plannedVideos: day.plannedVideos.map(vid => 
+                    plannedVideos: day.plannedVideos.map(vid =>
                         vid.videoId?.toString() === videoId?.toString() ? { ...vid, completed } : vid
                     )
                 }))
             };
         });
 
-        try {
-            const updated = await toggleVideoCompletion(roadmap._id, videoId, completed);
-            setRoadmap(updated);
+        // 2. Queue — most recent value wins
+        pendingRoadmapTogglesRef.current[videoId] = completed;
+
+        // 3. Debounce flush after 5s of inactivity
+        if (roadmapFlushTimerRef.current) clearTimeout(roadmapFlushTimerRef.current);
+        roadmapFlushTimerRef.current = setTimeout(async () => {
+            const entries = Object.entries(pendingRoadmapTogglesRef.current);
+            pendingRoadmapTogglesRef.current = {};
+            await Promise.allSettled(
+                entries.map(([vid, comp]) => toggleVideoCompletion(roadmap._id, vid, comp))
+            );
             broadcastProgressUpdate();
-        } catch (err) {
-            console.error("[Roadmap] Failed to toggle video completion:", {
-                message: err.message,
-                response: err.response?.data,
-                stack: err.stack
-            });
-            // Re-fetch on error
-            fetchRoadmap();
-        }
-    }, [roadmap, fetchRoadmap]);
+        }, 5000);
+    }, [roadmap]);
 
     const handleMarkAllComplete = async () => {
         if (!roadmap || !roadmap.courseId) return;
