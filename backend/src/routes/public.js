@@ -3,7 +3,7 @@ const router = express.Router();
 const User = require('../models/User');
 const Progress = require('../models/Progress');
 const QuizAttempt = require('../models/QuizAttempt');
-const redis = require('../queues/redisConnection');
+const { generalClient: redis } = require('../queues/redisConnection');
 
 /**
  * Public landing-page stats.

@@ -138,6 +138,7 @@ Distributed rate limiting stored in Redis, not in-memory (survives restarts).
 
 - **Library:** `express-rate-limit` + `rate-limit-redis`
 - **File:** `backend/src/middleware/rateLimiter.js`
+- **Resiliency & Connection Isolation**: Implements an isolated `generalClient` connection (with `enableOfflineQueue: false`) alongside the main BullMQ connection. By using `passOnStoreError: true` on all rate limiters, any Redis network drop or outage will immediately bypass the rate limiter (fail-open) and prevent API requests from hanging/timing out.
 
 ### 6. Bi-Directional Progress Sync
 

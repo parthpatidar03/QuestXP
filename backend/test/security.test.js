@@ -20,6 +20,8 @@ test.after(async () => {
     }
     // Close redis to prevent hang
     await redisClient.quit();
+    const { generalClient } = require('../src/queues/redisConnection');
+    await generalClient.quit();
 });
 
 test('Security: Helmet headers are present', async () => {

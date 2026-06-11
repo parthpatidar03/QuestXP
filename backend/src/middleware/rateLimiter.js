@@ -1,6 +1,6 @@
 const rateLimit = require('express-rate-limit');
 const { RedisStore } = require('rate-limit-redis');
-const redisClient = require('../queues/redisConnection');
+const { generalClient: redisClient } = require('../queues/redisConnection');
 
 /**
  * Global rate limiter (IP based)
@@ -14,6 +14,7 @@ const globalLimiter = rateLimit({
         sendCommand: (...args) => redisClient.call(...args),
         prefix: 'rl:global:'
     }),
+    passOnStoreError: true, // Fail-open if Redis is down
     handler: (req, res) => {
         res.status(429).json({
             error: 'GLOBAL_RATE_LIMIT',
@@ -48,6 +49,7 @@ const chatbotHourlyLimiter = rateLimit({
         sendCommand: (...args) => redisClient.call(...args),
         prefix: 'rl:chatbot:hr:'
     }),
+    passOnStoreError: true, // Fail-open if Redis is down
 });
 
 /**
@@ -71,6 +73,7 @@ const chatbotTwoHourLimiter = rateLimit({
         sendCommand: (...args) => redisClient.call(...args),
         prefix: 'rl:chatbot:2hr:'
     }),
+    passOnStoreError: true, // Fail-open if Redis is down
 });
 
 /**
@@ -94,6 +97,7 @@ const quizLimiter = rateLimit({
         sendCommand: (...args) => redisClient.call(...args),
         prefix: 'rl:quiz:'
     }),
+    passOnStoreError: true, // Fail-open if Redis is down
 });
 
 /**
@@ -117,6 +121,7 @@ const summaryLimiter = rateLimit({
         sendCommand: (...args) => redisClient.call(...args),
         prefix: 'rl:summary:'
     }),
+    passOnStoreError: true, // Fail-open if Redis is down
 });
 
 module.exports = {

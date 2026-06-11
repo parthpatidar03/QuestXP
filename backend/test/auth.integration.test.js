@@ -155,6 +155,8 @@ test.after(async () => {
     await stopMongo();
     // Close redis to prevent hang
     await redisClient.quit();
+    const { generalClient } = require('../src/queues/redisConnection');
+    await generalClient.quit();
 });
 
 test.beforeEach(async () => {
