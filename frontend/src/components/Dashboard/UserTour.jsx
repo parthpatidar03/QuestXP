@@ -115,16 +115,30 @@ const UserTour = () => {
     }, []);
 
     useEffect(() => {
+        if (!isVisible || currentStep < 0 || currentStep >= TOUR_STEPS.length) return;
+
+        let ticking = false;
+        const onScroll = () => {
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    updateTargetRect();
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        };
+
         // Wait for scrolling to finish before updating rect
         const timer = setTimeout(updateTargetRect, 300);
-        window.addEventListener('resize', updateTargetRect);
-        window.addEventListener('scroll', updateTargetRect);
+        window.addEventListener('resize', onScroll);
+        window.addEventListener('scroll', onScroll, { passive: true });
+        
         return () => {
             clearTimeout(timer);
-            window.removeEventListener('resize', updateTargetRect);
-            window.removeEventListener('scroll', updateTargetRect);
+            window.removeEventListener('resize', onScroll);
+            window.removeEventListener('scroll', onScroll);
         };
-    }, [currentStep, updateTargetRect]);
+    }, [isVisible, currentStep, updateTargetRect]);
 
     const handleBack = useCallback(() => {
         if (currentStep > 0) {

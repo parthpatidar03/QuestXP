@@ -251,6 +251,9 @@ A lightweight global store (`useGamificationStore`) manages XP, level, streak, t
 ### TanStack Query for Server State
 API data (courses, progress, leaderboard) is managed by TanStack Query with configured `staleTime` and cache invalidation. Progress toggles call `queryClient.invalidateQueries()` to surgically refetch only affected data, not the entire app state.
 
+### Scroll & Mouse Event Optimization (GPU Offloading)
+Global interactive effects and scroll listeners have been heavily optimized. React state updates (`useState`) for `mousemove` events were replaced with Framer Motion's `useMotionValue` to bypass React's render cycle completely, offloading work to the GPU. Global scroll listeners are throttled via `requestAnimationFrame` and dynamically attached only when actively needed to prevent continuous Layout Thrashing and scroll jank.
+
 ### SEO & Discoverability Architecture
 Implemented a comprehensive SEO engine to improve search visibility and indexing.
 - **Dynamic Meta Injection:** Using `react-helmet-async` for page-specific titles, descriptions, and Open Graph tags.

@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useMotionTemplate } from 'framer-motion';
 
 const GlobalInteractiveEffect = () => {
-    const [mousePos, setMousePos] = useState({ x: -100, y: -100 });
+    // Use motion values to bypass React re-renders on high-frequency mouse movements
+    const mouseX = useMotionValue(-100);
+    const mouseY = useMotionValue(-100);
     const [ripples, setRipples] = useState([]);
 
     useEffect(() => {
         const handleMouseMove = (e) => {
-            setMousePos({ x: e.clientX, y: e.clientY });
+            mouseX.set(e.clientX);
+            mouseY.set(e.clientY);
         };
 
         const handleClick = (e) => {
@@ -18,14 +21,17 @@ const GlobalInteractiveEffect = () => {
             }, 1000);
         };
 
-        window.addEventListener('mousemove', handleMouseMove);
+        window.addEventListener('mousemove', handleMouseMove, { passive: true });
         window.addEventListener('click', handleClick);
 
         return () => {
             window.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('click', handleClick);
         };
-    }, []);
+    }, [mouseX, mouseY]);
+
+    // Construct the background gradient dynamically without triggering re-renders
+    const background = useMotionTemplate`radial-gradient(600px at ${mouseX}px ${mouseY}px, rgba(34, 197, 94, 0.2), transparent 80%)`;
 
     return (
         <>
@@ -48,10 +54,10 @@ const GlobalInteractiveEffect = () => {
             </AnimatePresence>
 
             {/* Mouse Glow Effect */}
-            <div 
+            <motion.div 
                 className="pointer-events-none fixed inset-0 z-[9998] opacity-[0.15] transition-opacity duration-300 hidden sm:block"
                 style={{
-                    background: `radial-gradient(600px at ${mousePos.x}px ${mousePos.y}px, rgba(34, 197, 94, 0.2), transparent 80%)`
+                    background
                 }}
             />
         </>
