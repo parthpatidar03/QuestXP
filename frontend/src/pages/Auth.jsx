@@ -241,7 +241,7 @@ const SignInTab = ({ email, setEmail, password, setPassword, handleSubmit, submi
       </div>
       
       <div className="mt-4 flex w-full flex-col gap-3 items-center">
-        <div className="w-full flex justify-center [&>div]:w-full [&>div>iframe]:w-full overflow-hidden rounded-md border border-border">
+        <div className="flex justify-center w-full">
           <GoogleLogin
             onSuccess={handleGoogleSuccess}
             onError={handleGoogleError}
@@ -327,7 +327,7 @@ const SignUpTab = ({ name, setName, email, setEmail, password, setPassword, hand
       </div>
       
       <div className="mt-4 flex w-full flex-col gap-3 items-center">
-        <div className="w-full flex justify-center [&>div]:w-full [&>div>iframe]:w-full overflow-hidden rounded-md border border-border">
+        <div className="flex justify-center w-full">
           <GoogleLogin
             onSuccess={handleGoogleSuccess}
             onError={handleGoogleError}
