@@ -23,6 +23,11 @@ jobs:
         with:
           node-version: '22.x'
 
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
       - name: npm install, build, and test
         run: |
           cd backend
