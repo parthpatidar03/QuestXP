@@ -3,9 +3,12 @@ import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import useAuthStore from '../store/useAuthStore';
 import { useNavigate } from 'react-router-dom';
 import { BGPattern } from '../components/ui/bg-pattern';
+import { motion } from 'framer-motion';
 
 const Auth = () => {
-    const [isLogin, setIsLogin] = useState(true);
+    const [currentTab, setCurrentTab] = useState(0); // 0 for Sign in, 1 for Sign up
+    const isLogin = currentTab === 0;
+
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -22,14 +25,12 @@ const Auth = () => {
 
     const [submitting, setSubmitting] = useState(false);
 
-    // Map API failures to messages users can act on, not raw stack traces.
     const friendlyError = (err) => {
         if (!err) return 'Authentication failed. Please try again.';
 
-        // Handle Network Errors (likely CORS blocks or backend down)
         if (!err.response) {
             if (err.code === 'ERR_NETWORK') {
-                return 'Network failure. This is likely a CORS block. Ensure the backend is redeployed with the latest CORS fixes.';
+                return 'Network failure. Ensure the backend is redeployed with the latest CORS fixes.';
             }
             return 'Could not reach server. Please check your internet connection.';
         }
@@ -112,98 +113,234 @@ const Auth = () => {
         <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || ''}>
             <div className="min-h-screen flex items-center justify-center bg-bg flex-col text-text-primary p-4 relative overflow-hidden">
                 <BGPattern variant="grid" mask="fade-edges" fill="var(--color-text-muted)" className="opacity-20" />
-                <div className="relative z-10 mb-8 flex flex-col items-center">
+                
+                <div className="relative z-10 mb-6 flex flex-col items-center">
                     <div className="w-16 h-16 bg-surface border border-border rounded-xl flex items-center justify-center mb-4 shadow-card">
                         <img src="/favicon.png" alt="QuestXP Logo" className="w-10 h-10 object-contain" />
                     </div>
                     <h1 className="text-text-primary font-semibold text-3xl tracking-tight">QuestXP</h1>
-                    <p className="text-text-secondary mt-2">Structured learning from YouTube playlists.</p>
                 </div>
 
-                <div className="relative z-10 bg-surface p-8 rounded-xl shadow-card w-full max-w-md border border-border">
-                    <h2 className="text-2xl font-semibold mb-2 text-center text-text-primary">
-                        {isLogin ? 'Welcome back' : 'Create account'}
-                    </h2>
-                    <p className="text-sm text-text-secondary text-center mb-6">
-                        {isLogin ? 'Sign in to continue studying.' : 'Start tracking progress across your courses.'}
-                    </p>
-                    
-                    {error && (
-                        <div className="bg-danger/10 border border-danger/30 text-danger p-3 rounded-lg mb-4 text-sm text-center">
-                            {error}
-                        </div>
-                    )}
-
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        {!isLogin && (
-                            <div>
-                                <label className="block text-sm font-medium mb-1.5 text-text-secondary">Name</label>
-                                <input
-                                    type="text" value={name} onChange={(e) => setName(e.target.value)}
-                                    className="w-full p-3 bg-surface-2 rounded-md border border-border focus:border-primary outline-none transition-colors text-text-primary placeholder:text-text-muted"
-                                    placeholder="Enter your name"
-                                    required
-                                />
-                            </div>
-                        )}
-                        <div>
-                            <label className="block text-sm font-medium mb-1.5 text-text-secondary">Email</label>
-                            <input
-                                type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-                                className="w-full p-3 bg-surface-2 rounded-md border border-border focus:border-primary outline-none transition-colors text-text-primary placeholder:text-text-muted"
-                                placeholder="you@example.com"
-                                required
+                <div className="relative z-10 w-full max-w-[400px]">
+                    <Account 
+                        currentTab={currentTab} 
+                        setCurrentTab={setCurrentTab}
+                        firstTab={
+                            <SignInTab 
+                                email={email} setEmail={setEmail}
+                                password={password} setPassword={setPassword}
+                                handleSubmit={handleSubmit} submitting={submitting}
+                                error={error} handleGoogleSuccess={handleGoogleSuccess} handleGoogleError={handleGoogleError}
                             />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium mb-1.5 text-text-secondary">Password</label>
-                            <input
-                                type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-                                className="w-full p-3 bg-surface-2 rounded-md border border-border focus:border-primary outline-none transition-colors text-text-primary placeholder:text-text-muted"
-                                placeholder="••••••••"
-                                required
+                        }
+                        secondTab={
+                            <SignUpTab 
+                                name={name} setName={setName}
+                                email={email} setEmail={setEmail}
+                                password={password} setPassword={setPassword}
+                                handleSubmit={handleSubmit} submitting={submitting}
+                                error={error} handleGoogleSuccess={handleGoogleSuccess} handleGoogleError={handleGoogleError}
                             />
-                        </div>
-                        
-                        <button
-                            type="submit"
-                            disabled={submitting}
-                            className="btn-primary w-full py-3 mt-4 text-[15px] disabled:opacity-60 disabled:cursor-not-allowed"
-                        >
-                            {submitting ? (isLogin ? 'Signing in…' : 'Creating account…') : (isLogin ? 'Sign In' : 'Create Account')}
-                        </button>
-                    </form>
-
-                    <div className="mt-8 flex flex-col items-center gap-6">
-                        <div className="relative w-full flex items-center justify-center">
-                            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border"></div></div>
-                            <span className="relative bg-surface px-4 text-xs font-semibold uppercase tracking-wider text-text-muted">or continue with</span>
-                        </div>
-
-                        <div className="w-full flex justify-center">
-                            <GoogleLogin
-                                onSuccess={handleGoogleSuccess}
-                                onError={handleGoogleError}
-                                theme="outline"
-                                shape="rectangular"
-                                size="large"
-                                text={isLogin ? "signin_with" : "signup_with"}
-                                useOneTap={false}
-                                auto_select={false}
-                            />
-                        </div>
-                    </div>
-
-                    <p className="mt-8 text-center text-sm text-text-secondary">
-                        {isLogin ? "Don't have an account? " : "Already have an account? "}
-                        <button type="button" onClick={() => setIsLogin(!isLogin)} className="text-primary hover:text-primary-hover transition-colors font-medium ml-1">
-                            {isLogin ? 'Sign up' : 'Sign in'}
-                        </button>
-                    </p>
+                        }
+                    />
                 </div>
             </div>
         </GoogleOAuthProvider>
     );
 };
+
+export const Account = ({ currentTab, setCurrentTab, firstTab, secondTab }) => {
+    return (
+      <div className="flex w-full flex-col gap-2">
+        <Switch currentTab={currentTab} setTab={setCurrentTab} />
+        <div className="overflow-hidden rounded-xl border border-neutral-200 bg-surface shadow-sm dark:border-neutral-900">
+          {currentTab === 0 && firstTab}
+          {currentTab === 1 && secondTab}
+        </div>
+      </div>
+    )
+  }
+  
+const Switch = ({ setTab, currentTab }) => (
+    <div
+      className={`relative flex w-full items-center rounded-lg bg-neutral-100 py-1 text-neutral-900 dark:bg-[#1C1C1C] dark:text-neutral-400 border border-transparent dark:border-neutral-800`}>
+      <motion.div
+        transition={{ type: 'keyframes', duration: 0.15, ease: 'easeInOut' }}
+        animate={currentTab === 0 ? { x: 4 } : { x: '98%' }}
+        initial={currentTab === 0 ? { x: 4 } : { x: '98%' }}
+        className={`absolute h-5/6 w-1/2 rounded-md bg-white shadow-sm dark:bg-[#2C2C2C] dark:text-white`}
+      />
+      <button
+        type="button"
+        onClick={() => setTab(0)}
+        className={`z-10 h-9 w-full rounded-md text-center text-sm font-medium transition-colors ${currentTab === 0 ? 'text-black dark:text-white' : 'hover:text-black dark:hover:text-white'}`}>
+        Sign in
+      </button>
+      <button
+        type="button"
+        onClick={() => setTab(1)}
+        className={`z-10 h-9 w-full rounded-md text-center text-sm font-medium transition-colors ${currentTab === 1 ? 'text-black dark:text-white' : 'hover:text-black dark:hover:text-white'}`}>
+        Sign up
+      </button>
+    </div>
+)
+
+const SignInTab = ({ email, setEmail, password, setPassword, handleSubmit, submitting, error, handleGoogleSuccess, handleGoogleError }) => (
+    <div className="flex w-full flex-col items-start justify-start gap-4 p-5 pb-6">
+      <div>
+        <h1 className="font-semibold text-lg text-text-primary">Sign in to your account</h1>
+      </div>
+      
+      {error && (
+        <div className="bg-danger/10 w-full border border-danger/30 text-danger p-3 rounded-lg text-sm text-center">
+            {error}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
+          <div className="w-full">
+            <label htmlFor="email" className="text-sm font-medium text-text-primary">
+              Email
+            </label>
+            <input
+              name="email"
+              placeholder="you@example.com"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="mt-1 h-10 w-full rounded-md border border-neutral-300 px-3 placeholder-neutral-400 outline-none focus:ring-2 focus:ring-neutral-800 dark:border-neutral-800 dark:bg-[#1C1C1C] dark:text-white dark:placeholder-neutral-600 transition-all"
+            />
+          </div>
+          <div className="w-full">
+            <label htmlFor="password" className="text-sm font-medium text-text-primary">
+              Password
+            </label>
+            <input
+              name="password"
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="mt-1 h-10 w-full rounded-md border border-neutral-300 px-3 placeholder-neutral-400 outline-none focus:ring-2 focus:ring-neutral-800 dark:border-neutral-800 dark:bg-[#1C1C1C] dark:text-white dark:placeholder-neutral-600 transition-all"
+            />
+          </div>
+          <div className="mt-2.5 w-full">
+            <button type="submit" disabled={submitting} className="h-10 w-full rounded-md bg-neutral-900 font-medium text-white dark:bg-white dark:text-neutral-950 hover:opacity-90 transition-opacity disabled:opacity-50">
+              {submitting ? 'Signing in...' : 'Submit'}
+            </button>
+          </div>
+      </form>
+  
+      <div className="relative mt-4 w-full">
+        <div className="absolute left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 bg-surface px-3 text-xs text-neutral-500 dark:bg-surface dark:text-neutral-500">
+          Or
+        </div>
+        <div className="border-b border-neutral-200 dark:border-neutral-800"></div>
+      </div>
+      
+      <div className="mt-4 flex w-full flex-col gap-3 items-center">
+        <div className="w-full flex justify-center [&>div]:w-full [&>div>iframe]:w-full overflow-hidden rounded-md border border-border">
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={handleGoogleError}
+            theme="filled_black"
+            shape="rectangular"
+            size="large"
+            text="signin_with"
+            useOneTap={false}
+            auto_select={false}
+          />
+        </div>
+      </div>
+    </div>
+)
+  
+const SignUpTab = ({ name, setName, email, setEmail, password, setPassword, handleSubmit, submitting, error, handleGoogleSuccess, handleGoogleError }) => (
+    <div className="flex w-full flex-col items-start justify-start gap-4 p-5 pb-6">
+      <div>
+        <h1 className="font-semibold text-lg text-text-primary">Create an account</h1>
+      </div>
+      
+      {error && (
+        <div className="bg-danger/10 w-full border border-danger/30 text-danger p-3 rounded-lg text-sm text-center">
+            {error}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
+          <div className="w-full">
+            <label htmlFor="name" className="text-sm font-medium text-text-primary">
+              Name
+            </label>
+            <input
+              name="name"
+              placeholder="John Doe"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              className="mt-1 h-10 w-full rounded-md border border-neutral-300 px-3 placeholder-neutral-400 outline-none focus:ring-2 focus:ring-neutral-800 dark:border-neutral-800 dark:bg-[#1C1C1C] dark:text-white dark:placeholder-neutral-600 transition-all"
+            />
+          </div>
+          <div className="w-full">
+            <label htmlFor="email" className="text-sm font-medium text-text-primary">
+              Email
+            </label>
+            <input
+              name="email"
+              placeholder="you@example.com"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="mt-1 h-10 w-full rounded-md border border-neutral-300 px-3 placeholder-neutral-400 outline-none focus:ring-2 focus:ring-neutral-800 dark:border-neutral-800 dark:bg-[#1C1C1C] dark:text-white dark:placeholder-neutral-600 transition-all"
+            />
+          </div>
+          <div className="w-full">
+            <label htmlFor="password" className="text-sm font-medium text-text-primary">
+              Password
+            </label>
+            <input
+              name="password"
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="mt-1 h-10 w-full rounded-md border border-neutral-300 px-3 placeholder-neutral-400 outline-none focus:ring-2 focus:ring-neutral-800 dark:border-neutral-800 dark:bg-[#1C1C1C] dark:text-white dark:placeholder-neutral-600 transition-all"
+            />
+          </div>
+          <div className="mt-2.5 w-full">
+            <button type="submit" disabled={submitting} className="h-10 w-full rounded-md bg-neutral-900 font-medium text-white dark:bg-white dark:text-neutral-950 hover:opacity-90 transition-opacity disabled:opacity-50">
+              {submitting ? 'Creating...' : 'Submit'}
+            </button>
+          </div>
+      </form>
+  
+      <div className="relative mt-4 w-full">
+        <div className="absolute left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 bg-surface px-3 text-xs text-neutral-500 dark:bg-surface dark:text-neutral-500">
+          Or
+        </div>
+        <div className="border-b border-neutral-200 dark:border-neutral-800"></div>
+      </div>
+      
+      <div className="mt-4 flex w-full flex-col gap-3 items-center">
+        <div className="w-full flex justify-center [&>div]:w-full [&>div>iframe]:w-full overflow-hidden rounded-md border border-border">
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={handleGoogleError}
+            theme="filled_black"
+            shape="rectangular"
+            size="large"
+            text="signup_with"
+            useOneTap={false}
+            auto_select={false}
+          />
+        </div>
+      </div>
+    </div>
+)
 
 export default Auth;

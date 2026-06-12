@@ -25,7 +25,8 @@ import Footer from '../components/ui/Footer';
 import LeaderboardPodium from '../components/Dashboard/LeaderboardPodium';
 import FeaturesStack from '../components/Landing/FeaturesStack';
 import useAuthStore from '../store/useAuthStore';
-import { ShinyCard } from '../components/UI/ShinyCard';
+import { ShinyCard } from '../components/ui/ShinyCard';
+import Counter from '../components/ui/Counter';
 
 
 // Conservative floor values — always shown if API fails or is slow.
@@ -61,9 +62,9 @@ const LandingPage = () => {
     }, []);
 
     const formatMetric = (num) => {
-        if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M+`;
-        if (num >= 1000) return `${(num / 1000).toFixed(1)}k+`;
-        return `${num}+`;
+        if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M+';
+        if (num >= 1000) return (num / 1000).toFixed(1) + 'k+';
+        return Math.floor(num) + '+';
     };
 
     // Build the metrics list dynamically — we only render entries with show:true.
@@ -372,9 +373,11 @@ const LandingPage = () => {
                                             key={m.key}
                                             className="flex flex-col items-center justify-center text-center p-4 md:p-8 md:border-r border-border/20 md:last:border-r-0"
                                         >
-                                            <p className={`text-3xl sm:text-5xl font-black ${m.color} font-display mb-2`}>
-                                                {formatMetric(m.stat.value)}
-                                            </p>
+                                            <Counter
+                                                targetValue={m.stat.value}
+                                                format={formatMetric}
+                                                className={`text-3xl sm:text-5xl font-black ${m.color} font-display mb-2`}
+                                            />
                                             <p className="text-[10px] sm:text-[10px] font-bold text-text-primary/80 dark:text-text-secondary uppercase tracking-[0.2em] leading-tight">
                                                 {m.label[0]} <br/> {m.label[1]}
                                             </p>

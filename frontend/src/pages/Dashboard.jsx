@@ -23,8 +23,8 @@ import UsernameModal from '../components/Dashboard/UsernameModal';
 import { Calendar, TrendingUp, Crown, Smartphone } from 'lucide-react';
 import GlobalLeaderboardModal from '../components/Dashboard/GlobalLeaderboardModal';
 import GenerateRoadmapModal from '../components/Roadmap/GenerateRoadmapModal';
-import { ShinyCard } from '../components/UI/ShinyCard';
-import ProgressAnimata from '../components/UI/ProgressAnimata';
+import { ShinyCard } from '../components/ui/ShinyCard';
+import ProgressAnimata from '../components/ui/ProgressAnimata';
 
 
 /* ── Helpers ─────────────────────────────────────────────────────────── */
@@ -233,7 +233,7 @@ function ProductivityCard({ completionRate, completedCourses, totalEnrolled }) {
 }
 
 /* ── Course Card ────────────────────────────────────────────────────── */
-function CourseCard({ course, progress, onDelete, isDeleting }) {
+function CourseCard({ course, progress, onDelete, isDeleting, priority = false }) {
     const pct = calcCourseProgress(course, progress);
     const xpPool = (course?.totalLectures || 0) * XP_PER_LECTURE;
     const thumb = course?.thumbnailUrl || course?.sections?.[0]?.lectures?.[0]?.thumbnailUrl;
@@ -285,7 +285,8 @@ function CourseCard({ course, progress, onDelete, isDeleting }) {
                     <img 
                         src={thumb} 
                         alt={course.title}
-                        loading="lazy"
+                        loading={priority ? undefined : "lazy"}
+                        fetchpriority={priority ? "high" : "auto"}
                         className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-500"
                     />
                 ) : (
@@ -598,8 +599,7 @@ const Dashboard = () => {
         queryFn: getXPHistory,
         enabled: !!user && !user.guest
     });
-
-    const { data: coursesData, isLoading: coursesLoading } = useQuery({
+    const { data: coursesData = [], isLoading: coursesLoading } = useQuery({
         queryKey: ['courses', user?.guest],
         queryFn: async () => {
             if (user?.guest) {
@@ -615,6 +615,8 @@ const Dashboard = () => {
             return hasProcessing ? 3000 : false;
         }
     });
+
+
 
     const { data: progressMap = {} } = useQuery({
         queryKey: ['progress', user?.guest, coursesData?.map(c => c._id).join('|') || 'none'],
@@ -842,13 +844,14 @@ const Dashboard = () => {
                                             {courses
                                                 .filter(c => !optimisticHiddenIds.has(c._id))
                                                 .slice(0, visibleCount)
-                                                .map(c => (
+                                                .map((c, idx) => (
                                                     <CourseCard
                                                         key={c._id}
                                                         course={c}
                                                         progress={progressMap[c._id]}
                                                         onDelete={handleDeleteCourse}
                                                         isDeleting={deletingCourseId === c._id}
+                                                        priority={idx < 6}
                                                     />
                                                 ))}
                                         </div>

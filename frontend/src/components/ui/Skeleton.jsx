@@ -1,11 +1,11 @@
 import React from 'react';
 import { cn } from '../../lib/utils';
 
-const Skeleton = ({ className, ...props }) => {
+export const Skeleton = ({ className, ...props }) => {
     return (
         <div
             className={cn(
-                "animate-pulse rounded-md bg-surface-2/80",
+                "animate-pulse dark:bg-neutral-800 bg-neutral-300 rounded-lg",
                 className
             )}
             {...props}
@@ -14,26 +14,26 @@ const Skeleton = ({ className, ...props }) => {
 };
 
 export const CourseCardSkeleton = () => (
-    <div className="glass-card flex flex-col gap-3 p-0 overflow-hidden">
-        <Skeleton className="aspect-video w-full rounded-none" />
-        <div className="p-4 space-y-3">
-            <Skeleton className="h-4 w-3/4" />
-            <Skeleton className="h-3 w-full" />
-            <div className="flex justify-between items-center">
-                <Skeleton className="h-3 w-16" />
-                <Skeleton className="h-3 w-16" />
+    <div className="glass-card flex flex-col gap-4 p-4 overflow-hidden animate-pulse">
+        <div className="w-full aspect-video dark:bg-neutral-800 bg-neutral-300 rounded-xl" />
+        <div className="w-full flex flex-col items-start justify-start gap-3">
+            <div className="w-full dark:bg-neutral-800 bg-neutral-300 h-4 rounded-lg" />
+            <div className="w-2/3 dark:bg-neutral-800 bg-neutral-300 h-4 rounded-lg" />
+            <div className="flex justify-between items-center w-full mt-2">
+                <div className="w-16 dark:bg-neutral-800 bg-neutral-300 h-3 rounded-lg" />
+                <div className="w-16 dark:bg-neutral-800 bg-neutral-300 h-3 rounded-lg" />
             </div>
         </div>
     </div>
 );
 
 export const StatCardSkeleton = () => (
-    <div className="glass-card p-4 flex flex-col gap-2">
-        <div className="flex items-center gap-2">
-            <Skeleton className="w-8 h-8 rounded-lg" />
-            <Skeleton className="h-3 w-16" />
+    <div className="glass-card flex w-full h-24 items-center gap-4 animate-pulse p-4">
+        <div className="rounded-full h-12 aspect-square dark:bg-neutral-800 bg-neutral-300" />
+        <div className="w-full flex flex-col items-start justify-center gap-3">
+            <div className="w-full dark:bg-neutral-800 bg-neutral-300 h-4 rounded-lg" />
+            <div className="w-2/3 dark:bg-neutral-800 bg-neutral-300 h-4 rounded-lg" />
         </div>
-        <Skeleton className="h-8 w-24 mt-1" />
     </div>
 );
 

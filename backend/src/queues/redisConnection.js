@@ -45,7 +45,7 @@ const generalClient = new IORedis(redisUrl, {
         console.warn(`[Redis-General] Reconnect attempt #${times}, retrying in ${delay}ms...`);
         return delay;
     },
-    enableOfflineQueue: false, // Don't hang queries when Redis is disconnected
+    enableOfflineQueue: true, // Allow rate limiter script to queue during startup
 });
 
 generalClient.on('error', (err) => {
