@@ -1,6 +1,7 @@
 /* global process */
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
+import { visualizer } from 'rollup-plugin-visualizer';
 
 // T064 — Vite dev proxy + CORS final config
 // In dev, all /api requests are proxied to the backend (avoids CORS).
@@ -10,7 +11,15 @@ export default defineConfig(({ mode }) => {
   // a globally available `process` — keeps eslint's browser config happy.
   const env = loadEnv(mode, process.cwd(), '');
   return {
-    plugins: [react()],
+    plugins: [
+      react(),
+      visualizer({
+        filename: 'stats.html',
+        open: false,
+        gzipSize: true,
+        brotliSize: true
+      })
+    ],
     server: {
       port: 5173,
       proxy: {
