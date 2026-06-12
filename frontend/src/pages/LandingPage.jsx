@@ -25,7 +25,7 @@ import Footer from '../components/ui/Footer';
 import LeaderboardPodium from '../components/Dashboard/LeaderboardPodium';
 import FeaturesStack from '../components/Landing/FeaturesStack';
 import useAuthStore from '../store/useAuthStore';
-// Removed 3d-card import for static card styling
+import { ShinyCard } from '../components/UI/ShinyCard';
 
 
 // Conservative floor values — always shown if API fails or is slow.
@@ -610,7 +610,7 @@ const LandingPage = () => {
                                 { name: 'aditya.s', text: 'Being able to see my progress visually is surprisingly motivating. Love the minimal design.' },
                                 { name: 'alok7', text: 'Finally finished a 12-hour React course. The progress tracking is the only reason I didn\'t quit halfway.' },
                             ].map((t, idx) => (
-                                <div 
+                                <ShinyCard 
                                     key={idx} 
                                     className="p-8 rounded-3xl bg-surface-2/40 border border-border backdrop-blur-md hover:border-primary/50 hover:bg-surface-2/60 transition-all duration-300 group/card relative overflow-hidden"
                                 >
@@ -628,7 +628,7 @@ const LandingPage = () => {
                                             <h4 className="text-sm font-black text-text-primary tracking-tight">@{t.name}</h4>
                                         </div>
                                     </div>
-                                </div>
+                                </ShinyCard>
                             ))}
                         </div>
                     </div>

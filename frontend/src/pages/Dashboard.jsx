@@ -23,6 +23,8 @@ import UsernameModal from '../components/Dashboard/UsernameModal';
 import { Calendar, TrendingUp, Crown, Smartphone } from 'lucide-react';
 import GlobalLeaderboardModal from '../components/Dashboard/GlobalLeaderboardModal';
 import GenerateRoadmapModal from '../components/Roadmap/GenerateRoadmapModal';
+import { ShinyCard } from '../components/UI/ShinyCard';
+import ProgressAnimata from '../components/UI/ProgressAnimata';
 
 
 /* ── Helpers ─────────────────────────────────────────────────────────── */
@@ -39,7 +41,7 @@ function calcCourseProgress(course, progress) {
 /* ── Productivity Cards ─────────────────────────────────────────────── */
 function RankCard({ rank, percentile, trend }) {
     return (
-        <div className="glass-card p-5 relative overflow-hidden group hover:scale-[1.02] transition-all">
+        <ShinyCard className="glass-card p-5 relative overflow-hidden group hover:scale-[1.02] transition-all">
             <div className="flex items-center gap-2 mb-3">
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-gold/10 border border-gold/20 overflow-hidden">
                     <img src="/Trophy rank.png" alt="" className="w-5 h-5 object-contain" />
@@ -57,7 +59,7 @@ function RankCard({ rank, percentile, trend }) {
             <p className="text-xs font-semibold text-text-secondary">
                 <span className="text-primary">Top {percentile}%</span> of learners this week
             </p>
-        </div>
+        </ShinyCard>
     );
 }
 
@@ -78,7 +80,7 @@ function LearningTimeCard({ totalSeconds, weeklySeconds, avgSecondsPerDay }) {
     const hasActivity = totalSeconds > 0;
 
     return (
-        <div className="glass-card p-5 relative overflow-hidden group hover:scale-[1.02] transition-all">
+        <ShinyCard className="glass-card p-5 relative overflow-hidden group hover:scale-[1.02] transition-all">
             <div className="flex items-center gap-2 mb-3">
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-primary/10 border border-primary/20 overflow-hidden">
                     <img src="/Learning time.png" alt="" className="w-5 h-5 object-contain" />
@@ -101,25 +103,25 @@ function LearningTimeCard({ totalSeconds, weeklySeconds, avgSecondsPerDay }) {
                     <span className="text-sm font-black text-text-primary">{formatTime(avgSecondsPerDay)}</span>
                 </div>
             </div>
-        </div>
+        </ShinyCard>
     );
 }
 
 function DeadlineCard({ deadline }) {
     if (!deadline || !deadline.courseTitle) {
         return (
-            <div className="glass-card p-5 flex flex-col justify-center items-center text-center">
+            <ShinyCard className="glass-card p-5 flex flex-col justify-center items-center text-center">
                 <Calendar className="w-8 h-8 text-primary mb-2 opacity-40" />
                 <p className="text-sm font-black text-text-secondary uppercase tracking-widest">No Active Targets</p>
                 <p className="text-xs text-text-muted mt-1">Set a study plan to see targets</p>
-            </div>
+            </ShinyCard>
         );
     }
 
     const isUrgent = deadline.daysLeft <= 2;
 
     return (
-        <div 
+        <ShinyCard 
             className={`glass-card p-5 relative overflow-hidden group hover:scale-[1.02] transition-all border-l-4 ${isUrgent ? 'border-l-danger bg-danger/[0.02]' : 'border-l-primary'}`}
         >
             <div className="flex items-center gap-2 mb-3">
@@ -143,7 +145,7 @@ function DeadlineCard({ deadline }) {
                     style={{ width: `${deadline.progress}%` }} 
                 />
             </div>
-        </div>
+        </ShinyCard>
     );
 }
 
@@ -212,7 +214,7 @@ function ShareModal({ isOpen, onClose, courseTitle, shareUrl }) {
 
 function ProductivityCard({ completionRate, completedCourses, totalEnrolled }) {
     return (
-        <div className="glass-card p-5 relative overflow-hidden group hover:scale-[1.02] transition-all">
+        <ShinyCard className="glass-card p-5 relative overflow-hidden group hover:scale-[1.02] transition-all">
             <div className="flex items-center gap-2 mb-3">
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-success/10 border border-success/20 overflow-hidden">
                     <img src="/Mastery level.png" alt="" className="w-5 h-5 object-contain" />
@@ -226,7 +228,7 @@ function ProductivityCard({ completionRate, completedCourses, totalEnrolled }) {
             <p className="text-xs font-semibold text-text-secondary">
                 <span className="text-success">{completedCourses}</span> courses mastered out of {totalEnrolled}
             </p>
-        </div>
+        </ShinyCard>
     );
 }
 
@@ -271,12 +273,12 @@ function CourseCard({ course, progress, onDelete, isDeleting }) {
             courseTitle={course.title}
             shareUrl={`${window.location.origin}/share/${course._id}`}
         />
-        <div 
-            onClick={handleCardClick}
+        <ShinyCard 
             className="glass-card group block transition-all cursor-pointer" 
             style={{ padding: 0, overflow: 'hidden' }}
         >
             <div
+                onClick={handleCardClick}
                 className="relative w-full aspect-video overflow-hidden"
             >
                 {thumb ? (
@@ -328,8 +330,8 @@ function CourseCard({ course, progress, onDelete, isDeleting }) {
 
             <div className="p-4">
                 <h3 className="font-serif font-bold text-text-primary text-base leading-tight mb-2 group-hover:text-primary transition-colors line-clamp-2">{course.title}</h3>
-                <div className="progress-bar mb-2">
-                    <div className="progress-bar__fill" style={{ width: `${pct}%` }} />
+                <div className="mb-3">
+                    <ProgressAnimata progress={pct} />
                 </div>
                 <div className="flex items-center justify-between text-xs font-black text-text-secondary uppercase tracking-tight">
                     <span>{course.totalLectures} missions</span>
@@ -352,7 +354,7 @@ function CourseCard({ course, progress, onDelete, isDeleting }) {
                     </Link>
                 </div>
             </div>
-        </div>
+        </ShinyCard>
         </>
     );
 }
@@ -736,8 +738,8 @@ const Dashboard = () => {
                                     <span className="text-xs text-text-muted">{activePct > 0 ? `
                                     ${activePct}% complete` : 'Ready to begin'}</span>
                                 </div>
-                                <div className="progress-bar mb-4 max-w-xs">
-                                    <div className="progress-bar__fill" style={{ width: `${activePct}%` }} />
+                                <div className="mb-4 max-w-xs">
+                                    <ProgressAnimata progress={activePct} />
                                 </div>
                                 
                                 <div className="btn-esports inline-flex items-center gap-2 text-sm group-hover:bg-primary-hover transition-colors">

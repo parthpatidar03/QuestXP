@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import { Plus, X, Link as LinkIcon, AlertCircle, Info } from 'lucide-react';
 import { shootConfetti } from '../../utils/confetti';
+import AiGenerateButton from '../UI/AiGenerateButton';
 
 const CourseCreationForm = ({ onSuccess }) => {
     const [title, setTitle] = useState('');
@@ -187,13 +188,7 @@ const CourseCreationForm = ({ onSuccess }) => {
                 </div>
 
                 <div className="pt-4 border-t border-border">
-                    <button 
-                        type="submit" disabled={isSubmitting}
-                        className="btn-primary w-full py-4 text-base relative overflow-hidden group"
-                    >
-                        <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
-                        <span className="relative z-10">{isSubmitting ? 'Creating course...' : 'Generate course'}</span>
-                    </button>
+                    <AiGenerateButton isSubmitting={isSubmitting} />
                 </div>
             </form>
         </div>
