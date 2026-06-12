@@ -286,7 +286,7 @@ function CourseCard({ course, progress, onDelete, isDeleting, priority = false }
                         src={thumb} 
                         alt={course.title}
                         loading={priority ? undefined : "lazy"}
-                        fetchpriority={priority ? "high" : "auto"}
+                        fetchPriority={priority ? "high" : "auto"}
                         className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-500"
                     />
                 ) : (
@@ -851,6 +851,7 @@ const Dashboard = () => {
                                                         progress={progressMap[c._id]}
                                                         onDelete={handleDeleteCourse}
                                                         isDeleting={deletingCourseId === c._id}
+                                                        fetchPriority="high"
                                                         priority={idx < 6}
                                                     />
                                                 ))}
