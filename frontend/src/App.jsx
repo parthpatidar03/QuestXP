@@ -2,14 +2,12 @@ import React, { useEffect, lazy, Suspense } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import useAuthStore from './store/useAuthStore';
-import GamificationOverlay from './components/Gamification/GamificationOverlay';
 import ErrorBoundary from './components/ErrorBoundary';
-import PomodoroTimer from './components/PomodoroTimer';
 import useHeartbeat from './hooks/useHeartbeat';
-import GlobalInteractiveEffect from './components/ui/GlobalInteractiveEffect';
-import { requestNotificationPermission } from './services/firebase';
-import Lenis from 'lenis';
-import 'lenis/dist/lenis.css';
+
+// Lazy load PomodoroTimer and GamificationOverlay to keep initial bundle light
+const PomodoroTimer = lazy(() => import('./components/PomodoroTimer'));
+const GamificationOverlay = lazy(() => import('./components/Gamification/GamificationOverlay'));
 
 // Lazy load pages for performance
 const Auth = lazy(() => import('./pages/Auth'));
@@ -74,7 +72,12 @@ const AppContent = () => {
 
     useEffect(() => {
         if (isAuthenticated) {
-            requestNotificationPermission();
+            // Dynamically import Firebase registration to avoid pulling SDK into app shell
+            import('./services/firebase').then(({ requestNotificationPermission }) => {
+                requestNotificationPermission();
+            }).catch(err => {
+                console.error('[Firebase] Failed to load notification helper dynamically:', err);
+            });
         }
     }, [isAuthenticated]);
 
@@ -104,7 +107,7 @@ const AppContent = () => {
 
 
     return (
-        <div className="relative min-h-screen bg-bg cursor-crosshair">
+        <div className="relative min-h-screen bg-bg">
             <Toaster 
                 position="top-center" 
                 reverseOrder={false}
@@ -118,9 +121,14 @@ const AppContent = () => {
                     }
                 }}
             />
-            <GlobalInteractiveEffect />
-            <GamificationOverlay />
-            {showPomodoro && <PomodoroTimer />}
+            <Suspense fallback={null}>
+                <GamificationOverlay />
+            </Suspense>
+            {showPomodoro && (
+                <Suspense fallback={null}>
+                    <PomodoroTimer />
+                </Suspense>
+            )}
             <Suspense fallback={<PageLoader />}>
                 <Routes>
                     <Route path="/" element={<LandingPage />} />
@@ -159,25 +167,6 @@ const AppContent = () => {
 };
 
 const App = () => {
-    useEffect(() => {
-        const lenis = new Lenis({
-            autoRaf: true,
-            duration: 1.2,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-            orientation: 'vertical',
-            gestureOrientation: 'vertical',
-            smoothWheel: true,
-            wheelMultiplier: 1,
-            smoothTouch: false,
-            touchMultiplier: 2,
-            infinite: false,
-        });
-
-        return () => {
-            lenis.destroy();
-        };
-    }, []);
-
     return (
         <BrowserRouter>
             <AppContent />

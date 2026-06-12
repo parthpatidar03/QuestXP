@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -13,26 +14,30 @@
     --color-border: #E5E5E5;
     --color-border-shadow: #D1D5DB;
 
-    --color-primary: #F97316;
-    /* Lexicon Orange */
-    --color-primary-hover: #EA580C;
-    --color-primary-shadow: #C2410C;
+    --color-primary: #58CC02;
+    /* Duolingo Green */
+    --color-primary-hover: #61E002;
+    --color-primary-shadow: #46A302;
 
     --color-cyan: #1CB0F6;
+    /* Duolingo Blue */
     --color-cyan-shadow: #1899D6;
 
     --color-gold: #FFC800;
+    /* Duolingo Gold */
     --color-gold-dim: #E6B400;
 
-    --color-success: #F97316;
+    --color-success: #58CC02;
     --color-warning: #FF9600;
+    /* Duolingo Orange */
     --color-danger: #FF4B4B;
+    /* Duolingo Red */
     --color-danger-shadow: #EA2B2B;
     --color-xp-gold: #FFC800;
 
-    --color-text-primary: #191C21;
-    --color-text-secondary: #71717A;
-    --color-text-muted: #A1A1AA;
+    --color-text-primary: #3C3C3C;
+    --color-text-secondary: #777777;
+    --color-text-muted: #AFAFAF;
 
     --radius-sm: 6px;
     --radius-md: 10px;
@@ -48,18 +53,17 @@
   }
 
   .dark {
-    --color-bg: #000000;
-    /* Pitch Black */
-    --color-surface: #191C21;
-    /* Lexicon Slate */
-    --color-surface-2: #27272A;
-    --color-surface-3: #3F3F46;
-    --color-border: #27272A;
-    --color-border-shadow: #191C21;
+    --color-bg: #0F172A;
+    /* Deep slate / midnight */
+    --color-surface: #1E293B;
+    --color-surface-2: #334155;
+    --color-surface-3: #475569;
+    --color-border: #334155;
+    --color-border-shadow: #1E293B;
 
-    --color-primary: #F97316;
-    --color-primary-hover: #EA580C;
-    --color-primary-shadow: #C2410C;
+    --color-primary: #58CC02;
+    --color-primary-hover: #61E002;
+    --color-primary-shadow: #3B8801;
 
     --color-cyan: #1CB0F6;
     --color-cyan-shadow: #1899D6;
@@ -67,15 +71,15 @@
     --color-gold: #FFC800;
     --color-gold-dim: #E6B400;
 
-    --color-success: #F97316;
+    --color-success: #58CC02;
     --color-warning: #FF9600;
     --color-danger: #FF4B4B;
     --color-danger-shadow: #EA2B2B;
     --color-xp-gold: #FFC800;
 
-    --color-text-primary: #FFFFFF;
-    --color-text-secondary: #A1A1AA;
-    --color-text-muted: #71717A;
+    --color-text-primary: #F8FAFC;
+    --color-text-secondary: #CBD5E1;
+    --color-text-muted: #94A3B8;
 
     --shadow-card: 0 4px 24px -2px rgba(0, 0, 0, 0.4), 0 1px 1px 0 rgba(255, 255, 255, 0.03) inset;
   }
@@ -83,18 +87,18 @@
   body {
     @apply antialiased;
     background-color: var(--color-bg);
-    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    font-family: 'Josefin Sans', ui-sans-serif, system-ui, sans-serif;
     font-size: 16px;
     font-weight: 450;
     margin: 0;
   }
 
   .font-serif {
-    font-family: 'Playfair Display', Georgia, serif;
+    font-family: 'Josefin Sans', sans-serif;
   }
 
   .font-display {
-    font-family: 'Playfair Display', Georgia, serif;
+    font-family: 'Josefin Sans', sans-serif;
   }
 
   h1,
@@ -107,7 +111,7 @@
   .video-title,
   .roadmap-title {
     @apply font-display tracking-tight;
-    font-family: 'Playfair Display', Georgia, serif !important;
+    font-family: 'Josefin Sans', sans-serif !important;
   }
 
   ::-webkit-scrollbar {
@@ -366,18 +370,6 @@
   }
 }
 
-@keyframes blink-blue {
-
-  0%,
-  100% {
-    box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
-  }
-
-  50% {
-    box-shadow: 0 0 35px 8px rgba(59, 130, 246, 0.8);
-  }
-}
-
 @keyframes float-up {
   0% {
     opacity: 1;
@@ -402,20 +394,6 @@
   }
 }
 
-@keyframes ping-slow {
-
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-
-  50% {
-    transform: scale(1.35);
-    opacity: 0.4;
-  }
-}
-
 .streak-flame {
   animation: streak-pulse 2s ease-in-out infinite;
 }
@@ -424,30 +402,8 @@
   animation: glow-pulse 2s ease-in-out infinite;
 }
 
-.btn-blink {
-  animation: blink-blue 2s ease-in-out infinite;
-}
-
 .float-in {
   animation: float-in 0.35s ease forwards;
-}
-
-.ping-slow {
-  animation: ping-slow 2s ease-in-out infinite;
-}
-
-@keyframes spin-slow {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.animate-spin-slow {
-  animation: spin-slow 8s linear infinite;
 }
 
 

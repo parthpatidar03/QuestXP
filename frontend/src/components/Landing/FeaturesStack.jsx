@@ -38,12 +38,11 @@ const features = [
 const hue = (h) => `hsl(${h}, 100%, 40%)`;
 
 const cardVariants = {
-    offscreen: { y: 300, opacity: 0 },
+    offscreen: { y: 20, opacity: 0 },
     onscreen: {
         y: 0,
         opacity: 1,
-        rotate: -2,
-        transition: { type: "spring", bounce: 0.4, duration: 0.8 }
+        transition: { type: "tween", ease: "easeOut", duration: 0.4 }
     }
 };
 
@@ -55,24 +54,14 @@ export default function FeaturesStack() {
                 return (
                     <motion.div
                         key={i}
-                        className="relative flex justify-center items-center py-10 -mb-16 sm:-mb-24"
+                        className="relative flex justify-center items-center py-6 -mb-6"
                         initial="offscreen"
                         whileInView="onscreen"
-                        viewport={{ amount: 0.4, once: false }}
+                        viewport={{ once: true, margin: "-50px" }}
                     >
-                        {/* Background Splash effect (Angled) */}
-                        <div 
-                            className="absolute inset-0 w-full h-full rounded-[3rem] opacity-20"
-                            style={{
-                                background,
-                                clipPath: 'polygon(0 25%, 100% 5%, 100% 100%, 0% 100%)',
-                                transform: i % 2 === 0 ? 'scaleX(1)' : 'scaleX(-1)'
-                            }} 
-                        />
-                        
                         <motion.div 
                             variants={cardVariants} 
-                            className="relative z-10 w-full md:w-[800px] h-auto min-h-[300px] flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-10 rounded-3xl bg-surface border border-border shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)] origin-[50%_60%] p-8 sm:p-12"
+                            className="relative z-10 w-full md:w-[800px] h-auto min-h-[200px] flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-10 rounded-3xl bg-surface border border-border shadow-md hover:shadow-lg hover:border-border-shadow transition-all duration-300 p-8 sm:p-12"
                         >
                             <div className="shrink-0 rounded-3xl flex items-center justify-center shadow-xl p-6" style={{ background }}>
                                 {feature.icon}

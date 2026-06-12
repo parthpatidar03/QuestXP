@@ -253,7 +253,11 @@ A lightweight global store (`useGamificationStore`) manages XP, level, streak, t
 API data (courses, progress, leaderboard) is managed by TanStack Query with configured `staleTime` and cache invalidation. Progress toggles call `queryClient.invalidateQueries()` to surgically refetch only affected data, not the entire app state.
 
 ### Frontend Performance & Paint Optimization
-The frontend architecture underwent significant optimization to eliminate scroll jank, reduce memory leaks, and prevent CPU spikes:
+The frontend architecture was audited and optimized to reduce initial bundle bloat, eliminate scroll jank, and minimize CPU/GPU runtime overhead:
+- **Bundle Size Optimization:** Shrunk the main entry shared JS bundle size from **522.23 KB** to **301.88 KB** (Gzipped size: **102.32 KB**), representing a **42.2% reduction**.
+- **Dynamic Import Code-Splitting:** Configured Vite and React lazy loading to isolate heavy dependencies. Dynamic imports are now wired for `framer-motion` (via `GamificationOverlay` dynamic mounting), `firebase` notification setup, `html-to-image` screenshot generator, and `canvas-confetti` celebrations.
+- **Route-Scoped Providers:** Moved the `@react-oauth/google` provider from the root `main.jsx` to the specific `Auth.jsx` component, ensuring the library is only fetched for users navigating to login/register routes.
+- **Visual System Simplification:** Replaced scroll-blocking packages (`lenis` smooth scroll) with native CSS scrolling. Removed high-frequency cursor position tracking listeners, interactive hover spotlights, 3D card tilt calculations, and continuous animation loops, replacing them with static premium layouts and CSS transitions.
 - **GPU Offloading:** Replaced global `useState` hooks with Framer Motion `useMotionValue` to prevent 60fps React re-renders during mouse movement.
 - **Throttled Listeners:** Global scroll event listeners (e.g., in `UserTour`) are wrapped in `requestAnimationFrame` and dynamically unmounted when not visible to prevent continuous Layout Thrashing.
 - **Glassmorphism Penalty Elimination:** Removed computationally expensive CSS `backdrop-blur` from large scrolling containers (like the sticky NavBar and landing page cards) to prevent the browser from recalculating blur geometry on every pixel scroll, drastically reducing GPU paint time.

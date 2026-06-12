@@ -1,7 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { toPng } from 'html-to-image';
 import { Info, Camera, Check, Download, X, Trophy } from 'lucide-react';
 import useAuthStore from '../store/useAuthStore';
 
@@ -277,6 +276,7 @@ export default function StreakCalendar({ history = [], rank }) {
         setIsExporting(true);
         
         try {
+            const { toPng } = await import('html-to-image');
             const monthName = currentDate.toLocaleString('default', { month: 'long' });
             const fileName = `QuestXP-${user?.name || 'User'}-${monthName}.png`;
             

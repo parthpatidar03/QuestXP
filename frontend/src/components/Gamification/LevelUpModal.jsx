@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import confetti from 'canvas-confetti';
 import { ChevronRight, Unlock } from 'lucide-react';
 import useGamificationStore from '../../store/useGamificationStore';
 import { playSound } from '../../utils/soundEffects';
@@ -16,30 +15,40 @@ const LevelUpModal = () => {
             // Trigger confetti burst
             const duration = 3000;
             const end = Date.now() + duration;
+            let active = true;
 
-            const frame = () => {
-                confetti({
-                    particleCount: 5,
-                    angle: 60,
-                    spread: 55,
-                    origin: { x: 0 },
-                    colors: ['#38BDF8', '#10B981', '#F59E0B'],
-                    zIndex: 10005
-                });
-                confetti({
-                    particleCount: 5,
-                    angle: 120,
-                    spread: 55,
-                    origin: { x: 1 },
-                    colors: ['#38BDF8', '#10B981', '#F59E0B'],
-                    zIndex: 10005
-                });
+            import('canvas-confetti').then(({ default: confetti }) => {
+                const frame = () => {
+                    if (!active) return;
+                    confetti({
+                        particleCount: 5,
+                        angle: 60,
+                        spread: 55,
+                        origin: { x: 0 },
+                        colors: ['#38BDF8', '#10B981', '#F59E0B'],
+                        zIndex: 10005
+                    });
+                    confetti({
+                        particleCount: 5,
+                        angle: 120,
+                        spread: 55,
+                        origin: { x: 1 },
+                        colors: ['#38BDF8', '#10B981', '#F59E0B'],
+                        zIndex: 10005
+                    });
 
-                if (Date.now() < end) {
-                    requestAnimationFrame(frame);
-                }
+                    if (Date.now() < end) {
+                        requestAnimationFrame(frame);
+                    }
+                };
+                frame();
+            }).catch(err => {
+                console.error('[LevelUpModal] Failed to load canvas-confetti dynamically:', err);
+            });
+
+            return () => {
+                active = false;
             };
-            frame();
         }
     }, [levelUpData]);
 

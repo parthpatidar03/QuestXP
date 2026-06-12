@@ -1,6 +1,5 @@
-import confetti from 'canvas-confetti';
-
-export const shootConfetti = (origin) => {
+export const shootConfetti = async (origin) => {
+  const confetti = (await import('canvas-confetti')).default;
   const count = 200;
   const defaults = {
     origin: origin || { x: 0.5, y: 0.5 },
@@ -23,7 +22,8 @@ export const shootConfetti = (origin) => {
   fire(0.1, { spread: 120, startVelocity: 65, scalar: 1.5 });
 };
 
-export const shootLighterConfetti = () => {
+export const shootLighterConfetti = async () => {
+  const confetti = (await import('canvas-confetti')).default;
   confetti({
     particleCount: 40,
     spread: 70,
@@ -33,7 +33,8 @@ export const shootLighterConfetti = () => {
   });
 };
 
-export const shootFireworks = () => {
+export const shootFireworks = async () => {
+  const confetti = (await import('canvas-confetti')).default;
   const duration = 5 * 1000;
   const end = Date.now() + duration;
 
