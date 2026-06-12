@@ -25,6 +25,10 @@ const connectDB = async () => {
             // Don't deadlock the startup sequence — fail loudly and let the
             // operator decide what to do.
             connectTimeoutMS: 8000,
+            // Azure load balancers silently drop idle TCP connections after 4 minutes.
+            // Send keep-alive packets every 3 minutes to keep the connection alive.
+            keepAlive: true,
+            keepAliveInitialDelay: 180000,
         });
     } catch (err) {
         dbLogger.error('Initial MongoDB connection failed', { error: err.message });
