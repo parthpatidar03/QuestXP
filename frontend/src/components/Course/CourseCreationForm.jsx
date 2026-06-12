@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import { Plus, X, Link as LinkIcon, AlertCircle, Info } from 'lucide-react';
 import { shootConfetti } from '../../utils/confetti';
-import AiGenerateButton from '../UI/AiGenerateButton';
+import AiGenerateButton from '../ui/AiGenerateButton';
 
 const CourseCreationForm = ({ onSuccess }) => {
     const [title, setTitle] = useState('');
