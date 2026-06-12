@@ -1055,30 +1055,25 @@ const Dashboard = () => {
             {!showUsernameModal && <UserTour />}
 
             {/* Undo Toast */}
-            <AnimatePresence>
-                {showUndo && (
-                    <motion.div 
-                        initial={{ y: 100, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        exit={{ y: 100, opacity: 0 }}
-                        className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-5 px-6 py-4 bg-surface-2 border-2 border-border rounded-2xl shadow-2xl backdrop-blur-xl"
+            {showUndo && (
+                <div 
+                    className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-5 px-6 py-4 bg-surface-2 border-2 border-border rounded-2xl shadow-2xl backdrop-blur-xl animate-in slide-in-from-bottom-8 fade-in duration-300"
+                >
+                    <div className="flex items-center justify-center w-10 h-10 rounded-full border-2 border-primary text-primary font-black text-lg animate-pulse">
+                        {undoCountdown}
+                    </div>
+                    <div className="flex flex-col min-w-[120px]">
+                        <span className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em]">Course Deleting</span>
+                        <span className="text-sm font-black text-text-primary line-clamp-1">{showUndo.title}</span>
+                    </div>
+                    <button 
+                        onClick={handleUndoDelete}
+                        className="ml-2 px-6 py-2.5 bg-primary text-white text-xs font-black uppercase tracking-widest rounded-xl hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20"
                     >
-                        <div className="flex items-center justify-center w-10 h-10 rounded-full border-2 border-primary text-primary font-black text-lg animate-pulse">
-                            {undoCountdown}
-                        </div>
-                        <div className="flex flex-col min-w-[120px]">
-                            <span className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em]">Course Deleting</span>
-                            <span className="text-sm font-black text-text-primary line-clamp-1">{showUndo.title}</span>
-                        </div>
-                        <button 
-                            onClick={handleUndoDelete}
-                            className="ml-2 px-6 py-2.5 bg-primary text-white text-xs font-black uppercase tracking-widest rounded-xl hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20"
-                        >
-                            Undo
-                        </button>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                        Undo
+                    </button>
+                </div>
+            )}
         </div>
 
     );
@@ -1094,22 +1089,16 @@ const XPSystemModal = ({ isOpen, onClose }) => {
     ];
 
     return createPortal(
-        <AnimatePresence>
+        <>
             {isOpen && (
-                <div className="fixed inset-0 z-[10001] flex items-center justify-center p-4">
-                    <motion.div 
-                        initial={{ opacity: 0 }} 
-                        animate={{ opacity: 1 }} 
-                        exit={{ opacity: 0 }}
+                <div className="fixed inset-0 z-[10001] flex items-center justify-center p-4 animate-in fade-in duration-200">
+                    <div 
                         onClick={onClose}
                         className="absolute inset-0 bg-black/80 backdrop-blur-xl"
                     />
-                    <motion.div 
-                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                    <div 
                         onClick={(e) => e.stopPropagation()}
-                        className="relative w-full max-w-lg bg-surface border border-white/10 rounded-[2rem] shadow-2xl p-8 overflow-y-auto max-h-[90vh] scrollbar-hide z-10 pointer-events-auto"
+                        className="relative w-full max-w-lg bg-surface border border-white/10 rounded-[2rem] shadow-2xl p-8 overflow-y-auto max-h-[90vh] scrollbar-hide z-10 pointer-events-auto animate-in zoom-in-95 slide-in-from-bottom-4 duration-300"
                     >
                         <div className="absolute top-0 right-0 p-6">
                             <button onClick={onClose} className="p-2 hover:bg-surface-2 rounded-lg transition-colors">
@@ -1148,10 +1137,10 @@ const XPSystemModal = ({ isOpen, onClose }) => {
                                 Got it, Captain
                             </button>
                         </div>
-                    </motion.div>
+                    </div>
                 </div>
             )}
-        </AnimatePresence>,
+        </>,
         document.body
     );
 };

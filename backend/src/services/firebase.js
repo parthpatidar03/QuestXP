@@ -10,7 +10,7 @@ try {
         );
 
         admin.initializeApp({
-            credential: admin.credential.cert(serviceAccount)
+            credential: admin.cert(serviceAccount)
         });
         console.log('[FIREBASE] Admin SDK initialized successfully.');
     } else {
