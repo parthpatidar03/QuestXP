@@ -27,7 +27,6 @@ const connectDB = async () => {
             connectTimeoutMS: 8000,
             // Azure load balancers silently drop idle TCP connections after 4 minutes.
             // Send keep-alive packets every 3 minutes to keep the connection alive.
-            keepAlive: true,
             keepAliveInitialDelay: 180000,
         });
     } catch (err) {

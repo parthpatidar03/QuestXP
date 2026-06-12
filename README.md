@@ -195,7 +195,7 @@ Native app-like experience on mobile screens (`< 640px`) using strict `100dvh` v
 
 ### 13. Azure NAT Connection Resilience
 Stabilized database connections against Azure App Service's aggressive NAT load balancers, which silently drop idle TCP sockets after 4 minutes.
-- **Keep-Alive Probes**: Configured Mongoose to inject `keepAlive: true` and `keepAliveInitialDelay: 180000` (3 minutes). This sends a TCP heartbeat before the NAT timeout, ensuring the MongoDB Atlas connection is never marked as idle.
+- **Keep-Alive Probes**: Configured Mongoose to inject `keepAliveInitialDelay: 180000` (3 minutes). This sends a TCP heartbeat before the NAT timeout, ensuring the MongoDB Atlas connection is never marked as idle.
 - **Eliminated Ghost Hangs**: Prevents the critical failure mode where `dbReady` middleware allows requests through on dead sockets, causing 12-second Axios timeouts on the frontend.
 - **File:** `backend/src/utils/db.js`
 
