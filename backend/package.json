@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
+    "build": "bun build ./src/index.js --outdir ./dist --target=node",
     "pinecone:setup": "node src/scripts/createPineconeIndex.js",
     "test": "node --test test/*.test.js"
   },
