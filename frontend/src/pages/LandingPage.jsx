@@ -27,7 +27,7 @@ import FeaturesStack from '../components/Landing/FeaturesStack';
 import useAuthStore from '../store/useAuthStore';
 import { ShinyCard } from '../components/ui/ShinyCard';
 import Counter from '../components/ui/Counter';
-
+import Marquee from '../components/animata/container/marquee';
 
 // Conservative floor values — always shown if API fails or is slow.
 const FALLBACK_STATS = {
@@ -603,8 +603,8 @@ const LandingPage = () => {
                         </div>
                     </div>
 
-                    <div className="relative max-w-screen-xl mx-auto px-4 sm:px-6">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
+                    <div className="relative mx-auto px-4 sm:px-6 w-full max-w-[100vw] overflow-hidden">
+                        <Marquee pauseOnHover className="[--duration:40s]" repeat={4}>
                             {[
                                 { name: 'sarah01', text: 'QuestXP stops me from doom-scrolling. I open the app, watch my playlist, and actually learn.' },
                                 { name: 'jamesdev', text: 'The notes feature linked to timestamps is a game changer. I can jump back to exactly where I got confused.' },
@@ -615,7 +615,7 @@ const LandingPage = () => {
                             ].map((t, idx) => (
                                 <ShinyCard 
                                     key={idx} 
-                                    className="p-8 rounded-3xl bg-surface-2/40 border border-border backdrop-blur-md hover:border-primary/50 hover:bg-surface-2/60 transition-all duration-300 group/card relative overflow-hidden"
+                                    className="p-8 rounded-3xl bg-surface-2/40 border border-border backdrop-blur-md hover:border-primary/50 hover:bg-surface-2/60 transition-all duration-300 group/card relative overflow-hidden min-w-[300px] md:min-w-[400px]"
                                 >
                                     <div className="absolute top-0 right-0 p-4 opacity-10 group-hover/card:opacity-20 transition-opacity">
                                         <Sparkles className="w-8 h-8 text-primary" />
@@ -633,7 +633,7 @@ const LandingPage = () => {
                                     </div>
                                 </ShinyCard>
                             ))}
-                        </div>
+                        </Marquee>
                     </div>
                 </section>
 
