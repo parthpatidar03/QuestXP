@@ -615,7 +615,7 @@ const LandingPage = () => {
                             ].map((t, idx) => (
                                 <ShinyCard 
                                     key={idx} 
-                                    className="p-8 rounded-3xl bg-surface-2/40 border border-border backdrop-blur-md hover:border-primary/50 hover:bg-surface-2/60 transition-all duration-300 group/card relative overflow-hidden min-w-[300px] md:min-w-[400px]"
+                                    className="p-8 rounded-3xl bg-surface-2/40 border border-border backdrop-blur-md hover:border-primary/50 hover:bg-surface-2/60 transition-all duration-300 group/card relative overflow-hidden w-[280px] md:w-[320px] aspect-square flex flex-col justify-between shrink-0 mx-3"
                                 >
                                     <div className="absolute top-0 right-0 p-4 opacity-10 group-hover/card:opacity-20 transition-opacity">
                                         <Sparkles className="w-8 h-8 text-primary" />
@@ -623,7 +623,7 @@ const LandingPage = () => {
                                     <p className="text-text-primary text-base font-medium leading-relaxed mb-8 relative z-10">
                                         "{t.text}"
                                     </p>
-                                    <div className="flex items-center gap-4 relative z-10">
+                                    <div className="flex items-center gap-4 relative z-10 mt-auto">
                                         <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-black text-xl font-display">
                                             {t.name[0].toUpperCase()}
                                         </div>
