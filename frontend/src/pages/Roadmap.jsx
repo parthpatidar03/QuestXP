@@ -39,7 +39,7 @@ const formatTime = (value, unit = 'seconds') => {
 
 import api from '../services/api';
 import { getCurrentRoadmap, adjustRoadmap, partialShiftRoadmap, toggleVideoCompletion, getAllRoadmaps, updateRoadmapTitle, deleteRoadmap } from '../services/roadmapApi';
-import { shootConfetti, shootLighterConfetti } from '../utils/confetti';
+import { shootConfetti } from '../utils/confetti';
 import { broadcastProgressUpdate, getTabId } from '../utils/sync';
 import NavBar from '../components/NavBar';
 import { BGPattern } from '../components/ui/bg-pattern';

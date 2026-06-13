@@ -54,7 +54,7 @@ const LandingPage = () => {
             try {
                 const { data } = await api.get(`/public/stats?t=${Date.now()}`);
                 setStats(data);
-            } catch (err) {
+            } catch (_err) {
                 // Silent fail — stats section just won't render
             }
         };
@@ -368,7 +368,7 @@ const LandingPage = () => {
                                 <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
                                 <div className="grid relative z-10 grid-cols-2 md:grid-cols-4 gap-y-6 md:gap-y-0">
-                                    {visibleMetrics.map((m, idx) => (
+                                    {visibleMetrics.map((m) => (
                                         <div
                                             key={m.key}
                                             className="flex flex-col items-center justify-center text-center p-4 md:p-8 md:border-r border-border/20 md:last:border-r-0"

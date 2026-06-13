@@ -393,7 +393,7 @@ const CourseDetail = () => {
                 flushPendingToggles(courseId);
             }
         };
-    }, [courseId]);
+    }, [courseId, flushPendingToggles]);
 
     // Poll status if processing
     useEffect(() => {
