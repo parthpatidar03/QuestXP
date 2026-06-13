@@ -25,6 +25,7 @@ import GlobalLeaderboardModal from '../components/Dashboard/GlobalLeaderboardMod
 import GenerateRoadmapModal from '../components/Roadmap/GenerateRoadmapModal';
 import { ShinyCard } from '../components/ui/ShinyCard';
 import ProgressAnimata from '../components/ui/ProgressAnimata';
+import AnimatedBorderTrail from '../components/animata/container/animated-border-trail';
 
 
 /* ── Helpers ─────────────────────────────────────────────────────────── */
@@ -273,89 +274,91 @@ function CourseCard({ course, progress, onDelete, isDeleting, priority = false }
             courseTitle={course.title}
             shareUrl={`${window.location.origin}/share/${course._id}`}
         />
-        <ShinyCard 
-            className="glass-card group block transition-all cursor-pointer" 
-            style={{ padding: 0, overflow: 'hidden' }}
-        >
-            <div
-                onClick={handleCardClick}
-                className="relative w-full aspect-video overflow-hidden"
+        <AnimatedBorderTrail className="w-full block hover:-translate-y-[2px] transition-transform duration-150 shadow-card">
+            <ShinyCard 
+                className="group block transition-all cursor-pointer w-full h-full" 
+                style={{ padding: 0, overflow: 'hidden' }}
             >
-                {thumb ? (
-                    <img 
-                        src={thumb} 
-                        alt={course.title}
-                        loading={priority ? undefined : "lazy"}
-                        fetchPriority={priority ? "high" : "auto"}
-                        className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-500"
-                    />
-                ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-surface-2">
-                        <BookOpen className="w-10 h-10 text-text-muted" />
-                    </div>
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-bg via-transparent to-transparent opacity-60" />
-
-                <div className="absolute top-2 right-2 xp-chip">
-                    <img src="/favicon.png" alt="" className="w-3 h-3 object-contain" /> +{xpPool} XP
-                </div>
-                <button
-                    type="button"
-                    className="absolute top-2 left-2 inline-flex items-center gap-1 rounded-full border border-red-500/40 bg-red-500/85 px-2.5 py-1 text-[11px] font-semibold text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-70"
-                    onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        onDelete(course);
-                    }}
-                    disabled={isDeleting}
-                    aria-label={`Delete ${course.title}`}
-                    title="Delete course permanently"
+                <div
+                    onClick={handleCardClick}
+                    className="relative w-full aspect-video overflow-hidden"
                 >
-                    <Trash2 className="w-3 h-3" />
-                    {isDeleting ? 'Deleting...' : 'Delete'}
-                </button>
-                <button
-                    type="button"
-                    className="absolute top-2 left-[5.5rem] inline-flex items-center gap-1 rounded-full border border-indigo-500/50 bg-indigo-600 px-2.5 py-1 text-[11px] font-bold text-white transition-all hover:bg-indigo-700 hover:scale-105 shadow-lg shadow-indigo-500/20 disabled:cursor-not-allowed disabled:opacity-70"
-                    onClick={handleShare}
-                    aria-label={`Share ${course.title}`}
-                    title="Copy share link"
-                >
-                    <Share2 className="w-3 h-3" />
-                    {shareStatus || 'Share'}
-                </button>
-                <div className="absolute bottom-2 left-2 bg-surface/90 rounded-full px-2 py-0.5 text-xs font-semibold" style={{ color: pct === 100 ? 'var(--color-success)' : 'var(--color-primary)' }}>
-                    {pct}%
-                </div>
-            </div>
-
-            <div className="p-4">
-                <h3 className="font-serif font-bold text-text-primary text-base leading-tight mb-2 group-hover:text-primary transition-colors line-clamp-2">{course.title}</h3>
-                <div className="mb-3">
-                    <ProgressAnimata progress={pct} />
-                </div>
-                <div className="flex items-center justify-between text-xs font-black text-text-secondary uppercase tracking-tight">
-                    <span>{course.totalLectures} missions</span>
-                    <span className="text-primary">{pct}% complete</span>
-                </div>
-                <div className="mt-2 flex items-center justify-between">
-                    {resumeId && (
-                        <div className="text-xs font-semibold text-primary">
-                            <span className="flex items-center gap-1 hover:underline">
-                                Resume Mission <ChevronRight className="w-3 h-3" />
-                            </span>
+                    {thumb ? (
+                        <img 
+                            src={thumb} 
+                            alt={course.title}
+                            loading={priority ? undefined : "lazy"}
+                            fetchPriority={priority ? "high" : "auto"}
+                            className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-500"
+                        />
+                    ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-surface-2">
+                            <BookOpen className="w-10 h-10 text-text-muted" />
                         </div>
                     )}
-                    <Link 
-                        to={`/roadmap?courseId=${course._id}`}
-                        onClick={(e) => e.stopPropagation()}
-                        className="flex items-center gap-1 text-xs font-black uppercase tracking-widest text-text-secondary hover:text-primary transition-colors"
+                    <div className="absolute inset-0 bg-gradient-to-t from-bg via-transparent to-transparent opacity-60" />
+
+                    <div className="absolute top-2 right-2 xp-chip">
+                        <img src="/favicon.png" alt="" className="w-3 h-3 object-contain" /> +{xpPool} XP
+                    </div>
+                    <button
+                        type="button"
+                        className="absolute top-2 left-2 inline-flex items-center gap-1 rounded-full border border-red-500/40 bg-red-500/85 px-2.5 py-1 text-[11px] font-semibold text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-70"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            onDelete(course);
+                        }}
+                        disabled={isDeleting}
+                        aria-label={`Delete ${course.title}`}
+                        title="Delete course permanently"
                     >
-                        <Layout className="w-3.5 h-3.5" /> Roadmap
-                    </Link>
+                        <Trash2 className="w-3 h-3" />
+                        {isDeleting ? 'Deleting...' : 'Delete'}
+                    </button>
+                    <button
+                        type="button"
+                        className="absolute top-2 left-[5.5rem] inline-flex items-center gap-1 rounded-full border border-indigo-500/50 bg-indigo-600 px-2.5 py-1 text-[11px] font-bold text-white transition-all hover:bg-indigo-700 hover:scale-105 shadow-lg shadow-indigo-500/20 disabled:cursor-not-allowed disabled:opacity-70"
+                        onClick={handleShare}
+                        aria-label={`Share ${course.title}`}
+                        title="Copy share link"
+                    >
+                        <Share2 className="w-3 h-3" />
+                        {shareStatus || 'Share'}
+                    </button>
+                    <div className="absolute bottom-2 left-2 bg-surface/90 rounded-full px-2 py-0.5 text-xs font-semibold" style={{ color: pct === 100 ? 'var(--color-success)' : 'var(--color-primary)' }}>
+                        {pct}%
+                    </div>
                 </div>
-            </div>
-        </ShinyCard>
+
+                <div className="p-4">
+                    <h3 className="font-serif font-bold text-text-primary text-base leading-tight mb-2 group-hover:text-primary transition-colors line-clamp-2">{course.title}</h3>
+                    <div className="mb-3">
+                        <ProgressAnimata progress={pct} />
+                    </div>
+                    <div className="flex items-center justify-between text-xs font-black text-text-secondary uppercase tracking-tight">
+                        <span>{course.totalLectures} missions</span>
+                        <span className="text-primary">{pct}% complete</span>
+                    </div>
+                    <div className="mt-2 flex items-center justify-between">
+                        {resumeId && (
+                            <div className="text-xs font-semibold text-primary">
+                                <span className="flex items-center gap-1 hover:underline">
+                                    Resume Mission <ChevronRight className="w-3 h-3" />
+                                </span>
+                            </div>
+                        )}
+                        <Link 
+                            to={`/roadmap?courseId=${course._id}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="flex items-center gap-1 text-xs font-black uppercase tracking-widest text-text-secondary hover:text-primary transition-colors"
+                        >
+                            <Layout className="w-3.5 h-3.5" /> Roadmap
+                        </Link>
+                    </div>
+                </div>
+            </ShinyCard>
+        </AnimatedBorderTrail>
         </>
     );
 }
