@@ -17,6 +17,8 @@ const connection = new IORedis(redisUrl, {
         return delay;
     },
     enableOfflineQueue: true, // Queue commands while disconnected
+    keepAlive: 10000, // Important for Aiven/Azure idle timeouts
+    pingInterval: 30000, // Send PING every 30s to keep LB connection alive
 });
 
 // Graceful error handling — prevent unhandled error from crashing the process
@@ -45,7 +47,9 @@ const generalClient = new IORedis(redisUrl, {
         console.warn(`[Redis-General] Reconnect attempt #${times}, retrying in ${delay}ms...`);
         return delay;
     },
-    enableOfflineQueue: true, // Allow rate limiter script to queue during startup
+    enableOfflineQueue: false, // Fail fast so rate limiter passOnStoreError kicks in immediately
+    keepAlive: 10000, // Important for Aiven/Azure idle timeouts
+    pingInterval: 30000, // Send PING every 30s to keep LB connection alive
 });
 
 generalClient.on('error', (err) => {

@@ -198,6 +198,14 @@ Stabilized database connections against Azure App Service's aggressive NAT load 
 - **Eliminated Ghost Hangs**: Prevents the critical failure mode where `dbReady` middleware allows requests through on dead sockets, causing 12-second Axios timeouts on the frontend.
 - **File:** `backend/src/utils/db.js`
 
+### 14. Valkey (Redis) Connection Resilience
+Hardened `ioredis` connections against Aiven's cloud load balancers, which silently drop idle TCP connections and cause API-wide `ETIMEDOUT` hangs.
+- **Fail-Fast Rate Limiting**: Disabled `enableOfflineQueue` on the `generalClient` to ensure rate limits fail instantly (fail-open) rather than queuing requests for 11.5 seconds when Valkey goes down, preventing frontend `ECONNABORTED` timeouts.
+- **Active Keep-Alives**: Added a `30000ms` `pingInterval` and `10000ms` TCP `keepAlive` to generate constant heartbeat traffic, preventing the load balancer from classifying the connection as idle.
+- **File:** `backend/src/queues/redisConnection.js`
+- **Documentation:** `docs/VALKEY_CONNECTION_RESILIENCE.md`
+
+
 ---
 
 ## 🚀 Cloud Infrastructure & CI/CD
