@@ -22,39 +22,55 @@ const courseProcessor = new Worker('course-processing', async job => {
 
                 if (isPlaylist) {
                     const playlistId = section.playlistUrl.split('list=')[1].split('&')[0];
-                    const response = await axios.get('https://www.googleapis.com/youtube/v3/playlistItems', {
-                        params: {
+                    
+                    // Paginate through ALL playlist items (YouTube API caps at 50 per page)
+                    let allPlaylistItems = [];
+                    let nextPageToken = null;
+                    do {
+                        const params = {
                             part: 'snippet,contentDetails',
                             maxResults: 50,
                             playlistId: playlistId,
                             key: apiKey
-                        }
-                    });
+                        };
+                        if (nextPageToken) params.pageToken = nextPageToken;
 
-                    const videoIds = response.data.items.map(item => item.contentDetails.videoId).join(',');
-                    const videoResponse = await axios.get('https://www.googleapis.com/youtube/v3/videos', {
-                        params: {
-                            part: 'contentDetails',
-                            id: videoIds,
-                            key: apiKey
-                        }
-                    });
+                        const response = await axios.get('https://www.googleapis.com/youtube/v3/playlistItems', { params });
+                        allPlaylistItems.push(...response.data.items);
+                        nextPageToken = response.data.nextPageToken || null;
+                    } while (nextPageToken);
 
+                    // Fetch durations in batches of 50 (videos endpoint also caps at 50 IDs)
                     const durationsMap = {};
-                    videoResponse.data.items.forEach(v => {
-                        const duration = v.contentDetails.duration;
-                        const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
-                        const hours = parseInt(match[1] || 0);
-                        const minutes = parseInt(match[2] || 0);
-                        const seconds = parseInt(match[3] || 0);
-                        durationsMap[v.id] = hours * 3600 + minutes * 60 + seconds;
-                    });
+                    for (let i = 0; i < allPlaylistItems.length; i += 50) {
+                        const batch = allPlaylistItems.slice(i, i + 50);
+                        const videoIds = batch.map(item => item.contentDetails.videoId).join(',');
+                        const videoResponse = await axios.get('https://www.googleapis.com/youtube/v3/videos', {
+                            params: {
+                                part: 'contentDetails',
+                                id: videoIds,
+                                key: apiKey
+                            }
+                        });
+                        videoResponse.data.items.forEach(v => {
+                            const duration = v.contentDetails.duration;
+                            const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+                            const hours = parseInt(match[1] || 0);
+                            const minutes = parseInt(match[2] || 0);
+                            const seconds = parseInt(match[3] || 0);
+                            durationsMap[v.id] = hours * 3600 + minutes * 60 + seconds;
+                        });
+                    }
 
-                    playlistItems = response.data.items.map(item => ({
+                    // Smart split decision: playlists with >5 videos = each video is its own entity
+                    const skipSplitting = allPlaylistItems.length > 5;
+
+                    playlistItems = allPlaylistItems.map(item => ({
                         id: item.contentDetails.videoId,
                         title: item.snippet.title,
                         durationSec: durationsMap[item.contentDetails.videoId] || 0,
-                        bestThumbnail: { url: item.snippet.thumbnails?.high?.url || item.snippet.thumbnails?.default?.url }
+                        bestThumbnail: { url: item.snippet.thumbnails?.high?.url || item.snippet.thumbnails?.default?.url },
+                        isFromPlaylist: skipSplitting
                     }));
                 } else {
                     // Single Video Logic
@@ -142,6 +158,7 @@ const courseProcessor = new Worker('course-processing', async job => {
                     endTime: item.endTime || null,
                     order: index,
                     thumbnailUrl: item.bestThumbnail?.url,
+                    isFromPlaylist: item.isFromPlaylist || false,
                     aiStatus: {
                         transcription: 'pending',
                         quiz: 'pending',
@@ -196,7 +213,8 @@ const courseProcessor = new Worker('course-processing', async job => {
                     youtubeId: lecture.youtubeId,
                     durationSecs: lecture.duration,
                     startTime: lecture.startTime,
-                    endTime: lecture.endTime
+                    endTime: lecture.endTime,
+                    isFromPlaylist: lecture.isFromPlaylist || false
                 }, jobOptions);
             }
         }

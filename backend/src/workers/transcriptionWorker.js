@@ -11,7 +11,7 @@ const chapterizationService = require('../services/chapterizationService');
 const jobOptions = require('../queues/jobOptions');
 
 const transcriptionWorker = new Worker('transcription', async job => {
-    const { lectureId, courseId, youtubeId, durationSecs, startTime = 0, endTime = null } = job.data;
+    const { lectureId, courseId, youtubeId, durationSecs, startTime = 0, endTime = null, isFromPlaylist = false } = job.data;
     
     try {
         const mongoose = require('mongoose');
@@ -63,8 +63,9 @@ const transcriptionWorker = new Worker('transcription', async job => {
         );
 
         // CHECK FOR AUTO-SPLIT (Chapterization)
-        // If it's a long video (>15 mins) and covers almost the whole duration (indicating it's the only lecture for this video)
-        const isOneShot = durationSecs > 900 && (!startTime || startTime === 0) && (!endTime || endTime >= durationSecs);
+        // Only split if: long video (>15 mins), covers full duration (single video upload), AND not from a large playlist
+        // Playlist videos with isFromPlaylist=true are already individual entities — splitting would explode lecture count
+        const isOneShot = !isFromPlaylist && durationSecs > 900 && (!startTime || startTime === 0) && (!endTime || endTime >= durationSecs);
         
         if (isOneShot) {
             console.log(`[TranscriptionWorker] Detected One-Shot lecture for ${youtubeId}. Splitting...`);

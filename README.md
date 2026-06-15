@@ -40,6 +40,7 @@ QuestXP is a high-performance Learning Management System engineered to eliminate
 | **Achievement Capture** | TUF-style streak sharing | `html-to-image` + React Portals |
 | **Bi-directional Sync** | Player progress ↔ Roadmap, cross-tab | Atomic MongoDB writes + BroadcastChannel API |
 | **One-Shot Chapterization** | Timestamp parsing → logical chapters | Description regex + YouTube Data API |
+| **Smart Playlist Splitting** | Large playlists skip AI split; small ones chapterize | `isFromPlaylist` flag + paginated YouTube API |
 | **Push Notifications** | Firebase Cloud Messaging via backend scheduler | `node-cron` + `firebase-admin` |
 | **Structured Logging** | Centralized, clean, and masked observability | `winston`, `morgan`, custom Express middleware |
 | **Geo-Blocking** | **India-Only Security Guard** | Regional firewall active | `geoip-lite` offline IP filter |
@@ -91,6 +92,7 @@ Course creation is fully asynchronous — the API returns instantly while worker
 - **File:** `backend/src/workers/courseProcessor.js`, `embeddingWorker.js`, `transcriptionWorker.js`
 - **Pattern:** Fan-out — one course job fans out to N lecture jobs (N = total lectures)
 - **Fault Tolerance:** Failed jobs bubble to BullMQ's failed set; course document status → `error`; no partial ghost courses
+- **Smart Playlist Splitting:** YouTube API pagination via `nextPageToken` loop fetches ALL playlist videos (no 50-video cap). Playlists with >5 videos tag each lecture with `isFromPlaylist: true` → the `transcriptionWorker` skips AI chapterization for these, treating each video as one entity. Small playlists (≤5) still allow splitting. Single video uploads always split. See `docs/036-playlist-smart-splitting.md`
 
 ### 2. RAG Doubt Chatbot (Pinecone + OpenAI)
 

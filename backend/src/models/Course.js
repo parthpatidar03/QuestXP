@@ -17,6 +17,7 @@ const courseSchema = new Schema({
             endTime: { type: Number, default: null },
             order: { type: Number, required: true },
             thumbnailUrl: { type: String },
+            isFromPlaylist: { type: Boolean, default: false },
             aiStatus: {
                 transcription: { type: String, enum: ['pending', 'in_progress', 'complete', 'failed'], default: 'pending' },
                 quiz: { type: String, enum: ['pending', 'in_progress', 'complete', 'failed'], default: 'pending' },
