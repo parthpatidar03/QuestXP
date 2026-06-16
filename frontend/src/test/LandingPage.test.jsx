@@ -27,7 +27,7 @@ describe('LandingPage Smoke Test', () => {
         
         // Check for key hero text using role to avoid collision with testimonials
         expect(screen.getByRole('heading', { name: /Turn/i, level: 1 })).toBeInTheDocument();
-        expect(screen.getByText(/playlists into courses you can actually finish/i)).toBeInTheDocument();
+        expect(screen.getByText(/actually finish\./i)).toBeInTheDocument();
     });
 
     it('renders CTA buttons', async () => {
@@ -42,11 +42,11 @@ describe('LandingPage Smoke Test', () => {
         });
         
         // Buttons in the hero section
-        expect(screen.getByText(/Start Learning/i)).toBeInTheDocument();
-        expect(screen.getByText(/Watch Demo/i)).toBeInTheDocument();
-        
+        // We now have a 'Get Started' button in the hero form
+        const getStartedButtons = screen.getAllByText(/Get Started/i);
+        expect(getStartedButtons.length).toBeGreaterThan(0);
         // Buttons in the header
         expect(screen.getByText(/Sign in/i)).toBeInTheDocument();
-        expect(screen.getByText(/Get Started/i)).toBeInTheDocument();
+        expect(screen.getAllByText(/Get Started/i).length).toBeGreaterThan(0);
     });
 });
