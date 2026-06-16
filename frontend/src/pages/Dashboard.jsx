@@ -332,7 +332,11 @@ function CourseCard({ course, progress, onDelete, isDeleting, priority = false }
                 </div>
 
                 <div className="p-4">
-                    <h3 className="font-serif font-bold text-text-primary text-base leading-tight mb-2 group-hover:text-primary transition-colors line-clamp-2">{course.title}</h3>
+                    <h3 className="font-serif font-bold text-text-primary text-base leading-tight mb-1 group-hover:text-primary transition-colors line-clamp-2">{course.title}</h3>
+                    <div className="mb-3 text-[10px] font-black uppercase tracking-widest text-text-muted flex items-center gap-1">
+                        <Calendar className="w-3 h-3" />
+                        {course.createdAt ? new Date(course.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Unknown Date'}
+                    </div>
                     <div className="mb-3">
                         <ProgressAnimata progress={pct} />
                     </div>
