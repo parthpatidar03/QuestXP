@@ -11,6 +11,8 @@ const GamificationOverlay = lazy(() => import('./components/Gamification/Gamific
 
 // Lazy load pages for performance
 const Auth = lazy(() => import('./pages/Auth'));
+import PageLoader from './components/ui/PageLoader';
+
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const CourseDetail = lazy(() => import('./pages/CourseDetail'));
 const Player = lazy(() => import('./pages/Player'));
@@ -23,12 +25,7 @@ const FriendZones = lazy(() => import('./pages/FriendZones'));
 const FriendZoneDetail = lazy(() => import('./pages/FriendZoneDetail'));
 const JoinFriendZone = lazy(() => import('./pages/JoinFriendZone'));
 
-const PageLoader = () => (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-bg">
-        <div className="w-12 h-12 rounded-full border-4 border-t-transparent animate-spin" style={{ borderColor: 'var(--color-primary)', borderTopColor: 'transparent' }} />
-        <div className="text-xs font-mono tracking-wide uppercase text-text-muted">Loading Engine</div>
-    </div>
-);
+
 
 const ProtectedRoute = ({ children }) => {
     const { isAuthenticated, isLoading } = useAuthStore();

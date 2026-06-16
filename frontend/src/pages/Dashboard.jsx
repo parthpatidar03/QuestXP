@@ -40,9 +40,9 @@ function calcCourseProgress(course, progress) {
 
 
 /* ── Productivity Cards ─────────────────────────────────────────────── */
-function RankCard({ rank, percentile, trend }) {
+function RankCard({ rank, percentile, trend, className = "" }) {
     return (
-        <ShinyCard className="glass-card p-5 relative overflow-hidden group hover:scale-[1.02] transition-all">
+        <ShinyCard className={`glass-card p-4 sm:p-5 relative overflow-hidden group hover:scale-[1.02] transition-all flex flex-col justify-between ${className}`}>
             <div className="flex items-center gap-2 mb-3">
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-gold/10 border border-gold/20 overflow-hidden">
                     <img src="/Trophy rank.png" alt="" className="w-5 h-5 object-contain" />
@@ -77,11 +77,11 @@ const formatTime = (seconds) => {
 
 
 
-function LearningTimeCard({ totalSeconds, weeklySeconds, avgSecondsPerDay }) {
+function LearningTimeCard({ totalSeconds, weeklySeconds, avgSecondsPerDay, className = "" }) {
     const hasActivity = totalSeconds > 0;
 
     return (
-        <ShinyCard className="glass-card p-5 relative overflow-hidden group hover:scale-[1.02] transition-all">
+        <ShinyCard className={`glass-card p-4 sm:p-5 relative overflow-hidden group hover:scale-[1.02] transition-all flex flex-col justify-between ${className}`}>
             <div className="flex items-center gap-2 mb-3">
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-primary/10 border border-primary/20 overflow-hidden">
                     <img src="/Learning time.png" alt="" className="w-5 h-5 object-contain" />
@@ -108,10 +108,10 @@ function LearningTimeCard({ totalSeconds, weeklySeconds, avgSecondsPerDay }) {
     );
 }
 
-function DeadlineCard({ deadline }) {
+function DeadlineCard({ deadline, className = "" }) {
     if (!deadline || !deadline.courseTitle) {
         return (
-            <ShinyCard className="glass-card p-5 flex flex-col justify-center items-center text-center">
+            <ShinyCard className={`glass-card p-4 sm:p-5 flex flex-col justify-center items-center text-center ${className}`}>
                 <Calendar className="w-8 h-8 text-primary mb-2 opacity-40" />
                 <p className="text-sm font-black text-text-secondary uppercase tracking-widest">No Active Targets</p>
                 <p className="text-xs text-text-muted mt-1">Set a study plan to see targets</p>
@@ -123,7 +123,7 @@ function DeadlineCard({ deadline }) {
 
     return (
         <ShinyCard 
-            className={`glass-card p-5 relative overflow-hidden group hover:scale-[1.02] transition-all border-l-4 ${isUrgent ? 'border-l-danger bg-danger/[0.02]' : 'border-l-primary'}`}
+            className={`glass-card p-4 sm:p-5 relative overflow-hidden group hover:scale-[1.02] transition-all border-l-4 ${isUrgent ? 'border-l-danger bg-danger/[0.02]' : 'border-l-primary'} flex flex-col justify-between ${className}`}
         >
             <div className="flex items-center gap-2 mb-3">
                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isUrgent ? 'bg-danger/10 text-danger' : 'bg-primary/10 text-primary'} border border-border`}>
@@ -213,9 +213,9 @@ function ShareModal({ isOpen, onClose, courseTitle, shareUrl }) {
     );
 }
 
-function ProductivityCard({ completionRate, completedCourses, totalEnrolled }) {
+function ProductivityCard({ completionRate, completedCourses, totalEnrolled, className = "" }) {
     return (
-        <ShinyCard className="glass-card p-5 relative overflow-hidden group hover:scale-[1.02] transition-all">
+        <ShinyCard className={`glass-card p-4 sm:p-5 relative overflow-hidden group hover:scale-[1.02] transition-all flex flex-col justify-between ${className}`}>
             <div className="flex items-center gap-2 mb-3">
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-success/10 border border-success/20 overflow-hidden">
                     <img src="/Mastery level.png" alt="" className="w-5 h-5 object-contain" />
@@ -278,9 +278,9 @@ function CourseCard({ course, progress, onDelete, isDeleting, priority = false }
             <ShinyCard 
                 className="group block transition-all cursor-pointer w-full h-full" 
                 style={{ padding: 0, overflow: 'hidden' }}
+                onClick={handleCardClick}
             >
                 <div
-                    onClick={handleCardClick}
                     className="relative w-full aspect-video overflow-hidden"
                 >
                     {thumb ? (
@@ -559,10 +559,15 @@ const Dashboard = () => {
     useEffect(() => {
         if (searchParams.get('open') === 'leaderboard') {
             setShowLeaderboard(true);
-            // Clear 'open' param while preserving others (like 'demo')
             const nextParams = new URLSearchParams(searchParams);
             nextParams.delete('open');
             setSearchParams(nextParams, { replace: true });
+        }
+        
+        if (searchParams.get('createUrl')) {
+            setShowCreate(true);
+            // We keep createUrl in the URL so CourseCreationForm can read it, or we could pass it from state.
+            // Let's keep it in searchParams and pass it down.
         }
     }, [searchParams, setSearchParams]);
 
@@ -716,64 +721,71 @@ const Dashboard = () => {
             <BGPattern variant="grid" mask="fade-edges" fill="var(--color-primary)" className="opacity-5" />
             <NavBar />
 
-            <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 py-8 flex flex-col xl:flex-row gap-6">
-                <div className="flex-1 min-w-0 space-y-8">
+            <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 py-6 flex flex-col xl:flex-row gap-6">
+                <div className="flex-1 min-w-0 space-y-5">
                     {activeCourse && (
                         <Link 
                             id="tour-hero"
                             to={firstLecId ? `/courses/${activeCourse._id}/lectures/${firstLecId}` : `/courses/${activeCourse._id}`}
 
-                            className="relative rounded-xl overflow-hidden p-7 flex flex-col sm:flex-row gap-6 items-start bg-surface border border-border shadow-card hover:border-primary/50 group transition-all"
+                            className="relative rounded-xl overflow-hidden p-4 sm:p-5 flex flex-col sm:flex-row gap-4 sm:items-center bg-surface border border-border shadow-card hover:border-primary/50 group transition-all"
                         >
                             {activeCourse.sections?.[0]?.lectures?.[0]?.thumbnailUrl && (
                                 <img
                                     src={activeCourse.sections[0].lectures[0].thumbnailUrl}
                                     alt="course"
-                                    className="w-32 h-20 sm:w-44 sm:h-28 object-cover rounded-lg shrink-0 border border-border group-hover:scale-105 transition-transform duration-500"
+                                    className="w-24 h-16 sm:w-32 sm:h-20 object-cover rounded-lg shrink-0 border border-border group-hover:scale-105 transition-transform duration-500"
                                 />
                             )}
 
-                            <div className="relative flex-1 min-w-0">
-                                <p className="text-xs font-semibold uppercase tracking-wide mb-1 text-primary">Continue studying</p>
-                                <h1 className="text-2xl sm:text-4xl font-serif font-black text-text-primary mb-2 leading-none group-hover:text-primary transition-colors tracking-tight">
-                                    {activeCourse.title}
-                                </h1>
-                                <div className="flex items-center gap-2 mb-3">
-                                    <span className="xp-chip"><img src="/favicon.png" alt="" className="w-3 h-3 object-contain" /> {Math.floor(activePct * (activeCourse.totalLectures * XP_PER_LECTURE) / 100)} / {activeCourse.totalLectures * XP_PER_LECTURE} XP</span>
-                                    <span className="text-xs text-text-muted">{activePct > 0 ? `
-                                    ${activePct}% complete` : 'Ready to begin'}</span>
-                                </div>
-                                <div className="mb-4 max-w-xs">
-                                    <ProgressAnimata progress={activePct} />
+                            <div className="relative flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-[10px] font-bold uppercase tracking-widest mb-1 text-primary">Continue studying</p>
+                                    <h1 className="text-lg sm:text-xl font-bold text-text-primary mb-1.5 leading-tight group-hover:text-primary transition-colors tracking-tight truncate">
+                                        {activeCourse.title}
+                                    </h1>
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <span className="xp-chip text-[10px] py-0.5"><img src="/favicon.png" alt="" className="w-2.5 h-2.5 object-contain" /> {Math.floor(activePct * (activeCourse.totalLectures * XP_PER_LECTURE) / 100)} / {activeCourse.totalLectures * XP_PER_LECTURE} XP</span>
+                                        <span className="text-[10px] text-text-muted">{activePct > 0 ? `${activePct}% complete` : 'Ready to begin'}</span>
+                                    </div>
+                                    <div className="max-w-[200px]">
+                                        <ProgressAnimata progress={activePct} />
+                                    </div>
                                 </div>
                                 
-                                <div className="btn-esports inline-flex items-center gap-2 text-sm group-hover:bg-primary-hover transition-colors">
-                                    <ChevronRight className="w-4 h-4" />
-                                    Resume Mission
+                                <div className="btn-esports shrink-0 px-4 py-2 text-[10px] sm:text-xs">
+                                    <ChevronRight className="w-3 h-3" />
+                                    Resume
                                 </div>
                             </div>
                         </Link>
                     )}
 
 
-                    <section id="tour-stats" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <section id="tour-stats" className="grid grid-cols-2 lg:grid-cols-4 gap-3">
 
                         {statsLoading ? (
                             Array(4).fill(0).map((_, i) => <StatCardSkeleton key={i} />)
                         ) : (
                             <>
                                 <RankCard 
+                                    className="h-full"
                                     rank={stats?.rank?.current} 
                                     percentile={stats?.rank?.percentile} 
                                     trend={stats?.rank?.trend} 
                                 />
                                 <LearningTimeCard 
+                                    className="h-full"
                                     totalSeconds={stats?.learningTime?.totalSeconds} 
                                     weeklySeconds={stats?.learningTime?.weeklySeconds} 
                                     avgSecondsPerDay={stats?.learningTime?.avgSecondsPerDay} 
                                 />
-                                <DeadlineCard deadline={stats?.deadlines} />
+                                <DeadlineCard 
+                                    className="h-full"
+                                    deadline={stats?.deadlines} 
+                                />
                                 <ProductivityCard 
+                                    className="h-full"
                                     completionRate={stats?.productivity?.completionRate} 
                                     completedCourses={stats?.productivity?.completedCourses} 
                                     totalEnrolled={stats?.productivity?.totalEnrolled} 
@@ -819,11 +831,20 @@ const Dashboard = () => {
                                 )}
                                 {showCreate && (
                                     <div className="mb-6">
-                                        <CourseCreationForm onSuccess={(courseId) => {
-                                            setShowCreate(false);
-                                            setRoadmapCourseId(courseId);
-                                            queryClient.invalidateQueries({ queryKey: ['courses'] });
-                                        }} />
+                                        <CourseCreationForm 
+                                            initialUrl={searchParams.get('createUrl') || ''}
+                                            onSuccess={(courseId) => {
+                                                setShowCreate(false);
+                                                // Clear createUrl from URL after success
+                                                if (searchParams.get('createUrl')) {
+                                                    const nextParams = new URLSearchParams(searchParams);
+                                                    nextParams.delete('createUrl');
+                                                    setSearchParams(nextParams, { replace: true });
+                                                }
+                                                setRoadmapCourseId(courseId);
+                                                queryClient.invalidateQueries({ queryKey: ['courses'] });
+                                            }} 
+                                        />
                                     </div>
                                 )}
                                 {coursesLoading ? (

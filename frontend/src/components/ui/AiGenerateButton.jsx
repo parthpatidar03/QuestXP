@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
-import Particles from "@tsparticles/react";
+import Particles, { initParticlesEngine } from "@tsparticles/react";
 import { loadFull } from "tsparticles";
-import { tsParticles } from "@tsparticles/engine";
 import { Sparkle } from "lucide-react";
 
 const options = {
@@ -51,8 +50,8 @@ const options = {
     move: {
       enable: true,
       center: {
-        x: 120,
-        y: 45,
+        x: 50,
+        y: 50,
       },
     },
   },
@@ -82,8 +81,8 @@ const options = {
         },
       },
       position: {
-        x: 110,
-        y: 45,
+        x: 50,
+        y: 50,
       },
     },
   ],
@@ -99,8 +98,8 @@ const options = {
         delay: 0.5,
       },
       position: {
-        x: 110,
-        y: 45,
+        x: 50,
+        y: 50,
       },
     },
   ],
@@ -111,15 +110,16 @@ export default function AiGenerateButton({ isSubmitting = false }) {
   const [isHovering, setIsHovering] = useState(false);
 
   useEffect(() => {
-    loadFull(tsParticles).then(() => {
+    initParticlesEngine(async (engine) => {
+      await loadFull(engine);
+    }).then(() => {
       setParticlesReady("loaded");
     });
   }, []);
 
   const modifiedOptions = useMemo(() => {
-    options.autoPlay = isHovering;
-    return options;
-  }, [isHovering]);
+    return { ...options, autoPlay: true };
+  }, []);
 
   return (
     <button
@@ -149,7 +149,7 @@ export default function AiGenerateButton({ isSubmitting = false }) {
       {!!particleState && !isSubmitting && (
         <Particles
           id="course-particles"
-          className={`pointer-events-none absolute -bottom-4 -left-4 -right-4 -top-4 z-0 opacity-0 transition-opacity ${particleState === "ready" ? "group-hover/ai:opacity-100" : ""}`}
+          className={`pointer-events-none absolute -bottom-4 -left-4 -right-4 -top-4 z-0 transition-opacity duration-300 ${isHovering ? "opacity-100" : "opacity-0"}`}
           particlesLoaded={async () => {
             setParticlesReady("ready");
           }}

@@ -44,6 +44,7 @@ const LandingPage = () => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [feedbackOpen, setFeedbackOpen] = useState(false);
     const [videoOpen, setVideoOpen] = useState(false);
+    const [heroUrl, setHeroUrl] = useState('');
     // Stats loaded from /api/public/stats. Fallback ensures metrics bar
     // is ALWAYS visible — API data overwrites on success.
     const [stats, setStats] = useState(FALLBACK_STATS);
@@ -80,7 +81,7 @@ const LandingPage = () => {
 
 
     useEffect(() => {
-        const theme = localStorage.getItem('theme') || 'dark';
+        const theme = localStorage.getItem('theme') || 'light';
         const nextDark = theme === 'dark';
         setIsDark(nextDark);
         if (nextDark) document.documentElement.classList?.add('dark');
@@ -109,7 +110,32 @@ const LandingPage = () => {
         navigate(isAuthenticated ? '/dashboard' : '/login');
     };
 
+    const handleHeroSubmit = () => {
+        if (!heroUrl.trim()) {
+            openApp();
+            return;
+        }
+        const encoded = encodeURIComponent(heroUrl);
+        if (isAuthenticated && !isLoading) {
+            navigate(`/dashboard?createUrl=${encoded}`);
+        } else {
+            navigate(`/dashboard?demo=true&createUrl=${encoded}`);
+        }
+    };
 
+    const studyEmojis1 = [
+        { emoji: "📚", position: "md:-left-12 -left-6 md:-top-8 -top-6 group-hover/hero:-translate-y-4 group-hover/hero:-translate-x-4 group-hover/hero:-rotate-12" },
+        { emoji: "🎓", position: "md:-left-10 -left-4 md:-bottom-8 -bottom-6 group-hover/hero:translate-y-4 group-hover/hero:-translate-x-4 group-hover/hero:rotate-12" },
+        { emoji: "💡", position: "md:-right-8 -right-4 md:-top-10 -top-8 group-hover/hero:-translate-y-4 group-hover/hero:translate-x-4 group-hover/hero:scale-110" },
+        { emoji: "✏️", position: "md:-right-12 -right-6 md:-bottom-8 -bottom-6 group-hover/hero:translate-y-4 group-hover/hero:translate-x-4 group-hover/hero:rotate-45" },
+    ];
+
+    const studyEmojis2 = [
+        { emoji: "💻", position: "md:-left-12 -left-6 md:-top-8 -top-6 group-hover/hero:-translate-y-4 group-hover/hero:-translate-x-4 group-hover/hero:-rotate-12" },
+        { emoji: "🎯", position: "md:-left-10 -left-4 md:-bottom-8 -bottom-6 group-hover/hero:translate-y-4 group-hover/hero:-translate-x-4 group-hover/hero:rotate-12" },
+        { emoji: "🚀", position: "md:-right-8 -right-4 md:-top-10 -top-8 group-hover/hero:-translate-y-4 group-hover/hero:translate-x-4 group-hover/hero:rotate-12" },
+        { emoji: "🧠", position: "md:-right-12 -right-6 md:-bottom-8 -bottom-6 group-hover/hero:translate-y-4 group-hover/hero:translate-x-4 group-hover/hero:-rotate-12" },
+    ];
 
     return (
         <div className="min-h-screen bg-bg relative overflow-hidden flex flex-col">
@@ -180,29 +206,29 @@ const LandingPage = () => {
             {/* Interactive Spotlight Removed for Performance */}
             <BGPattern variant="grid" mask="fade-edges" fill="var(--color-text-muted)" className="opacity-20 z-0" />
 
-            <header className="relative z-20 border-b border-border bg-surface/90">
-                <div className="max-w-screen-xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
-                    <Link to="/" className="flex items-center gap-2.5 group cursor-pointer shrink-0">
+            <header className="relative z-20 border-b border-border bg-surface/90 backdrop-blur-md sticky top-0">
+                <div className="max-w-screen-xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between gap-6">
+                    <Link to="/" className="flex items-center gap-3 group cursor-pointer shrink-0">
                         <img src="/favicon.png" alt="QuestXP" className="w-10 h-10 object-contain transition-transform group-hover:scale-105 rounded-xl shadow-sm" />
-                        <span className="text-lg sm:text-xl font-semibold text-text-primary tracking-tight">QuestXP</span>
+                        <span className="text-xl font-bold text-text-primary tracking-tight">QuestXP</span>
                     </Link>
 
-                    <nav className="hidden md:flex items-center gap-1 text-sm">
-                        <a href="#features" className="px-3 py-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors">Features</a>
-                        <a href="#how-it-works" className="px-3 py-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors">How it works</a>
+                    <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
+                        <a href="#features" className="whitespace-nowrap text-text-secondary hover:text-text-primary transition-colors">Features</a>
+                        <a href="#how-it-works" className="whitespace-nowrap text-text-secondary hover:text-text-primary transition-colors">How it works</a>
                         <button 
                             onClick={() => setFeedbackOpen(true)}
-                            className="px-3 py-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors"
+                            className="whitespace-nowrap text-text-secondary hover:text-text-primary transition-colors"
                         >
                             Feedback
                         </button>
                     </nav>
 
-                    <div className="hidden md:flex items-center gap-2">
+                    <div className="hidden md:flex items-center gap-3">
                         <button
                             type="button"
                             onClick={toggleTheme}
-                            className="p-2 rounded-lg border border-border bg-surface-2 text-text-secondary hover:text-text-primary transition-colors"
+                            className="w-10 h-10 flex items-center justify-center rounded-full border border-border bg-surface-2 text-text-secondary hover:text-text-primary transition-colors"
                             title="Toggle theme"
                             aria-label="Toggle theme"
                         >
@@ -210,15 +236,15 @@ const LandingPage = () => {
                         </button>
                         <button 
                             onClick={() => navigate('/dashboard?demo=true')} 
-                            className="flex flex-col items-center px-4 py-1.5 rounded-xl border border-border hover:border-primary/50 hover:bg-surface-2 transition-all group"
+                            className="px-5 py-2.5 rounded-full border border-border bg-surface hover:bg-surface-2 transition-all group whitespace-nowrap flex items-center gap-2 shadow-sm"
                         >
-                            <span className="text-sm font-bold text-text-secondary group-hover:text-text-primary leading-none">Try Demo</span>
-                            <span className="text-[8px] text-text-muted uppercase tracking-tighter mt-1 font-black opacity-60">Without Sign-in</span>
+                            <span className="text-sm font-bold text-text-primary">Try Demo</span>
+                            <span className="px-1.5 py-0.5 rounded text-[10px] bg-surface-2 text-text-muted font-bold uppercase tracking-wider">No Sign-in</span>
                         </button>
-                        <button onClick={openAuth} className="bg-red-600 text-sm px-6 py-2.5 rounded-lg text-white font-bold transition-all hover:bg-red-700 hover:-translate-y-0.5 duration-150">
+                        <button onClick={openAuth} className="bg-red-600 text-sm px-6 py-2.5 rounded-full text-white font-bold transition-all hover:bg-red-700 hover:-translate-y-0.5 shadow-sm whitespace-nowrap">
                             {isAuthenticated && !isLoading ? 'Dashboard' : 'Sign in'}
                         </button>
-                        <button onClick={openApp} className="btn-primary text-sm px-6 py-2.5 hover:-translate-y-0.5 duration-150">
+                        <button onClick={openApp} className="btn-primary text-sm px-6 py-2.5 rounded-full font-bold hover:-translate-y-0.5 transition-all shadow-sm whitespace-nowrap">
                             Get Started
                         </button>
                     </div>
@@ -278,87 +304,114 @@ const LandingPage = () => {
             </header>
 
             <main className="relative z-10 flex-1">
-                <section id="how-it-works" className="max-w-screen-xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8 pb-8 sm:pb-10">
-                    <div className="grid gap-10 lg:grid-cols-2 items-center">
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.5, ease: 'easeOut' }}
-                        >
-                            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-surface mb-6 text-xs sm:text-sm text-text-secondary">
-                                <Flame className="w-4 h-4 text-primary" />
-                                Serious learning workspace, with light gamification.
-                            </div>
+                
+                <section id="how-it-works" className="relative max-w-screen-xl mx-auto px-4 sm:px-6 pt-8 sm:pt-10 pb-12 sm:pb-16 flex flex-col items-center text-center">
+                    
+                    {/* Floating Doodles */}
+                    <motion.div 
+                        animate={{ y: [-10, 10, -10] }} 
+                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                        className="absolute left-[5%] top-[15%] hidden lg:block opacity-20 text-text-muted"
+                    >
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                    </motion.div>
+                    <motion.div 
+                        animate={{ y: [15, -15, 15] }} 
+                        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                        className="absolute right-[5%] top-[25%] hidden lg:block opacity-10 text-text-primary"
+                    >
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                    </motion.div>
+                    <motion.div 
+                        animate={{ y: [-5, 15, -5], rotate: [0, 10, 0] }} 
+                        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                        className="absolute left-[15%] bottom-[30%] hidden lg:block opacity-20 text-primary"
+                    >
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                        </svg>
+                    </motion.div>
+                    <motion.div 
+                        animate={{ y: [10, -10, 10], rotate: [0, -10, 0] }} 
+                        transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut" }}
+                        className="absolute right-[12%] bottom-[20%] hidden lg:block opacity-20 text-text-muted"
+                    >
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                        </svg>
+                    </motion.div>
 
-                            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-text-primary leading-[1.05] tracking-[-0.04em] max-w-[14ch] font-display">
-                                Turn 
-                                <img src="/yt-icon.png" alt="YouTube" className="inline-block w-[1.1em] h-[1.1em] mx-2 -mt-1 vertical-middle align-middle" /> 
-                                playlists into courses you can actually finish.
-                            </h1>
-
-                            <p className="mt-8 text-lg sm:text-xl text-text-primary font-medium leading-relaxed max-w-[60ch]">
-                                We buy expensive courses but end up on YouTube. It has the content, but lacks the 
-                                <span className="text-primary italic font-bold"> structure, gamification, and personalization </span> 
-                                you need to finish.
-                                <span className="block mt-4 text-text-primary font-black tracking-tight">
-                                    QuestXP combines multiple playlists from different creators into one structured course you can finish and track.
-                                </span>
-                            </p>
-
-                            <div className="mt-7 flex flex-col sm:flex-row gap-3 sm:items-center">
-                                <button onClick={openApp} className="btn-primary inline-flex items-center justify-center gap-2 px-8 py-3.5 text-sm sm:text-base active:scale-95 active:shadow-[0_0_30px_rgba(34,197,94,0.4)] transition-all">
-                                    Start Learning
-                                    <ChevronRight className="w-4 h-4" />
-                                </button>
-                                <button 
-                                    onClick={() => setVideoOpen(true)}
-                                    className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-lg border border-border bg-surface text-sm sm:text-base font-bold text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-all"
-                                >
-                                    <Play className="w-4 h-4 fill-current" />
-                                    Watch Demo
-                                </button>
-                            </div>
-
-                        </motion.div>
-
-                        <motion.div
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.6, ease: 'easeOut', delay: 0.2 }}
-                            className="relative group"
-                        >
-                            {/* Decorative glow behind image */}
-                            <div className="absolute -inset-4 bg-primary/10 rounded-[2.5rem] blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                            
-                            <div className="relative z-10 w-full h-auto rounded-2xl border border-border bg-surface shadow-2xl overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                                <img 
-                                    src="/Images/dashboard_landing_page.png" 
-                                    alt="QuestXP Dashboard" 
-                                    className="w-full h-auto object-cover block"
-                                />
-                                
-                                {/* Glass overlay on bottom */}
-                                <div className="absolute bottom-0 inset-x-0 p-4 bg-gradient-to-t from-black/80 to-transparent backdrop-blur-sm flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-2 h-2 rounded-full bg-primary" />
-                                        <span className="text-[10px] font-bold text-white uppercase tracking-widest">Live Dashboard Preview</span>
-                                    </div>
-                                    <Sparkles className="w-4 h-4 text-primary" />
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, ease: 'easeOut' }}
+                        className="flex flex-col items-center max-w-4xl relative z-10"
+                    >
+                        <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-text-primary leading-[1.1] tracking-tight font-display mb-6">
+                            Turn <img src="/yt-icon.png" alt="YouTube" className="inline-block w-[1em] h-[1em] mx-2 -mt-2 align-middle drop-shadow-sm" /> playlists into{" "}
+                            <div className="group/hero relative inline-flex items-center cursor-pointer">
+                                <span className="text-[#E7E1B1] underline decoration-dashed decoration-2 underline-offset-8 decoration-[#E7E1B1]/40 transition-all duration-300 group-hover/hero:text-[#E7E1B1]/80 group-hover/hero:decoration-[#E7E1B1]/80">courses</span>
+                                <div className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover/hero:opacity-100 pointer-events-none z-20">
+                                    {studyEmojis1.map((dest, index) => (
+                                        <span key={index} className={`absolute transform text-2xl sm:text-3xl md:text-5xl transition-transform duration-300 ease-[cubic-bezier(0.5,1.8,0.4,1)] ${dest.position}`}>
+                                            {dest.emoji}
+                                        </span>
+                                    ))}
                                 </div>
-
-                                {/* Floating badge */}
-                                <div className="absolute -top-4 -right-4 bg-surface-2 border border-border p-3 rounded-xl shadow-xl hidden md:flex items-center gap-3 z-20">
-                                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                                        <Flame className="w-6 h-6 text-primary" />
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] text-text-muted uppercase font-bold tracking-tight">Active Mission</p>
-                                        <p className="text-xs font-black text-text-primary">Master ML in 6h</p>
-                                    </div>
+                            </div>{" "}
+                            you can{" "}
+                            <div className="group/hero relative inline-flex items-center cursor-pointer">
+                                <span className="text-[#68D956] underline decoration-dashed decoration-2 underline-offset-8 decoration-[#68D956]/40 transition-all duration-300 group-hover/hero:text-[#68D956]/80 group-hover/hero:decoration-[#68D956]/80">actually finish.</span>
+                                <div className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover/hero:opacity-100 pointer-events-none z-20">
+                                    {studyEmojis2.map((dest, index) => (
+                                        <span key={index} className={`absolute transform text-2xl sm:text-3xl md:text-5xl transition-transform duration-300 ease-[cubic-bezier(0.5,1.8,0.4,1)] ${dest.position}`}>
+                                            {dest.emoji}
+                                        </span>
+                                    ))}
                                 </div>
                             </div>
-                        </motion.div>
-                    </div>
+                        </h1>
+
+                        <p className="text-lg sm:text-xl text-text-secondary font-medium leading-relaxed max-w-[800px] mb-10">
+                            QuestXP connects scattered YouTube videos, AI-generated quizzes, and structured roadmaps into a single learning graph. Stop abandoning playlists and start operating at <span className="font-bold text-text-primary">completion speed.</span>
+                        </p>
+
+                        <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
+                            <input 
+                                type="text" 
+                                value={heroUrl}
+                                onChange={(e) => setHeroUrl(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && handleHeroSubmit()}
+                                placeholder="Paste YouTube Playlist URL" 
+                                className="flex-1 px-5 py-3.5 rounded-full border border-border bg-surface text-text-primary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-sm"
+                            />
+                            <button onClick={handleHeroSubmit} className="btn-primary rounded-full px-8 py-3.5 text-base sm:whitespace-nowrap shadow-sm hover:shadow-md">
+                                Get Started
+                            </button>
+                        </div>
+                    </motion.div>
+
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, ease: 'easeOut', delay: 0.3 }}
+                        className="w-full mt-16 max-w-5xl"
+                    >
+                        <div className="relative z-10 w-full h-auto rounded-xl border border-border bg-surface shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 p-2">
+                            <img 
+                                src="/Images/dashboard_landing_page.png" 
+                                alt="QuestXP Dashboard" 
+                                className="w-full h-auto object-cover block rounded-lg border border-border/50"
+                            />
+                        </div>
+                    </motion.div>
                 </section>
 
                 {visibleMetrics.length > 0 && (

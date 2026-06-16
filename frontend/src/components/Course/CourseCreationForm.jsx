@@ -5,15 +5,33 @@ import { Plus, X, Link as LinkIcon, AlertCircle, Info } from 'lucide-react';
 import { shootConfetti } from '../../utils/confetti';
 import AiGenerateButton from '../ui/AiGenerateButton';
 
-const CourseCreationForm = ({ onSuccess }) => {
+const CourseCreationForm = ({ onSuccess, initialUrl = '' }) => {
     const [title, setTitle] = useState('');
-    const [sections, setSections] = useState([{ title: '', playlistUrl: '', order: 0 }]);
+    const [sections, setSections] = useState([{ title: '', playlistUrl: initialUrl, order: 0 }]);
     const [error, setError] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const navigate = useNavigate();
     
     // Check if we are in demo/guest mode
     const isGuest = !localStorage.getItem('accessToken') && window.location.search.includes('demo=true');
+
+    // Auto-fetch if initialUrl is provided
+    React.useEffect(() => {
+        if (initialUrl && (initialUrl.includes('youtube.com') || initialUrl.includes('youtu.be'))) {
+            const fetchInfo = async () => {
+                try {
+                    const { data } = await api.get(`/courses/playlist-info?url=${encodeURIComponent(initialUrl)}`);
+                    if (data.title) {
+                        setSections([{ title: data.title, playlistUrl: initialUrl, order: 0 }]);
+                        setTitle(data.title);
+                    }
+                } catch (err) {
+                    console.error('[AutoFill] Failed:', err);
+                }
+            };
+            fetchInfo();
+        }
+    }, [initialUrl]);
 
     const addSection = () => {
         setSections([...sections, { title: '', playlistUrl: '', order: sections.length }]);
