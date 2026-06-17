@@ -380,7 +380,9 @@ const LandingPage = () => {
                         </h1>
 
                         <p className="text-lg sm:text-xl text-text-secondary font-medium leading-relaxed max-w-[800px] mb-10">
-                            QuestXP connects scattered YouTube videos, AI-generated quizzes, and structured roadmaps into a single learning graph. Stop abandoning playlists and start operating at <span className="font-bold text-text-primary">completion speed.</span>
+                            We buy expensive courses but end up on YouTube. It has the content, but lacks the <span className="text-primary italic">structure, gamification, and personalization</span> you need to finish.
+                            <br /><br />
+                            <span className="text-primary">QuestXP gives free Yt content the structure it lacks.</span>
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
