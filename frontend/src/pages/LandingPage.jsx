@@ -28,6 +28,7 @@ import useAuthStore from '../store/useAuthStore';
 import { ShinyCard } from '../components/ui/ShinyCard';
 import Counter from '../components/ui/Counter';
 import Marquee from '../components/animata/container/marquee';
+import { Reveal, RevealLines, RevealWords, RevealGroup, RevealItem } from '../components/ui/Reveal';
 
 // Conservative floor values — always shown if API fails or is slow.
 const FALLBACK_STATS = {
@@ -348,10 +349,9 @@ const LandingPage = () => {
                         </svg>
                     </motion.div>
 
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, ease: 'easeOut' }}
+                    <Reveal
+                        y={20}
+                        duration={0.8}
                         className="flex flex-col items-center max-w-4xl relative z-10"
                     >
                         <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-text-primary leading-[1.1] tracking-tight font-display mb-6">
@@ -398,12 +398,13 @@ const LandingPage = () => {
                                 Get Started
                             </button>
                         </div>
-                    </motion.div>
+                    </Reveal>
 
-                    <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, ease: 'easeOut', delay: 0.3 }}
+                    <Reveal
+                        y={30}
+                        duration={1.0}
+                        delay={0.2}
+                        scale={0.97}
                         className="w-full mt-16 max-w-5xl"
                     >
                         <div className="relative z-10 w-full h-auto rounded-xl border border-border bg-surface shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 p-2">
@@ -413,7 +414,7 @@ const LandingPage = () => {
                                 className="w-full h-auto object-cover block rounded-lg border border-border/50"
                             />
                         </div>
-                    </motion.div>
+                    </Reveal>
                 </section>
 
                 {visibleMetrics.length > 0 && (
