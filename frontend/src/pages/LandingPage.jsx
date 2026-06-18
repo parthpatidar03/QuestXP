@@ -449,10 +449,8 @@ const LandingPage = () => {
                                 <div className="relative overflow-hidden bg-black rounded-[2.5rem] border border-white/10 py-12 px-6 flex flex-col items-center justify-center shadow-2xl">
                         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,180,255,0.1),transparent_70%)]" />
                         
-                        <motion.div
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
+                        <Reveal
+                            y={30}
                             className="text-center relative z-10 space-y-2"
                         >
                             <span className="text-[9px] font-black uppercase tracking-[0.4em] text-white/40 block mb-4">Synergized Learning</span>
@@ -474,23 +472,23 @@ const LandingPage = () => {
                             <p className="text-[10px] font-bold text-white/40 tracking-[0.2em] uppercase mt-8">
                                 The definitive workspace for technical mastery.
                             </p>
-                        </motion.div>
+                        </Reveal>
                     </div>
                 </section>
 
 
 
                 <section className="max-w-screen-xl mx-auto px-4 sm:px-6 py-12">
-                    <div className="text-center mb-10">
+                    <Reveal y={30} className="text-center mb-10">
                         <h2 className="text-3xl sm:text-4xl font-bold text-text-primary tracking-tight mb-4">
                             Global Hall of Fame
                         </h2>
                         <p className="text-text-secondary max-w-2xl mx-auto text-base sm:text-lg">
                             Compete with learners worldwide and earn XP for every mission you finish.
                         </p>
-                    </div>
+                    </Reveal>
 
-                    <div className="relative">
+                    <Reveal y={40} className="relative">
                         <div className="absolute inset-0 bg-primary/5 blur-3xl -z-10 rounded-full" />
                         <LeaderboardPodium 
                             players={[
@@ -506,17 +504,15 @@ const LandingPage = () => {
                                 <ChevronRight className="w-4 h-4" />
                             </button>
                         </div>
-                    </div>
+                    </Reveal>
                 </section>
 
 
                 {/* New Feature: Dynamic Roadmap */}
                 <section className="max-w-screen-xl mx-auto px-4 sm:px-6 py-12">
                     <div className="grid md:grid-cols-2 gap-16 items-center">
-                        <motion.div
-                            initial={{ opacity: 0, x: -30 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
+                        <Reveal
+                            y={30}
                         >
                             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/30 bg-primary/10 mb-6 text-xs font-bold text-primary uppercase tracking-widest">
                                 <Map className="w-4 h-4" />
@@ -542,12 +538,11 @@ const LandingPage = () => {
                                     </li>
                                 ))}
                             </ul>
-                        </motion.div>
+                        </Reveal>
 
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            whileInView={{ opacity: 1, scale: 1 }}
-                            viewport={{ once: true }}
+                        <Reveal
+                            y={40}
+                            scale={0.96}
                             className="relative"
                         >
                             <div className="absolute inset-0 bg-primary/10 blur-[80px] rounded-full opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity duration-500" />
@@ -569,16 +564,14 @@ const LandingPage = () => {
                                     </div>
                                 </div>
                             </div>
-                        </motion.div>
+                        </Reveal>
                     </div>
                 </section>
 
                 <section className="max-w-screen-xl mx-auto px-4 sm:px-6 py-12">
                     <div className="grid md:grid-cols-2 gap-16 items-center">
-                        <motion.div
-                            initial={{ opacity: 0, x: -30 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
+                        <Reveal
+                            y={30}
                         >
                             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-danger/30 bg-danger/10 mb-6 text-xs font-bold text-danger uppercase tracking-widest">
                                 <ShieldCheck className="w-4 h-4" />
@@ -606,12 +599,11 @@ const LandingPage = () => {
                                     </div>
                                 </div>
                             </div>
-                        </motion.div>
+                        </Reveal>
 
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            whileInView={{ opacity: 1, scale: 1 }}
-                            viewport={{ once: true }}
+                        <Reveal
+                            y={40}
+                            scale={0.96}
                             className="relative"
                         >
                             <div className="absolute -inset-10 bg-primary/10 blur-[100px] rounded-full opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity duration-500" />
@@ -631,7 +623,7 @@ const LandingPage = () => {
                                     <span className="text-xs font-black text-text-primary uppercase tracking-tighter">Focus Safeguard Active</span>
                                 </div>
                             </div>
-                        </motion.div>
+                        </Reveal>
                     </div>
                 </section>
 
