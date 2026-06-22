@@ -5,7 +5,6 @@ import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import {
     ChevronRight,
-    Flame,
     Sun,
     Moon,
     Menu,
@@ -20,7 +19,7 @@ import {
 import { BGPattern } from '../components/ui/bg-pattern';
 import FeedbackModal from '../components/FeedbackModal';
 import VideoModal from '../components/VideoModal';
-import { Play } from 'lucide-react';
+
 import Footer from '../components/ui/Footer';
 import LeaderboardPodium from '../components/Dashboard/LeaderboardPodium';
 import FeaturesStack from '../components/Landing/FeaturesStack';

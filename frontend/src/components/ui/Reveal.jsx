@@ -56,7 +56,7 @@ export function RevealLines({
   if (splitBy === 'wrap') {
     lines = wrapIntoLines(text.trim(), charsPerLine);
   } else if (splitBy === 'sentence') {
-    lines = text.split(/(?<=\.)\ +|(?<=—)\ +/).filter(l => l.trim().length > 0);
+    lines = text.split(/(?<=[.]) +|(?<=—) +/).filter(l => l.trim().length > 0);
   } else {
     lines = text.split('\n').filter(l => l.trim().length > 0);
   }
