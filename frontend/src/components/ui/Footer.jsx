@@ -34,19 +34,19 @@ const Footer = ({ onOpenFeedback }) => {
                         href="https://github.com/parthpatidar03" 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="p-3 rounded-2xl bg-surface-2 border border-border hover:border-primary/50 hover:bg-surface-3 transition-all group flex items-center justify-center"
+                        className="hover:scale-110 transition-transform duration-200 flex items-center justify-center"
                         title="GitHub Profile"
                     >
-                        <img src="/github-icon.png" alt="GitHub" className="w-5 h-5 object-contain group-hover:brightness-110 transition-all" />
+                        <img src="/github-icon.png" alt="GitHub" className="w-14 h-14 object-contain hover:brightness-125 transition-all" />
                     </a>
                     <a 
                         href="https://www.linkedin.com/in/patidar-parth/" 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="p-3 rounded-2xl bg-surface-2 border border-border hover:border-primary/50 hover:bg-surface-3 transition-all group flex items-center justify-center"
+                        className="hover:scale-110 transition-transform duration-200 flex items-center justify-center"
                         title="LinkedIn Profile"
                     >
-                        <img src="/linkden-icon.png" alt="LinkedIn" className="w-5 h-5 object-contain group-hover:brightness-110 transition-all" />
+                        <img src="/linkden-icon.png" alt="LinkedIn" className="w-14 h-14 object-contain hover:brightness-125 transition-all" />
                     </a>
                     <a 
                         href="mailto:u1892911@gmail.com" 

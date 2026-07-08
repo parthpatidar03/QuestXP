@@ -14,6 +14,15 @@
           "value": "same-origin-allow-popups"
         }
       ]
+    },
+    {
+      "source": "/(linkden-icon|github-icon|yt-icon|whatsapp-icon|favicon)\\.(png|svg)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
     }
   ]
 }

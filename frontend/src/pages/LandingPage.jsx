@@ -354,7 +354,7 @@ const LandingPage = () => {
                         className="flex flex-col items-center max-w-4xl relative z-10"
                     >
                         <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-text-primary leading-[1.1] tracking-tight font-display mb-6">
-                            Turn <img src="/yt-icon.png" alt="YouTube" className="inline-block w-[1em] h-[1em] mx-2 -mt-2 align-middle drop-shadow-sm" /> playlists into{" "}
+                            Turn <img src="/yt-icon.png" alt="YouTube" className="inline-block w-[1.3em] h-[1.3em] mx-2 -mt-2 align-middle drop-shadow-md" /> playlists into{" "}
                             <div className="group/hero relative inline-flex items-center cursor-pointer">
                                 <span className="text-[#E7E1B1] underline decoration-dashed decoration-2 underline-offset-8 decoration-[#E7E1B1]/40 transition-all duration-300 group-hover/hero:text-[#E7E1B1]/80 group-hover/hero:decoration-[#E7E1B1]/80">courses</span>
                                 <div className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover/hero:opacity-100 pointer-events-none z-20">
