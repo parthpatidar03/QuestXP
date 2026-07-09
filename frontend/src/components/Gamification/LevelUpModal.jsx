@@ -3,9 +3,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, Unlock } from 'lucide-react';
 import useGamificationStore from '../../store/useGamificationStore';
 import { playSound } from '../../utils/soundEffects';
+import useFocusTrap from '../../hooks/useFocusTrap';
 
 const LevelUpModal = () => {
     const { levelUpData, clearLevelUp } = useGamificationStore();
+    const trapRef = useFocusTrap(!!levelUpData, clearLevelUp);
 
     useEffect(() => {
         if (levelUpData) {
@@ -68,6 +70,10 @@ const LevelUpModal = () => {
 
                     {/* Modal Content */}
                     <motion.div 
+                        ref={trapRef}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label="Level up celebration"
                         initial={{ opacity: 0, scale: 0.8, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 10 }}

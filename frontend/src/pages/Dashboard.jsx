@@ -8,6 +8,7 @@ import useGamificationStore from '../store/useGamificationStore';
 import api from '../services/api';
 import { getGamificationProfile, getXPHistory } from '../services/gamificationApi';
 import NavBar from '../components/NavBar';
+import useFocusTrap from '../hooks/useFocusTrap';
 import DailyMissionWidget from '../components/Dashboard/DailyMissionWidget';
 import UserTour from '../components/Dashboard/UserTour';
 
@@ -152,19 +153,20 @@ function DeadlineCard({ deadline, className = "" }) {
 
 /* ── Share Modal ─────────────────────────────────────────────────────── */
 function ShareModal({ isOpen, onClose, courseTitle, shareUrl }) {
+    const trapRef = useFocusTrap(isOpen, onClose);
     if (!isOpen) return null;
 
     const shareText = `*I found this awesome course "${courseTitle}" on QuestXP!* 🚀\n\nWould you like to level up? Check it out here:\n${shareUrl}`;
 
     const copyMessage = () => {
         navigator.clipboard.writeText(shareText);
-        alert('Message copied to clipboard!');
+        toast.success('Copied to clipboard!');
     };
 
     return (
         <div className="fixed inset-0 z-[200] flex items-start justify-center p-4 pt-16 sm:pt-24 animate-in fade-in duration-200">
             <div className="absolute inset-0 bg-bg/60 backdrop-blur-sm" onClick={onClose} />
-            <div className="relative w-full max-w-md bg-surface border border-border rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-top-4 duration-300">
+            <div ref={trapRef} role="dialog" aria-modal="true" aria-label="Share course" className="relative w-full max-w-md bg-surface border border-border rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-top-4 duration-300">
                 <div className="p-5 border-b border-border bg-surface-2 flex items-center justify-between">
                     <div className="flex items-center gap-3 text-primary">
                         <Share2 className="w-5 h-5" />
@@ -1029,21 +1031,21 @@ const Dashboard = () => {
                             <h2 className="text-sm font-semibold tracking-wide text-text-primary">Daily Quests</h2>
                         </div>
                         <div className="space-y-3">
-                            <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-surface-2 hover:border-success/50 transition-colors cursor-pointer group gap-3">
+                            <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-surface-2 transition-colors gap-3">
                                 <div className="min-w-0 flex-1">
-                                    <p className="text-sm font-medium text-text-primary group-hover:text-success transition-colors truncate">Study for 15 minutes</p>
+                                    <p className="text-sm font-medium text-text-primary transition-colors truncate">Study for 15 minutes</p>
                                     <p className="text-xs text-text-secondary mt-0.5">Gain 50 XP</p>
                                 </div>
-                                <div className="w-8 h-8 rounded-full bg-surface border border-border flex items-center justify-center group-hover:bg-success/10 group-hover:border-success/30 transition-colors p-1.5">
+                                <div className="w-8 h-8 rounded-full bg-surface border border-border flex items-center justify-center transition-colors p-1.5">
                                     <img src="/favicon.png" alt="" className="w-full h-full object-contain" />
                                 </div>
                             </div>
-                            <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-surface-2 hover:border-success/50 transition-colors cursor-pointer group gap-3">
+                            <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-surface-2 transition-colors gap-3">
                                 <div className="min-w-0 flex-1">
-                                    <p className="text-sm font-medium text-text-primary group-hover:text-success transition-colors truncate">Complete a Quiz</p>
+                                    <p className="text-sm font-medium text-text-primary transition-colors truncate">Complete a Quiz</p>
                                     <p className="text-xs text-text-secondary mt-0.5">Gain 100 XP</p>
                                 </div>
-                                <div className="w-8 h-8 rounded-full bg-surface border border-border flex items-center justify-center group-hover:bg-success/10 group-hover:border-success/30 transition-colors p-1.5">
+                                <div className="w-8 h-8 rounded-full bg-surface border border-border flex items-center justify-center transition-colors p-1.5">
                                     <img src="/favicon.png" alt="" className="w-full h-full object-contain" />
                                 </div>
                             </div>
@@ -1114,6 +1116,7 @@ const Dashboard = () => {
 };
 
 const XPSystemModal = ({ isOpen, onClose }) => {
+    const trapRef = useFocusTrap(isOpen, onClose);
     const mechanics = [
         { title: "Progressive Lectures", desc: "Gain more XP as you go. Lecture 1 (+50 XP), Lecture 2 (+60 XP), and so on!", icon: <BookOpen className="w-5 h-5" />, color: "text-blue-400" },
         { title: "Study Streaks", desc: "Keep the flame alive! 1.25x (7 days), 1.5x (14 days), 2x (30 days), up to 3x multiplier!", icon: <Flame className="w-5 h-5" />, color: "text-warning" },
@@ -1131,6 +1134,10 @@ const XPSystemModal = ({ isOpen, onClose }) => {
                         className="absolute inset-0 bg-black/80 backdrop-blur-xl"
                     />
                     <div 
+                        ref={trapRef}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label="How XP works"
                         onClick={(e) => e.stopPropagation()}
                         className="relative w-full max-w-lg bg-surface border border-white/10 rounded-[2rem] shadow-2xl p-8 overflow-y-auto max-h-[90vh] scrollbar-hide z-10 pointer-events-auto animate-in zoom-in-95 slide-in-from-bottom-4 duration-300"
                     >

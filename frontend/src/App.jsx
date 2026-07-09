@@ -157,6 +157,14 @@ const AppContent = () => {
                         <ProtectedRoute><FriendZoneDetail /></ProtectedRoute>
                     } />
                     <Route path="/join/:inviteCode" element={<JoinFriendZone />} />
+                    <Route path="*" element={
+                        <div className="min-h-screen flex flex-col items-center justify-center bg-bg p-8 text-center">
+                            <div className="text-6xl mb-4">🗺️</div>
+                            <h1 className="text-2xl font-bold text-text-primary mb-2">Page Not Found</h1>
+                            <p className="text-text-secondary mb-6">This quest doesn't exist. Let's get you back on track.</p>
+                            <a href="/dashboard" className="btn-primary">Back to Dashboard</a>
+                        </div>
+                    } />
                 </Routes>
             </Suspense>
         </div>

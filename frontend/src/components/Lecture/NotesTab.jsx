@@ -4,6 +4,7 @@ import useAuthStore from '../../store/useAuthStore';
 import api from '../../services/api';
 import LockedFeature from '../LockedFeature';
 import AILoadingState from './AILoadingState';
+import AiBadge from '../ui/AiBadge';
 
 const LEVEL_NOTES_EDIT = 3;
 
@@ -181,7 +182,8 @@ const NotesTab = ({ lectureId, onSeek, notesStatus, errorReason, aiStatus = {} }
                     </div>
                 )}
 
-                <p className="text-base font-bold text-white mb-2">⚡ AI Smart Summary</p>
+                <p className="text-base font-bold text-white mb-1">⚡ AI Smart Summary</p>
+                <AiBadge label="AI-generated summary" className="mb-2" />
                 <p className="text-sm mb-6 text-text-secondary">
                     {isReady 
                         ? 'AI has generated a structured summary for this lesson.' 
@@ -240,7 +242,10 @@ const NotesTab = ({ lectureId, onSeek, notesStatus, errorReason, aiStatus = {} }
                         </p>
                     </div>
                 )}
-                <h2 className="text-xl font-display font-bold text-white mb-3">Summary</h2>
+                <div className="flex items-center justify-between mb-3">
+                    <h2 className="text-xl font-display font-bold text-white">Summary</h2>
+                    <AiBadge />
+                </div>
                 <p className="text-text-secondary leading-relaxed">{notes.summary}</p>
             </section>
 

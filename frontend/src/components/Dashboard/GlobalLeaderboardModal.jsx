@@ -4,8 +4,10 @@ import { motion } from 'framer-motion';
 import { X, Crown, Info } from 'lucide-react';
 import LeaderboardPodium from './LeaderboardPodium';
 import LeaderboardTable from './LeaderboardTable';
+import useFocusTrap from '../../hooks/useFocusTrap';
 
 const GlobalLeaderboardModal = ({ isOpen, onClose, players = [], onShowXPSystem }) => {
+    const trapRef = useFocusTrap(isOpen, onClose);
     if (!isOpen) return null;
 
     return createPortal(
@@ -18,6 +20,10 @@ const GlobalLeaderboardModal = ({ isOpen, onClose, players = [], onShowXPSystem 
                 onClick={onClose}
             />
             <motion.div
+                ref={trapRef}
+                role="dialog"
+                aria-modal="true"
+                aria-label="Global leaderboard"
                 initial={{ scale: 0.9, opacity: 0, y: 20 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
                 exit={{ scale: 0.9, opacity: 0, y: 20 }}

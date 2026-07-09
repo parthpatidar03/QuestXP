@@ -90,7 +90,7 @@ const NavBar = () => {
                     <button
                         onClick={toggleTheme}
                         className="p-2 text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-lg transition-colors"
-                        title="Toggle theme"
+                        aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
                     >
                         {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                     </button>
@@ -122,6 +122,8 @@ const NavBar = () => {
                 <button
                     onClick={() => setMobileOpen(!mobileOpen)}
                     className="md:hidden p-2 text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-lg transition-colors"
+                    aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
+                    aria-expanded={mobileOpen}
                 >
                     {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                 </button>

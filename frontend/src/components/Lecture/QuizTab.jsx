@@ -7,6 +7,7 @@ import { MAINTENANCE_CONFIG } from '../../constants/maintenance';
 import AILoadingState from './AILoadingState';
 import { broadcastProgressUpdate } from '../../utils/sync';
 import { playSound } from '../../utils/soundEffects';
+import AiBadge from '../ui/AiBadge';
 
 const LEVEL_QUIZ = 1;
 
@@ -258,7 +259,8 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
                 <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4" style={{ background: 'rgba(245,165,36,0.10)', border: '1px solid rgba(245,165,36,0.3)' }}>
                     <Trophy className="w-6 h-6 text-[#f5a524]" />
                 </div>
-                <p className="text-base font-bold text-text-primary mb-2">🎯 AI Practice Quiz</p>
+                <p className="text-base font-bold text-text-primary mb-1">🎯 AI Practice Quiz</p>
+                <AiBadge label="AI-generated questions" className="mb-2" />
                 <p className="text-sm mb-6 text-text-secondary">
                     {isReady
                         ? 'Test your knowledge with AI-generated questions from this lesson.'

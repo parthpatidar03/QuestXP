@@ -4,6 +4,7 @@ import { Bot, X, Send, Loader2, MessageSquare, Minimize2, Lock, Zap } from 'luci
 import { useFeatureGate } from '../../hooks/useFeatureGate';
 import api from '../../services/api';
 import { MAINTENANCE_CONFIG } from '../../constants/maintenance';
+import AiBadge from '../ui/AiBadge';
 
 /**
  * Renders markdown-like text: **bold**, *italic*, `code`, bullet/numbered lists, line breaks.
@@ -112,9 +113,12 @@ const DoubtChatbot = ({ lectureId, courseTitle = '', lectureTitle = '', isSideba
                     </div>
                     <div className="flex-1 min-w-0">
                         <p className="text-sm font-bold text-text-primary">Doubt Bot</p>
-                        <p className="text-xs truncate text-text-secondary">
-                            {lectureTitle ? `📺 ${lectureTitle}` : 'Ask anything about this lecture'}
-                        </p>
+                        <div className="flex items-center gap-2">
+                            <p className="text-xs truncate text-text-secondary">
+                                {lectureTitle ? `📺 ${lectureTitle}` : 'Ask anything about this lecture'}
+                            </p>
+                            <AiBadge label="AI-powered" />
+                        </div>
                     </div>
                 </div>
 

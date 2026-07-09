@@ -228,7 +228,7 @@ const SignInTab = ({ email, setEmail, password, setPassword, handleSubmit, submi
           </div>
           <div className="mt-2.5 w-full">
             <button type="submit" disabled={submitting} className="h-10 w-full rounded-md bg-neutral-900 font-medium text-white dark:bg-white dark:text-neutral-950 hover:opacity-90 transition-opacity disabled:opacity-50">
-              {submitting ? 'Signing in...' : 'Submit'}
+              {submitting ? 'Signing in...' : 'Sign In'}
             </button>
           </div>
       </form>
@@ -314,7 +314,7 @@ const SignUpTab = ({ name, setName, email, setEmail, password, setPassword, hand
           </div>
           <div className="mt-2.5 w-full">
             <button type="submit" disabled={submitting} className="h-10 w-full rounded-md bg-neutral-900 font-medium text-white dark:bg-white dark:text-neutral-950 hover:opacity-90 transition-opacity disabled:opacity-50">
-              {submitting ? 'Creating...' : 'Submit'}
+              {submitting ? 'Creating account...' : 'Create Account'}
             </button>
           </div>
       </form>

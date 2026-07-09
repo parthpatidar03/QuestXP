@@ -281,6 +281,13 @@ The frontend architecture was audited and optimized to reduce initial bundle blo
 ### Scroll & Mouse Event Optimization (GPU Offloading)
 Global interactive effects and scroll listeners have been heavily optimized. React state updates (`useState`) for `mousemove` events were replaced with Framer Motion's `useMotionValue` to bypass React's render cycle completely, offloading work to the GPU. Global scroll listeners are throttled via `requestAnimationFrame` and dynamically attached only when actively needed to prevent continuous Layout Thrashing and scroll jank.
 
+### UX/UI Accessibility & Trust Architecture
+Implemented WCAG-compliant accessibility and AI transparency measures across the platform.
+- **Focus Traps**: Custom `useFocusTrap` hook isolates keyboard navigation (`Tab`/`Shift+Tab`) inside modals (Level Up, Leaderboard, Share) to prevent background element interaction, satisfying WCAG 2.4.3.
+- **AI Attribution**: All LLM-generated content (Quizzes, Notes, Chatbot) explicitly labeled via `<AiBadge />` to set calibrated user trust and comply with emerging AI transparency standards.
+- **Action-Specific Interactions**: Replaced generic form buttons with action-specific labels to reduce cognitive load. Replaced thread-blocking `alert()` calls with async `toast` notifications for seamless flow.
+- **ARIA Labeling & Affordances**: Screen reader context added via `aria-label` and `aria-expanded` to icon-only interactive elements. Eliminated "Zombie Clicks" by removing perceived affordances (like `cursor-pointer`) from non-interactive components.
+
 ### SEO & Discoverability Architecture
 Implemented a comprehensive SEO engine to improve search visibility and indexing.
 - **Dynamic Meta Injection:** Using `react-helmet-async` for page-specific titles, descriptions, and Open Graph tags.

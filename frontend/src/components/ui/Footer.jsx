@@ -37,7 +37,7 @@ const Footer = ({ onOpenFeedback }) => {
                         className="hover:scale-110 transition-transform duration-200 flex items-center justify-center"
                         title="GitHub Profile"
                     >
-                        <img src="/github-icon.png" alt="GitHub" className="w-14 h-14 object-contain hover:brightness-125 transition-all" />
+                        <img src="/github-icon.png" alt="GitHub" className="w-8 h-8 object-contain hover:brightness-125 transition-all" />
                     </a>
                     <a 
                         href="https://www.linkedin.com/in/patidar-parth/" 
@@ -46,7 +46,7 @@ const Footer = ({ onOpenFeedback }) => {
                         className="hover:scale-110 transition-transform duration-200 flex items-center justify-center"
                         title="LinkedIn Profile"
                     >
-                        <img src="/linkden-icon.png" alt="LinkedIn" className="w-14 h-14 object-contain hover:brightness-125 transition-all" />
+                        <img src="/linkedin-icon.png" alt="LinkedIn" className="w-8 h-8 object-contain hover:brightness-125 transition-all" />
                     </a>
                     <a 
                         href="mailto:u1892911@gmail.com" 
