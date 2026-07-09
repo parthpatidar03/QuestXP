@@ -22,6 +22,9 @@ export default defineConfig(({ mode }) => {
     ],
     server: {
       port: 5173,
+      headers: {
+        'Cross-Origin-Opener-Policy': 'same-origin-allow-popups'
+      },
       proxy: {
         '/api': {
           target: env.VITE_DEV_BACKEND || 'http://localhost:5002',
