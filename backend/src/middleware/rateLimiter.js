@@ -49,7 +49,7 @@ const chatbotHourlyLimiter = rateLimit({
         sendCommand: (...args) => redisClient.call(...args),
         prefix: 'rl:chatbot:hr:'
     }),
-    passOnStoreError: true, // Fail-open if Redis is down
+    passOnStoreError: false, // Fail-closed (strict) for expensive AI routes
 });
 
 /**
@@ -73,7 +73,7 @@ const chatbotTwoHourLimiter = rateLimit({
         sendCommand: (...args) => redisClient.call(...args),
         prefix: 'rl:chatbot:2hr:'
     }),
-    passOnStoreError: true, // Fail-open if Redis is down
+    passOnStoreError: false, // Fail-closed (strict) for expensive AI routes
 });
 
 /**
@@ -97,7 +97,7 @@ const quizLimiter = rateLimit({
         sendCommand: (...args) => redisClient.call(...args),
         prefix: 'rl:quiz:'
     }),
-    passOnStoreError: true, // Fail-open if Redis is down
+    passOnStoreError: false, // Fail-closed (strict) for expensive AI routes
 });
 
 /**
@@ -121,7 +121,7 @@ const summaryLimiter = rateLimit({
         sendCommand: (...args) => redisClient.call(...args),
         prefix: 'rl:summary:'
     }),
-    passOnStoreError: true, // Fail-open if Redis is down
+    passOnStoreError: false, // Fail-closed (strict) for expensive AI routes
 });
 
 module.exports = {
