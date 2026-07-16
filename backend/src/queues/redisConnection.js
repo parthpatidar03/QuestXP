@@ -17,8 +17,17 @@ const connection = new IORedis(redisUrl, {
         return delay;
     },
     enableOfflineQueue: true, // Queue commands while disconnected
-    keepAlive: 10000, // Important for Aiven/Azure idle timeouts
-    pingInterval: 30000, // Send PING every 30s to keep LB connection alive
+    keepAlive: 30000, // TCP keepalive every 30s (Azure/Aiven has ~4min idle timeout)
+});
+
+// Manual PING heartbeat to prevent Azure/Aiven idle disconnects
+let bullmqPingInterval;
+connection.on('connect', () => {
+    console.log('[Redis-BullMQ] Connected successfully');
+    if (bullmqPingInterval) clearInterval(bullmqPingInterval);
+    bullmqPingInterval = setInterval(() => {
+        connection.ping().catch(() => {});
+    }, 60000); // PING every 60s
 });
 
 // Graceful error handling — prevent unhandled error from crashing the process
@@ -26,12 +35,12 @@ connection.on('error', (err) => {
     console.error('[Redis-BullMQ] Connection error:', err.message);
 });
 
-connection.on('connect', () => {
-    console.log('[Redis-BullMQ] Connected successfully');
-});
-
 connection.on('close', () => {
     console.warn('[Redis-BullMQ] Connection closed');
+    if (bullmqPingInterval) {
+        clearInterval(bullmqPingInterval);
+        bullmqPingInterval = null;
+    }
 });
 
 // Connection for Rate Limiting / Caching (fails fast, enableOfflineQueue: false)
@@ -48,20 +57,31 @@ const generalClient = new IORedis(redisUrl, {
         return delay;
     },
     enableOfflineQueue: false, // Fail fast so rate limiter passOnStoreError kicks in immediately
-    keepAlive: 10000, // Important for Aiven/Azure idle timeouts
-    pingInterval: 30000, // Send PING every 30s to keep LB connection alive
+    keepAlive: 30000, // TCP keepalive every 30s (Azure/Aiven has ~4min idle timeout)
+});
+
+// Manual PING heartbeat to prevent Azure/Aiven idle disconnects
+// (pingInterval is NOT a native ioredis option, so we use setInterval)
+let generalPingInterval;
+generalClient.on('connect', () => {
+    console.log('[Redis-General] Connected successfully');
+    // Clear any existing interval before setting a new one
+    if (generalPingInterval) clearInterval(generalPingInterval);
+    generalPingInterval = setInterval(() => {
+        generalClient.ping().catch(() => {}); // Swallow errors, reconnect logic handles them
+    }, 60000); // PING every 60s
 });
 
 generalClient.on('error', (err) => {
     console.error('[Redis-General] Connection error:', err.message);
 });
 
-generalClient.on('connect', () => {
-    console.log('[Redis-General] Connected successfully');
-});
-
 generalClient.on('close', () => {
     console.warn('[Redis-General] Connection closed');
+    if (generalPingInterval) {
+        clearInterval(generalPingInterval);
+        generalPingInterval = null;
+    }
 });
 
 module.exports = connection;

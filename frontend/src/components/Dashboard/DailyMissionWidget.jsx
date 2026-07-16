@@ -27,21 +27,20 @@ const DailyMissionWidget = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetch = async () => {
+        const fetchRoadmap = async () => {
             try {
                 const data = await getCurrentRoadmap();
                 setRoadmap(data);
             } catch (err) {
-                console.error("[DailyMissionWidget] Error fetching roadmap:", {
-                    message: err.message,
-                    response: err.response?.data,
-                    stack: err.stack
-                });
+                // 404 = no roadmap yet, totally expected for new users
+                if (err.response?.status !== 404) {
+                    console.error("[DailyMissionWidget] Error fetching roadmap:", err.message);
+                }
             } finally {
                 setLoading(false);
             }
         };
-        fetch();
+        fetchRoadmap();
     }, []);
 
     const todayMission = useMemo(() => {

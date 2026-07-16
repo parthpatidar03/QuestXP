@@ -35,6 +35,14 @@ const createCourse = async (req, res, next) => {
 
 const getCourses = async (req, res, next) => {
     try {
+        // Auto-recover courses stuck in 'processing' for >5 minutes
+        // This happens when BullMQ loses a job due to Redis disconnects
+        const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000);
+        await Course.updateMany(
+            { owner: req.user._id, status: 'processing', updatedAt: { $lt: fiveMinAgo } },
+            { $set: { status: 'error' } }
+        );
+
         const courses = await Course.find({ owner: req.user._id })
             .select('title status totalLectures createdAt sections.title sections._id sections.lectures.title sections.lectures._id sections.lectures.thumbnailUrl')
             .sort({ createdAt: -1 })
