@@ -48,7 +48,7 @@ const NavBar = () => {
                 key={label}
                 id={id}
                 to={to}
-                className={`px-4 h-10 flex items-center gap-1.5 rounded-clay text-sm font-bold whitespace-nowrap transition-all duration-200 ease-clay ${
+                className={`px-3 lg:px-4 h-10 flex items-center gap-1.5 rounded-clay text-sm font-bold whitespace-nowrap transition-all duration-200 ease-clay ${
                     active
                         ? 'clay-sunk text-primary'
                         : 'text-text-secondary hover:text-text-primary hover:clay-sm hover:-translate-y-[2px]'
@@ -75,29 +75,33 @@ const NavBar = () => {
                 </Link>
 
                 {/* Live search - hidden on mobile header, shown in mobile menu */}
-                <div className="hidden md:flex flex-1 items-center gap-2 min-w-0">
+                <div className="hidden md:flex flex-1 items-center min-w-0">
                     <CourseSearch />
-                    <a
-                        href="https://www.youtube.com/feed/playlists"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="clay-sm clay-interactive flex items-center gap-2 px-4 h-10 rounded-clay text-sm font-bold text-text-secondary hover:text-text-primary group whitespace-nowrap shrink-0"
-                    >
-                        <Star className="w-4 h-4 text-primary transition-transform group-hover:scale-110" />
-                        <span className="hidden xl:inline">Explore more courses</span>
-                        <span className="xl:hidden">Explore</span>
-                    </a>
                 </div>
 
                 <div className="flex-1 md:hidden" />
 
-                <nav className="hidden md:flex items-center gap-1.5">
+                {/* Explore lives in the nav row rather than beside the search box:
+                    as its own flex item it can drop its label instead of spilling
+                    out of the search column and under the Dashboard pill. */}
+                <nav className="hidden md:flex items-center gap-1.5 shrink-0">
+                    <a
+                        href="https://www.youtube.com/feed/playlists"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Explore more courses"
+                        className="clay-sm clay-interactive hidden lg:flex items-center gap-2 px-3 2xl:px-4 h-10 rounded-clay text-sm font-bold text-text-secondary hover:text-text-primary group whitespace-nowrap"
+                    >
+                        <Star className="w-4 h-4 text-primary transition-transform group-hover:scale-110" />
+                        <span className="hidden 2xl:inline">Explore more courses</span>
+                        <span className="sr-only 2xl:hidden">Explore more courses</span>
+                    </a>
                     {navLink(`/dashboard${demoQuery}`, 'Dashboard')}
                     {navLink(`/roadmap${demoQuery}`, 'Roadmap', '', 'tour-roadmap')}
                     <Link
                         id="tour-leaderboard"
                         to={`/dashboard${demoQuery}${isDemo ? '&' : '?'}open=leaderboard`}
-                        className="px-4 h-10 flex items-center gap-1.5 rounded-clay text-sm font-bold text-text-secondary hover:text-text-primary hover:clay-sm hover:-translate-y-[2px] transition-all duration-200 ease-clay whitespace-nowrap"
+                        className="px-3 lg:px-4 h-10 flex items-center gap-1.5 rounded-clay text-sm font-bold text-text-secondary hover:text-text-primary hover:clay-sm hover:-translate-y-[2px] transition-all duration-200 ease-clay whitespace-nowrap"
                     >
                         <Trophy className="w-3.5 h-3.5 text-gold" />
                         <span className="hidden lg:inline">Leaderboard</span>
