@@ -29,7 +29,7 @@ import useAuthStore from '../store/useAuthStore';
 import { ShinyCard } from '../components/ui/ShinyCard';
 import Counter from '../components/ui/Counter';
 import Marquee from '../components/animata/container/marquee';
-import { Reveal } from '../components/ui/Reveal';
+import Reveal from '../components/ui/Reveal';
 
 // Conservative floor values — always shown if API fails or is slow.
 const FALLBACK_STATS = {
@@ -422,7 +422,7 @@ const LandingPage = () => {
                                 alt="The QuestXP dashboard: today's mission, streak, rank and course progress"
                                 width={1600}
                                 height={1044}
-                                fetchpriority="high"
+                                fetchPriority="high"
                                 className="w-full h-auto object-cover block rounded-clay-lg"
                             />
                         </div>

@@ -2,9 +2,9 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 // Fast initial acceleration, extremely slow settle-down phase
-export const EASE = [0.16, 1, 0.3, 1];
+const EASE = [0.16, 1, 0.3, 1];
 
-export function Reveal({
+export default function Reveal({
   children,
   className = '',
   delay = 0,
