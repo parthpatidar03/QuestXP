@@ -20,6 +20,7 @@ const useAuthStore = create((set) => ({
     user: null,
     isAuthenticated: false,
     isLoading: true,
+    isDemoMode: sessionStorage.getItem('questxp_demo') === 'true',
 
     checkAuth: async () => {
         if (inFlightCheckAuth) return inFlightCheckAuth;
@@ -43,7 +44,8 @@ const useAuthStore = create((set) => ({
         const { data } = await api.post('/auth/login', { email, password });
         authVersion += 1;
         persistTokens(data);
-        set({ user: data.user, isAuthenticated: true, isLoading: false });
+        sessionStorage.removeItem('questxp_demo');
+        set({ user: data.user, isAuthenticated: true, isLoading: false, isDemoMode: false });
         return data;
     },
 
@@ -51,7 +53,8 @@ const useAuthStore = create((set) => ({
         const { data } = await api.post('/auth/google', { credential });
         authVersion += 1;
         persistTokens(data);
-        set({ user: data.user, isAuthenticated: true, isLoading: false });
+        sessionStorage.removeItem('questxp_demo');
+        set({ user: data.user, isAuthenticated: true, isLoading: false, isDemoMode: false });
         return data;
     },
 
@@ -68,12 +71,25 @@ const useAuthStore = create((set) => ({
             await api.post('/auth/logout');
         } catch { /* ignore — local cleanup must still happen */ }
         clearTokens();
+        sessionStorage.removeItem('questxp_demo');
+        localStorage.removeItem('questxp_demo_course');
         authVersion += 1;
-        set({ user: null, isAuthenticated: false });
+        set({ user: null, isAuthenticated: false, isDemoMode: false });
         window.location.href = '/login';
     },
 
     setUser: (user) => set({ user }),
+
+    enterDemoMode: () => {
+        sessionStorage.setItem('questxp_demo', 'true');
+        set({ isDemoMode: true, isLoading: false });
+    },
+
+    exitDemoMode: () => {
+        sessionStorage.removeItem('questxp_demo');
+        localStorage.removeItem('questxp_demo_course');
+        set({ isDemoMode: false });
+    },
 }));
 
 export default useAuthStore;

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
+import useAuthStore from '../../store/useAuthStore';
 import { Plus, X, Link as LinkIcon, AlertCircle, Info } from 'lucide-react';
 import { shootConfetti } from '../../utils/confetti';
 import AiGenerateButton from '../ui/AiGenerateButton';
@@ -13,7 +14,7 @@ const CourseCreationForm = ({ onSuccess, initialUrl = '' }) => {
     const navigate = useNavigate();
     
     // Check if we are in demo/guest mode
-    const isGuest = !localStorage.getItem('accessToken') && window.location.search.includes('demo=true');
+    const isGuest = useAuthStore(s => s.isDemoMode);
 
     // Auto-fetch if initialUrl is provided
     React.useEffect(() => {
@@ -106,7 +107,7 @@ const CourseCreationForm = ({ onSuccess, initialUrl = '' }) => {
                 setIsSubmitting(false);
                 shootConfetti();
                 if (onSuccess) onSuccess(mockCourse._id);
-                else navigate(`/courses/${mockCourse._id}?demo=true`);
+                else navigate(`/courses/${mockCourse._id}`);
             }, 2000);
             return;
         }

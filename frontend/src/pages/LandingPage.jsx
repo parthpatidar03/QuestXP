@@ -41,7 +41,7 @@ const FALLBACK_STATS = {
 
 const LandingPage = () => {
     const navigate = useNavigate();
-    const { isAuthenticated, isLoading } = useAuthStore();
+    const { isAuthenticated, isLoading, enterDemoMode } = useAuthStore();
     const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [feedbackOpen, setFeedbackOpen] = useState(false);
@@ -120,7 +120,8 @@ const LandingPage = () => {
         if (isAuthenticated && !isLoading) {
             navigate(`/dashboard?createUrl=${encoded}`);
         } else {
-            navigate(`/dashboard?demo=true&createUrl=${encoded}`);
+            enterDemoMode();
+            navigate(`/dashboard?createUrl=${encoded}`);
         }
     };
 
@@ -244,7 +245,7 @@ const LandingPage = () => {
                             {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
                         </button>
                         <button
-                            onClick={() => navigate('/dashboard?demo=true')}
+                            onClick={() => { enterDemoMode(); navigate('/dashboard'); }}
                             className="clay-sm clay-interactive px-4 h-11 rounded-clay flex items-center gap-2 whitespace-nowrap"
                         >
                             <span className="text-sm font-bold text-text-primary">Try demo</span>
@@ -292,7 +293,7 @@ const LandingPage = () => {
                                 Feedback
                             </button>
                             <button
-                                onClick={() => { setMobileMenuOpen(false); navigate('/dashboard?demo=true'); }}
+                                onClick={() => { setMobileMenuOpen(false); enterDemoMode(); navigate('/dashboard'); }}
                                 className="clay-sm clay-interactive px-4 min-h-[48px] flex items-center justify-between rounded-clay"
                             >
                                 <span className="text-sm font-bold text-text-primary">Try demo</span>
@@ -728,7 +729,7 @@ const LandingPage = () => {
                                 <ChevronRight className="w-4 h-4" />
                             </button>
                             <button
-                                onClick={() => navigate('/dashboard?demo=true')}
+                                onClick={() => { enterDemoMode(); navigate('/dashboard'); }}
                                 className="clay-sm clay-interactive px-6 min-h-[44px] rounded-clay text-sm font-bold text-text-primary"
                             >
                                 Try the demo first

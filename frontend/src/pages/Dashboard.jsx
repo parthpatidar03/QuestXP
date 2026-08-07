@@ -330,10 +330,10 @@ function CourseCard({ course, progress, onDelete, isDeleting, priority = false }
 
 /* ── Dashboard ──────────────────────────────────────────────────────── */
 const Dashboard = () => {
-    const { user: authUser } = useAuthStore();
+    const { user: authUser, isDemoMode } = useAuthStore();
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
-    const isDemo = searchParams.get('demo') === 'true';
+    const isDemo = isDemoMode;
 
     // Mock user for demo mode
     const user = useMemo(() => authUser || (isDemo ? { 

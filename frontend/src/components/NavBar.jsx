@@ -12,13 +12,13 @@ import CourseSearch from './Course/CourseSearch';
 
 /* ── NavBar ──────────────────────────────────────────────────────────── */
 const NavBar = () => {
-    const { user } = useAuthStore();
+    const { user, isDemoMode } = useAuthStore();
     const { totalXP, level, setProfile } = useGamificationStore();
     const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
     const [mobileOpen, setMobileOpen] = useState(false);
     const location = useLocation();
-    const isDemo = new URLSearchParams(window.location.search).get('demo') === 'true' || user?.guest;
-    const demoQuery = isDemo ? '?demo=true' : '';
+    const isDemo = isDemoMode || user?.guest;
+    const demoQuery = '';
 
 
     useEffect(() => {

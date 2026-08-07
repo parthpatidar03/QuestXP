@@ -28,9 +28,14 @@ const JoinFriendZone = lazy(() => import('./pages/JoinFriendZone'));
 
 
 const ProtectedRoute = ({ children }) => {
-    const { isAuthenticated, isLoading } = useAuthStore();
+    const { isAuthenticated, isLoading, isDemoMode, enterDemoMode } = useAuthStore();
     const location = useLocation();
-    const isDemo = new URLSearchParams(location.search).get('demo') === 'true';
+
+    // Seed demo mode from URL param on first visit (entry from landing page)
+    React.useEffect(() => {
+        const urlDemo = new URLSearchParams(location.search).get('demo') === 'true';
+        if (urlDemo && !isDemoMode) enterDemoMode();
+    }, [location.search, isDemoMode, enterDemoMode]);
 
     // Mirror the AppContent safety net: never spin longer than 5s here either.
     const [bailout, setBailout] = React.useState(false);
@@ -39,13 +44,13 @@ const ProtectedRoute = ({ children }) => {
         return () => clearTimeout(t);
     }, []);
 
-    if (isLoading && !bailout) return (
+    if (isLoading && !bailout && !isDemoMode) return (
         <div className="min-h-screen flex items-center justify-center bg-bg">
             <div className="w-10 h-10 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: 'var(--color-primary)', borderTopColor: 'transparent' }} />
         </div>
     );
 
-    if (isAuthenticated || isDemo) return children;
+    if (isAuthenticated || isDemoMode) return children;
 
     return <Navigate to="/login" replace />;
 };
@@ -53,7 +58,7 @@ const ProtectedRoute = ({ children }) => {
 
 
 const AppContent = () => {
-    const { checkAuth, isLoading, isAuthenticated } = useAuthStore();
+    const { checkAuth, isLoading, isAuthenticated, isDemoMode } = useAuthStore();
     const location = useLocation();
     useHeartbeat();
 
@@ -94,7 +99,7 @@ const AppContent = () => {
     const isPublicPage = ['/', '/login', '/register'].includes(location.pathname) || location.pathname.startsWith('/share/');
     const showPomodoro = isAuthenticated && !isPublicPage;
 
-    if (isLoading && !isPublicPage && !hardLoaded) {
+    if (isLoading && !isPublicPage && !hardLoaded && !isDemoMode) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-bg">
                 <div className="w-12 h-12 rounded-full border-4 border-t-transparent animate-spin" style={{ borderColor: 'var(--color-primary)', borderTopColor: 'transparent' }} />
