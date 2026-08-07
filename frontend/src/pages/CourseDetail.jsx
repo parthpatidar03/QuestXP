@@ -16,7 +16,6 @@ import {
 import toast from 'react-hot-toast';
 
 
-import { BGPattern } from '../components/ui/bg-pattern';
 
 /* ── helpers ────────────────────────────────────────────────────────── */
 const XP_PER_LECTURE = 50;
@@ -86,13 +85,13 @@ function MissionRow({ lecture, index, isCompleted, isActive, isLocked, courseId 
             </div>
 
             {/* Thumbnail (small) */}
-            <div className="relative w-16 h-10 sm:w-24 sm:h-14 rounded-lg overflow-hidden shrink-0 bg-surface-3 border border-border shadow-sm group-hover:border-primary/50 transition-colors hidden xs:block">
+            <div className="relative w-16 h-10 sm:w-24 sm:h-14 rounded-clay-sm overflow-hidden shrink-0 clay-sunk group-hover:border-primary/50 transition-colors hidden xs:block">
                 {lecture.thumbnailUrl || lecture.youtubeId
                     ? <img src={lecture.thumbnailUrl || `https://img.youtube.com/vi/${lecture.youtubeId}/mqdefault.jpg`} alt="" className="w-full h-full object-cover" />
                     : <PlayCircle className="w-6 h-6 m-auto mt-4 text-text-muted" />}
                 {!isLocked && (
                     <div className="absolute inset-0 flex items-center justify-center opacity-40 group-hover:opacity-100 transition-opacity bg-black/20 group-hover:bg-black/40">
-                        <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-primary/90 flex items-center justify-center shadow-lg transform scale-90 group-hover:scale-100 transition-transform">
+                        <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-primary/90 flex items-center justify-center transform scale-90 group-hover:scale-100 transition-transform">
                             <PlayCircle className="w-4 h-4 sm:w-5 sm:h-5 text-white fill-white" />
                         </div>
                     </div>
@@ -132,7 +131,7 @@ function MissionRow({ lecture, index, isCompleted, isActive, isLocked, courseId 
                 {!isCompleted && !isLocked && (
                     <button
                         type="button"
-                        className="p-1.5 sm:p-2 rounded-lg bg-surface-3 hover:bg-primary/20 text-text-muted hover:text-primary transition-all group/quiz flex flex-col items-center gap-1 border border-border"
+                        className="p-1.5 sm:p-2 rounded-clay-sm bg-surface-3 hover:bg-primary/20 text-text-muted hover:text-primary transition-all group/quiz flex flex-col items-center gap-1 clay-sm"
                         title="Take Quiz to Complete"
                         onClick={openQuiz}
                     >
@@ -169,25 +168,25 @@ function ShareModal({ isOpen, onClose, courseTitle, shareUrl }) {
     return (
         <div className="fixed inset-0 z-[200] flex items-start justify-center p-4 pt-16 sm:pt-24 animate-in fade-in duration-200">
             <div className="absolute inset-0 bg-bg/60 backdrop-blur-sm" onClick={onClose} />
-            <div className="relative w-full max-w-md bg-surface border border-border rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-top-4 duration-300">
+            <div className="relative w-full max-w-md clay rounded-clay-lg overflow-hidden animate-in slide-in-from-top-4 duration-300">
                 <div className="p-5 border-b border-border bg-surface-2 flex items-center justify-between">
                     <div className="flex items-center gap-3 text-primary">
                         <Share2 className="w-5 h-5" />
                         <span className="font-black uppercase tracking-widest text-sm">Share Quest</span>
                     </div>
-                    <button onClick={onClose} className="p-2 hover:bg-surface-3 rounded-lg transition-colors">
+                    <button onClick={onClose} className="p-2 hover:bg-surface-3 rounded-clay-sm transition-colors">
                         <X className="w-5 h-5 text-text-muted" />
                     </button>
                 </div>
                 <div className="p-6 space-y-4">
-                    <div className="p-4 bg-surface-2 rounded-xl border border-border text-sm text-text-secondary italic leading-relaxed">
+                    <div className="p-4 bg-surface-2 rounded-clay clay-sm text-sm text-text-secondary italic leading-relaxed">
                         "{shareText}"
                     </div>
                     
                     <div className="grid grid-cols-2 gap-3">
                         <button 
                             onClick={copyMessage}
-                            className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-primary text-white text-xs font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all"
+                            className="flex items-center justify-center gap-2 py-3 px-4 rounded-clay bg-primary text-white text-xs font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all"
                         >
                             <Copy className="w-4 h-4" />
                             Copy Message
@@ -196,7 +195,7 @@ function ShareModal({ isOpen, onClose, courseTitle, shareUrl }) {
                             href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#25D366] text-white text-xs font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all"
+                            className="flex items-center justify-center gap-2 py-3 px-4 rounded-clay bg-[#25D366] text-white text-xs font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all"
                         >
                             <img src="/whatsapp-icon.png" alt="WhatsApp" className="w-5 h-5 object-contain" />
                             WhatsApp
@@ -208,7 +207,7 @@ function ShareModal({ isOpen, onClose, courseTitle, shareUrl }) {
                             <span>Direct Link</span>
                             <span className="text-primary">Copied!</span>
                         </div>
-                        <div className="flex items-center gap-2 p-3 bg-surface-3 rounded-lg border border-border text-xs font-mono text-text-muted truncate">
+                        <div className="flex items-center gap-2 p-3 bg-surface-3 rounded-clay-sm clay-sm text-xs font-mono text-text-muted truncate">
                             {shareUrl}
                         </div>
                     </div>
@@ -434,13 +433,13 @@ const CourseDetail = () => {
                 <div className="h-4 bg-surface-2 rounded w-28 mb-6" />
                 <div className="flex flex-col lg:flex-row gap-6">
                     <div className="flex-1 min-w-0">
-                        <div className="rounded-2xl bg-surface border border-border h-52 mb-6 p-7">
+                        <div className="rounded-clay-lg clay h-52 mb-6 p-7">
                             <div className="h-4 bg-surface-2 rounded w-24 mb-4" />
                             <div className="h-8 bg-surface-2 rounded w-3/4 mb-3" />
                             <div className="h-4 bg-surface-2 rounded w-40 mb-6" />
-                            <div className="h-10 bg-surface-2 rounded-lg w-36" />
+                            <div className="h-10 bg-surface-2 rounded-clay-sm w-36" />
                         </div>
-                        <div className="bg-surface border border-border rounded-2xl overflow-hidden">
+                        <div className="clay rounded-clay-lg overflow-hidden">
                             <div className="px-8 py-6 border-b border-border">
                                 <div className="h-5 bg-surface-2 rounded w-32 mb-2" />
                                 <div className="h-3 bg-surface-2 rounded w-48" />
@@ -448,7 +447,7 @@ const CourseDetail = () => {
                             {[1, 2, 3, 4].map(i => (
                                 <div key={i} className="flex items-center gap-6 px-6 py-5 border-b border-border">
                                     <div className="w-10 h-10 rounded-full bg-surface-2" />
-                                    <div className="w-24 h-14 rounded-lg bg-surface-2" />
+                                    <div className="w-24 h-14 rounded-clay-sm bg-surface-2" />
                                     <div className="flex-1">
                                         <div className="h-4 bg-surface-2 rounded w-3/4 mb-2" />
                                         <div className="h-3 bg-surface-2 rounded w-20" />
@@ -458,7 +457,7 @@ const CourseDetail = () => {
                         </div>
                     </div>
                     <aside className="w-full lg:w-72 xl:w-80 shrink-0 space-y-4">
-                        <div className="bg-surface border border-border rounded-2xl p-5 space-y-4">
+                        <div className="clay rounded-clay-lg p-5 space-y-4">
                             <div className="h-4 bg-surface-2 rounded w-24" />
                             {[1, 2, 3, 4].map(i => (
                                 <div key={i} className="flex justify-between py-2 border-b border-border">
@@ -486,7 +485,7 @@ const CourseDetail = () => {
                     </div>
                     <h2 className="text-3xl font-black mb-3 text-text-primary">Synthesizing Quest</h2>
                     <p className="text-sm mb-8 text-text-secondary">Analyzing playlist, extracting metadata, building your mission list…</p>
-                    <div className="bg-surface-2 rounded-xl p-4 border border-border">
+                    <div className="bg-surface-2 rounded-clay p-4 clay-sm">
                         <div className="flex justify-between items-center mb-2 text-xs">
                             <span className="font-semibold text-text-primary">Processing Missions</span>
                             <span className="text-text-muted">{processed} / {total}</span>
@@ -531,14 +530,13 @@ const CourseDetail = () => {
 
     return (
         <div className="min-h-screen relative overflow-hidden bg-bg">
-            <BGPattern variant="grid" mask="fade-edges" fill="var(--color-primary)" className="opacity-5 z-0" />
             <NavBar />
 
             <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-8">
 
                 {/* Back link */}
-                <Link to="/dashboard" className="inline-flex items-center gap-3 px-5 py-2.5 bg-surface-2 hover:bg-surface-3 border border-border rounded-xl transition-all group mb-8 w-fit">
-                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center group-hover:-translate-x-1 transition-transform">
+                <Link to="/dashboard" className="inline-flex items-center gap-3 px-5 py-2.5 bg-surface-2 hover:clay-sunk rounded-clay transition-all group mb-8 w-fit">
+                    <div className="w-8 h-8 rounded-clay-sm bg-primary/10 flex items-center justify-center group-hover:-translate-x-1 transition-transform">
                         <ArrowLeft className="w-5 h-5 text-primary" />
                     </div>
                     <span className="text-sm font-black uppercase tracking-widest text-text-primary">Back to Library</span>
@@ -551,7 +549,7 @@ const CourseDetail = () => {
 
                         {/* Hero Banner */}
                         <div
-                            className="relative rounded-2xl overflow-hidden mb-6 border border-primary/20"
+                            className="relative rounded-clay-lg overflow-hidden mb-6 border border-primary/20"
                             style={{
                                 background: heroThumb
                                     ? `linear-gradient(to right, var(--color-bg) 40%, transparent 100%),  url(${heroThumb}) right center / cover no-repeat`
@@ -587,7 +585,7 @@ const CourseDetail = () => {
                                         </Link>
                                         <Link 
                                             to={`/roadmap?courseId=${courseId}`} 
-                                            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:px-5 sm:py-2.5 bg-surface-2 hover:bg-surface-3 transition-colors rounded-lg text-[10px] sm:text-sm font-bold text-text-primary border border-border flex-1 sm:flex-none"
+                                            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:px-5 sm:py-2.5 bg-surface-2 hover:bg-surface-3 transition-colors rounded-clay-sm text-[10px] sm:text-sm font-bold text-text-primary clay-sm flex-1 sm:flex-none"
                                         >
                                             <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
                                             <span className="whitespace-nowrap">Roadmap</span>
@@ -600,7 +598,7 @@ const CourseDetail = () => {
                                         />
                                         <button 
                                             onClick={handleShare}
-                                            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:px-5 sm:py-2.5 bg-surface-2 hover:bg-surface-3 transition-colors rounded-lg text-[10px] sm:text-sm font-bold text-text-primary border border-border flex-1 sm:flex-none"
+                                            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:px-5 sm:py-2.5 bg-surface-2 hover:bg-surface-3 transition-colors rounded-clay-sm text-[10px] sm:text-sm font-bold text-text-primary clay-sm flex-1 sm:flex-none"
                                         >
                                             <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
                                             <span className="whitespace-nowrap">{shareStatus || 'Share'}</span>
@@ -615,7 +613,7 @@ const CourseDetail = () => {
                             {!courseId?.startsWith('demo-') ? (
                                 <StudyPlan courseId={courseId} onOpenSetup={() => setShowSetupModal(true)} />
                             ) : (
-                                <div className="glass-card p-6 border-dashed opacity-75">
+                                <div className="glass-card p-6 opacity-75">
                                     <p className="text-sm text-text-muted text-center italic">Study Plans are available for registered users.</p>
                                 </div>
                             )}
@@ -649,7 +647,7 @@ const CourseDetail = () => {
                                 {/* Elite Journey Progress Bar */}
                                 <div className="relative pt-2 pb-12 sm:pb-14">
                                     {/* Track */}
-                                    <div className="h-5 w-full bg-surface-2 rounded-full border border-border/50 relative overflow-visible shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]">
+                                    <div className="h-5 w-full bg-surface-2 rounded-full clay-sm relative overflow-visible shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]">
                                         {/* Progress Fill */}
                                         <motion.div 
                                             initial={{ width: 0 }}
@@ -674,9 +672,9 @@ const CourseDetail = () => {
                                 </div>
 
                                 {/* Done vs Remaining Stats */}
-                                <div className="flex flex-col sm:flex-row items-center justify-between mt-2 px-4 py-4 sm:py-3 border-t border-border/40 bg-surface-2/20 rounded-2xl gap-4">
+                                <div className="flex flex-col sm:flex-row items-center justify-between mt-2 px-4 py-4 sm:py-3 border-t border-border/40 bg-surface-2/20 rounded-clay-lg gap-4">
                                     <div className="flex items-center gap-4">
-                                        <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
+                                        <div className="w-10 h-10 rounded-clay bg-primary/10 flex items-center justify-center border border-primary/20">
                                             <CheckCircle2 className="w-5 h-5 text-primary" />
                                         </div>
                                         <div className="flex flex-col">
@@ -689,7 +687,7 @@ const CourseDetail = () => {
                                             <span className="text-xs font-black text-text-secondary uppercase tracking-widest">To Go</span>
                                             <span className="text-sm font-bold text-text-primary">{allLectures.length - completedCount} Missions</span>
                                         </div>
-                                        <div className="w-10 h-10 rounded-xl bg-surface-3 flex items-center justify-center border border-border">
+                                        <div className="w-10 h-10 rounded-clay bg-surface-3 flex items-center justify-center clay-sm">
                                             <Flag className="w-5 h-5 text-text-secondary" />
                                         </div>
                                     </div>
@@ -703,7 +701,7 @@ const CourseDetail = () => {
                                             type="button"
                                             onClick={handleMarkAllComplete}
                                             disabled={isBulkUpdating}
-                                            className="w-16 h-16 rounded-2xl border-2 border-primary/50 bg-primary/10 flex flex-col items-center justify-center text-primary transition-all hover:scale-105 active:scale-95 shadow-[0_0_25px_rgba(var(--color-primary-rgb),0.2)] hover:bg-primary hover:text-white hover:border-primary group-hover/bulk:border-primary"
+                                            className="w-16 h-16 rounded-clay-lg border-2 border-primary/50 bg-primary/10 flex flex-col items-center justify-center text-primary transition-all hover:scale-105 active:scale-95 shadow-[0_0_25px_rgba(var(--color-primary-rgb),0.2)] hover:bg-primary hover:text-white hover:border-primary group-hover/bulk:border-primary"
                                             title="Mark All Complete"
                                         >
                                             {isBulkUpdating ? (
@@ -878,17 +876,17 @@ const OnboardingModal = ({ onClose }) => {
             title: "Earn XP & Rewards",
             description: "Pass quizzes to earn +50 XP and unlock new levels. Your streak and progress are tracked in real-time.",
             icon: <CheckCircle2 className="w-8 h-8 text-success" />,
-            color: "#10B981"
+            color: "var(--color-success)"
         }
     ];
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-bg/70 backdrop-blur-sm">
             <motion.div
                 initial={{ scale: 0.9, opacity: 0, y: 20 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
                 exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                className="w-full max-w-lg bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-3xl overflow-hidden shadow-2xl relative"
+                className="w-full max-w-lg bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-clay-lg overflow-hidden relative"
             >
                 {/* Progress Bar */}
                 <div className="absolute top-0 left-0 w-full h-1 bg-[var(--color-surface-3)]">
@@ -908,7 +906,7 @@ const OnboardingModal = ({ onClose }) => {
                             exit={{ x: -20, opacity: 0 }}
                             className="flex flex-col items-center"
                         >
-                            <div className="w-20 h-20 rounded-2xl bg-[var(--color-surface-3)] flex items-center justify-center mb-8 border border-[var(--color-border)] shadow-xl">
+                            <div className="w-20 h-20 rounded-clay-lg bg-[var(--color-surface-3)] flex items-center justify-center mb-8 border border-[var(--color-border)] ">
                                 {steps[step].icon}
                             </div>
                             <h2 className="text-3xl font-black mb-4 uppercase tracking-tight text-[var(--color-primary)]">
@@ -932,14 +930,14 @@ const OnboardingModal = ({ onClose }) => {
                             {step > 0 && (
                                 <button 
                                     onClick={() => setStep(step - 1)}
-                                    className="p-4 rounded-2xl bg-[var(--color-surface-3)] border border-[var(--color-border)] hover:bg-[var(--color-surface)] transition-colors text-[var(--color-text-primary)]"
+                                    className="p-4 rounded-clay-lg bg-[var(--color-surface-3)] border border-[var(--color-border)] hover:bg-[var(--color-surface)] transition-colors text-[var(--color-text-primary)]"
                                 >
                                     <ChevronRight className="w-5 h-5 rotate-180" />
                                 </button>
                             )}
                             <button 
                                 onClick={() => step < steps.length - 1 ? setStep(step + 1) : onClose()}
-                                className="px-8 py-4 rounded-2xl bg-[var(--color-primary)] text-white font-black uppercase tracking-widest text-xs hover:scale-105 active:scale-95 transition-all flex items-center gap-2 shadow-lg shadow-primary/20"
+                                className="px-8 py-4 rounded-clay-lg bg-[var(--color-primary)] text-white font-black uppercase tracking-widest text-xs hover:scale-105 active:scale-95 transition-all flex items-center gap-2 shadow-primary/20"
                             >
                                 {step < steps.length - 1 ? (
                                     <>Next <ChevronRight className="w-4 h-4" /></>

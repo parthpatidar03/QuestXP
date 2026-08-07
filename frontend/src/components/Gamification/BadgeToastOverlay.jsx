@@ -25,7 +25,7 @@ const BadgeToastOverlay = () => {
                         animate={{ opacity: 1, y: 0, x: 0 }}
                         exit={{ opacity: 0, x: -20, transition: { duration: 0.2 } }}
                         transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                        className="bg-surface border border-warning/30 rounded-xl p-4 shadow-[0_0_20px_rgba(245,158,11,0.15)] flex items-center gap-4 w-max"
+                        className="bg-surface border border-warning/30 rounded-clay p-4 shadow-[0_0_20px_rgba(245,158,11,0.15)] flex items-center gap-4 w-max"
                     >
                         <div className="w-10 h-10 rounded-full bg-warning/10 border border-warning/20 flex items-center justify-center flex-shrink-0">
                             {getIcon(toast.iconType)}

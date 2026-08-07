@@ -21,7 +21,7 @@ const StreakInfoModal = ({ isOpen, onClose }) => {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
                         onClick={(e) => e.stopPropagation()}
-                        className="relative w-full max-w-[480px] bg-surface border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden z-10 pointer-events-auto p-8 text-sm"
+                        className="relative w-full max-w-[480px] bg-surface rounded-clay-xl overflow-hidden z-10 pointer-events-auto p-8 text-sm"
                     >
                         <div className="flex items-center gap-2 mb-4 text-text-primary font-black uppercase tracking-widest text-xs">
                             <Info className="w-4 h-4 text-primary" /> Streak Protocol
@@ -31,7 +31,7 @@ const StreakInfoModal = ({ isOpen, onClose }) => {
                             <li>Earning any XP (greater than 0) extends your streak.</li>
                         </ol>
                         <p className="text-xs text-text-muted mb-6 leading-relaxed">Streaks are tracked based on your local timezone. Reset happens at midnight.</p>
-                        <button type="button" onClick={onClose} className="w-full py-4 bg-primary hover:bg-primary-hover rounded-xl font-black uppercase tracking-widest text-[10px] text-white transition-all shadow-lg shadow-primary/20">Acknowledge</button>
+                        <button type="button" onClick={onClose} className="w-full py-4 bg-primary hover:bg-primary-hover rounded-clay font-black uppercase tracking-widest text-[10px] text-white transition-all shadow-primary/20">Acknowledge</button>
                     </motion.div>
                 </div>
             )}
@@ -63,7 +63,7 @@ const ShareAchievementModal = ({
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 bg-black/80 backdrop-blur-2xl" 
+                        className="fixed inset-0 bg-bg/80 backdrop-blur-2xl" 
                         onClick={onClose} 
                     />
                     <motion.div 
@@ -71,12 +71,12 @@ const ShareAchievementModal = ({
                         animate={{ y: 0, opacity: 1, scale: 1 }}
                         exit={{ y: 50, opacity: 0, scale: 0.9 }}
                         onClick={(e) => e.stopPropagation()}
-                        className="relative z-10 w-full max-w-[480px] bg-[#0d0d0d] border border-white/10 rounded-[2.5rem] shadow-[0_32px_128px_-16px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col pointer-events-auto"
+                        className="relative z-10 w-full max-w-[480px] bg-[#0d0d0d] rounded-clay-xl shadow-[0_32px_128px_-16px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col pointer-events-auto"
                     >
                         {/* Modal Header */}
                         <div className="px-8 py-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
                             <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
+                                <div className="w-12 h-12 rounded-clay-lg bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
                                     <Camera className="w-6 h-6" />
                                 </div>
                                 <div>
@@ -93,10 +93,10 @@ const ShareAchievementModal = ({
                         <div className="p-6 bg-black overflow-y-auto max-h-[60vh] scrollbar-hide">
                             <div 
                                 ref={exportRef}
-                                className="bg-[#0a0a0a] border border-white/5 p-8 rounded-2xl relative overflow-hidden flex flex-col items-center"
+                                className="bg-[#0a0a0a] border border-white/5 p-8 rounded-clay-lg relative overflow-hidden flex flex-col items-center"
                                 style={{ width: '100%', minWidth: '340px' }}
                             >
-                                <div className="px-5 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-black text-white uppercase tracking-[0.2em] mb-8">
+                                <div className="px-5 py-1.5 rounded-full bg-white/5 text-xs font-black text-white uppercase tracking-[0.2em] mb-8">
                                     {currentDate.toLocaleString('default', { month: 'long' })}
                                 </div>
 
@@ -116,7 +116,7 @@ const ShareAchievementModal = ({
                                 </div>
 
                                 <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-                                    <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-1.5">
+                                    <div className="flex items-center gap-2 bg-white/5 rounded-full px-4 py-1.5">
                                         <span className="text-[10px] font-black text-text-muted uppercase tracking-widest">Current</span>
                                         <span className="text-xs font-black text-white">Streak Stats</span>
                                     </div>
@@ -151,7 +151,7 @@ const ShareAchievementModal = ({
                                 <div className="grid grid-cols-2 gap-3">
                                     <button 
                                         onClick={() => setShowUsername(!showUsername)}
-                                        className={`flex items-center justify-between p-4 rounded-2xl border transition-all ${showUsername ? 'bg-primary/5 border-primary/20 text-primary' : 'bg-white/[0.02] border-white/5 text-text-muted'}`}
+                                        className={`flex items-center justify-between p-4 rounded-clay-lg border transition-all ${showUsername ? 'bg-primary/5 border-primary/20 text-primary' : 'bg-white/[0.02] border-white/5 text-text-muted'}`}
                                     >
                                         <div className="flex flex-col items-start">
                                             <span className="text-[10px] font-black uppercase tracking-widest mb-1">Username</span>
@@ -163,7 +163,7 @@ const ShareAchievementModal = ({
                                     </button>
                                     <button 
                                         onClick={() => setShowRank(!showRank)}
-                                        className={`flex items-center justify-between p-4 rounded-2xl border transition-all ${showRank ? 'bg-warning/5 border-warning/20 text-warning' : 'bg-white/[0.02] border-white/5 text-text-muted'}`}
+                                        className={`flex items-center justify-between p-4 rounded-clay-lg border transition-all ${showRank ? 'bg-warning/5 border-warning/20 text-warning' : 'bg-white/[0.02] border-white/5 text-text-muted'}`}
                                     >
                                         <div className="flex flex-col items-start">
                                             <span className="text-[10px] font-black uppercase tracking-widest mb-1">Rank Position</span>
@@ -304,7 +304,7 @@ export default function StreakCalendar({ history = [], rank }) {
     };
 
     return (
-        <div className="w-full max-w-[320px] mx-auto py-2 relative bg-surface p-4 rounded-2xl">
+        <div className="w-full max-w-[320px] mx-auto py-2 relative bg-surface p-4 rounded-clay-lg">
             {/* Header: [Info] [Month Controls] [Camera] */}
             <div className="flex items-center justify-between mb-6">
                 <button 
@@ -358,7 +358,7 @@ export default function StreakCalendar({ history = [], rank }) {
             </div>
 
             {/* Streak Stats Pill */}
-            <div className="mt-8 flex items-center justify-center bg-surface-2 border border-white/5 rounded-xl px-4 py-3">
+            <div className="mt-8 flex items-center justify-center bg-surface-2 border border-white/5 rounded-clay px-4 py-3">
                 <div className="flex items-center gap-2">
                     <span className="text-[10px] font-black text-text-muted uppercase">Current</span>
                     <span className="text-lg">🔥</span>

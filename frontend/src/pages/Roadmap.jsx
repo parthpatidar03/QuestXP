@@ -42,7 +42,6 @@ import { getCurrentRoadmap, adjustRoadmap, partialShiftRoadmap, toggleVideoCompl
 import { shootConfetti } from '../utils/confetti';
 import { broadcastProgressUpdate, getTabId } from '../utils/sync';
 import NavBar from '../components/NavBar';
-import { BGPattern } from '../components/ui/bg-pattern';
 import GenerateRoadmapModal from '../components/Roadmap/GenerateRoadmapModal';
 
 
@@ -79,30 +78,31 @@ const ProgressHeader = React.memo(({ roadmap, onShift, totalCalendarDays, onUpda
                                     value={tempTitle}
                                     onChange={(e) => setTempTitle(e.target.value)}
                                     onKeyDown={(e) => e.key === 'Enter' && handleTitleSave()}
-                                    className="bg-surface-3 border border-primary/50 text-text-primary px-3 py-1 rounded-lg font-black text-2xl focus:outline-none focus:ring-2 ring-primary/20 flex-1"
+                                    className="bg-surface-3 border border-primary/50 text-text-primary px-3 py-1 rounded-clay-sm font-black text-2xl focus:outline-none focus:ring-2 ring-primary/20 flex-1"
                                     autoFocus
                                 />
-                                <button onClick={handleTitleSave} className="bg-primary p-2 rounded-lg text-white shadow-lg shadow-primary/20"><CheckSquare className="w-5 h-5" /></button>
+                                <button onClick={handleTitleSave} className="bg-primary p-2 rounded-clay-sm text-white shadow-primary/20"><CheckSquare className="w-5 h-5" /></button>
                             </div>
                         ) : (
-                            <h2 
+                            // Block, not flex: as a flex item the title shrank to
+                            // min-content and broke one word per line.
+                            <h2
                                 onClick={() => setIsEditing(true)}
-                                className="text-3xl sm:text-4xl font-black text-text-primary tracking-tight leading-[1.1] cursor-pointer hover:text-primary transition-colors flex items-center gap-3 flex-wrap" 
+                                className="text-2xl sm:text-3xl font-display font-bold text-text-primary tracking-tight leading-tight cursor-pointer hover:text-primary transition-colors"
                             >
-                                <span className="uppercase">{roadmap.title || "Your Mastery Journey"}</span>
-                                <div className="flex items-center gap-1.5 opacity-30 group-hover:opacity-100 transition-opacity translate-y-1">
+                                {roadmap.title || "Your Mastery Journey"}
+                                <span className="inline-flex items-center gap-1.5 align-middle ml-3 opacity-40 group-hover:opacity-100 transition-opacity">
                                     <Edit2 className="w-4 h-4" />
                                     <span className="text-xs font-bold uppercase tracking-widest text-text-primary">Rename</span>
-                                </div>
+                                </span>
                             </h2>
                         )}
                         {roadmap.days && roadmap.days.length > 0 && (
-                            <div className="text-sm font-bold text-text-secondary flex items-center gap-2">
-                                <span>Targeting completion by</span>
-                                <span className="text-success font-black bg-success/10 px-2 py-0.5 rounded">
+                            <div className="text-sm font-semibold text-text-secondary flex items-center gap-2 flex-wrap mt-1">
+                                <span className="whitespace-nowrap">Targeting completion by</span>
+                                <span className="xp-chip !text-success whitespace-nowrap">
                                     {format(new Date(roadmap.days[roadmap.days.length - 1].date), 'MMMM dd, yyyy')}
                                 </span>
-                                <span>🎯</span>
                             </div>
                         )}
                     </div>
@@ -112,7 +112,7 @@ const ProgressHeader = React.memo(({ roadmap, onShift, totalCalendarDays, onUpda
                     <div className="h-12 w-px bg-border/40 hidden xl:block" />
 
                     {/* Schedule Adjuster */}
-                    <div className="flex flex-col items-center gap-2 bg-surface-2/50 p-3 rounded-2xl border border-border/50 relative shrink-0 min-w-[160px]">
+                    <div className="flex flex-col items-center gap-2 bg-surface-2/50 p-3 rounded-clay-lg clay-sm relative shrink-0 min-w-[160px]">
                         {onShift.adjusting && (
                             <div className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap px-3 py-1 bg-primary/20 text-primary text-[10px] font-black rounded-full border border-primary/30 animate-pulse z-20">
                                 SYNCING...
@@ -122,7 +122,7 @@ const ProgressHeader = React.memo(({ roadmap, onShift, totalCalendarDays, onUpda
                             <motion.button 
                                 whileTap={{ scale: 0.9 }}
                                 onClick={() => onShift(-1)}
-                                className="p-1.5 hover:bg-surface-3 rounded-lg text-text-muted hover:text-primary transition-colors disabled:opacity-50"
+                                className="p-1.5 hover:bg-surface-3 rounded-clay-sm text-text-muted hover:text-primary transition-colors disabled:opacity-50"
                                 title="Subtract 1 day"
                                 disabled={onShift.adjusting}
                             >
@@ -135,7 +135,7 @@ const ProgressHeader = React.memo(({ roadmap, onShift, totalCalendarDays, onUpda
                             <motion.button 
                                 whileTap={{ scale: 0.9 }}
                                 onClick={() => onShift(1)}
-                                className="p-1.5 hover:bg-surface-3 rounded-lg text-text-muted hover:text-primary transition-colors disabled:opacity-50"
+                                className="p-1.5 hover:bg-surface-3 rounded-clay-sm text-text-muted hover:text-primary transition-colors disabled:opacity-50"
                                 title="Add 1 day"
                                 disabled={onShift.adjusting}
                             >
@@ -160,7 +160,7 @@ const ProgressHeader = React.memo(({ roadmap, onShift, totalCalendarDays, onUpda
                             </div>
                             <div className="flex flex-col items-center sm:items-end gap-1">
                                 <span className="text-5xl font-black text-text-primary italic leading-none">Day {Math.max(1, currentDayIndex)}/{totalCalendarDays}</span>
-                                <div className="w-40 h-2 rounded-full bg-surface-3 overflow-hidden border border-border/50 relative">
+                                <div className="w-40 h-2 rounded-full bg-surface-3 overflow-hidden clay-sm relative">
                                     <motion.div 
                                         initial={{ width: 0 }}
                                         animate={{ width: `${timeProgressPercent}%` }}
@@ -206,7 +206,7 @@ const RoadmapPlaylistCard = React.memo(({ playlistId, days, dayLabelsMap, onPart
     }, [filteredDays]);
 
     return (
-        <div className="bg-surface/30 backdrop-blur-md mb-2 overflow-hidden border border-border/40 rounded-xl hover:border-primary/20 transition-all group">
+        <div className="bg-surface/30 backdrop-blur-md mb-2 overflow-hidden clay-sm rounded-clay hover:border-primary/20 transition-all group">
             <div 
                 className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer hover:bg-surface-2 transition-colors select-none"
                 onClick={() => setIsExpanded(!isExpanded)}
@@ -225,7 +225,7 @@ const RoadmapPlaylistCard = React.memo(({ playlistId, days, dayLabelsMap, onPart
                 {/* RIGHT SIDE */}
                 <div className="flex items-center justify-between sm:justify-end gap-4 sm:shrink-0">
                     <div 
-                        className="flex items-center gap-3 bg-black/40 px-3 sm:px-5 py-2 rounded-xl border border-border/80 shadow-inner"
+                        className="flex items-center gap-3 clay-sunk px-3 sm:px-5 py-2 rounded-clay"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <motion.button 
@@ -249,16 +249,16 @@ const RoadmapPlaylistCard = React.memo(({ playlistId, days, dayLabelsMap, onPart
                         </motion.button>
                     </div>
 
-                    <div className="p-1.5 rounded-lg text-text-muted group-hover:text-primary transition-colors">
+                    <div className="p-1.5 rounded-clay-sm text-text-muted group-hover:text-primary transition-colors">
                         {isExpanded ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
                     </div>
                 </div>
             </div>
 
             {isExpanded && (
-                <div className="bg-black/10 border-t border-border/30 p-3 space-y-2">
+                <div className="clay-sunk p-3 space-y-2 rounded-clay mt-2">
                     {filteredDays.map((day, dIdx) => (
-                        <div key={dIdx} className="p-4 rounded-xl bg-surface/50 border border-border/20">
+                        <div key={dIdx} className="p-4 rounded-clay bg-surface/50 clay-sm">
                             <div className="flex items-center justify-between mb-4">
                                 <div className="flex items-center gap-3">
                                     <div className="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgba(var(--color-primary-rgb),0.5)]" />
@@ -267,7 +267,7 @@ const RoadmapPlaylistCard = React.memo(({ playlistId, days, dayLabelsMap, onPart
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-3">
-                                    <div className="flex items-center bg-surface-2 rounded-xl border border-border overflow-hidden">
+                                    <div className="flex items-center bg-surface-2 rounded-clay clay-sm overflow-hidden">
                                         <motion.button 
                                             whileTap={{ scale: 0.9 }}
                                             onClick={() => onPartialShift(day.dayIndex, -1)}
@@ -285,8 +285,8 @@ const RoadmapPlaylistCard = React.memo(({ playlistId, days, dayLabelsMap, onPart
                                             <Plus className="w-4 h-4" />
                                         </motion.button>
                                     </div>
-                                    <div className="px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/30">
-                                        <span className="text-[11px] font-black text-primary uppercase tracking-tight">Target: {formatTime(day.totalMinutes)}</span>
+                                    <div className="px-3 py-1.5 rounded-clay-sm bg-primary/10 border border-primary/30">
+                                        <span className="text-[11px] font-black text-primary uppercase tracking-tight">Target: {formatTime(day.totalMinutes, 'minutes')}</span>
                                     </div>
 
 
@@ -297,7 +297,7 @@ const RoadmapPlaylistCard = React.memo(({ playlistId, days, dayLabelsMap, onPart
                                     <Link 
                                         key={vIdx} 
                                         to={`/courses/${vid.playlistId}/lectures/${vid.videoId}`}
-                                        className="flex items-center gap-3 py-1.5 px-3 rounded-lg hover:bg-white/5 transition-all group/item"
+                                        className="flex items-center gap-3 py-1.5 px-3 rounded-clay-sm hover:bg-white/5 transition-all group/item"
                                     >
                                         <Play className="w-2.5 h-2.5 text-primary opacity-70 group-hover/item:opacity-100 group-hover/item:scale-110 transition-all" />
                                         <span className="text-xs font-bold text-text-primary flex-1 truncate group-hover/item:text-primary transition-colors">
@@ -357,7 +357,7 @@ const UniversalRoadmapCard = React.memo(({ roadmap, onDelete }) => {
                 className="glass-card p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group hover:border-primary/40 transition-all hover:scale-[1.01]"
             >
                 <div className="flex items-center gap-4 sm:gap-6">
-                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-clay-lg bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
                         <Calendar className="w-6 h-6 sm:w-7 h-7" />
                     </div>
                     <div>
@@ -365,14 +365,14 @@ const UniversalRoadmapCard = React.memo(({ roadmap, onDelete }) => {
                         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] sm:text-xs font-bold text-text-muted">
                             <span className="flex items-center gap-1"><Play className="w-3 h-3" /> {totalVideos} Videos</span>
                             <span className="flex items-center gap-1">
-                                <Clock className="w-3 h-3" /> 
-                                {formatTime(totalMinutes)}
+                                <Clock className="w-3 h-3" />
+                                {formatTime(totalMinutes, 'minutes')}
                             </span>
                             <span className="flex items-center gap-1 text-primary/70">{dateRange}</span>
                         </div>
                     </div>
                 </div>
-                <div className="self-end sm:self-center w-10 h-10 rounded-xl bg-surface-3 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
+                <div className="self-end sm:self-center w-10 h-10 rounded-clay bg-surface-3 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
                     <ChevronRight className="w-5 h-5" />
                 </div>
             </Link>
@@ -385,7 +385,7 @@ const UniversalRoadmapCard = React.memo(({ roadmap, onDelete }) => {
                         onDelete(roadmap._id);
                     }
                 }}
-                className="absolute top-1/2 -translate-y-1/2 right-16 p-3 rounded-xl bg-error/10 text-error opacity-0 group-hover/card:opacity-100 hover:bg-error hover:text-white transition-all z-20 shadow-lg shadow-error/10"
+                className="absolute top-1/2 -translate-y-1/2 right-16 p-3 rounded-clay bg-error/10 text-error opacity-0 group-hover/card:opacity-100 hover:bg-error hover:text-white transition-all z-20 shadow-error/10"
                 title="Delete Roadmap"
             >
                 <Trash2 className="w-4 h-4" />
@@ -737,13 +737,12 @@ const Roadmap = () => {
 
     return (
         <div className="min-h-screen bg-bg text-text-primary">
-            <BGPattern variant="grid" mask="fade-edges" fill="var(--color-text-muted)" className="opacity-10" />
             <NavBar />
 
             <main className="max-w-4xl mx-auto px-4 py-12 relative z-10">
                 <div className="flex items-center justify-between mb-8">
-                    <Link to="/dashboard" className="inline-flex items-center gap-3 px-5 py-2.5 bg-surface-2 hover:bg-surface-3 border border-border rounded-xl transition-all group w-fit">
-                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center group-hover:-translate-x-1 transition-transform">
+                    <Link to="/dashboard" className="inline-flex items-center gap-3 px-5 py-2.5 bg-surface-2 hover:clay-sunk rounded-clay transition-all group w-fit">
+                        <div className="w-8 h-8 rounded-clay-sm bg-primary/10 flex items-center justify-center group-hover:-translate-x-1 transition-transform">
                             <ArrowLeft className="w-5 h-5 text-primary" />
                         </div>
                         <span className="text-sm font-black uppercase tracking-widest text-text-primary italic">Back to Hub</span>
@@ -754,7 +753,7 @@ const Roadmap = () => {
                             setModalCourseId(null);
                             setIsGenerateModalOpen(true);
                         }}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-xl text-primary text-xs font-black uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98]"
+                        className="flex items-center gap-2 px-5 py-2.5 bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-clay text-primary text-xs font-black uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98]"
                     >
                         <Plus className="w-4 h-4" />
                         New Roadmap
@@ -787,13 +786,13 @@ const Roadmap = () => {
 
                         {/* Global Bulk Action Row */}
                         {roadmap.courseId && (
-                            <div className="flex items-center gap-4 px-5 py-5 bg-primary/5 border-2 border-primary/20 rounded-2xl mb-6 group/bulk shadow-lg shadow-primary/5">
+                            <div className="flex items-center gap-4 px-5 py-5 bg-primary/5 border-2 border-primary/20 rounded-clay-lg mb-6 group/bulk shadow-primary/5">
                                 <div className="shrink-0">
                                     <button
                                         type="button"
                                         onClick={handleMarkAllComplete}
                                         disabled={isBulkUpdating}
-                                        className="w-16 h-16 rounded-2xl border-2 border-primary/50 bg-primary/10 flex flex-col items-center justify-center text-primary transition-all hover:scale-105 active:scale-95 shadow-[0_0_25px_rgba(var(--color-primary-rgb),0.2)] hover:bg-primary hover:text-white hover:border-primary group-hover/bulk:border-primary"
+                                        className="w-16 h-16 rounded-clay-lg border-2 border-primary/50 bg-primary/10 flex flex-col items-center justify-center text-primary transition-all hover:scale-105 active:scale-95 shadow-[0_0_25px_rgba(var(--color-primary-rgb),0.2)] hover:bg-primary hover:text-white hover:border-primary group-hover/bulk:border-primary"
                                         title="Mark All Complete"
                                     >
                                         {isBulkUpdating ? (
@@ -858,7 +857,7 @@ const Roadmap = () => {
                     </div>
                 ) : (
                     <div className="glass-card p-12 flex flex-col items-center justify-center text-center max-w-2xl mx-auto mt-12">
-                        <div className="w-20 h-20 rounded-3xl bg-primary/10 text-primary flex items-center justify-center mb-6">
+                        <div className="w-20 h-20 rounded-clay-lg bg-primary/10 text-primary flex items-center justify-center mb-6">
                             <Layout className="w-10 h-10" />
                         </div>
                         <h2 className="text-2xl font-black text-text-primary tracking-tight mb-3">No Active Roadmap</h2>
@@ -870,7 +869,7 @@ const Roadmap = () => {
                                 setModalCourseId(courseId);
                                 setIsGenerateModalOpen(true);
                             }}
-                            className="px-8 py-4 rounded-2xl bg-primary text-white font-black text-sm hover:bg-primary-hover transition-all shadow-xl shadow-primary/20 flex items-center gap-3"
+                            className="px-8 py-4 rounded-clay-lg bg-primary text-white font-black text-sm hover:bg-primary-hover transition-all shadow-primary/20 flex items-center gap-3"
                         >
                             <Sparkles className="w-4 h-4" />
                             CREATE MY ROADMAP

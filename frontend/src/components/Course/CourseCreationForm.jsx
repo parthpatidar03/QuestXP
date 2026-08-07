@@ -130,7 +130,7 @@ const CourseCreationForm = ({ onSuccess, initialUrl = '' }) => {
             <h2 className="text-2xl font-semibold mb-6 text-text-primary">Create course</h2>
             
             {error && (
-                <div className="bg-danger/10 text-danger border border-danger/20 p-4 rounded-lg mb-6 text-sm flex items-start gap-3">
+                <div className="bg-danger/10 text-danger border border-danger/20 p-4 rounded-clay-sm mb-6 text-sm flex items-start gap-3">
                     <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
                     <span>{error}</span>
                 </div>
@@ -141,7 +141,7 @@ const CourseCreationForm = ({ onSuccess, initialUrl = '' }) => {
                     <label className="block text-sm font-semibold mb-2 text-text-secondary">Course name</label>
                     <input 
                         type="text" value={title} onChange={e => setTitle(e.target.value)} required
-                        className="w-full p-3.5 bg-surface-2 rounded-lg border border-border focus:border-primary outline-none transition-colors text-text-primary placeholder:text-text-muted text-lg"
+                        className="w-full p-3.5 bg-surface-2 rounded-clay-sm clay-sm focus:border-primary outline-none transition-colors text-text-primary placeholder:text-text-muted text-lg"
                         placeholder="e.g. Fullstack Web Development Mastery"
                     />
                 </div>
@@ -153,11 +153,11 @@ const CourseCreationForm = ({ onSuccess, initialUrl = '' }) => {
 
                     <div className="space-y-4">
                         {sections.map((section, index) => (
-                            <div key={index} className="p-5 bg-surface-2 rounded-xl border border-border relative group">
+                            <div key={index} className="p-5 bg-surface-2 rounded-clay clay-sm relative group">
                                 <div className="flex items-center justify-between mb-4 border-b border-border/50 pb-3">
                                     <h3 className="text-xs font-bold text-text-primary uppercase tracking-widest">Section {index + 1}</h3>
                                     {sections.length > 1 && (
-                                        <button type="button" onClick={() => removeSection(index)} className="text-text-muted hover:text-danger hover:bg-danger/10 p-1.5 rounded-lg transition-colors flex items-center gap-1.5 text-[10px] font-bold" title="Remove Section">
+                                        <button type="button" onClick={() => removeSection(index)} className="text-text-muted hover:text-danger hover:bg-danger/10 p-1.5 rounded-clay-sm transition-colors flex items-center gap-1.5 text-[10px] font-bold" title="Remove Section">
                                             <X className="w-4 h-4" />
                                             REMOVE
                                         </button>
@@ -169,7 +169,7 @@ const CourseCreationForm = ({ onSuccess, initialUrl = '' }) => {
                                         <label className="block text-xs font-semibold text-text-muted mb-1.5">Section title</label>
                                         <input 
                                             type="text" value={section.title} onChange={e => updateSection(index, 'title', e.target.value)} required
-                                            className="w-full p-2.5 bg-surface border border-border focus:border-primary rounded-md outline-none text-sm text-text-primary placeholder:text-text-muted"
+                                            className="w-full p-2.5 clay focus:border-primary rounded-md outline-none text-sm text-text-primary placeholder:text-text-muted"
                                             placeholder="e.g. Module 1: The Basics"
                                         />
                                     </div>
@@ -180,10 +180,10 @@ const CourseCreationForm = ({ onSuccess, initialUrl = '' }) => {
                                         </label>
                                         <input 
                                             type="url" value={section.playlistUrl} onChange={e => updateSection(index, 'playlistUrl', e.target.value)} required
-                                            className="w-full p-2.5 bg-surface border border-border focus:border-primary rounded-md outline-none text-sm text-text-primary placeholder:text-text-muted"
+                                            className="w-full p-2.5 clay focus:border-primary rounded-md outline-none text-sm text-text-primary placeholder:text-text-muted"
                                             placeholder="https://youtube.com/playlist?list=... or https://youtu.be/..."
                                         />
-                                        <div className="mt-2 p-2.5 bg-surface/50 rounded-lg border border-border/30 flex items-start gap-2 text-sm text-text-muted leading-relaxed">
+                                        <div className="mt-2 p-2.5 bg-surface/50 rounded-clay-sm clay-sm flex items-start gap-2 text-sm text-text-muted leading-relaxed">
                                             <div className="bg-primary/10 p-1 rounded">
                                                 <Info className="w-3 h-3 text-primary shrink-0" />
                                             </div>
@@ -199,7 +199,7 @@ const CourseCreationForm = ({ onSuccess, initialUrl = '' }) => {
                         ))}
                     </div>
 
-                    <button type="button" onClick={addSection} className="w-full py-3 mt-2 border-2 border-dashed border-border rounded-xl text-text-secondary hover:text-primary hover:border-primary/50 hover:bg-primary/5 transition-all text-sm font-semibold flex items-center justify-center gap-2">
+                    <button type="button" onClick={addSection} className="w-full py-3 mt-2 border-2 border-border rounded-clay text-text-secondary hover:text-primary hover:border-primary/50 hover:bg-primary/5 transition-all text-sm font-semibold flex items-center justify-center gap-2">
                         <Plus className="w-4 h-4" />
                         Add another section
                     </button>

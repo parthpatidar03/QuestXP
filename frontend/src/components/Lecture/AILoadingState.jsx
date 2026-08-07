@@ -24,7 +24,7 @@ const AILoadingState = ({ progress, status, title, icon }) => {
                         repeat: Infinity,
                         ease: "easeInOut"
                     }}
-                    className="w-20 h-20 rounded-[2rem] flex items-center justify-center relative z-10"
+                    className="w-20 h-20 rounded-clay-xl flex items-center justify-center relative z-10"
                     style={{ 
                         background: 'linear-gradient(135deg, rgba(0,180,255,0.2) 0%, rgba(0,255,128,0.1) 100%)',
                         border: '1px solid rgba(0,180,255,0.3)',
@@ -38,7 +38,7 @@ const AILoadingState = ({ progress, status, title, icon }) => {
                 <motion.div 
                     animate={{ rotate: 360 }}
                     transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-                    className="absolute inset-[-10px] border border-dashed border-primary/20 rounded-full"
+                    className="absolute inset-[-10px] border border-primary/20 rounded-full"
                 />
                 <motion.div 
                     animate={{ rotate: -360 }}
@@ -49,7 +49,7 @@ const AILoadingState = ({ progress, status, title, icon }) => {
 
             {/* Title & Status */}
             <div className="space-y-2 mb-10">
-                <h3 className="text-xl font-display font-black text-white tracking-tight flex items-center justify-center gap-2">
+                <h3 className="text-xl font-display font-black text-text-primary tracking-tight flex items-center justify-center gap-2">
                     <Sparkles className="w-5 h-5 text-primary animate-pulse" />
                     {title}
                 </h3>

@@ -272,7 +272,7 @@ export default function NotificationBell({ profile, user }) {
         <div className="relative" ref={panelRef}>
             <button
                 onClick={() => setOpen(prev => !prev)}
-                className="relative p-2 text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-lg transition-colors"
+                className="relative p-2 text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-clay-sm transition-colors"
                 title="Notifications"
                 aria-label={`Notifications${unseen > 0 ? `, ${unseen} new` : ''}`}
             >
@@ -283,7 +283,7 @@ export default function NotificationBell({ profile, user }) {
             </button>
 
             {open && (
-                <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 bg-surface border border-border rounded-xl shadow-2xl z-[70] overflow-hidden">
+                <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 clay rounded-clay z-[70] overflow-hidden">
                     {/* Header */}
                     <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-surface-2/50">
                         <h3 className="text-sm font-bold text-text-primary">Notifications</h3>
@@ -312,7 +312,7 @@ export default function NotificationBell({ profile, user }) {
                             <button 
                                 onClick={handleEnablePush}
                                 disabled={enabling}
-                                className="text-[10px] bg-primary text-white px-2 py-1 rounded shadow-sm hover:bg-primary-hover font-bold flex items-center gap-1 disabled:opacity-50"
+                                className="text-[10px] bg-primary text-white px-2 py-1 rounded hover:bg-primary-hover font-bold flex items-center gap-1 disabled:opacity-50"
                             >
                                 {enabling ? 'Enabling...' : <><Send className="w-3 h-3" /> Enable</>}
                             </button>
@@ -333,7 +333,7 @@ export default function NotificationBell({ profile, user }) {
                                     key={n.id}
                                     className={`flex gap-3 px-4 py-3 border-b border-border/50 transition-colors ${!seenIds.has(n.id) ? 'bg-primary/5' : 'hover:bg-surface-2/30'}`}
                                 >
-                                    <div className="w-8 h-8 rounded-lg bg-surface-2 border border-border flex items-center justify-center shrink-0 mt-0.5">
+                                    <div className="w-8 h-8 rounded-clay-sm clay-sunk flex items-center justify-center shrink-0 mt-0.5">
                                         {ICON_MAP[n.icon] || ICON_MAP.sparkles}
                                     </div>
                                     <div className="flex-1 min-w-0">

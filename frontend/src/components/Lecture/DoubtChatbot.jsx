@@ -135,7 +135,7 @@ const DoubtChatbot = ({ lectureId, courseTitle = '', lectureTitle = '', isSideba
                                 You need <span className="text-primary font-bold">{xpToUnlock} XP</span> more.
                             </p>
                             
-                            <div className="w-full space-y-3 bg-primary/5 border border-primary/10 rounded-xl p-4">
+                            <div className="w-full space-y-3 bg-primary/5 border border-primary/10 rounded-clay p-4">
                                 <p className="text-xs font-bold text-primary uppercase tracking-widest">How to Unlock</p>
                                 <div className="flex items-start gap-3 text-left">
                                     <Zap className="w-4 h-4 text-primary shrink-0 mt-0.5" />
@@ -149,7 +149,7 @@ const DoubtChatbot = ({ lectureId, courseTitle = '', lectureTitle = '', isSideba
                         </div>
                     ) : MAINTENANCE_CONFIG.AI_FEATURES_DOWN ? (
                         <div className="flex flex-col items-center justify-center py-10 text-center px-4">
-                            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-4">
+                            <div className="w-12 h-12 rounded-clay-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-4">
                                 <Bot className="w-6 h-6 text-amber-500" />
                             </div>
                             <p className="text-sm font-bold text-text-primary mb-2">Service Maintenance</p>
@@ -171,12 +171,12 @@ const DoubtChatbot = ({ lectureId, courseTitle = '', lectureTitle = '', isSideba
                                             <Bot className="w-3.5 h-3.5 text-primary" />
                                         </div>
                                     )}
-                                    <div className={`max-w-[82%] px-3 py-2.5 rounded-2xl text-sm leading-relaxed ${msg.role === 'user' ? 'bg-primary/10 border border-primary/20 text-text-primary rounded-br-sm' : 'bg-surface border border-border text-text-secondary rounded-bl-sm'}`}>
+                                    <div className={`max-w-[82%] px-3 py-2.5 rounded-clay-lg text-sm leading-relaxed ${msg.role === 'user' ? 'bg-primary/10 border border-primary/20 text-text-primary rounded-br-sm' : 'clay text-text-secondary rounded-bl-sm'}`}>
                                         {msg.role === 'bot' ? <MarkdownText text={msg.text} /> : msg.text}
                                     </div>
                                 </div>
                             ))}
-                            {loading && <div className="flex gap-2 items-center"><div className="w-6 h-6 rounded-full shrink-0 flex items-center justify-center bg-primary/10"><Bot className="w-3.5 h-3.5 text-primary" /></div><div className="flex gap-1.5 px-4 py-3 rounded-2xl bg-surface border border-border">{[0, 150, 300].map(d => <span key={d} className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: `${d}ms` }} />)}</div></div>}
+                            {loading && <div className="flex gap-2 items-center"><div className="w-6 h-6 rounded-full shrink-0 flex items-center justify-center bg-primary/10"><Bot className="w-3.5 h-3.5 text-primary" /></div><div className="flex gap-1.5 px-4 py-3 rounded-clay-lg clay">{[0, 150, 300].map(d => <span key={d} className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: `${d}ms` }} />)}</div></div>}
                         </>
                     )}
                     <div ref={bottomRef} />
@@ -192,13 +192,13 @@ const DoubtChatbot = ({ lectureId, courseTitle = '', lectureTitle = '', isSideba
                             placeholder={MAINTENANCE_CONFIG.AI_FEATURES_DOWN ? "Service offline…" : "Ask a doubt…"}
                             rows={1}
                             disabled={loading || MAINTENANCE_CONFIG.AI_FEATURES_DOWN}
-                            className="flex-1 px-3 py-2.5 rounded-xl text-sm outline-none resize-none transition-colors bg-surface border border-border text-text-primary placeholder:text-text-muted focus:border-primary/50 disabled:opacity-50"
+                            className="flex-1 px-3 py-2.5 rounded-clay text-sm outline-none resize-none transition-colors clay text-text-primary placeholder:text-text-muted focus:border-primary/50 disabled:opacity-50"
                             style={{ maxHeight: 80, fontFamily: "'Space Grotesk', sans-serif" }}
                         />
                         <button
                             onClick={handleSend}
                             disabled={!input.trim() || loading || MAINTENANCE_CONFIG.AI_FEATURES_DOWN}
-                            className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all shrink-0 self-end ${(!input.trim() || loading || MAINTENANCE_CONFIG.AI_FEATURES_DOWN) ? 'bg-surface border border-border text-text-muted opacity-50' : 'bg-primary text-white shadow-sm hover:scale-105'}`}
+                            className={`w-10 h-10 rounded-clay flex items-center justify-center transition-all shrink-0 self-end ${(!input.trim() || loading || MAINTENANCE_CONFIG.AI_FEATURES_DOWN) ? 'clay text-text-muted opacity-50' : 'bg-primary text-white  hover:scale-105'}`}
                         >
                             {loading ? <Loader2 className="w-4 h-4 animate-spin text-white" /> : <Send className="w-4 h-4 text-white" />}
                         </button>
@@ -237,7 +237,7 @@ const DoubtChatbot = ({ lectureId, courseTitle = '', lectureTitle = '', isSideba
                         initial={{ opacity: 0, y: 28, scale: 0.94 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 28, scale: 0.94 }}
-                        className="pointer-events-auto fixed bottom-40 right-6 flex flex-col rounded-2xl overflow-hidden shadow-2xl border border-border bg-surface-2/95 backdrop-blur-md z-40"
+                        className="pointer-events-auto fixed bottom-40 right-6 flex flex-col rounded-clay-lg overflow-hidden clay-sunk backdrop-blur-md z-40"
                         style={{
                             width: 'min(380px, calc(100vw - 2rem))',
                             maxHeight: '65vh',
@@ -272,7 +272,7 @@ const DoubtChatbot = ({ lectureId, courseTitle = '', lectureTitle = '', isSideba
                                         You need <span className="text-primary font-bold">{xpToUnlock} XP</span> more.
                                     </p>
                                     
-                                    <div className="w-full space-y-3 bg-primary/5 border border-primary/10 rounded-xl p-4">
+                                    <div className="w-full space-y-3 bg-primary/5 border border-primary/10 rounded-clay p-4">
                                         <p className="text-xs font-bold text-primary uppercase tracking-widest">How to Unlock</p>
                                         <div className="flex items-start gap-3 text-left">
                                             <Zap className="w-4 h-4 text-primary shrink-0 mt-0.5" />
@@ -286,7 +286,7 @@ const DoubtChatbot = ({ lectureId, courseTitle = '', lectureTitle = '', isSideba
                                 </div>
                             ) : MAINTENANCE_CONFIG.AI_FEATURES_DOWN ? (
                                 <div className="flex flex-col items-center justify-center py-10 text-center px-4">
-                                    <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-4">
+                                    <div className="w-12 h-12 rounded-clay-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-4">
                                         <Bot className="w-6 h-6 text-amber-500" />
                                     </div>
                                     <p className="text-sm font-bold text-text-primary mb-2">Service Maintenance</p>
@@ -308,12 +308,12 @@ const DoubtChatbot = ({ lectureId, courseTitle = '', lectureTitle = '', isSideba
                                                     <Bot className="w-3.5 h-3.5 text-primary" />
                                                 </div>
                                             )}
-                                            <div className={`max-w-[82%] px-3 py-2.5 rounded-2xl text-sm leading-relaxed ${msg.role === 'user' ? 'bg-primary/10 border border-primary/20 text-text-primary rounded-br-sm' : 'bg-surface border border-border text-text-secondary rounded-bl-sm'}`}>
+                                            <div className={`max-w-[82%] px-3 py-2.5 rounded-clay-lg text-sm leading-relaxed ${msg.role === 'user' ? 'bg-primary/10 border border-primary/20 text-text-primary rounded-br-sm' : 'clay text-text-secondary rounded-bl-sm'}`}>
                                                 {msg.role === 'bot' ? <MarkdownText text={msg.text} /> : msg.text}
                                             </div>
                                         </div>
                                     ))}
-                                    {loading && <div className="flex gap-2 items-center"><div className="w-6 h-6 rounded-full shrink-0 flex items-center justify-center bg-primary/10"><Bot className="w-3.5 h-3.5 text-primary" /></div><div className="flex gap-1.5 px-4 py-3 rounded-2xl bg-surface border border-border">{[0, 150, 300].map(d => <span key={d} className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: `${d}ms` }} />)}</div></div>}
+                                    {loading && <div className="flex gap-2 items-center"><div className="w-6 h-6 rounded-full shrink-0 flex items-center justify-center bg-primary/10"><Bot className="w-3.5 h-3.5 text-primary" /></div><div className="flex gap-1.5 px-4 py-3 rounded-clay-lg clay">{[0, 150, 300].map(d => <span key={d} className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: `${d}ms` }} />)}</div></div>}
                                 </>
                             )}
                             <div ref={bottomRef} />
@@ -329,13 +329,13 @@ const DoubtChatbot = ({ lectureId, courseTitle = '', lectureTitle = '', isSideba
                                     placeholder={MAINTENANCE_CONFIG.AI_FEATURES_DOWN ? "Service offline…" : "Ask a doubt…"}
                                     rows={1}
                                     disabled={loading || MAINTENANCE_CONFIG.AI_FEATURES_DOWN}
-                                    className="flex-1 px-3 py-2.5 rounded-xl text-sm outline-none resize-none transition-colors bg-surface border border-border text-text-primary placeholder:text-text-muted focus:border-primary/50 disabled:opacity-50"
+                                    className="flex-1 px-3 py-2.5 rounded-clay text-sm outline-none resize-none transition-colors clay text-text-primary placeholder:text-text-muted focus:border-primary/50 disabled:opacity-50"
                                     style={{ maxHeight: 80, fontFamily: "'Space Grotesk', sans-serif" }}
                                 />
                                 <button
                                     onClick={handleSend}
                                     disabled={!input.trim() || loading || MAINTENANCE_CONFIG.AI_FEATURES_DOWN}
-                                    className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all shrink-0 self-end ${(!input.trim() || loading || MAINTENANCE_CONFIG.AI_FEATURES_DOWN) ? 'bg-surface border border-border text-text-muted opacity-50' : 'bg-primary text-white shadow-sm hover:scale-105'}`}
+                                    className={`w-10 h-10 rounded-clay flex items-center justify-center transition-all shrink-0 self-end ${(!input.trim() || loading || MAINTENANCE_CONFIG.AI_FEATURES_DOWN) ? 'clay text-text-muted opacity-50' : 'bg-primary text-white  hover:scale-105'}`}
                                 >
                                     {loading ? <Loader2 className="w-4 h-4 animate-spin text-white" /> : <Send className="w-4 h-4 text-white" />}
                                 </button>

@@ -10,7 +10,6 @@ import QuizTab from '../components/Lecture/QuizTab';
 import DoubtChatbot from '../components/Lecture/DoubtChatbot';
 import useGamificationStore from '../store/useGamificationStore';
 import { ArrowLeft, CheckCircle2, ChevronRight, ChevronLeft, X } from 'lucide-react';
-import { BGPattern } from '../components/ui/bg-pattern';
 import { useLectureStatus } from '../hooks/useLectureStatus';
 import { shootConfetti } from '../utils/confetti';
 import { broadcastProgressUpdate, getTabId } from '../utils/sync';
@@ -406,7 +405,6 @@ const PLAYER_THEME = {
             className="h-screen h-[100dvh] flex flex-col relative overflow-hidden"
             style={{ background: PLAYER_THEME.pageBg }}
         >
-            <BGPattern variant="grid" mask="fade-edges" fill={PLAYER_THEME.patternFill} className="opacity-10 z-0" />
 
             {/* Top progress bar */}
             <div className="fixed top-0 left-0 w-full h-[2px] z-50" style={{ background: PLAYER_THEME.progressTrack }}>
@@ -421,13 +419,13 @@ const PLAYER_THEME = {
                 <div className="flex items-center justify-between">
                     <Link
                         to={`/courses/${courseId}`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1 bg-surface-2/60 hover:bg-surface-3 border border-border/75 rounded-lg transition-all hover:scale-[1.02] active:scale-[0.98] group"
+                        className="inline-flex items-center gap-1.5 px-3 py-1 bg-surface-2/60 hover:clay-sunk rounded-clay-sm transition-all hover:scale-[1.02] active:scale-[0.98] group"
                     >
                         <ArrowLeft className="w-3.5 h-3.5 text-primary group-hover:-translate-x-0.5 transition-transform" />
                         <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-text-muted group-hover:text-text-primary transition-colors">Overview</span>
                     </Link>
                     <div className="flex items-center gap-2">
-                        <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.15em] px-3.5 py-1 rounded-full border border-[#00ff8b]/40 bg-[#00ff8b]/10 text-[#00ff8b] shadow-[0_0_12px_rgba(0,255,139,0.25)] flex items-center justify-center">
+                        <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.15em] px-3.5 py-1 rounded-full clay-sunk-sm text-success flex items-center justify-center">
                             M {currentLectureIndex + 1} / {allLectures.length}
                         </span>
                     </div>
@@ -442,7 +440,7 @@ const PLAYER_THEME = {
                         {prevLecture && (
                             <button
                                 onClick={() => navigate(`/courses/${courseId}/lectures/${prevLecture._id}`)}
-                                className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[10px] sm:text-[11px] font-black uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98]"
+                                className="flex items-center gap-1.5 px-3.5 py-2 rounded-clay-sm text-[10px] sm:text-[11px] font-black uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98]"
                                 style={{ background: PLAYER_THEME.panelAlt, border: `1px solid ${PLAYER_THEME.border}`, color: PLAYER_THEME.secondaryText }}
                             >
                                 <ChevronLeft className="w-3.5 h-3.5" />
@@ -452,7 +450,7 @@ const PLAYER_THEME = {
                         {nextLecture && (
                             <button
                                 onClick={handleNextLecture}
-                                className="flex items-center gap-1.5 px-5 py-2 rounded-lg sm:rounded-xl text-[10px] sm:text-[11px] font-black uppercase tracking-[0.1em] sm:tracking-[0.15em] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/20"
+                                className="flex items-center gap-1.5 px-5 py-2 rounded-clay-sm sm:rounded-clay text-[10px] sm:text-[11px] font-black uppercase tracking-[0.1em] sm:tracking-[0.15em] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-primary/20"
                                 style={{ background: 'var(--color-primary)', border: 'none', color: 'var(--color-bg)' }}
                             >
                                 <span className="hidden xs:inline">Next</span>
@@ -470,7 +468,7 @@ const PLAYER_THEME = {
                 {!shouldStartQuiz && (
                     <div className="shrink-0 lg:flex-1 flex flex-col items-center lg:justify-center p-0 sm:p-2 lg:p-4 min-h-0 relative" style={{ background: PLAYER_THEME.pageBg }}>
                         <div className="w-full max-w-6xl mx-auto aspect-video relative">
-                            <div className="w-full h-full rounded-none sm:rounded-xl overflow-hidden" style={{ border: '1px solid rgba(0,255,128,0.25)', boxShadow: PLAYER_THEME.shadow }}>
+                            <div className="w-full h-full rounded-none sm:rounded-clay overflow-hidden" style={{ border: '1px solid rgba(0,255,128,0.25)', boxShadow: PLAYER_THEME.shadow }}>
                                 <VideoPlayer
                                     courseId={courseId}
                                     lectureId={lectureId}
@@ -508,32 +506,32 @@ const PLAYER_THEME = {
                                     animate={{ y: 0, opacity: 1 }}
                                     exit={{ y: 80, opacity: 0 }}
                                     transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-                                    className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 w-[94%] sm:w-[90%] max-w-md rounded-2xl p-4 sm:p-6 flex flex-col items-center text-center z-50 shadow-2xl relative"
+                                    className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 w-[94%] sm:w-[90%] max-w-md rounded-clay-lg p-4 sm:p-6 flex flex-col items-center text-center z-50 relative"
                                     style={{ background: PLAYER_THEME.completionBg, border: PLAYER_THEME.completionBorder, backdropFilter: 'blur(20px)' }}
                                 >
                                     <button
                                         onClick={() => setShowCompletionCard(false)}
-                                        className="absolute top-4 right-4 p-1.5 rounded-lg bg-surface-2 hover:bg-surface-3 border border-border text-text-muted hover:text-text-primary transition-colors cursor-pointer"
+                                        className="absolute top-4 right-4 p-1.5 rounded-clay-sm bg-surface-2 hover:clay-sunk text-text-muted hover:text-text-primary transition-colors cursor-pointer"
                                     >
                                         <X className="w-4 h-4" />
                                     </button>
                                     
                                     <div className="w-14 h-14 rounded-full flex items-center justify-center mb-4" style={{ background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)' }}>
-                                        <CheckCircle2 className="w-7 h-7 text-[#10B981]" />
+                                        <CheckCircle2 className="w-7 h-7 text-success" />
                                     </div>
                                     <h3 className="text-2xl font-black mb-1" style={{ color: PLAYER_THEME.text }}>Mission Complete!</h3>
                                     <p className="text-sm font-bold mb-6 text-gold">+{xpEarned || 50} XP Earned</p>
                                     <div className="flex gap-3 w-full">
                                         <button
                                             onClick={() => navigate(`/courses/${courseId}`)}
-                                            className="flex-1 py-3 px-4 rounded-xl text-sm font-semibold transition-colors"
+                                            className="flex-1 py-3 px-4 rounded-clay text-sm font-semibold transition-colors"
                                             style={{ background: PLAYER_THEME.completionBtnBg, border: `1px solid ${PLAYER_THEME.completionBtnBorder}`, color: PLAYER_THEME.completionBtnText }}
                                         >
                                             Overview
                                         </button>
                                         <button
                                             onClick={handleNextLecture}
-                                            className="flex-[2] py-3 px-4 rounded-xl text-sm font-bold transition-all btn-esports"
+                                            className="flex-[2] py-3 px-4 rounded-clay text-sm font-bold transition-all btn-esports"
                                         >
                                             {nextLecture ? '⚡ Continue' : '🏆 Finish Course'}
                                         </button>
@@ -549,7 +547,7 @@ const PLAYER_THEME = {
                                     initial={{ y: -100, opacity: 0 }}
                                     animate={{ y: 0, opacity: 1 }}
                                     exit={{ y: -100, opacity: 0 }}
-                                    className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] w-[92%] sm:w-full sm:max-w-md p-4 rounded-xl shadow-2xl border flex items-center justify-between gap-4"
+                                    className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] w-[92%] sm:w-full sm:max-w-md p-4 rounded-clay border flex items-center justify-between gap-4"
                                     style={{
                                         background: 'rgba(18, 21, 42, 0.95)',
                                         borderColor: 'var(--color-primary)',
@@ -558,7 +556,7 @@ const PLAYER_THEME = {
                                     }}
                                 >
                                     <div className="flex items-center gap-3">
-                                        <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-primary/10 border border-primary/20 shrink-0">
+                                        <div className="w-9 h-9 rounded-clay-sm flex items-center justify-center bg-primary/10 border border-primary/20 shrink-0">
                                             <CheckCircle2 className="w-5 h-5 text-primary animate-pulse" />
                                         </div>
                                         <div>
@@ -575,7 +573,7 @@ const PLAYER_THEME = {
                                         </button>
                                         <button
                                             onClick={() => setShowCompletionCard(false)}
-                                            className="p-1 rounded-lg bg-surface-2 hover:bg-surface-3 border border-border text-text-muted hover:text-text-primary transition-colors cursor-pointer"
+                                            className="p-1 rounded-clay-sm bg-surface-2 hover:clay-sunk text-text-muted hover:text-text-primary transition-colors cursor-pointer"
                                         >
                                             <X className="w-3.5 h-3.5" />
                                         </button>

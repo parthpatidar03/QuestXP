@@ -4,7 +4,7 @@ import XPCurrency from '../XPCurrency';
 
 const LeaderboardTable = ({ players = [] }) => {
     return (
-        <div className="w-full overflow-hidden rounded-2xl border border-border bg-surface/30 backdrop-blur-sm">
+        <div className="w-full overflow-hidden rounded-clay-lg clay backdrop-blur-sm">
             <div className="grid grid-cols-[50px_1fr_100px_80px_80px] px-6 py-4 border-b border-border bg-surface/50 text-[10px] font-black uppercase tracking-widest text-text-muted">
                 <span>Rank</span>
                 <span>Learner</span>
@@ -24,7 +24,7 @@ const LeaderboardTable = ({ players = [] }) => {
                         </span>
                         
                         <div className="flex items-center gap-3 min-w-0">
-                            <div className="w-8 h-8 rounded-full bg-surface-2 border border-border flex items-center justify-center text-xs font-bold text-text-primary shrink-0">
+                            <div className="w-8 h-8 rounded-full clay-sunk flex items-center justify-center text-xs font-bold text-text-primary shrink-0">
                                 {p.name[0]}
                             </div>
                             <span className="text-sm font-bold text-text-primary truncate">{p.name}</span>

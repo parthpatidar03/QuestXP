@@ -75,7 +75,7 @@ const VideoPlayer = ({ _courseId, _lectureId, youtubeId, onEnded, onTimeUpdate, 
     }, [seekTo]);
 
     return (
-        <div className="w-full h-full flex flex-col items-center justify-center relative bg-black rounded-xl overflow-hidden">
+        <div className="w-full h-full flex flex-col items-center justify-center relative bg-black rounded-clay overflow-hidden">
             <div ref={containerRef} className="w-full h-full" />
             
             {!isPlayerReady && (

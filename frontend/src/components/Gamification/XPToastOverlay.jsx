@@ -15,7 +15,7 @@ const ToastItem = ({ toast }) => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
             transition={{ type: "spring", stiffness: 400, damping: 25 }}
-            className="bg-surface-2 border-2 border-gold rounded-xl px-4 py-3 shadow-[0_4px_0_rgba(230,180,0,1)] flex items-center gap-3 w-max self-end mb-2"
+            className="bg-surface-2 border-2 border-gold rounded-clay px-4 py-3 shadow-[0_4px_0_rgba(230,180,0,1)] flex items-center gap-3 w-max self-end mb-2"
         >
             <div>
                 <p className="text-sm font-bold text-text-primary m-0 flex items-center gap-1.5">

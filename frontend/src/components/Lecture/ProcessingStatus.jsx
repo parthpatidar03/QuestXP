@@ -80,7 +80,7 @@ const ProcessingStatus = ({ courseId, lectureId, initialStatus }) => {
     }, [courseId]);
 
     return (
-        <div className="bg-surface-2 border border-border rounded-xl p-5 mb-6">
+        <div className="clay-sunk rounded-clay p-5 mb-6">
             <h3 className="text-sm font-semibold text-white mb-4 uppercase tracking-wider">AI Processing Status</h3>
             
             {courseProgress && (
@@ -108,7 +108,7 @@ const ProcessingStatus = ({ courseId, lectureId, initialStatus }) => {
             </div>
 
             {errorReason && (
-                <div className="mt-4 p-3 bg-danger/10 border border-danger/20 rounded-lg text-sm text-danger flex items-start gap-2">
+                <div className="mt-4 p-3 bg-danger/10 border border-danger/20 rounded-clay-sm text-sm text-danger flex items-start gap-2">
                     <XCircle className="w-4 h-4 mt-0.5 shrink-0" />
                     <p>{errorReason}</p>
                 </div>

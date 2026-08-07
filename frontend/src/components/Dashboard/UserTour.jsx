@@ -196,7 +196,7 @@ const UserTour = () => {
         <div className="fixed inset-0 z-[9999] pointer-events-none">
             {/* Spotlight Overlay */}
             <div 
-                className="absolute inset-0 bg-black/80 backdrop-blur-[1px] pointer-events-none transition-opacity duration-300"
+                className="absolute inset-0 bg-bg/80 backdrop-blur-[1px] pointer-events-none transition-opacity duration-300"
                 style={{
                     maskImage: `radial-gradient(circle at ${targetRect.left + targetRect.width / 2}px ${targetRect.top + targetRect.height / 2}px, transparent ${Math.min(100, Math.max(targetRect.width, targetRect.height) / 2 + 10)}px, black ${Math.min(100, Math.max(targetRect.width, targetRect.height) / 2 + 11)}px)`,
                     WebkitMaskImage: `radial-gradient(circle at ${targetRect.left + targetRect.width / 2}px ${targetRect.top + targetRect.height / 2}px, transparent ${Math.min(100, Math.max(targetRect.width, targetRect.height) / 2 + 10)}px, black ${Math.min(100, Math.max(targetRect.width, targetRect.height) / 2 + 11)}px)`
@@ -213,7 +213,7 @@ const UserTour = () => {
                     height: targetRect.height + 16,
                     opacity: 1
                 }}
-                className="absolute border-2 border-white/50 rounded-xl shadow-[0_0_20px_rgba(255,255,255,0.3)] z-[10000] pointer-events-none"
+                className="absolute border-2 border-white/50 rounded-clay shadow-[0_0_20px_rgba(255,255,255,0.3)] z-[10000] pointer-events-none"
             />
 
 
@@ -232,12 +232,12 @@ const UserTour = () => {
                     onClick={(e) => e.stopPropagation()}
                     exit={{ opacity: 0, scale: 0.9, y: 10 }}
                     transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                    className="absolute w-[280px] sm:w-[300px] bg-slate-900/95 backdrop-blur-md text-white border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.8)] rounded-2xl p-5 sm:p-6 pointer-events-auto"
+                    className="absolute w-[280px] sm:w-[300px] bg-slate-900/95 backdrop-blur-md text-white border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.8)] rounded-clay-lg p-5 sm:p-6 pointer-events-auto"
                     style={{ position: 'fixed' }}
                 >
                     <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white">
+                            <div className="w-8 h-8 rounded-clay-sm bg-white/10 flex items-center justify-center text-white">
                                 <Sparkles className="w-4 h-4" />
                             </div>
                             <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.2em]">
@@ -271,14 +271,14 @@ const UserTour = () => {
                             {currentStep > 0 && (
                                 <button 
                                     onClick={handleBack}
-                                    className="p-2 rounded-lg border border-white/10 bg-white/5 text-white hover:bg-white/10 transition-all"
+                                    className="p-2 rounded-clay-sm bg-white/5 text-white hover:bg-white/10 transition-all"
                                 >
                                     <ChevronLeft className="w-4 h-4" />
                                 </button>
                             )}
                             <button 
                                 onClick={handleNext}
-                                className="bg-white text-slate-950 py-2.5 px-5 rounded-xl text-xs font-black flex items-center gap-2 shadow-xl shadow-white/10 hover:bg-slate-100 active:scale-95 transition-all"
+                                className="bg-white text-slate-950 py-2.5 px-5 rounded-clay text-xs font-black flex items-center gap-2 shadow-white/10 hover:bg-slate-100 active:scale-95 transition-all"
                             >
                                 {currentStep === TOUR_STEPS.length - 1 ? (
                                     <>FINISH <CheckCircle2 className="w-3.5 h-3.5" /></>

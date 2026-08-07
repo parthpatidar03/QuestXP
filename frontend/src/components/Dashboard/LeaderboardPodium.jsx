@@ -46,7 +46,7 @@ const LeaderboardPodium = ({ players = [] }) => {
                             relative flex flex-col items-center p-3 sm:p-5 rounded-t-2xl border-x border-t border-border/50 backdrop-blur-md
                             ${isFirst ? 'w-32 sm:w-48 h-40 sm:h-60 bg-gold/10 border-gold/30' : 'w-28 sm:w-40 h-32 sm:h-48 bg-surface/50'}
                         `}>
-                            <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-surface border border-border flex items-center justify-center mb-3 overflow-hidden shadow-inner">
+                            <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-full clay flex items-center justify-center mb-3 overflow-hidden shadow-inner">
                                 <span className="text-xs sm:text-base font-bold uppercase text-text-primary">{player.name[0]}</span>
                             </div>
                             <span className="text-xs sm:text-base font-bold text-text-primary truncate w-full text-center px-1 mb-2">{player.name}</span>
@@ -66,7 +66,7 @@ const LeaderboardPodium = ({ players = [] }) => {
 
                             {/* Rank Badge */}
                             <div className={`
-                                absolute -bottom-4 px-3 py-1 rounded-full text-[10px] font-black tracking-widest uppercase shadow-lg
+                                absolute -bottom-4 px-3 py-1 rounded-full text-[10px] font-black tracking-widest uppercase 
                                 ${isFirst ? 'bg-gold text-[#1a1a1a]' : isSecond ? 'bg-text-muted text-surface' : 'bg-warning text-[#1a1a1a]'}
                             `}>
                                 #{rank}

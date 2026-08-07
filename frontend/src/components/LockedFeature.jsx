@@ -12,14 +12,14 @@ const LockedFeature = ({ featureKey, children, featureName = '' }) => {
     }
 
     return (
-        <div className="relative group rounded-xl overflow-hidden pointer-events-auto">
+        <div className="relative group rounded-clay overflow-hidden pointer-events-auto">
             {/* The actual children are rendered behind the lock, blurred and disabled */}
             <div className="opacity-30 blur-[2px] pointer-events-none select-none transition-all duration-300">
                 {children}
             </div>
             
-            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-bg/60 backdrop-blur-sm p-6 text-center border items-center justify-center border-border rounded-xl">
-                <div className="w-12 h-12 rounded-full bg-surface-3 border border-border flex items-center justify-center mb-3">
+            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-bg/60 backdrop-blur-sm p-6 text-center border items-center justify-center border-border rounded-clay">
+                <div className="w-12 h-12 rounded-full clay-sunk flex items-center justify-center mb-3">
                     <Lock className="w-5 h-5 text-text-muted" />
                 </div>
                 <h3 className="text-lg font-bold text-text-primary mb-1">Feature Locked</h3>

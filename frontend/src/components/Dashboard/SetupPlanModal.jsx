@@ -48,12 +48,12 @@ const SetupPlanModal = ({ courseId, isOpen, onClose, onPlanGenerated }) => {
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-            <div className="card w-full max-w-md bg-surface p-0 overflow-hidden relative border-border shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bg/70 backdrop-blur-sm">
+            <div className="card w-full max-w-md bg-surface p-0 overflow-hidden relative border-border animate-in fade-in zoom-in-95 duration-200">
                 {/* Header */}
                 <div className="p-5 border-b border-border flex justify-between items-center bg-surface-2">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-primary/10 rounded-lg text-primary">
+                        <div className="p-2 bg-primary/10 rounded-clay-sm text-primary">
                             <Target className="w-5 h-5" />
                         </div>
                         <h2 className="text-xl font-display font-bold text-text-primary">Set Your Target</h2>
@@ -66,7 +66,7 @@ const SetupPlanModal = ({ courseId, isOpen, onClose, onPlanGenerated }) => {
                 {/* Body */}
                 <form onSubmit={handleSubmit} className="p-5 space-y-6">
                     {error && (
-                        <div className="p-3 bg-danger/10 border border-danger/20 rounded-lg text-danger text-sm text-center">
+                        <div className="p-3 bg-danger/10 border border-danger/20 rounded-clay-sm text-danger text-sm text-center">
                             {error}
                         </div>
                     )}
@@ -83,7 +83,7 @@ const SetupPlanModal = ({ courseId, isOpen, onClose, onPlanGenerated }) => {
                             value={deadline}
                             onChange={(e) => setDeadline(e.target.value)}
                             required
-                            className="w-full bg-surface-2 border border-border rounded-lg px-4 py-2.5 text-text-primary focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all font-mono text-sm"
+                            className="w-full clay-sunk rounded-clay-sm px-4 py-2.5 text-text-primary focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all font-mono text-sm"
                         />
                     </div>
 
@@ -96,7 +96,7 @@ const SetupPlanModal = ({ courseId, isOpen, onClose, onPlanGenerated }) => {
                         <select
                             value={weekdayMins}
                             onChange={(e) => setWeekdayMins(Number(e.target.value))}
-                            className="w-full bg-surface-2 border border-border rounded-lg px-4 py-2.5 text-text-primary focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all text-sm appearance-none"
+                            className="w-full clay-sunk rounded-clay-sm px-4 py-2.5 text-text-primary focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all text-sm appearance-none"
                             style={{ backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%238b9cc8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right .7rem top 50%', backgroundSize: '.65rem auto' }}
                         >
                             <option value={0}>Off / No Study</option>
@@ -121,7 +121,7 @@ const SetupPlanModal = ({ courseId, isOpen, onClose, onPlanGenerated }) => {
                         <select
                             value={weekendMins}
                             onChange={(e) => setWeekendMins(Number(e.target.value))}
-                            className="w-full bg-surface-2 border border-border rounded-lg px-4 py-2.5 text-text-primary focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all text-sm appearance-none"
+                            className="w-full clay-sunk rounded-clay-sm px-4 py-2.5 text-text-primary focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all text-sm appearance-none"
                             style={{ backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%238b9cc8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right .7rem top 50%', backgroundSize: '.65rem auto' }}
                         >
                             <option value={0}>Off / No Study</option>

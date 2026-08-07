@@ -16,7 +16,7 @@ const GlobalLeaderboardModal = ({ isOpen, onClose, players = [], onShowXPSystem 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="absolute inset-0 bg-black/80 backdrop-blur-xl"
+                className="absolute inset-0 bg-bg/80 backdrop-blur-xl"
                 onClick={onClose}
             />
             <motion.div
@@ -27,12 +27,12 @@ const GlobalLeaderboardModal = ({ isOpen, onClose, players = [], onShowXPSystem 
                 initial={{ scale: 0.9, opacity: 0, y: 20 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
                 exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                className="relative w-full max-w-4xl h-[90vh] bg-surface border border-border rounded-[2.5rem] flex flex-col overflow-hidden shadow-2xl z-10"
+                className="relative w-full max-w-4xl h-[90vh] clay rounded-clay-xl flex flex-col overflow-hidden z-10"
             >
                 {/* Header */}
                 <div className="p-6 sm:p-8 border-b border-border flex items-center justify-between shrink-0 bg-surface/50">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gold/10 flex items-center justify-center border border-gold/20">
+                        <div className="w-10 h-10 rounded-clay bg-gold/10 flex items-center justify-center border border-gold/20">
                             <Crown className="w-6 h-6 text-gold" />
                         </div>
                         <div>
@@ -45,7 +45,7 @@ const GlobalLeaderboardModal = ({ isOpen, onClose, players = [], onShowXPSystem 
                     <div className="flex items-center gap-2">
                         <button 
                             onClick={onShowXPSystem}
-                            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-all border border-primary/20 text-xs font-black uppercase tracking-widest"
+                            className="flex items-center gap-2 px-4 py-2 rounded-clay bg-primary/10 text-primary hover:bg-primary/20 transition-all border border-primary/20 text-xs font-black uppercase tracking-widest"
                         >
                             <Info className="w-4 h-4" />
                             How XP Works

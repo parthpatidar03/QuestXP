@@ -15,8 +15,10 @@ import {
     ShieldCheck,
     Bell,
     Map,
+    Play,
+    ListChecks,
+    Flame,
 } from 'lucide-react';
-import { BGPattern } from '../components/ui/bg-pattern';
 import FeedbackModal from '../components/FeedbackModal';
 import VideoModal from '../components/VideoModal';
 
@@ -27,7 +29,7 @@ import useAuthStore from '../store/useAuthStore';
 import { ShinyCard } from '../components/ui/ShinyCard';
 import Counter from '../components/ui/Counter';
 import Marquee from '../components/animata/container/marquee';
-import { Reveal, RevealLines, RevealWords, RevealGroup, RevealItem } from '../components/ui/Reveal';
+import { Reveal } from '../components/ui/Reveal';
 
 // Conservative floor values — always shown if API fails or is slow.
 const FALLBACK_STATS = {
@@ -48,7 +50,6 @@ const LandingPage = () => {
     // Stats loaded from /api/public/stats. Fallback ensures metrics bar
     // is ALWAYS visible — API data overwrites on success.
     const [stats, setStats] = useState(FALLBACK_STATS);
-    // Removed high-frequency mouse tracking state and listeners for performance
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -138,7 +139,7 @@ const LandingPage = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-bg relative overflow-hidden flex flex-col">
+        <div className="min-h-screen bg-bg relative flex flex-col">
             <Helmet>
                 <title>QuestXP — Gamified Learning from YouTube Playlists | AI Quizzes, XP, Streaks</title>
                 <meta name="description" content="QuestXP turns any YouTube playlist into a structured course with AI-generated quizzes, notes, and study roadmaps. Earn XP, level up, build streaks, and learn with friends in private squads." />
@@ -203,48 +204,56 @@ const LandingPage = () => {
                     },
                 })}</script>
             </Helmet>
-            {/* Interactive Spotlight Removed for Performance */}
-            <BGPattern variant="grid" mask="fade-edges" fill="var(--color-text-muted)" className="opacity-20 z-0" />
 
-            <header className="relative z-20 border-b border-border bg-surface/90 backdrop-blur-md sticky top-0">
-                <div className="max-w-screen-xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between gap-6">
-                    <Link to="/" className="flex items-center gap-3 group cursor-pointer shrink-0">
-                        <img src="/favicon.png" alt="QuestXP" className="w-10 h-10 object-contain transition-transform group-hover:scale-105 rounded-xl shadow-sm" />
-                        <span className="text-xl font-bold text-text-primary tracking-tight">QuestXP</span>
+            <header className="sticky top-0 z-50 w-full px-3 sm:px-5 pt-3 pb-1">
+                <div className="max-w-screen-xl mx-auto clay rounded-clay-lg px-3 sm:px-5 h-16 flex items-center justify-between gap-4">
+                    <Link to="/" className="flex items-center gap-2.5 group cursor-pointer shrink-0">
+                        <img src="/favicon.png" alt="QuestXP" className="w-9 h-9 object-contain transition-transform duration-200 ease-clay group-hover:scale-105" />
+                        <span className="text-lg font-display font-bold text-text-primary">QuestXP</span>
                     </Link>
 
-                    <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-                        <a href="#features" className="whitespace-nowrap text-text-secondary hover:text-text-primary transition-colors">Features</a>
-                        <a href="#how-it-works" className="whitespace-nowrap text-text-secondary hover:text-text-primary transition-colors">How it works</a>
-                        <button 
+                    <nav className="hidden md:flex items-center gap-1">
+                        {[
+                            { href: '#how-it-works', label: 'How it works' },
+                            { href: '#features', label: 'Features' },
+                        ].map(l => (
+                            <a
+                                key={l.href}
+                                href={l.href}
+                                className="px-4 h-10 flex items-center rounded-clay text-sm font-bold text-text-secondary hover:text-text-primary hover:clay-sm hover:-translate-y-[2px] transition-all duration-200 ease-clay whitespace-nowrap"
+                            >
+                                {l.label}
+                            </a>
+                        ))}
+                        <button
                             onClick={() => setFeedbackOpen(true)}
-                            className="whitespace-nowrap text-text-secondary hover:text-text-primary transition-colors"
+                            className="px-4 h-10 flex items-center rounded-clay text-sm font-bold text-text-secondary hover:text-text-primary hover:clay-sm hover:-translate-y-[2px] transition-all duration-200 ease-clay whitespace-nowrap"
                         >
                             Feedback
                         </button>
                     </nav>
 
-                    <div className="hidden md:flex items-center gap-3">
+                    <div className="hidden md:flex items-center gap-2.5">
                         <button
                             type="button"
                             onClick={toggleTheme}
-                            className="w-10 h-10 flex items-center justify-center rounded-full border border-border bg-surface-2 text-text-secondary hover:text-text-primary transition-colors"
+                            className="clay-sm clay-interactive w-10 h-10 flex items-center justify-center rounded-clay text-text-secondary hover:text-text-primary"
                             title="Toggle theme"
                             aria-label="Toggle theme"
                         >
                             {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
                         </button>
-                        <button 
-                            onClick={() => navigate('/dashboard?demo=true')} 
-                            className="px-5 py-2.5 rounded-full border border-border bg-surface hover:bg-surface-2 transition-all group whitespace-nowrap flex items-center gap-2 shadow-sm"
+                        <button
+                            onClick={() => navigate('/dashboard?demo=true')}
+                            className="clay-sm clay-interactive px-4 h-11 rounded-clay flex items-center gap-2 whitespace-nowrap"
                         >
-                            <span className="text-sm font-bold text-text-primary">Try Demo</span>
-                            <span className="px-1.5 py-0.5 rounded text-[10px] bg-surface-2 text-text-muted font-bold uppercase tracking-wider">No Sign-in</span>
+                            <span className="text-sm font-bold text-text-primary">Try demo</span>
+                            <span className="clay-sunk-sm px-2 py-0.5 rounded-full text-[10px] text-text-muted font-bold uppercase tracking-wider">No sign-in</span>
                         </button>
-                        <button onClick={openAuth} className="bg-red-600 text-sm px-6 py-2.5 rounded-full text-white font-bold transition-all hover:bg-red-700 hover:-translate-y-0.5 shadow-sm whitespace-nowrap">
+                        <button onClick={openAuth} className="clay-sm clay-interactive px-5 h-11 rounded-clay text-sm font-bold text-text-primary whitespace-nowrap">
                             {isAuthenticated && !isLoading ? 'Dashboard' : 'Sign in'}
                         </button>
-                        <button onClick={openApp} className="btn-primary text-sm px-6 py-2.5 rounded-full font-bold hover:-translate-y-0.5 transition-all shadow-sm whitespace-nowrap">
+                        <button onClick={openApp} className="btn-primary whitespace-nowrap">
                             Get Started
                         </button>
                     </div>
@@ -253,7 +262,7 @@ const LandingPage = () => {
                         <button
                             type="button"
                             onClick={toggleTheme}
-                            className="p-2 rounded-lg border border-border bg-surface-2 text-text-secondary"
+                            className="clay-sm clay-interactive w-11 h-11 flex items-center justify-center rounded-clay text-text-secondary"
                             title="Toggle theme"
                             aria-label="Toggle theme"
                         >
@@ -262,90 +271,75 @@ const LandingPage = () => {
                         <button
                             type="button"
                             onClick={() => setMobileMenuOpen(prev => !prev)}
-                            className="p-2 rounded-lg border border-border bg-surface-2 text-text-secondary"
+                            className="clay-sm clay-interactive w-11 h-11 flex items-center justify-center rounded-clay text-text-secondary"
                             aria-label="Toggle menu"
+                            aria-expanded={mobileMenuOpen}
                         >
-                            {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+                            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
                         </button>
                     </div>
                 </div>
 
                 {mobileMenuOpen && (
-                    <div className="md:hidden border-t border-border bg-surface px-4 sm:px-6 py-4">
-                        <div className="flex flex-col gap-2">
-                            <a href="#features" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg text-sm text-text-secondary hover:bg-surface-2">Features</a>
-                            <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg text-sm text-text-secondary hover:bg-surface-2">How it works</a>
-                            <button 
-                                onClick={() => {
-                                    setMobileMenuOpen(false);
-                                    setFeedbackOpen(true);
-                                }} 
-                                className="px-3 py-2 rounded-lg text-left text-sm text-text-secondary hover:bg-surface-2"
+                    <div className="md:hidden max-w-screen-xl mx-auto mt-3 clay rounded-clay-lg p-4 animate-in slide-in-from-top-2 fade-in duration-200">
+                        <div className="flex flex-col gap-2.5">
+                            <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="clay-sm clay-interactive px-4 min-h-[48px] flex items-center rounded-clay text-sm font-bold text-text-primary">How it works</a>
+                            <a href="#features" onClick={() => setMobileMenuOpen(false)} className="clay-sm clay-interactive px-4 min-h-[48px] flex items-center rounded-clay text-sm font-bold text-text-primary">Features</a>
+                            <button
+                                onClick={() => { setMobileMenuOpen(false); setFeedbackOpen(true); }}
+                                className="clay-sm clay-interactive px-4 min-h-[48px] flex items-center rounded-clay text-left text-sm font-bold text-text-primary"
                             >
                                 Feedback
                             </button>
-                            <button 
-                                onClick={() => {
-                                    setMobileMenuOpen(false);
-                                    navigate('/dashboard?demo=true');
-                                }} 
-                                className="flex flex-col items-start px-3 py-2 rounded-lg hover:bg-surface-2 transition-colors"
+                            <button
+                                onClick={() => { setMobileMenuOpen(false); navigate('/dashboard?demo=true'); }}
+                                className="clay-sm clay-interactive px-4 min-h-[48px] flex items-center justify-between rounded-clay"
                             >
-                                <span className="text-sm font-bold text-text-secondary">Try Demo</span>
-                                <span className="text-[8px] text-text-muted uppercase tracking-tighter mt-0.5 font-black opacity-60">Without Sign-in</span>
+                                <span className="text-sm font-bold text-text-primary">Try demo</span>
+                                <span className="clay-sunk-sm px-2 py-0.5 rounded-full text-[10px] text-text-muted font-bold uppercase tracking-wider">No sign-in</span>
                             </button>
-                            <button onClick={openAuth} className="mt-2 w-full py-3 rounded-lg bg-red-600 text-white font-bold text-center hover:bg-red-700 transition-colors">
+                            <button onClick={openAuth} className="clay-sm clay-interactive px-4 min-h-[48px] flex items-center justify-center rounded-clay text-sm font-bold text-text-primary">
                                 {isAuthenticated && !isLoading ? 'Dashboard' : 'Sign in'}
                             </button>
-                            <button onClick={openApp} className="mt-2 btn-primary w-full">Get Started</button>
+                            <button onClick={openApp} className="btn-primary w-full">Get Started</button>
                         </div>
                     </div>
                 )}
             </header>
 
             <main className="relative z-10 flex-1">
-                
-                <section id="how-it-works" className="relative max-w-screen-xl mx-auto px-4 sm:px-6 pt-8 sm:pt-10 pb-12 sm:pb-16 flex flex-col items-center text-center">
-                    
+
+                {/* ── Hero ─────────────────────────────────────────────── */}
+                <section id="how-it-works" className="relative max-w-screen-xl mx-auto px-4 sm:px-6 pt-10 sm:pt-16 pb-10 flex flex-col items-center text-center">
+
                     {/* Floating Doodles */}
-                    <motion.div 
-                        animate={{ y: [-10, 10, -10] }} 
+                    <motion.div
+                        animate={{ y: [-10, 10, -10] }}
                         transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                        className="absolute left-[5%] top-[15%] hidden lg:block opacity-20 text-text-muted"
+                        className="absolute left-[4%] top-[12%] hidden lg:flex w-16 h-16 rounded-clay-lg clay items-center justify-center text-primary"
                     >
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
-                            <polyline points="14 2 14 8 20 8"/>
-                        </svg>
+                        <Play className="w-6 h-6" />
                     </motion.div>
-                    <motion.div 
-                        animate={{ y: [15, -15, 15] }} 
+                    <motion.div
+                        animate={{ y: [15, -15, 15] }}
                         transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                        className="absolute right-[5%] top-[25%] hidden lg:block opacity-10 text-text-primary"
+                        className="absolute right-[5%] top-[20%] hidden lg:flex w-16 h-16 rounded-clay-lg clay items-center justify-center text-gold"
                     >
-                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                            <circle cx="12" cy="12" r="10"/>
-                            <polyline points="12 6 12 12 16 14"/>
-                        </svg>
+                        <Trophy className="w-6 h-6" />
                     </motion.div>
-                    <motion.div 
-                        animate={{ y: [-5, 15, -5], rotate: [0, 10, 0] }} 
+                    <motion.div
+                        animate={{ y: [-5, 15, -5] }}
                         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                        className="absolute left-[15%] bottom-[30%] hidden lg:block opacity-20 text-primary"
+                        className="absolute left-[9%] bottom-[26%] hidden xl:flex w-14 h-14 rounded-clay-lg clay items-center justify-center text-warning"
                     >
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                        </svg>
+                        <Flame className="w-5 h-5" />
                     </motion.div>
-                    <motion.div 
-                        animate={{ y: [10, -10, 10], rotate: [0, -10, 0] }} 
+                    <motion.div
+                        animate={{ y: [10, -10, 10] }}
                         transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut" }}
-                        className="absolute right-[12%] bottom-[20%] hidden lg:block opacity-20 text-text-muted"
+                        className="absolute right-[8%] bottom-[22%] hidden xl:flex w-14 h-14 rounded-clay-lg clay items-center justify-center text-success"
                     >
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
-                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
-                        </svg>
+                        <ListChecks className="w-5 h-5" />
                     </motion.div>
 
                     <Reveal
@@ -353,87 +347,88 @@ const LandingPage = () => {
                         duration={0.8}
                         className="flex flex-col items-center max-w-4xl relative z-10"
                     >
-                        <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-text-primary leading-[1.1] tracking-tight font-display mb-6">
-                            Turn <img src="/yt-icon.png" alt="YouTube" className="inline-block w-[1.3em] h-[1.3em] mx-2 -mt-2 align-middle drop-shadow-md" /> playlists into{" "}
-                            <div className="group/hero relative inline-flex items-center cursor-pointer">
-                                <span className="text-[#E7E1B1] underline decoration-dashed decoration-2 underline-offset-8 decoration-[#E7E1B1]/40 transition-all duration-300 group-hover/hero:text-[#E7E1B1]/80 group-hover/hero:decoration-[#E7E1B1]/80">courses</span>
-                                <div className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover/hero:opacity-100 pointer-events-none z-20">
+                        <h1 className="text-4xl sm:text-6xl md:text-7xl font-display font-bold text-text-primary leading-[1.08] tracking-tight mb-6">
+                            Turn <img src="/yt-icon.png" alt="YouTube" className="inline-block w-[1.15em] h-[1.15em] mx-1.5 -mt-2 align-middle" /> playlists into{" "}
+                            <span className="group/hero relative inline-flex items-center cursor-pointer">
+                                <span className="text-gold underline decoration-dashed decoration-2 underline-offset-8 decoration-gold/40 transition-all duration-300 group-hover/hero:decoration-gold/80">courses</span>
+                                <span className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover/hero:opacity-100 pointer-events-none z-20">
                                     {studyEmojis1.map((dest, index) => (
-                                        <span key={index} className={`absolute transform text-2xl sm:text-3xl md:text-5xl transition-transform duration-300 ease-[cubic-bezier(0.5,1.8,0.4,1)] ${dest.position}`}>
+                                        <span key={index} className={`absolute transform text-2xl sm:text-3xl md:text-5xl transition-transform duration-300 ease-clay ${dest.position}`}>
                                             {dest.emoji}
                                         </span>
                                     ))}
-                                </div>
-                            </div>{" "}
+                                </span>
+                            </span>{" "}
                             you can{" "}
-                            <div className="group/hero relative inline-flex items-center cursor-pointer">
-                                <span className="text-[#68D956] underline decoration-dashed decoration-2 underline-offset-8 decoration-[#68D956]/40 transition-all duration-300 group-hover/hero:text-[#68D956]/80 group-hover/hero:decoration-[#68D956]/80">actually finish.</span>
-                                <div className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover/hero:opacity-100 pointer-events-none z-20">
+                            <span className="group/hero relative inline-flex items-center cursor-pointer">
+                                <span className="text-primary underline decoration-dashed decoration-2 underline-offset-8 decoration-primary/40 transition-all duration-300 group-hover/hero:decoration-primary/80">actually finish.</span>
+                                <span className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover/hero:opacity-100 pointer-events-none z-20">
                                     {studyEmojis2.map((dest, index) => (
-                                        <span key={index} className={`absolute transform text-2xl sm:text-3xl md:text-5xl transition-transform duration-300 ease-[cubic-bezier(0.5,1.8,0.4,1)] ${dest.position}`}>
+                                        <span key={index} className={`absolute transform text-2xl sm:text-3xl md:text-5xl transition-transform duration-300 ease-clay ${dest.position}`}>
                                             {dest.emoji}
                                         </span>
                                     ))}
-                                </div>
-                            </div>
+                                </span>
+                            </span>
                         </h1>
 
-                        <p className="text-lg sm:text-xl text-text-secondary font-medium leading-relaxed max-w-[800px] mb-10">
-                            We buy expensive courses but end up on YouTube. It has the content, but lacks the <span className="text-primary italic">structure, gamification, and personalization</span> you need to finish.
-                            <br /><br />
-                            <span className="text-primary">QuestXP gives free Yt content the structure it lacks.</span>
+                        <p className="text-lg sm:text-xl text-text-secondary font-semibold leading-relaxed max-w-[46ch] mb-9">
+                            YouTube has the content. QuestXP gives it the{' '}
+                            <span className="text-primary">structure, gamification, and personalization</span> you need to finish.
                         </p>
 
-                        <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
-                            <input 
-                                type="text" 
+                        <div className="clay-sunk flex flex-col sm:flex-row gap-2 p-2 rounded-clay-lg w-full max-w-lg">
+                            <input
+                                type="text"
                                 value={heroUrl}
                                 onChange={(e) => setHeroUrl(e.target.value)}
                                 onKeyDown={(e) => e.key === 'Enter' && handleHeroSubmit()}
-                                placeholder="Paste YouTube Playlist URL" 
-                                className="flex-1 px-5 py-3.5 rounded-full border border-border bg-surface text-text-primary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-sm"
+                                placeholder="Paste YouTube Playlist URL"
+                                aria-label="YouTube playlist URL"
+                                className="flex-1 min-h-[48px] px-5 bg-transparent border-0 text-text-primary font-semibold placeholder:text-text-muted focus:outline-none"
                             />
-                            <button onClick={handleHeroSubmit} className="btn-primary rounded-full px-8 py-3.5 text-base sm:whitespace-nowrap shadow-sm hover:shadow-md">
+                            <button onClick={handleHeroSubmit} className="btn-primary shrink-0">
                                 Get Started
                             </button>
                         </div>
+                        <p className="text-xs font-semibold text-text-muted mt-3">Free — no card, no sign-in to try.</p>
                     </Reveal>
 
+                    {/* The product itself, sitting in a clay frame */}
                     <Reveal
                         y={30}
                         duration={1.0}
                         delay={0.2}
                         scale={0.97}
-                        className="w-full mt-16 max-w-5xl"
+                        className="w-full mt-14 max-w-6xl"
                     >
-                        <div className="relative z-10 w-full h-auto rounded-xl border border-border bg-surface shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 p-2">
-                            <img 
-                                src="/Images/dashboard_landing_page.png" 
-                                alt="QuestXP Dashboard" 
-                                className="w-full h-auto object-cover block rounded-lg border border-border/50"
+                        <div className="relative clay rounded-clay-xl p-2 sm:p-3">
+                            <img
+                                src="/Images/dashboard_landing_page.png"
+                                alt="The QuestXP dashboard: today's mission, streak, rank and course progress"
+                                className="w-full h-auto object-cover block rounded-clay-lg"
                             />
                         </div>
                     </Reveal>
                 </section>
 
+                {/* ── Numbers ──────────────────────────────────────────── */}
                 {visibleMetrics.length > 0 && (
-                    <section className="py-8 relative overflow-hidden">
+                    <section className="py-10">
                         <div className="max-w-5xl mx-auto px-4 sm:px-6">
-                            <div className="bg-surface/40 backdrop-blur-md border border-border rounded-[2.5rem] p-8 shadow-2xl relative group overflow-hidden">
-                                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-                                <div className="grid relative z-10 grid-cols-2 md:grid-cols-4 gap-y-6 md:gap-y-0">
+                            <div className="clay rounded-clay-xl p-6 sm:p-8">
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                     {visibleMetrics.map((m) => (
                                         <div
                                             key={m.key}
-                                            className="flex flex-col items-center justify-center text-center p-4 md:p-8 md:border-r border-border/20 md:last:border-r-0"
+                                            className="clay-sunk rounded-clay-lg flex flex-col items-center justify-center text-center p-5"
                                         >
                                             <Counter
                                                 targetValue={m.stat.value}
                                                 format={formatMetric}
-                                                className={`text-3xl sm:text-5xl font-black ${m.color} font-display mb-2`}
+                                                className={`text-3xl sm:text-4xl font-mono font-bold ${m.color} mb-2`}
                                             />
-                                            <p className="text-[10px] sm:text-[10px] font-bold text-text-primary/80 dark:text-text-secondary uppercase tracking-[0.2em] leading-tight">
+                                            <p className="text-[11px] font-bold text-text-secondary uppercase tracking-[0.15em] leading-tight">
                                                 {m.label[0]} <br/> {m.label[1]}
                                             </p>
                                         </div>
@@ -444,42 +439,37 @@ const LandingPage = () => {
                     </section>
                 )}
 
+                {/* ── Multiple playlists → single course ───────────────── */}
                 <section className="max-w-screen-xl mx-auto px-4 sm:px-6 py-8">
-                                <div className="relative overflow-hidden bg-black rounded-[2.5rem] border border-white/10 py-12 px-6 flex flex-col items-center justify-center shadow-2xl">
-                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,180,255,0.1),transparent_70%)]" />
-                        
-                        <Reveal
-                            y={30}
-                            className="text-center relative z-10 space-y-2"
-                        >
-                            <span className="text-[9px] font-black uppercase tracking-[0.4em] text-white/40 block mb-4">Synergized Learning</span>
-                            
+                    <div className="relative clay rounded-clay-xl py-14 px-6 flex flex-col items-center justify-center">
+                        <Reveal y={30} className="text-center relative z-10">
+                            <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-text-muted block mb-5">Synergized Learning</span>
+
                             <div className="flex flex-col items-center">
-                                <h2 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-[-0.06em] text-white leading-[0.9] font-display">
-                                    MULTIPLE <span className="italic font-serif text-primary tracking-[-0.04em]">PLAYLISTS</span>
+                                <h2 className="text-4xl sm:text-6xl md:text-7xl font-display font-bold tracking-tight text-text-primary leading-[0.95]">
+                                    MULTIPLE <span className="text-primary">PLAYLISTS</span>
                                 </h2>
-                                <div className="flex items-center gap-3 my-4">
-                                    <div className="h-[1px] w-8 sm:w-16 bg-white/10" />
-                                    <span className="text-lg font-black text-white italic font-serif tracking-widest">•</span>
-                                    <div className="h-[1px] w-8 sm:w-16 bg-white/10" />
+                                <div className="flex items-center gap-3 my-5">
+                                    <div className="h-[3px] w-10 sm:w-20 rounded-full clay-sunk-sm" />
+                                    <span className="w-2.5 h-2.5 rounded-full bg-primary" />
+                                    <div className="h-[3px] w-10 sm:w-20 rounded-full clay-sunk-sm" />
                                 </div>
-                                <h2 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-[-0.06em] text-white leading-[0.9] font-display">
+                                <h2 className="text-4xl sm:text-6xl md:text-7xl font-display font-bold tracking-tight text-text-primary leading-[0.95]">
                                     SINGLE COURSE
                                 </h2>
                             </div>
 
-                            <p className="text-[10px] font-bold text-white/40 tracking-[0.2em] uppercase mt-8">
+                            <p className="text-sm font-semibold text-text-muted mt-8">
                                 The definitive workspace for technical mastery.
                             </p>
                         </Reveal>
                     </div>
                 </section>
 
-
-
+                {/* ── Leaderboard ──────────────────────────────────────── */}
                 <section className="max-w-screen-xl mx-auto px-4 sm:px-6 py-12">
                     <Reveal y={30} className="text-center mb-10">
-                        <h2 className="text-3xl sm:text-4xl font-bold text-text-primary tracking-tight mb-4">
+                        <h2 className="text-3xl sm:text-4xl font-display font-bold text-text-primary mb-3">
                             Global Hall of Fame
                         </h2>
                         <p className="text-text-secondary max-w-2xl mx-auto text-base sm:text-lg">
@@ -488,17 +478,16 @@ const LandingPage = () => {
                     </Reveal>
 
                     <Reveal y={40} className="relative">
-                        <div className="absolute inset-0 bg-primary/5 blur-3xl -z-10 rounded-full" />
-                        <LeaderboardPodium 
+                        <LeaderboardPodium
                             players={[
                                 { name: 'Alex_Mastery', totalXP: 12450, level: 12 },
                                 { name: 'Quantum_Learner', totalXP: 10200, level: 10 },
                                 { name: 'Deep_Focus', totalXP: 9850, level: 9 },
-                            ]} 
+                            ]}
                         />
-                        
+
                         <div className="mt-12 text-center">
-                            <button onClick={openApp} className="btn-primary px-8 py-4 text-sm font-black tracking-widest uppercase flex items-center gap-2 mx-auto hover:scale-105 transition-all">
+                            <button onClick={openApp} className="btn-primary mx-auto">
                                 View Full Leaderboard
                                 <ChevronRight className="w-4 h-4" />
                             </button>
@@ -507,129 +496,140 @@ const LandingPage = () => {
                 </section>
 
 
-                {/* New Feature: Dynamic Roadmap */}
+                {/* ── Roadmaps ─────────────────────────────────────────── */}
                 <section className="max-w-screen-xl mx-auto px-4 sm:px-6 py-12">
-                    <div className="grid md:grid-cols-2 gap-16 items-center">
-                        <Reveal
-                            y={30}
-                        >
-                            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/30 bg-primary/10 mb-6 text-xs font-bold text-primary uppercase tracking-widest">
+                    <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+                        <Reveal y={30}>
+                            <div className="clay-sunk-sm inline-flex items-center gap-2 px-3.5 py-2 rounded-full mb-6 text-xs font-bold text-primary uppercase tracking-widest">
                                 <Map className="w-4 h-4" />
                                 Interactive Learning paths
                             </div>
-                            <h2 className="text-4xl sm:text-5xl font-black text-text-primary tracking-tight mb-8 leading-[1.1]">
-                                Master Any Subject with <br/><span className="text-primary">Dynamic Roadmaps</span>
+                            <h2 className="text-3xl sm:text-5xl font-display font-bold text-text-primary mb-6 leading-[1.1]">
+                                Master Any Subject with <span className="text-primary">Dynamic Roadmaps</span>
                             </h2>
-                            <p className="text-text-secondary text-lg leading-relaxed mb-10">
-                                Visual learning paths that keep you on track. Transform complex topics into 
+                            <p className="text-text-secondary text-lg leading-relaxed mb-8">
+                                Visual learning paths that keep you on track. Transform complex topics into
                                 structured modules and master anything faster.
                             </p>
-                            
-                            <ul className="space-y-4">
+
+                            <ul className="space-y-3">
                                 {[
-                                    { icon: CheckCircle2, text: "Visual progress tracking for every milestone" },
-                                    { icon: CheckCircle2, text: "AI-generated curriculum based on your goals" },
-                                    { icon: CheckCircle2, text: "Sequential module locks to ensure fundamentals first" }
-                                ].map((item, idx) => (
-                                    <li key={idx} className="flex items-center gap-3 text-text-secondary font-medium">
-                                        <item.icon className="w-5 h-5 text-primary" />
-                                        {item.text}
+                                    "Visual progress tracking for every milestone",
+                                    "AI-generated curriculum based on your goals",
+                                    "Sequential module locks to ensure fundamentals first",
+                                ].map((text) => (
+                                    <li key={text} className="clay-sunk flex items-center gap-3 p-3.5 rounded-clay text-text-secondary font-semibold">
+                                        <CheckCircle2 className="w-5 h-5 text-success shrink-0" />
+                                        {text}
                                     </li>
                                 ))}
                             </ul>
                         </Reveal>
 
-                        <Reveal
-                            y={40}
-                            scale={0.96}
-                            className="relative"
-                        >
-                            <div className="absolute inset-0 bg-primary/10 blur-[80px] rounded-full opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity duration-500" />
-                            <div className="relative z-10 w-full h-auto rounded-3xl border border-border shadow-2xl overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                                <img 
-                                    src="/Images/Roadmap_landingpage.png" 
-                                    alt="Dynamic Roadmap Feature" 
-                                    className="w-full h-auto object-cover block"
+                        <Reveal y={40} scale={0.96} className="relative">
+                            <div className="clay rounded-clay-xl p-2.5">
+                                <img
+                                    src="/Images/Roadmap_landingpage.png"
+                                    alt="The QuestXP roadmap planner"
+                                    className="w-full h-auto object-cover block rounded-clay-lg"
                                 />
-                                
-                                {/* Decorative Badge */}
-                                <div className="absolute -bottom-6 -left-6 z-20 bg-surface border border-border p-4 rounded-2xl shadow-xl hidden sm:flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-success/10 flex items-center justify-center text-success">
-                                        <Trophy className="w-5 h-5" />
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Level Progress</p>
-                                        <p className="text-sm font-black text-text-primary">85% Completed</p>
-                                    </div>
+                            </div>
+
+                            {/* Decorative Badge */}
+                            <div className="clay absolute -bottom-6 -left-4 sm:-left-6 z-20 p-4 rounded-clay-lg hidden sm:flex items-center gap-3 clay-bob">
+                                <div className="clay-sunk w-10 h-10 rounded-clay flex items-center justify-center text-success">
+                                    <Trophy className="w-5 h-5" />
+                                </div>
+                                <div>
+                                    <p className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Level Progress</p>
+                                    <p className="text-sm font-mono font-bold text-text-primary">85% Completed</p>
                                 </div>
                             </div>
                         </Reveal>
                     </div>
                 </section>
 
+                {/* ── Focus Guardian ───────────────────────────────────── */}
                 <section className="max-w-screen-xl mx-auto px-4 sm:px-6 py-12">
-                    <div className="grid md:grid-cols-2 gap-16 items-center">
-                        <Reveal
-                            y={30}
-                        >
-                            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-danger/30 bg-danger/10 mb-6 text-xs font-bold text-danger uppercase tracking-widest">
+                    <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+                        <Reveal y={30} className="lg:order-2">
+                            <div className="clay-sunk-sm inline-flex items-center gap-2 px-3.5 py-2 rounded-full mb-6 text-xs font-bold text-danger uppercase tracking-widest">
                                 <ShieldCheck className="w-4 h-4" />
                                 Anti-Distraction Engine
                             </div>
-                            <h2 className="text-4xl sm:text-5xl font-black text-text-primary tracking-tight mb-8 leading-[1.1]">
-                                Your Proactive <br/><span className="text-primary">Focus Guardian</span>
+                            <h2 className="text-3xl sm:text-5xl font-display font-bold text-text-primary mb-6 leading-[1.1]">
+                                Your Proactive <span className="text-primary">Focus Guardian</span>
                             </h2>
-                            <p className="text-text-secondary text-lg leading-relaxed mb-10">
-                                Don't fall into the distraction trap. Our Guardian detects when you drift away 
+                            <p className="text-text-secondary text-lg leading-relaxed mb-8">
+                                Don&apos;t fall into the distraction trap. Our Guardian detects when you drift away
                                 and sends a personalized nudge to keep you on mission.
                             </p>
-                            
-                            <div className="relative p-6 rounded-2xl bg-surface-2 border border-border overflow-hidden group">
-                                <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
+
+                            <div className="clay-sunk relative p-5 rounded-clay-lg">
                                 <div className="flex items-start gap-4">
-                                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                                        <Bell className="w-5 h-5 text-primary" />
+                                    <div className="clay-sm w-11 h-11 rounded-clay flex items-center justify-center shrink-0 text-primary">
+                                        <Bell className="w-5 h-5" />
                                     </div>
                                     <div>
-                                        <p className="text-sm font-black text-text-primary mb-1">Smart Alert Example</p>
-                                        <p className="text-base text-text-secondary italic font-medium">
-                                            "Hey, you opening reels again instead of studying? 👀"
+                                        <p className="text-sm font-bold text-text-primary mb-1">Smart Alert Example</p>
+                                        <p className="text-base text-text-secondary font-semibold">
+                                            &quot;Hey, you opening reels again instead of studying? 👀&quot;
                                         </p>
                                     </div>
                                 </div>
                             </div>
                         </Reveal>
 
-                        <Reveal
-                            y={40}
-                            scale={0.96}
-                            className="relative"
-                        >
-                            <div className="absolute -inset-10 bg-primary/10 blur-[100px] rounded-full opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity duration-500" />
-                            <div className="relative z-10 w-full rounded-3xl border border-border p-2 bg-bg shadow-2xl overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                                <img 
-                                    src="/Images/notificatiions questXP.jpeg" 
-                                    alt="QuestXP Focus Notification" 
-                                    className="w-full h-auto rounded-2xl block"
+                        <Reveal y={40} scale={0.96} className="relative lg:order-1">
+                            <div className="clay rounded-clay-xl p-2.5">
+                                <img
+                                    src="/Images/notificatiions questXP.jpeg"
+                                    alt="QuestXP focus notification on a phone"
+                                    className="w-full h-auto rounded-clay-lg block"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
-                                
-                                {/* Floating Badge */}
-                                <div className="absolute -bottom-6 -right-6 bg-surface-3 border border-border p-4 rounded-2xl shadow-xl flex items-center gap-3 z-20">
-                                    <div className="w-8 h-8 rounded-full bg-success/20 flex items-center justify-center p-1.5">
-                                        <img src="/favicon.png" alt="" className="w-full h-full object-contain" />
-                                    </div>
-                                    <span className="text-xs font-black text-text-primary uppercase tracking-tighter">Focus Safeguard Active</span>
-                                </div>
+                            </div>
+
+                            {/* Floating Badge */}
+                            <div className="clay absolute -bottom-6 -right-3 sm:-right-6 p-4 rounded-clay-lg flex items-center gap-3 z-20 clay-bob">
+                                <img src="/favicon.png" alt="" className="w-8 h-8 object-contain" />
+                                <span className="text-xs font-bold text-text-primary">Focus Safeguard Active</span>
                             </div>
                         </Reveal>
                     </div>
                 </section>
 
+                {/* ── Mobile ───────────────────────────────────────────── */}
+                <section className="max-w-screen-xl mx-auto px-4 sm:px-6 py-12">
+                    <div className="clay rounded-clay-xl p-8 sm:p-12 grid lg:grid-cols-2 gap-10 items-center">
+                        <Reveal y={30}>
+                            <div className="clay-sunk-sm inline-flex items-center gap-2 px-3.5 py-2 rounded-full mb-6 text-xs font-bold text-primary uppercase tracking-widest">
+                                <Sparkles className="w-4 h-4" />
+                                Study anywhere
+                            </div>
+                            <h2 className="text-3xl sm:text-4xl font-display font-bold text-text-primary mb-4 leading-[1.1]">
+                                The same quest line, in your pocket
+                            </h2>
+                            <p className="text-text-secondary text-lg leading-relaxed">
+                                Every screen is built for the phone first — edge-to-edge player, tappable missions,
+                                and the AI doubt tutor one tab away.
+                            </p>
+                        </Reveal>
+                        <Reveal y={40} scale={0.96} className="flex justify-center">
+                            <div className="clay rounded-clay-xl p-2 max-w-[280px]">
+                                <img
+                                    src="/Images/dashboard_mobile.png"
+                                    alt="QuestXP dashboard on a phone"
+                                    className="w-full h-auto rounded-clay-lg block"
+                                />
+                            </div>
+                        </Reveal>
+                    </div>
+                </section>
 
+                {/* ── Features ─────────────────────────────────────────── */}
                 <section id="features" className="max-w-screen-xl mx-auto px-4 sm:px-6 py-16">
-                    <div className="text-center mb-12">
-                        <h2 className="text-3xl sm:text-4xl font-bold text-text-primary tracking-tight mb-4">
+                    <div className="text-center mb-8">
+                        <h2 className="text-3xl sm:text-4xl font-display font-bold text-text-primary mb-3">
                             Deep Learning Features
                         </h2>
                         <p className="text-text-secondary max-w-2xl mx-auto text-base sm:text-lg">
@@ -642,11 +642,12 @@ const LandingPage = () => {
                     </div>
                 </section>
 
-                <section className="py-16 bg-surface/30 overflow-hidden group/testimonial">
-                    <div className="max-w-screen-xl mx-auto px-4 sm:px-6 mb-12">
-                        <div className="flex flex-col items-center text-center space-y-4">
-                            <span className="text-primary font-black text-[10px] uppercase tracking-[0.3em]">Wall of Love</span>
-                            <h2 className="text-4xl font-black text-text-primary tracking-tight font-display">What learners say</h2>
+                {/* ── Testimonials ─────────────────────────────────────── */}
+                <section className="py-16 overflow-hidden group/testimonial">
+                    <div className="max-w-screen-xl mx-auto px-4 sm:px-6 mb-10">
+                        <div className="flex flex-col items-center text-center space-y-3">
+                            <span className="text-primary font-bold text-[11px] uppercase tracking-[0.3em]">Wall of Love</span>
+                            <h2 className="text-3xl sm:text-4xl font-display font-bold text-text-primary">What learners say</h2>
                         </div>
                     </div>
 
@@ -660,23 +661,22 @@ const LandingPage = () => {
                                 { name: 'aditya.s', text: 'Being able to see my progress visually is surprisingly motivating. Love the minimal design.' },
                                 { name: 'alok7', text: 'Finally finished a 12-hour React course. The progress tracking is the only reason I didn\'t quit halfway.' },
                             ].map((t, idx) => (
-                                <ShinyCard 
-                                    key={idx} 
-                                    className="p-8 rounded-3xl bg-surface-2/40 border border-border backdrop-blur-md hover:border-primary/50 hover:bg-surface-2/60 transition-all duration-300 group/card relative overflow-hidden w-[280px] md:w-[320px] aspect-square flex flex-col justify-between shrink-0 mx-3"
+                                <ShinyCard
+                                    key={idx}
+                                    className="clay clay-interactive p-7 rounded-clay-lg group/card w-[280px] md:w-[320px] aspect-square flex flex-col justify-between shrink-0 mx-3"
                                 >
-                                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover/card:opacity-20 transition-opacity">
-                                        <Sparkles className="w-8 h-8 text-primary" />
+                                    <div className="absolute top-0 right-0 p-5 opacity-20 group-hover/card:opacity-40 transition-opacity">
+                                        <Sparkles className="w-7 h-7 text-primary" />
                                     </div>
-                                    <p className="text-text-primary text-base font-medium leading-relaxed mb-8 relative z-10">
-                                        "{t.text}"
+                                    <p className="text-text-primary text-base font-semibold leading-relaxed mb-8 relative z-10">
+                                        &quot;{t.text}&quot;
                                     </p>
-                                    <div className="flex items-center gap-4 relative z-10 mt-auto">
-                                        <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-black text-xl font-display">
+                                    <div className="flex items-center gap-3.5 relative z-10 mt-auto">
+                                        <div className="w-12 h-12 rounded-clay flex items-center justify-center text-white font-display font-bold text-xl clay-pop-sm"
+                                             style={{ background: 'linear-gradient(150deg, var(--color-primary), var(--color-primary-hover))' }}>
                                             {t.name[0].toUpperCase()}
                                         </div>
-                                        <div>
-                                            <h4 className="text-sm font-black text-text-primary tracking-tight">@{t.name}</h4>
-                                        </div>
+                                        <h4 className="text-sm font-bold text-text-primary">@{t.name}</h4>
                                     </div>
                                 </ShinyCard>
                             ))}
@@ -684,14 +684,38 @@ const LandingPage = () => {
                     </div>
                 </section>
 
+                {/* ── Final CTA ────────────────────────────────────────── */}
+                <section className="max-w-screen-xl mx-auto px-4 sm:px-6 pb-8">
+                    <div className="clay rounded-clay-xl p-10 sm:p-14 text-center">
+                        <h2 className="text-3xl sm:text-5xl font-display font-bold text-text-primary mb-4 max-w-[20ch] mx-auto leading-[1.1]">
+                            Paste a playlist. Get your first quest.
+                        </h2>
+                        <p className="text-text-secondary text-lg max-w-[46ch] mx-auto mb-8">
+                            Free while the content is free. The structure is the product.
+                        </p>
+                        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                            <button onClick={openApp} className="btn-primary">
+                                Get Started
+                                <ChevronRight className="w-4 h-4" />
+                            </button>
+                            <button
+                                onClick={() => navigate('/dashboard?demo=true')}
+                                className="clay-sm clay-interactive px-6 min-h-[44px] rounded-clay text-sm font-bold text-text-primary"
+                            >
+                                Try the demo first
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
             </main>
 
             <Footer onOpenFeedback={() => setFeedbackOpen(true)} />
             <FeedbackModal isOpen={feedbackOpen} onClose={() => setFeedbackOpen(false)} contextPage="Landing Page" />
-            <VideoModal 
-                isOpen={videoOpen} 
-                onClose={() => setVideoOpen(false)} 
-                videoUrl="https://vimeo.com/1191279081?share=copy&fl=sv&fe=ci#t=0" 
+            <VideoModal
+                isOpen={videoOpen}
+                onClose={() => setVideoOpen(false)}
+                videoUrl="https://vimeo.com/1191279081?share=copy&fl=sv&fe=ci#t=0"
             />
         </div>
     );

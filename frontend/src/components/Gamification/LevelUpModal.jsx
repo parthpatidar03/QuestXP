@@ -27,7 +27,7 @@ const LevelUpModal = () => {
                         angle: 60,
                         spread: 55,
                         origin: { x: 0 },
-                        colors: ['#38BDF8', '#10B981', '#F59E0B'],
+                        colors: ['#E33A2E', '#DE8C1F', '#2E9E6B'],
                         zIndex: 10005
                     });
                     confetti({
@@ -35,7 +35,7 @@ const LevelUpModal = () => {
                         angle: 120,
                         spread: 55,
                         origin: { x: 1 },
-                        colors: ['#38BDF8', '#10B981', '#F59E0B'],
+                        colors: ['#E33A2E', '#DE8C1F', '#2E9E6B'],
                         zIndex: 10005
                     });
 
@@ -64,7 +64,7 @@ const LevelUpModal = () => {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.3 }}
-                        className="absolute inset-0 bg-black/85 backdrop-blur-sm"
+                        className="absolute inset-0 bg-bg/85 backdrop-blur-sm"
                         onClick={clearLevelUp}
                     ></motion.div>
 
@@ -78,11 +78,11 @@ const LevelUpModal = () => {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 10 }}
                         transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                        className="relative w-[90%] max-w-md bg-surface border-2 border-border border-b-[8px] border-b-border-shadow rounded-[32px] p-8 flex flex-col items-center text-center shadow-[0_25px_50px_rgba(0,0,0,0.6)]"
+                        className="relative w-[90%] max-w-md clay border-b-[8px] border-b-border-shadow rounded-[32px] p-8 flex flex-col items-center text-center shadow-[0_25px_50px_rgba(0,0,0,0.6)]"
                     >
                         <div className="absolute -top-32 w-64 h-64 bg-primary/20 rounded-full blur-[80px] pointer-events-none"></div>
 
-                        <span className="text-warning text-sm font-bold tracking-widest uppercase mb-6 drop-shadow-md">
+                        <span className="text-warning text-sm font-bold tracking-widest uppercase mb-6 drop-">
                             Level Up!
                         </span>
 
@@ -115,7 +115,7 @@ const LevelUpModal = () => {
 
                         {/* Unlocks */}
                         {levelUpData.unlockedFeatures && levelUpData.unlockedFeatures.length > 0 && (
-                            <div className="w-full bg-surface-2 rounded-xl p-4 mb-8 text-left border border-border">
+                            <div className="w-full bg-surface-2 rounded-clay p-4 mb-8 text-left clay-sm">
                                 <span className="text-xs font-bold text-text-muted uppercase tracking-wider mb-3 block">New Unlocks</span>
                                 <div className="space-y-3">
                                     {levelUpData.unlockedFeatures.map((feature, idx) => (

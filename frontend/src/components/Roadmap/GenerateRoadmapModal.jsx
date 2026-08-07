@@ -166,10 +166,10 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
         <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 sm:p-6">
             <div className="absolute inset-0 bg-bg/80 backdrop-blur-xl" onClick={onClose} />
             
-            <div className="relative w-full max-w-xl bg-surface border border-border rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] z-10">
+            <div className="relative w-full max-w-xl clay rounded-clay-lg overflow-hidden flex flex-col max-h-[90vh] z-10">
                 <div className="p-6 border-b border-border flex items-center justify-between bg-surface-2">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-clay bg-primary/10 text-primary flex items-center justify-center">
                             <Sparkles className="w-5 h-5" />
                         </div>
                         <div>
@@ -177,7 +177,7 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
                             <p className="text-xs text-text-muted">Set your study capacity and conquer</p>
                         </div>
                     </div>
-                    <button onClick={onClose} className="p-2 hover:bg-surface-3 rounded-lg transition-colors">
+                    <button onClick={onClose} className="p-2 hover:bg-surface-3 rounded-clay-sm transition-colors">
                         <X className="w-5 h-5 text-text-muted" />
                     </button>
                 </div>
@@ -187,18 +187,18 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
                         <div className="absolute inset-0 z-50 bg-bg/90 backdrop-blur-md flex flex-col items-center justify-center p-8 text-center animate-in fade-in duration-300">
                             {stuckError ? (
                                 <>
-                                    <div className="w-20 h-20 mb-6 rounded-full bg-red-500/10 border-2 border-red-500/30 flex items-center justify-center">
-                                        <X className="w-8 h-8 text-red-400" />
+                                    <div className="w-20 h-20 mb-6 rounded-full bg-danger/10 border-2 border-red-500/30 flex items-center justify-center">
+                                        <X className="w-8 h-8 text-danger" />
                                     </div>
                                     <h3 className="text-xl font-bold text-text-primary mb-2">Processing Timed Out</h3>
                                     <p className="text-sm text-text-secondary max-w-xs mb-6">
                                         The course is taking longer than expected. This can happen with very large playlists. Try closing and reopening this modal.
                                     </p>
                                     <div className="flex gap-3">
-                                        <button onClick={onClose} className="px-6 py-2.5 rounded-lg border border-border text-xs font-bold uppercase tracking-widest text-text-muted hover:text-text-primary transition-colors">
+                                        <button onClick={onClose} className="px-6 py-2.5 rounded-clay-sm clay-sm text-xs font-bold uppercase tracking-widest text-text-muted hover:text-text-primary transition-colors">
                                             Close
                                         </button>
-                                        <button onClick={() => { setStuckError(false); setPollCount(0); setCountdown(10); }} className="px-6 py-2.5 rounded-lg bg-primary text-white text-xs font-bold uppercase tracking-widest hover:bg-primary/90 transition-colors">
+                                        <button onClick={() => { setStuckError(false); setPollCount(0); setCountdown(10); }} className="px-6 py-2.5 rounded-clay-sm bg-primary text-white text-xs font-bold uppercase tracking-widest hover:bg-primary/90 transition-colors">
                                             Retry
                                         </button>
                                     </div>
@@ -219,7 +219,7 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
                                     </p>
                                     <p className="text-[10px] text-text-muted mb-6">Attempt {pollCount + 1}/{MAX_POLLS}</p>
                                     <div className="flex gap-4">
-                                        <button onClick={onClose} className="px-6 py-2 rounded-lg border border-border text-xs font-bold uppercase tracking-widest text-text-muted hover:text-text-primary transition-colors">
+                                        <button onClick={onClose} className="px-6 py-2 rounded-clay-sm clay-sm text-xs font-bold uppercase tracking-widest text-text-muted hover:text-text-primary transition-colors">
                                             Cancel
                                         </button>
                                     </div>
@@ -230,7 +230,7 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
 
                 <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-6">
                     {/* How it works briefing */}
-                    <div className="p-4 bg-surface-3 border border-border rounded-2xl space-y-2">
+                    <div className="p-4 clay-sunk rounded-clay-lg space-y-2">
                         <div className="flex items-center gap-2 text-primary">
                             <div className="p-1 rounded bg-primary/10">
                                 <Info className="w-4 h-4" />
@@ -253,7 +253,7 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
                                 <div className="text-sm text-text-muted animate-pulse">Fetching library...</div>
                             ) : courses.length > 0 ? (
                                 courses.filter(c => !courseId || c._id === courseId).map(course => (
-                                    <div key={course._id} className="border border-border rounded-xl overflow-hidden bg-surface-2/40">
+                                    <div key={course._id} className="clay-sm rounded-clay overflow-hidden bg-surface-2/40">
                                         <div className="flex items-center p-3 gap-3 hover:bg-surface-2 transition-colors">
                                             <button 
                                                 type="button"
@@ -274,11 +274,11 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
                                         </div>
 
                                         {expandedCourses.includes(course._id) && (
-                                            <div className="bg-black/20 border-t border-border/50 p-2 space-y-1">
+                                            <div className="clay-sunk p-2 space-y-1 rounded-clay mt-1">
                                                 {course.sections?.map(section => (
                                                     <div key={section._id} className="space-y-1">
                                                         <div 
-                                                            className={`flex items-center gap-2 p-2 rounded-lg transition-all ${selectedSectionIds.includes(section._id) ? 'bg-primary/10' : 'hover:bg-white/5'}`}
+                                                            className={`flex items-center gap-2 p-2 rounded-clay-sm transition-all ${selectedSectionIds.includes(section._id) ? 'bg-primary/10' : 'hover:bg-white/5'}`}
                                                         >
                                                             <button 
                                                                 type="button"
@@ -321,7 +321,7 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
                                     </div>
                                 ))
                             ) : (
-                                <div className="p-8 border border-dashed border-border rounded-2xl text-center">
+                                <div className="p-8 border border-border rounded-clay-lg text-center">
                                     <BookOpen className="w-8 h-8 text-text-muted mx-auto mb-3 opacity-20" />
                                     <p className="text-sm text-text-muted">Library empty. Enroll in a course first.</p>
                                 </div>
@@ -339,7 +339,7 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
                                     type="number" min="0.5" step="0.5" max="24"
                                     value={weekdayHours}
                                     onChange={e => setWeekdayHours(e.target.value)}
-                                    className="w-full bg-surface-2 border border-border rounded-xl pl-10 pr-4 py-3 text-sm font-bold text-text-primary focus:border-primary outline-none transition-colors"
+                                    className="w-full clay-sunk rounded-clay pl-10 pr-4 py-3 text-sm font-bold text-text-primary focus:border-primary outline-none transition-colors"
                                 />
                             </div>
                         </div>
@@ -351,7 +351,7 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
                                     type="number" min="0.5" step="0.5" max="24"
                                     value={weekendHours}
                                     onChange={e => setWeekendHours(e.target.value)}
-                                    className="w-full bg-surface-2 border border-primary/40 rounded-xl pl-10 pr-4 py-3 text-sm font-bold text-text-primary focus:border-primary outline-none transition-colors"
+                                    className="w-full bg-surface-2 border border-primary/40 rounded-clay pl-10 pr-4 py-3 text-sm font-bold text-text-primary focus:border-primary outline-none transition-colors"
                                 />
                             </div>
                         </div>
@@ -366,12 +366,12 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
                                 type="date" 
                                 value={startDate}
                                 onChange={e => setStartDate(e.target.value)}
-                                className="w-full bg-surface-2 border border-border rounded-xl pl-10 pr-4 py-3 text-sm font-bold text-text-primary focus:border-primary outline-none transition-colors [color-scheme:dark]"
+                                className="w-full clay-sunk rounded-clay pl-10 pr-4 py-3 text-sm font-bold text-text-primary focus:border-primary outline-none transition-colors [color-scheme:dark]"
                             />
                         </div>
                     </div>
 
-                    <div className="p-4 bg-primary/5 border border-primary/10 rounded-2xl flex gap-3">
+                    <div className="p-4 bg-primary/5 border border-primary/10 rounded-clay-lg flex gap-3">
                         <AlertCircle className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                         <p className="text-xs text-text-secondary leading-relaxed">
                             Our algorithm will prioritize larger missions for your weekend blocks to maximize your learning momentum.
@@ -381,13 +381,13 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
                 </div>
 
                 <div className="p-6 border-t border-border bg-surface-2 flex gap-3">
-                    <button onClick={onClose} type="button" className="flex-1 px-4 py-4 rounded-xl border border-border text-xs font-black uppercase tracking-widest text-text-primary hover:bg-surface-3 transition-all">
+                    <button onClick={onClose} type="button" className="flex-1 px-4 py-4 rounded-clay clay-sm text-xs font-black uppercase tracking-widest text-text-primary hover:bg-surface-3 transition-all">
                         Cancel
                     </button>
                     <button 
                         onClick={handleSubmit}
                         disabled={loading || selectedLectureIds.length === 0}
-                        className="flex-[2] px-4 py-4 rounded-xl bg-primary text-white text-xs font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
+                        className="flex-[2] px-4 py-4 rounded-clay bg-primary text-white text-xs font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-primary/20 flex items-center justify-center gap-2"
                     >
                         {loading ? (
                             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />

@@ -33,12 +33,12 @@ const ProcessingStatus = ({ lectureId }) => {
             <h3 className="font-bold mb-2">AI Processing Status</h3>
             <div className="flex justify-between py-1">
                 <span>Embedding:</span>
-                <span className={status.embeddingStatus === 'complete' ? 'text-green-400' : 'text-yellow-400'}>
+                <span className={status.embeddingStatus === 'complete' ? 'text-success' : 'text-gold'}>
                     {status.embeddingStatus}
                 </span>
             </div>
             {status.errorReason && (
-                <div className="text-red-400 text-xs mt-1">Error: {status.errorReason}</div>
+                <div className="text-danger text-xs mt-1">Error: {status.errorReason}</div>
             )}
         </div>
     );

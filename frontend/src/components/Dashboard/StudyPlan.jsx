@@ -53,20 +53,20 @@ const StudyPlan = ({ courseId, onOpenSetup }) => {
     }, [roadmap]);
 
     if (loading) {
-        return <div className="glass-card p-8 animate-pulse bg-surface-2/50 h-40 rounded-2xl" />;
+        return <div className="glass-card p-8 animate-pulse bg-surface-2/50 h-40 rounded-clay-lg" />;
     }
 
     if (!roadmap) {
         return (
-            <div className="glass-card p-8 border-dashed border-border flex flex-col items-center justify-center text-center group hover:border-primary/50 transition-all">
-                <div className="w-12 h-12 rounded-2xl bg-surface-2 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+            <div className="glass-card p-8 border-border flex flex-col items-center justify-center text-center group hover:border-primary/50 transition-all">
+                <div className="w-12 h-12 rounded-clay-lg bg-surface-2 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     <Layout className="w-6 h-6 text-text-muted group-hover:text-primary" />
                 </div>
                 <h3 className="text-lg font-bold text-text-primary mb-1">No Study Roadmap</h3>
                 <p className="text-xs text-text-muted mb-6 max-w-xs">
                     Generate an adaptive study roadmap to distribute your workload across days.
                 </p>
-                <button onClick={onOpenSetup} className="px-6 py-2.5 rounded-xl bg-primary text-white text-xs font-black uppercase tracking-widest hover:bg-primary-hover transition-all shadow-lg shadow-primary/20">
+                <button onClick={onOpenSetup} className="px-6 py-2.5 rounded-clay bg-primary text-white text-xs font-black uppercase tracking-widest hover:bg-primary-hover transition-all shadow-primary/20">
                     CREATE ROADMAP
                 </button>
             </div>
@@ -80,7 +80,7 @@ const StudyPlan = ({ courseId, onOpenSetup }) => {
             
             <div className="p-6 flex flex-col md:flex-row items-center gap-6 relative z-10">
                 {/* Left: Day Indicator */}
-                <div className="shrink-0 flex flex-col items-center justify-center w-24 h-24 rounded-2xl bg-surface-2 border border-border shadow-inner">
+                <div className="shrink-0 flex flex-col items-center justify-center w-24 h-24 rounded-clay-lg clay-sunk shadow-inner">
                     <span className="text-[10px] font-black text-text-muted uppercase tracking-widest">Day</span>
                     <span className="text-4xl font-black text-text-primary italic">{(activeDay?.dayIndex || 0) + 1}</span>
                 </div>
@@ -97,7 +97,7 @@ const StudyPlan = ({ courseId, onOpenSetup }) => {
                     
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                         <div className="flex items-center gap-2">
-                            <div className="w-7 h-7 rounded-lg bg-surface-3 flex items-center justify-center text-text-muted">
+                            <div className="w-7 h-7 rounded-clay-sm bg-surface-3 flex items-center justify-center text-text-muted">
                                 <Clock className="w-3.5 h-3.5" />
                             </div>
                             <div>
@@ -108,7 +108,7 @@ const StudyPlan = ({ courseId, onOpenSetup }) => {
                             </div>
                         </div>
                         <div className="flex items-center gap-2">
-                            <div className="w-7 h-7 rounded-lg bg-surface-3 flex items-center justify-center text-text-muted">
+                            <div className="w-7 h-7 rounded-clay-sm bg-surface-3 flex items-center justify-center text-text-muted">
                                 <Target className="w-3.5 h-3.5" />
                             </div>
                             <div>
@@ -117,7 +117,7 @@ const StudyPlan = ({ courseId, onOpenSetup }) => {
                             </div>
                         </div>
                         <div className="hidden sm:flex items-center gap-2">
-                            <div className="w-7 h-7 rounded-lg bg-surface-3 flex items-center justify-center text-text-muted">
+                            <div className="w-7 h-7 rounded-clay-sm bg-surface-3 flex items-center justify-center text-text-muted">
                                 <Trophy className="w-3.5 h-3.5" />
                             </div>
                             <div>
@@ -132,7 +132,7 @@ const StudyPlan = ({ courseId, onOpenSetup }) => {
                 <div className="shrink-0 w-full md:w-auto">
                     <Link 
                         to={`/roadmap?courseId=${courseId}`}
-                        className="w-full inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl bg-primary text-white font-black text-xs uppercase tracking-widest hover:bg-primary-hover transition-all shadow-xl shadow-primary/30 group/btn"
+                        className="w-full inline-flex items-center justify-center gap-3 px-8 py-4 rounded-clay-lg bg-primary text-white font-black text-xs uppercase tracking-widest hover:bg-primary-hover transition-all shadow-primary/30 group/btn"
                     >
                         VIEW FULL ROADMAP
                         <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />

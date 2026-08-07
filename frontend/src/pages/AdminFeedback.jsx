@@ -3,7 +3,6 @@ import { ChevronLeft, MessageSquare, Clock, Globe, User, Mail } from 'lucide-rea
 import { Link } from 'react-router-dom';
 import api from '../services/api';
 import NavBar from '../components/NavBar';
-import { BGPattern } from '../components/ui/bg-pattern';
 
 const AdminFeedback = () => {
     const [feedbacks, setFeedbacks] = useState([]);
@@ -36,7 +35,6 @@ const AdminFeedback = () => {
 
     return (
         <div className="min-h-screen bg-bg text-text-primary relative overflow-hidden">
-            <BGPattern variant="grid" mask="fade-edges" fill="var(--color-primary)" className="opacity-5" />
             <NavBar />
 
             <div className="max-w-5xl mx-auto px-4 py-8 relative z-10">
@@ -59,7 +57,7 @@ const AdminFeedback = () => {
                 </div>
 
                 {error && (
-                    <div className="p-4 rounded-xl border border-danger/40 bg-danger/10 text-danger text-sm mb-6">
+                    <div className="p-4 rounded-clay border border-danger/40 bg-danger/10 text-danger text-sm mb-6">
                         {error}
                     </div>
                 )}
@@ -86,17 +84,17 @@ const AdminFeedback = () => {
                                         </div>
                                     </div>
                                     <div className="flex flex-wrap items-center gap-4 text-xs font-medium uppercase tracking-wider text-text-muted">
-                                        <div className="flex items-center gap-1.5 px-2 py-1 bg-surface-2 rounded-md border border-border">
+                                        <div className="flex items-center gap-1.5 px-2 py-1 bg-surface-2 rounded-md clay-sm">
                                             <Clock className="w-3 h-3" />
                                             {new Date(fb.createdAt).toLocaleString()}
                                         </div>
-                                        <div className="flex items-center gap-1.5 px-2 py-1 bg-surface-2 rounded-md border border-border">
+                                        <div className="flex items-center gap-1.5 px-2 py-1 bg-surface-2 rounded-md clay-sm">
                                             <Globe className="w-3 h-3" />
                                             {fb.contextPage || 'Unknown'}
                                         </div>
                                     </div>
                                 </div>
-                                <div className="p-4 rounded-xl bg-surface-2 border border-border text-text-secondary text-sm leading-relaxed whitespace-pre-wrap">
+                                <div className="p-4 rounded-clay clay-sunk text-text-secondary text-sm leading-relaxed whitespace-pre-wrap">
                                     {fb.message}
                                 </div>
                             </div>

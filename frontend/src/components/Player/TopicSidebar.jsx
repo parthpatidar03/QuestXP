@@ -33,7 +33,7 @@ const TopicSidebar = ({ topics, currentTime, onTopicClick }) => {
                 </div>
                 <button 
                     onClick={() => document.querySelector('button[key="notes"]')?.click() || window.dispatchEvent(new CustomEvent('switch-tab', { detail: 'notes' }))}
-                    className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary text-[10px] font-black uppercase tracking-widest border border-primary/20 transition-all"
+                    className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-clay-sm bg-primary/10 hover:bg-primary/20 text-primary text-[10px] font-black uppercase tracking-widest border border-primary/20 transition-all"
                 >
                     <Bot className="w-3.5 h-3.5" />
                     Summarize

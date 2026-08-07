@@ -33,7 +33,7 @@ const XPLeaderboardSidebar = ({ players = [] }) => {
                     {players.slice(0, 5).map((p, i) => (
                         <div
                             key={i}
-                            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors hover:bg-surface-2 ${i === 0 ? 'bg-gold/10 border border-gold/30' : ''}`}
+                            className={`flex items-center gap-3 px-3 py-2.5 rounded-clay transition-colors hover:bg-surface-2 ${i === 0 ? 'bg-gold/10 border border-gold/30' : ''}`}
                         >
                             {/* Rank */}
                             <span className={`text-xs font-semibold w-5 text-center shrink-0 ${i === 0 ? 'text-gold' : 'text-text-muted'}`}>{RANK_LABELS[i]}</span>

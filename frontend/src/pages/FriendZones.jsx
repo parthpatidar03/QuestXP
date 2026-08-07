@@ -52,11 +52,11 @@ const CreateZoneModal = ({ open, onClose, onCreated }) => {
             className="fixed inset-0 z-[60] bg-bg/70 backdrop-blur-sm flex items-center justify-center px-4"
             onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
         >
-            <div className="w-full max-w-md rounded-2xl border border-border bg-surface p-6 shadow-2xl">
+            <div className="w-full max-w-md rounded-clay-lg clay p-6 ">
                 {createdZone ? (
                     <div className="space-y-4">
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                            <div className="w-10 h-10 rounded-clay bg-primary/10 flex items-center justify-center">
                                 <Users className="w-5 h-5 text-primary" />
                             </div>
                             <div>
@@ -64,7 +64,7 @@ const CreateZoneModal = ({ open, onClose, onCreated }) => {
                                 <p className="text-xs text-text-muted">Share this link with friends.</p>
                             </div>
                         </div>
-                        <div className="rounded-xl border border-border bg-surface-2 p-3">
+                        <div className="rounded-clay clay-sunk p-3">
                             <div className="text-[10px] uppercase tracking-widest text-text-muted mb-1">Invite Link</div>
                             <div className="flex items-center gap-2">
                                 <code className="flex-1 truncate text-xs text-text-primary">
@@ -79,12 +79,12 @@ const CreateZoneModal = ({ open, onClose, onCreated }) => {
                                 </button>
                             </div>
                         </div>
-                        <div className="rounded-xl border border-primary/20 bg-primary/5 p-3 text-xs text-text-secondary">
+                        <div className="rounded-clay border border-primary/20 bg-primary/5 p-3 text-xs text-text-secondary">
                             <strong className="text-text-primary">Next:</strong> open the zone, press <em>Generate code</em>, and share the 6-digit code with your friend. They open the invite link, enter the code, and they're in.
                         </div>
                         <button
                             onClick={onClose}
-                            className="w-full py-2.5 rounded-xl bg-primary text-bg font-semibold"
+                            className="w-full py-2.5 rounded-clay bg-primary text-bg font-semibold"
                         >
                             Done
                         </button>
@@ -102,7 +102,7 @@ const CreateZoneModal = ({ open, onClose, onCreated }) => {
                                 onChange={(e) => setName(e.target.value)}
                                 maxLength={60}
                                 placeholder="The Grind Squad"
-                                className="w-full px-3 py-2.5 rounded-lg border border-border bg-surface-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary/40"
+                                className="w-full px-3 py-2.5 rounded-clay-sm clay-sunk text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary/40"
                                 required
                                 autoFocus
                             />
@@ -114,18 +114,18 @@ const CreateZoneModal = ({ open, onClose, onCreated }) => {
                                 onChange={(e) => setDescription(e.target.value)}
                                 maxLength={200}
                                 placeholder="Cracking SDE prep together"
-                                className="w-full px-3 py-2.5 rounded-lg border border-border bg-surface-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary/40"
+                                className="w-full px-3 py-2.5 rounded-clay-sm clay-sunk text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary/40"
                             />
                         </div>
                         {error && <p className="text-sm text-danger">{error}</p>}
                         <div className="flex items-center justify-end gap-2 pt-2">
-                            <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg text-sm text-text-secondary hover:text-text-primary">
+                            <button type="button" onClick={onClose} className="px-4 py-2 rounded-clay-sm text-sm text-text-secondary hover:text-text-primary">
                                 Cancel
                             </button>
                             <button
                                 type="submit"
                                 disabled={submitting}
-                                className="px-4 py-2 rounded-lg bg-primary text-bg text-sm font-semibold disabled:opacity-60 inline-flex items-center gap-2"
+                                className="px-4 py-2 rounded-clay-sm bg-primary text-bg text-sm font-semibold disabled:opacity-60 inline-flex items-center gap-2"
                             >
                                 {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
                                 Create Zone
@@ -179,7 +179,7 @@ const FriendZones = () => {
                     </div>
                     <button
                         onClick={() => setModalOpen(true)}
-                        className="px-4 py-2.5 rounded-xl bg-primary text-bg font-semibold inline-flex items-center gap-2 shrink-0"
+                        className="px-4 py-2.5 rounded-clay bg-primary text-bg font-semibold inline-flex items-center gap-2 shrink-0"
                     >
                         <Plus className="w-4 h-4" /> New Zone
                     </button>
@@ -192,14 +192,14 @@ const FriendZones = () => {
                 )}
 
                 {!loading && error && (
-                    <div className="p-4 rounded-xl border border-danger/30 bg-danger/10 text-danger text-sm">
+                    <div className="p-4 rounded-clay border border-danger/30 bg-danger/10 text-danger text-sm">
                         {error}
                     </div>
                 )}
 
                 {!loading && !error && zones.length === 0 && (
-                    <div className="border border-dashed border-border rounded-2xl p-12 text-center">
-                        <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-primary/10 flex items-center justify-center">
+                    <div className="border border-border rounded-clay-lg p-12 text-center">
+                        <div className="w-14 h-14 mx-auto mb-4 rounded-clay-lg bg-primary/10 flex items-center justify-center">
                             <Users className="w-6 h-6 text-primary" />
                         </div>
                         <h2 className="text-lg font-semibold text-text-primary">No zones yet</h2>
@@ -208,7 +208,7 @@ const FriendZones = () => {
                         </p>
                         <button
                             onClick={() => setModalOpen(true)}
-                            className="px-5 py-2.5 rounded-xl bg-primary text-bg font-semibold inline-flex items-center gap-2"
+                            className="px-5 py-2.5 rounded-clay bg-primary text-bg font-semibold inline-flex items-center gap-2"
                         >
                             <Plus className="w-4 h-4" /> Create your first zone
                         </button>
@@ -221,7 +221,7 @@ const FriendZones = () => {
                             <Link
                                 key={z._id}
                                 to={`/friendzones/${z._id}`}
-                                className="block p-5 rounded-2xl border border-border bg-surface hover:bg-surface-2 transition-colors"
+                                className="block p-5 rounded-clay-lg clay hover:bg-surface-2 transition-colors"
                             >
                                 <div className="flex items-start justify-between gap-2 mb-2">
                                     <h3 className="font-bold text-text-primary truncate">{z.name}</h3>

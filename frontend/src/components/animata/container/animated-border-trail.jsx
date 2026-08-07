@@ -32,7 +32,7 @@ export default function AnimatedBorderTrail({
       />
       <div
         className={cn(
-          "relative h-full w-full overflow-hidden rounded-[14px] bg-surface",
+ "relative h-full w-full overflow-hidden rounded-[14px] bg-surface",
           contentClassName,
         )}
       >

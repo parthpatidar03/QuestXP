@@ -30,7 +30,7 @@ const CloudinaryUpload = ({ onUploadSuccess, currentUrl }) => {
             <button
                 type="button"
                 onClick={() => widgetRef.current.open()}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 transition-all font-semibold text-sm"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-clay-sm border border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 transition-all font-semibold text-sm"
             >
                 <Upload className="w-4 h-4" />
                 {currentUrl ? 'Change Video' : 'Upload Video to Cloudinary'}

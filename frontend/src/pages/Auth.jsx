@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import useAuthStore from '../store/useAuthStore';
 import { useNavigate } from 'react-router-dom';
-import { BGPattern } from '../components/ui/bg-pattern';
 import { motion } from 'framer-motion';
 
 const Auth = () => {
@@ -112,13 +111,12 @@ const Auth = () => {
     return (
         <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || ''}>
             <div className="min-h-screen flex items-center justify-center bg-bg flex-col text-text-primary p-4 relative overflow-hidden">
-                <BGPattern variant="grid" mask="fade-edges" fill="var(--color-text-muted)" className="opacity-20" />
                 
                 <div className="relative z-10 mb-6 flex flex-col items-center">
-                    <div className="w-16 h-16 bg-surface border border-border rounded-xl flex items-center justify-center mb-4 shadow-card">
+                    <div className="w-16 h-16 clay rounded-clay flex items-center justify-center mb-4 ">
                         <img src="/favicon.png" alt="QuestXP Logo" className="w-10 h-10 object-contain" />
                     </div>
-                    <h1 className="text-text-primary font-semibold text-3xl tracking-tight">QuestXP</h1>
+                    <h1 className="text-text-primary font-display font-bold text-3xl tracking-tight">QuestXP</h1>
                 </div>
 
                 <div className="relative z-10 w-full max-w-[400px]">
@@ -153,7 +151,7 @@ export const Account = ({ currentTab, setCurrentTab, firstTab, secondTab }) => {
     return (
       <div className="flex w-full flex-col gap-2">
         <Switch currentTab={currentTab} setTab={setCurrentTab} />
-        <div className="overflow-hidden rounded-xl border border-neutral-200 bg-surface shadow-sm dark:border-neutral-900">
+        <div className="clay overflow-hidden rounded-clay-lg mt-2">
           {currentTab === 0 && firstTab}
           {currentTab === 1 && secondTab}
         </div>
@@ -163,23 +161,25 @@ export const Account = ({ currentTab, setCurrentTab, firstTab, secondTab }) => {
   
 const Switch = ({ setTab, currentTab }) => (
     <div
-      className={`relative flex w-full items-center rounded-lg bg-neutral-100 py-1 text-neutral-900 dark:bg-[#1C1C1C] dark:text-neutral-400 border border-transparent dark:border-neutral-800`}>
+      className="clay-sunk relative flex w-full items-center rounded-clay p-1.5 text-text-secondary">
+      {/* Pill is inset by the container's 6px padding, so a 100% shift of its
+          own width lands it flush against the opposite inner edge. */}
       <motion.div
-        transition={{ type: 'keyframes', duration: 0.15, ease: 'easeInOut' }}
-        animate={currentTab === 0 ? { x: 4 } : { x: '98%' }}
-        initial={currentTab === 0 ? { x: 4 } : { x: '98%' }}
-        className={`absolute h-5/6 w-1/2 rounded-md bg-white shadow-sm dark:bg-[#2C2C2C] dark:text-white`}
+        transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+        animate={{ x: currentTab === 0 ? '0%' : '100%' }}
+        initial={{ x: currentTab === 0 ? '0%' : '100%' }}
+        className="clay-sm absolute left-1.5 h-[calc(100%-12px)] w-[calc(50%-6px)] rounded-clay-sm"
       />
       <button
         type="button"
         onClick={() => setTab(0)}
-        className={`z-10 h-9 w-full rounded-md text-center text-sm font-medium transition-colors ${currentTab === 0 ? 'text-black dark:text-white' : 'hover:text-black dark:hover:text-white'}`}>
+        className={`z-10 h-11 w-full rounded-clay-sm text-center text-sm font-bold transition-colors ${currentTab === 0 ? 'text-text-primary' : 'text-text-muted hover:text-text-primary'}`}>
         Sign in
       </button>
       <button
         type="button"
         onClick={() => setTab(1)}
-        className={`z-10 h-9 w-full rounded-md text-center text-sm font-medium transition-colors ${currentTab === 1 ? 'text-black dark:text-white' : 'hover:text-black dark:hover:text-white'}`}>
+        className={`z-10 h-11 w-full rounded-clay-sm text-center text-sm font-bold transition-colors ${currentTab === 1 ? 'text-text-primary' : 'text-text-muted hover:text-text-primary'}`}>
         Sign up
       </button>
     </div>
@@ -188,11 +188,11 @@ const Switch = ({ setTab, currentTab }) => (
 const SignInTab = ({ email, setEmail, password, setPassword, handleSubmit, submitting, error, handleGoogleSuccess, handleGoogleError }) => (
     <div className="flex w-full flex-col items-start justify-start gap-4 p-5 pb-6">
       <div>
-        <h1 className="font-semibold text-lg text-text-primary">Sign in to your account</h1>
+        <h1 className="font-display font-bold text-xl text-text-primary">Sign in to your account</h1>
       </div>
       
       {error && (
-        <div className="bg-danger/10 w-full border border-danger/30 text-danger p-3 rounded-lg text-sm text-center">
+        <div className="bg-danger/10 w-full border border-danger/30 text-danger p-3 rounded-clay-sm text-sm text-center">
             {error}
         </div>
       )}
@@ -209,7 +209,7 @@ const SignInTab = ({ email, setEmail, password, setPassword, handleSubmit, submi
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="mt-1 h-10 w-full rounded-md border border-neutral-300 px-3 placeholder-neutral-400 outline-none focus:ring-2 focus:ring-neutral-800 dark:border-neutral-800 dark:bg-[#1C1C1C] dark:text-white dark:placeholder-neutral-600 transition-all"
+              className="clay-input mt-1.5"
             />
           </div>
           <div className="w-full">
@@ -223,21 +223,21 @@ const SignInTab = ({ email, setEmail, password, setPassword, handleSubmit, submi
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="mt-1 h-10 w-full rounded-md border border-neutral-300 px-3 placeholder-neutral-400 outline-none focus:ring-2 focus:ring-neutral-800 dark:border-neutral-800 dark:bg-[#1C1C1C] dark:text-white dark:placeholder-neutral-600 transition-all"
+              className="clay-input mt-1.5"
             />
           </div>
           <div className="mt-2.5 w-full">
-            <button type="submit" disabled={submitting} className="h-10 w-full rounded-md bg-neutral-900 font-medium text-white dark:bg-white dark:text-neutral-950 hover:opacity-90 transition-opacity disabled:opacity-50">
+            <button type="submit" disabled={submitting} className="btn-primary w-full">
               {submitting ? 'Signing in...' : 'Sign In'}
             </button>
           </div>
       </form>
   
       <div className="relative mt-4 w-full">
-        <div className="absolute left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 bg-surface px-3 text-xs text-neutral-500 dark:bg-surface dark:text-neutral-500">
+        <div className="absolute left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 bg-surface px-3 text-xs font-bold text-text-muted">
           Or
         </div>
-        <div className="border-b border-neutral-200 dark:border-neutral-800"></div>
+        <div className="border-b border-border "></div>
       </div>
       
       <div className="mt-4 flex w-full flex-col gap-3 items-center">
@@ -260,11 +260,11 @@ const SignInTab = ({ email, setEmail, password, setPassword, handleSubmit, submi
 const SignUpTab = ({ name, setName, email, setEmail, password, setPassword, handleSubmit, submitting, error, handleGoogleSuccess, handleGoogleError }) => (
     <div className="flex w-full flex-col items-start justify-start gap-4 p-5 pb-6">
       <div>
-        <h1 className="font-semibold text-lg text-text-primary">Create an account</h1>
+        <h1 className="font-display font-bold text-xl text-text-primary">Create an account</h1>
       </div>
       
       {error && (
-        <div className="bg-danger/10 w-full border border-danger/30 text-danger p-3 rounded-lg text-sm text-center">
+        <div className="bg-danger/10 w-full border border-danger/30 text-danger p-3 rounded-clay-sm text-sm text-center">
             {error}
         </div>
       )}
@@ -281,7 +281,7 @@ const SignUpTab = ({ name, setName, email, setEmail, password, setPassword, hand
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className="mt-1 h-10 w-full rounded-md border border-neutral-300 px-3 placeholder-neutral-400 outline-none focus:ring-2 focus:ring-neutral-800 dark:border-neutral-800 dark:bg-[#1C1C1C] dark:text-white dark:placeholder-neutral-600 transition-all"
+              className="clay-input mt-1.5"
             />
           </div>
           <div className="w-full">
@@ -295,7 +295,7 @@ const SignUpTab = ({ name, setName, email, setEmail, password, setPassword, hand
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="mt-1 h-10 w-full rounded-md border border-neutral-300 px-3 placeholder-neutral-400 outline-none focus:ring-2 focus:ring-neutral-800 dark:border-neutral-800 dark:bg-[#1C1C1C] dark:text-white dark:placeholder-neutral-600 transition-all"
+              className="clay-input mt-1.5"
             />
           </div>
           <div className="w-full">
@@ -309,21 +309,21 @@ const SignUpTab = ({ name, setName, email, setEmail, password, setPassword, hand
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="mt-1 h-10 w-full rounded-md border border-neutral-300 px-3 placeholder-neutral-400 outline-none focus:ring-2 focus:ring-neutral-800 dark:border-neutral-800 dark:bg-[#1C1C1C] dark:text-white dark:placeholder-neutral-600 transition-all"
+              className="clay-input mt-1.5"
             />
           </div>
           <div className="mt-2.5 w-full">
-            <button type="submit" disabled={submitting} className="h-10 w-full rounded-md bg-neutral-900 font-medium text-white dark:bg-white dark:text-neutral-950 hover:opacity-90 transition-opacity disabled:opacity-50">
+            <button type="submit" disabled={submitting} className="btn-primary w-full">
               {submitting ? 'Creating account...' : 'Create Account'}
             </button>
           </div>
       </form>
   
       <div className="relative mt-4 w-full">
-        <div className="absolute left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 bg-surface px-3 text-xs text-neutral-500 dark:bg-surface dark:text-neutral-500">
+        <div className="absolute left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 bg-surface px-3 text-xs font-bold text-text-muted">
           Or
         </div>
-        <div className="border-b border-neutral-200 dark:border-neutral-800"></div>
+        <div className="border-b border-border "></div>
       </div>
       
       <div className="mt-4 flex w-full flex-col gap-3 items-center">

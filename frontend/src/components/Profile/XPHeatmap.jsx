@@ -53,7 +53,7 @@ const XPHeatmap = () => {
     if (loading) return null;
 
     return (
-        <div className="bg-surface-2 border border-border rounded-xl p-6 mb-6 overflow-hidden">
+        <div className="clay-sunk rounded-clay p-6 mb-6 overflow-hidden">
             <h3 className="text-sm font-bold text-text-secondary mb-4 uppercase tracking-wider">30-Day Activity Heatmap</h3>
             <div className="flex gap-1.5 overflow-x-auto pb-2 custom-scrollbar">
                 {days.map(day => (
@@ -71,7 +71,7 @@ const XPHeatmap = () => {
                         <div className="text-[9px] text-text-muted">{day.label.split(' ')[1]}</div>
                         
                         {/* Tooltip */}
-                        <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-surface border border-border text-xs px-2 py-1 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none">
+                        <div className="absolute -top-10 left-1/2 -translate-x-1/2 clay text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none">
                             <span className="font-bold text-primary">{day.xp} XP</span> on {day.label}
                         </div>
                     </div>

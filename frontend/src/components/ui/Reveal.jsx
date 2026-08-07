@@ -19,10 +19,10 @@ export function Reveal({
       viewport={{ once: true, amount: 0.15 }}
       transition={{ duration, delay, ease: EASE }}
       className={className}
-    >
-      {children}
-    </motion.div>
-  );
+ >
+ {children}
+ </motion.div>
+ );
 }
 
 function wrapIntoLines(text, maxChars) {
@@ -68,10 +68,10 @@ export function RevealLines({
       viewport={{ once: true, amount: 0.15 }}
       transition={{ staggerChildren: stagger }}
       className={className}
-    >
-      {lines.map((line, i) => (
-        <motion.span
-          key={i}
+ >
+ {lines.map((line, i) => (
+ <motion.span
+ key={i}
           variants={{
             hidden: { opacity: 0, y: 18 },
             visible: {
@@ -104,10 +104,10 @@ export function RevealWords({
       viewport={{ once: true, amount: 0.2 }}
       transition={{ staggerChildren: stagger }}
       className={className}
-    >
-      {words.map((word, i) => (
-        <motion.span
-          key={i}
+ >
+ {words.map((word, i) => (
+ <motion.span
+ key={i}
           variants={{
             hidden: { opacity: 0, y: 15 },
             visible: {
@@ -137,10 +137,10 @@ export function RevealGroup({
       viewport={{ once: true, amount: 0.1 }}
       transition={{ staggerChildren: stagger }}
       className={className}
-    >
-      {children}
-    </motion.div>
-  );
+ >
+ {children}
+ </motion.div>
+ );
 }
 
 export function RevealItem({
@@ -159,8 +159,8 @@ export function RevealItem({
         }
       }}
       className={className}
-    >
-      {children}
-    </motion.div>
-  );
+ >
+ {children}
+ </motion.div>
+ );
 }

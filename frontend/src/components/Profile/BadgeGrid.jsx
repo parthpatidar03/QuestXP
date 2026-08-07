@@ -31,13 +31,13 @@ const BadgeGrid = ({ badges }) => {
     if (!badges || badges.length === 0) return null;
 
     return (
-        <div className="bg-surface-2 border border-border rounded-xl p-6 mb-6">
+        <div className="clay-sunk rounded-clay p-6 mb-6">
             <h3 className="text-sm font-bold text-text-secondary mb-4 uppercase tracking-wider">Your Badges</h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 {badges.map(badge => (
                     <div 
                         key={badge.id} 
-                        className={`flex flex-col items-center p-4 rounded-xl border transition-all ${
+                        className={`flex flex-col items-center p-4 rounded-clay border transition-all ${
                             badge.earned 
                                 ? 'bg-surface border-warning/30 hover:border-warning/60 shadow-[0_0_15px_rgba(245,158,11,0.05)]' 
                                 : 'bg-surface-1 border-border/50 opacity-60 grayscale'

@@ -98,14 +98,14 @@ const DoubtPanel = ({ lectureId }) => {
 
     if (isLocked) {
         return (
-            <div className="bg-gray-900 border border-gray-700 rounded-lg p-6 text-center text-gray-400">
+            <div className="bg-gray-900 border border-gray-700 rounded-clay-sm p-6 text-center text-gray-400">
                 <p>🔒 Doubt Chatbot requires Level {requiredLevel}</p>
             </div>
         );
     }
 
     return (
-        <div className="flex flex-col h-[500px] bg-gray-900 border border-gray-700 rounded-lg overflow-hidden flex-shrink-0 w-full max-w-md">
+        <div className="flex flex-col h-[500px] bg-gray-900 border border-gray-700 rounded-clay-sm overflow-hidden flex-shrink-0 w-full max-w-md">
             <div className="bg-gray-800 px-4 py-3 border-b border-gray-700">
                 <h3 className="text-white font-medium">Ask a Doubt</h3>
             </div>
@@ -113,12 +113,12 @@ const DoubtPanel = ({ lectureId }) => {
             <div className="flex-1 overflow-y-auto p-4 space-y-4" ref={scrollRef}>
                 {status === 'checking' && <div className="text-gray-400 text-sm text-center">Loading...</div>}
                 {status === 'indexing' && (
-                    <div className="bg-blue-900/30 text-blue-400 text-sm p-3 rounded text-center border border-blue-800">
+                    <div className="bg-blue-900/30 text-cyan text-sm p-3 rounded text-center border border-blue-800">
                         Indexing in progress. Chatbot will be ready shortly...
                     </div>
                 )}
                 {status === 'error' && (
-                    <div className="text-red-400 text-sm text-center p-3">Failed to load chatbot status.</div>
+                    <div className="text-danger text-sm text-center p-3">Failed to load chatbot status.</div>
                 )}
                 
                 {status === 'ready' && history.length === 0 && (
@@ -131,7 +131,7 @@ const DoubtPanel = ({ lectureId }) => {
                     <div key={exchange._id} className="space-y-2">
                         {/* User Question */}
                         <div className="flex justify-end">
-                            <div className="bg-blue-600 text-white px-3 py-2 rounded-lg max-w-[85%] text-sm">
+                            <div className="bg-cyan text-white px-3 py-2 rounded-clay-sm max-w-[85%] text-sm">
                                 {exchange.questionText}
                             </div>
                         </div>
@@ -139,7 +139,7 @@ const DoubtPanel = ({ lectureId }) => {
                         {/* Bot Answer */}
                         {exchange.pending ? (
                             <div className="flex justify-start">
-                                <div className="bg-gray-800 text-gray-300 px-4 py-3 rounded-lg text-sm animate-pulse flex space-x-2">
+                                <div className="bg-gray-800 text-gray-300 px-4 py-3 rounded-clay-sm text-sm animate-pulse flex space-x-2">
                                     <div className="w-1.5 h-1.5 bg-gray-500 rounded-full"></div>
                                     <div className="w-1.5 h-1.5 bg-gray-500 rounded-full"></div>
                                     <div className="w-1.5 h-1.5 bg-gray-500 rounded-full"></div>
@@ -147,8 +147,8 @@ const DoubtPanel = ({ lectureId }) => {
                             </div>
                         ) : exchange.answer && (
                             <div className="flex justify-start">
-                                <div className={`px-4 py-3 rounded-lg max-w-[95%] text-sm border ${
-                                    exchange.answer.error ? 'bg-red-900/20 border-red-800 text-red-300 italic' 
+                                <div className={`px-4 py-3 rounded-clay-sm max-w-[95%] text-sm border ${
+                                    exchange.answer.error ? 'bg-red-900/20 border-red-800 text-danger italic' 
                                     : exchange.answer.notFound ? 'bg-gray-800 border-gray-700 text-gray-400 italic' 
                                     : 'bg-gray-800 border-gray-700 text-gray-200'
                                 }`}>
@@ -183,7 +183,7 @@ const DoubtPanel = ({ lectureId }) => {
                     <button
                         type="submit"
                         disabled={status !== 'ready' || loading || !input.trim()}
-                        className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="bg-cyan hover:bg-blue-500 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         Send
                     </button>

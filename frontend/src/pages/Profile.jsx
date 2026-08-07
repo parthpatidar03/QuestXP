@@ -6,7 +6,6 @@ import useGamificationStore from '../store/useGamificationStore';
 import { getGamificationProfile, getXPHistory, markBadgesSeen } from '../services/gamificationApi';
 import NavBar from '../components/NavBar';
 import UsernameModal from '../components/Dashboard/UsernameModal';
-import { BGPattern } from '../components/ui/bg-pattern';
 
 /* ── Hex Badge ──────────────────────────────────────────────────────── */
 function HexBadge({ name, earned, iconColor = 'var(--color-text-muted)' }) {
@@ -74,7 +73,6 @@ const Profile = () => {
 
     return (
         <div className="min-h-screen bg-bg text-text-primary relative overflow-hidden">
-            <BGPattern variant="grid" mask="fade-edges" fill="var(--color-text-muted)" className="opacity-15 z-0" />
             <NavBar />
 
             <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-10 space-y-8">
@@ -104,11 +102,11 @@ const Profile = () => {
 
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center flex-wrap gap-3 mb-2">
-                            <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-white leading-none">
+                            <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-text-primary leading-none">
                                 {user.username || user.name}
                             </h1>
                             {!user.usernameSet && (
-                                <span className="px-3 py-1 rounded-lg bg-primary/20 border border-primary/40 text-[11px] font-black text-primary uppercase tracking-widest">
+                                <span className="px-3 py-1 rounded-clay-sm bg-primary/20 border border-primary/40 text-[11px] font-black text-primary uppercase tracking-widest">
                                     Random Identity
                                 </span>
                             )}
@@ -126,7 +124,7 @@ const Profile = () => {
 
                         <button 
                             onClick={() => window.dispatchEvent(new CustomEvent('open-username-modal'))}
-                            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-surface-2 border border-border text-xs font-black uppercase tracking-widest text-primary hover:bg-primary/10 hover:border-primary/30 transition-all mb-8 shadow-sm"
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-clay clay-sunk text-xs font-black uppercase tracking-widest text-primary hover:bg-primary/10 hover:border-primary/30 transition-all mb-8 "
                         >
                             <User className="w-3.5 h-3.5" />
                             Change Identity →
@@ -136,11 +134,11 @@ const Profile = () => {
                         <div className="max-w-md">
                             <div className="mb-2 flex items-center justify-between text-sm">
                                 <span className="text-text-secondary font-bold uppercase tracking-wider text-[11px]">XP to Level {(level || 1) + 1}</span>
-                                <span className="font-black text-white">
+                                <span className="font-black text-text-primary">
                                     {totalXP?.toLocaleString()} / {xpToNextLevel ? (totalXP + xpToNextLevel).toLocaleString() : '—'} XP
                                 </span>
                             </div>
-                            <div className="h-3 w-full bg-surface-2 rounded-full overflow-hidden border border-border/50">
+                            <div className="h-3 w-full bg-surface-2 rounded-full overflow-hidden clay-sm">
                                 <motion.div 
                                     initial={{ width: 0 }}
                                     animate={{ width: `${xpProgress}%` }}
@@ -151,17 +149,17 @@ const Profile = () => {
                     </div>
 
                     {/* Quick stats */}
-                    <div className="grid grid-cols-3 gap-4 sm:flex sm:gap-10 shrink-0 bg-surface-2/50 p-4 sm:p-6 rounded-3xl border border-border/40 backdrop-blur-sm w-full sm:w-auto">
+                    <div className="grid grid-cols-3 gap-4 sm:flex sm:gap-10 shrink-0 bg-surface-2/50 p-4 sm:p-6 rounded-clay-lg clay-sm backdrop-blur-sm w-full sm:w-auto">
                         {[
                             { icon: <img src="/favicon.png" alt="" className="w-4 h-4 sm:w-5 sm:h-5 object-contain" />, val: (totalXP || 0).toLocaleString(), label: 'XP', color: 'var(--color-gold)' },
                             { icon: <Flame className="w-4 h-4 sm:w-5 sm:h-5" />, val: `${streak?.current ?? 0}d`, label: 'Streak', color: 'var(--color-warning)' },
                             { icon: <Trophy className="w-4 h-4 sm:w-5 sm:h-5" />, val: badges.filter(b => b.earned).length, label: 'Badges', color: 'var(--color-success)' },
                         ].map(s => (
                             <div key={s.label} className="flex flex-col items-center gap-1 sm:gap-2">
-                                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-inner" style={{ background: `${s.color}20`, color: s.color, border: `1px solid ${s.color}30`, padding: '8px sm:10px' }}>
+                                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-clay sm:rounded-clay-lg flex items-center justify-center shadow-inner" style={{ background: `${s.color}20`, color: s.color, border: `1px solid ${s.color}30`, padding: '8px sm:10px' }}>
                                     {s.icon}
                                 </div>
-                                <span className="text-lg sm:text-2xl font-black text-white tracking-tight">{s.val}</span>
+                                <span className="text-lg sm:text-2xl font-black text-text-primary tracking-tight">{s.val}</span>
                                 <span className="text-[9px] sm:text-[11px] font-bold uppercase tracking-widest text-text-muted">{s.label}</span>
                             </div>
                         ))}
@@ -174,11 +172,11 @@ const Profile = () => {
                     {/* ── Badges / Achievements ── */}
                     <section className="glass-card p-8 flex flex-col h-full">
                         <div className="flex items-center gap-3 mb-8">
-                            <div className="w-10 h-10 rounded-2xl bg-gold/10 flex items-center justify-center border border-gold/20">
+                            <div className="w-10 h-10 rounded-clay-lg bg-gold/10 flex items-center justify-center border border-gold/20">
                                 <Shield className="w-5 h-5 text-gold" />
                             </div>
                             <div>
-                                <h2 className="text-xl font-black uppercase tracking-tight text-white">Achievements</h2>
+                                <h2 className="text-xl font-black uppercase tracking-tight text-text-primary">Achievements</h2>
                                 <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest">{badges.filter(b => b.earned).length} / {badges.length} unlocked</p>
                             </div>
                         </div>
@@ -204,11 +202,11 @@ const Profile = () => {
                     {/* ── XP History Table ── */}
                     <section className="glass-card p-8 flex flex-col h-full">
                         <div className="flex items-center gap-3 mb-8">
-                            <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
+                            <div className="w-10 h-10 rounded-clay-lg bg-primary/10 flex items-center justify-center border border-primary/20">
                                 <BarChart3 className="w-5 h-5 text-primary" />
                             </div>
                             <div>
-                                <h2 className="text-xl font-black uppercase tracking-tight text-white">XP Activity</h2>
+                                <h2 className="text-xl font-black uppercase tracking-tight text-text-primary">XP Activity</h2>
                                 <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Recent performance</p>
                             </div>
                         </div>
@@ -216,11 +214,11 @@ const Profile = () => {
                         {history.length > 0 ? (
                             <div className="space-y-4 flex-1">
                                 {history.slice(-6).reverse().map(day => (
-                                    <div key={day.date} className="flex items-center justify-between p-4 rounded-2xl bg-surface-2/40 border border-border/40 hover:border-primary/20 transition-all">
+                                    <div key={day.date} className="flex items-center justify-between p-4 rounded-clay-lg bg-surface-2/40 clay-sm hover:border-primary/20 transition-all">
                                         <div className="flex flex-col">
                                             <span className="text-xs font-bold text-text-secondary">{new Date(day.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
                                         </div>
-                                        <div className="px-3 py-1.5 rounded-xl bg-gold/10 border border-gold/20 flex items-center gap-2">
+                                        <div className="px-3 py-1.5 rounded-clay bg-gold/10 border border-gold/20 flex items-center gap-2">
                                             <img src="/favicon.png" alt="" className="w-3.5 h-3.5 object-contain" />
                                             <span className="text-xs font-black text-gold">+{day.totalXP} XP</span>
                                         </div>
@@ -241,7 +239,7 @@ const Profile = () => {
                         type="button"
                         onClick={handleLogout}
                         disabled={isLoggingOut}
-                        className="group flex items-center gap-3 rounded-2xl bg-red-500/10 px-8 py-4 text-xs font-black uppercase tracking-[0.2em] text-red-500 transition-all hover:bg-red-500 hover:text-white border border-red-500/20 shadow-lg shadow-red-500/5 active:scale-95 disabled:opacity-50"
+                        className="group flex items-center gap-3 rounded-clay-lg bg-danger/10 px-8 py-4 text-xs font-black uppercase tracking-[0.2em] text-danger transition-all hover:bg-red-500 hover:text-white border border-red-500/20 shadow-red-500/5 active:scale-95 disabled:opacity-50"
                     >
                         <LogOut className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
                         {isLoggingOut ? 'Terminating Session...' : 'Sign Out of QuestXP'}
@@ -251,7 +249,7 @@ const Profile = () => {
                     </p>
                 </div>
                 {logoutError && (
-                    <p className="text-center mt-2 text-xs text-red-400">{logoutError}</p>
+                    <p className="text-center mt-2 text-xs text-danger">{logoutError}</p>
                 )}
             </div>
             <UsernameModal isOpen={showUsernameModal} onClose={() => setShowUsernameModal(false)} />

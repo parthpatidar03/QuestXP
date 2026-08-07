@@ -142,7 +142,7 @@ const NotesTab = ({ lectureId, onSeek, notesStatus, errorReason, aiStatus = {} }
         return (
             <div className="p-6 text-center text-text-muted">
                 <AlertCircle className="w-8 h-8 text-danger mx-auto mb-3" />
-                <h3 className="text-lg font-semibold text-white mb-2">Summary Generation Failed</h3>
+                <h3 className="text-lg font-semibold text-text-primary mb-2">Summary Generation Failed</h3>
                 <p className="text-sm mb-6">{errorReason || 'An error occurred while generating summary.'}</p>
                 <button 
                     onClick={handleManualStart}
@@ -171,18 +171,18 @@ const NotesTab = ({ lectureId, onSeek, notesStatus, errorReason, aiStatus = {} }
         return (
             <div className="flex flex-col items-center justify-center min-h-[300px] p-8 text-center">
                 {!isReady && (
-                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4" style={{ background: 'rgba(0,180,255,0.10)', border: '1px solid rgba(0,180,255,0.3)' }}>
+                    <div className="w-14 h-14 rounded-clay-lg flex items-center justify-center mb-4" style={{ background: 'rgba(0,180,255,0.10)', border: '1px solid rgba(0,180,255,0.3)' }}>
                         <Bot className="w-6 h-6 text-[#00b4ff]" />
                     </div>
                 )}
                 
                 {isReady && (
-                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4" style={{ background: 'rgba(0,180,255,0.10)', border: '1px solid rgba(0,180,255,0.3)' }}>
+                    <div className="w-14 h-14 rounded-clay-lg flex items-center justify-center mb-4" style={{ background: 'rgba(0,180,255,0.10)', border: '1px solid rgba(0,180,255,0.3)' }}>
                         <Play className="w-6 h-6 text-[#00b4ff]" />
                     </div>
                 )}
 
-                <p className="text-base font-bold text-white mb-1">⚡ AI Smart Summary</p>
+                <p className="text-base font-bold text-text-primary mb-1">⚡ AI Smart Summary</p>
                 <AiBadge label="AI-generated summary" className="mb-2" />
                 <p className="text-sm mb-6 text-text-secondary">
                     {isReady 
@@ -199,7 +199,7 @@ const NotesTab = ({ lectureId, onSeek, notesStatus, errorReason, aiStatus = {} }
                 {!isReady && (
                     <div className="flex flex-col items-center gap-4">
                         <div className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold bg-cyan/10 border border-cyan/30 text-cyan">
-                            <span className="w-2 h-2 rounded-full bg-[#00b4ff] animate-pulse" />
+                            <span className="w-2 h-2 rounded-full bg-cyan animate-pulse" />
                             Ready to Generate
                         </div>
                         <button 
@@ -233,9 +233,9 @@ const NotesTab = ({ lectureId, onSeek, notesStatus, errorReason, aiStatus = {} }
         <div className="p-6 space-y-8 max-w-4xl mx-auto">
             
             {/* Summary Layer */}
-            <section className="bg-surface-2 p-6 rounded-2xl border border-border relative overflow-hidden">
+            <section className="bg-surface-2 p-6 rounded-clay-lg clay-sm relative overflow-hidden">
                 {notes.transcriptSource === 'metadata_fallback' && (
-                    <div className="mb-4 p-3 rounded-xl bg-danger/10 border border-danger/20 flex items-center gap-3">
+                    <div className="mb-4 p-3 rounded-clay bg-danger/10 border border-danger/20 flex items-center gap-3">
                         <AlertCircle className="w-5 h-5 text-danger shrink-0" />
                         <p className="text-[11px] font-bold text-danger uppercase tracking-wider">
                             Low Quality Warning: Video captions were unavailable. Summary is based on video title only.
@@ -243,7 +243,7 @@ const NotesTab = ({ lectureId, onSeek, notesStatus, errorReason, aiStatus = {} }
                     </div>
                 )}
                 <div className="flex items-center justify-between mb-3">
-                    <h2 className="text-xl font-display font-bold text-white">Summary</h2>
+                    <h2 className="text-xl font-display font-bold text-text-primary">Summary</h2>
                     <AiBadge />
                 </div>
                 <p className="text-text-secondary leading-relaxed">{notes.summary}</p>
@@ -251,7 +251,7 @@ const NotesTab = ({ lectureId, onSeek, notesStatus, errorReason, aiStatus = {} }
 
             {/* High Priority Alerts */}
             {notes.highPriority && notes.highPriority.length > 0 && (
-                <section className="bg-warning/10 border border-warning/20 p-5 rounded-2xl">
+                <section className="bg-warning/10 border border-warning/20 p-5 rounded-clay-lg">
                     <h3 className="text-lg font-bold text-warning flex items-center gap-2 mb-3">
                         <AlertCircle className="w-5 h-5" /> 
                         Key Takeaways / Exam Focus
@@ -265,10 +265,10 @@ const NotesTab = ({ lectureId, onSeek, notesStatus, errorReason, aiStatus = {} }
             {/* Definitions with Clickable Timestamps */}
             {notes.definitions && notes.definitions.length > 0 && (
                 <section>
-                    <h3 className="text-lg font-bold text-white mb-4 border-b border-border pb-2">Definitions</h3>
+                    <h3 className="text-lg font-bold text-text-primary mb-4 border-b border-border pb-2">Definitions</h3>
                     <div className="space-y-4">
                         {notes.definitions.map((def, i) => (
-                            <div key={i} className="bg-surface-2 p-4 rounded-xl border border-border group hover:border-primary/30 transition-colors">
+                            <div key={i} className="bg-surface-2 p-4 rounded-clay clay-sm group hover:border-primary/30 transition-colors">
                                 <div className="flex items-start justify-between gap-4">
                                     <div>
                                         <h4 className="font-bold text-primary mb-1">{def.term}</h4>
@@ -276,7 +276,7 @@ const NotesTab = ({ lectureId, onSeek, notesStatus, errorReason, aiStatus = {} }
                                     </div>
                                     <button 
                                         onClick={() => onSeek(def.timestamp)}
-                                        className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-3 hover:bg-primary/20 hover:text-primary text-xs font-semibold text-text-muted transition-all"
+                                        className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-clay-sm bg-surface-3 hover:bg-primary/20 hover:text-primary text-xs font-semibold text-text-muted transition-all"
                                     >
                                         <Play className="w-3.5 h-3.5" />
                                         {formatTime(def.timestamp)}
@@ -291,10 +291,10 @@ const NotesTab = ({ lectureId, onSeek, notesStatus, errorReason, aiStatus = {} }
             {/* Code Snippets */}
             {notes.codeSnippets && notes.codeSnippets.length > 0 && (
                 <section>
-                    <h3 className="text-lg font-bold text-white mb-4 border-b border-border pb-2">Code Snippets</h3>
+                    <h3 className="text-lg font-bold text-text-primary mb-4 border-b border-border pb-2">Code Snippets</h3>
                     <div className="space-y-6">
                         {notes.codeSnippets.map((snippet, i) => (
-                            <div key={i} className="rounded-xl overflow-hidden border border-border">
+                            <div key={i} className="rounded-clay overflow-hidden clay-sm">
                                 <div className="bg-surface-3 px-4 py-2 flex justify-between items-center text-xs font-mono text-text-muted border-b border-border">
                                     <span className="uppercase">{snippet.language}</span>
                                     <button 
@@ -316,17 +316,17 @@ const NotesTab = ({ lectureId, onSeek, notesStatus, errorReason, aiStatus = {} }
             {/* Formulas */}
             {notes.formulas && notes.formulas.length > 0 && (
                 <section>
-                    <h3 className="text-lg font-bold text-white mb-4 border-b border-border pb-2">Formulas & Equations</h3>
+                    <h3 className="text-lg font-bold text-text-primary mb-4 border-b border-border pb-2">Formulas & Equations</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {notes.formulas.map((formula, i) => (
-                            <div key={i} className="bg-surface-2 p-4 rounded-xl border border-border flex flex-col justify-between">
+                            <div key={i} className="bg-surface-2 p-4 rounded-clay clay-sm flex flex-col justify-between">
                                 <div>
                                     <h4 className="text-xs uppercase tracking-wider text-text-muted font-bold mb-2">{formula.label}</h4>
                                     <div className="font-mono text-primary text-lg mb-4">{formula.content}</div>
                                 </div>
                                 <button 
                                     onClick={() => onSeek(formula.timestamp)}
-                                    className="self-start flex items-center gap-1.5 px-3 py-1 rounded-lg bg-surface-3 hover:bg-primary/20 hover:text-primary text-xs font-semibold text-text-muted transition-colors"
+                                    className="self-start flex items-center gap-1.5 px-3 py-1 rounded-clay-sm bg-surface-3 hover:bg-primary/20 hover:text-primary text-xs font-semibold text-text-muted transition-colors"
                                 >
                                     <Play className="w-3 h-3" /> {formatTime(formula.timestamp)}
                                 </button>
@@ -339,11 +339,11 @@ const NotesTab = ({ lectureId, onSeek, notesStatus, errorReason, aiStatus = {} }
             {/* User Community Edits (Level 3 Gated) */}
             <section className="pt-8 border-t border-border mt-12">
                 <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-lg font-bold text-white">Community Summary</h3>
+                    <h3 className="text-lg font-bold text-text-primary">Community Summary</h3>
                     {!isEditing && user.level >= LEVEL_NOTES_EDIT && (
                         <button 
                             onClick={() => setIsEditing(true)}
-                            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-surface-2 hover:bg-surface-3 text-sm font-semibold transition-colors border border-border"
+                            className="flex items-center gap-2 px-4 py-2 rounded-clay bg-surface-2 hover:bg-surface-3 text-sm font-semibold transition-colors clay-sm"
                         >
                             <Edit2 className="w-4 h-4" /> Add Note
                         </button>
@@ -351,24 +351,24 @@ const NotesTab = ({ lectureId, onSeek, notesStatus, errorReason, aiStatus = {} }
                 </div>
 
                 {isEditing && (
-                    <div className="bg-surface-2 p-4 rounded-xl border border-primary/50 mb-6">
+                    <div className="bg-surface-2 p-4 rounded-clay border border-primary/50 mb-6">
                         <textarea 
                             value={editContent}
                             onChange={e => setEditContent(e.target.value)}
                             placeholder="Add your own notes, clarifications, or helpful links..."
-                            className="w-full bg-black border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-primary resize-y min-h-[100px] mb-3"
+                            className="w-full bg-black clay-sm rounded-clay-sm p-3 text-sm text-text-primary focus:outline-none focus:border-primary resize-y min-h-[100px] mb-3"
                         />
                         <div className="flex justify-end gap-2">
                             <button 
                                 onClick={() => setIsEditing(false)}
-                                className="px-4 py-2 rounded-lg text-text-muted hover:text-white text-sm font-semibold transition-colors"
+                                className="px-4 py-2 rounded-clay-sm text-text-muted hover:text-text-primary text-sm font-semibold transition-colors"
                             >
                                 Cancel
                             </button>
                             <button 
                                 onClick={handleSaveEdit}
                                 disabled={saving || !editContent.trim()}
-                                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-white text-sm font-semibold transition-colors disabled:opacity-50"
+                                className="flex items-center gap-2 px-4 py-2 rounded-clay-sm bg-primary hover:bg-primary-hover text-white text-sm font-semibold transition-colors disabled:opacity-50"
                             >
                                 {saving ? <div className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin"/> : <Check className="w-4 h-4" />}
                                 Save Note
@@ -389,7 +389,7 @@ const NotesTab = ({ lectureId, onSeek, notesStatus, errorReason, aiStatus = {} }
                 {notes.userEdits && notes.userEdits.length > 0 ? (
                     <div className="space-y-4 mt-6">
                         {notes.userEdits.map((edit, i) => (
-                            <div key={i} className="bg-surface-2/50 p-4 rounded-xl border border-border/50">
+                            <div key={i} className="bg-surface-2/50 p-4 rounded-clay clay-sm">
                                 <p className="text-sm text-text-secondary leading-relaxed mb-3">{edit.content}</p>
                                 <div className="text-xs font-mono text-text-muted">
                                     Added • {new Date(edit.editedAt).toLocaleDateString()}

@@ -54,7 +54,7 @@ const DailyMissionWidget = () => {
     );
 
     if (!roadmap || !todayMission) return (
-        <div className="glass-card p-6 border-dashed border-border flex flex-col items-center justify-center text-center">
+        <div className="glass-card p-6 border-border flex flex-col items-center justify-center text-center">
             <div className="w-10 h-10 rounded-full bg-surface-2 flex items-center justify-center mb-3">
                 <Target className="w-5 h-5 text-text-muted" />
             </div>
@@ -68,7 +68,7 @@ const DailyMissionWidget = () => {
             <div className="p-5">
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-clay-sm bg-primary/10 flex items-center justify-center">
                             <Zap className="w-4 h-4 text-primary" />
                         </div>
                         <h3 className="text-xs font-black text-text-primary uppercase tracking-widest">Today's Mission</h3>
@@ -82,7 +82,7 @@ const DailyMissionWidget = () => {
                             <Link 
                                 key={i} 
                                 to={`/courses/${vid.playlistId}/lectures/${vid.videoId}`}
-                                className="flex items-center gap-3 p-2.5 rounded-xl bg-surface-3/50 border border-border/50 hover:border-primary hover:bg-surface-3 transition-all group/item"
+                                className="flex items-center gap-3 p-2.5 rounded-clay bg-surface-3/50 clay-sm hover:border-primary hover:bg-surface-3 transition-all group/item"
                             >
                                 <div className="w-6 h-6 rounded bg-primary/20 flex items-center justify-center shrink-0 group-hover/item:bg-primary group-hover/item:text-white transition-colors">
                                     <Play className="w-3 h-3 text-primary fill-primary group-hover/item:text-white group-hover/item:fill-white" />
@@ -105,7 +105,8 @@ const DailyMissionWidget = () => {
                 <div className="grid grid-cols-2 gap-3 pt-2">
                     <div className="flex flex-col">
                         <span className="text-[9px] font-black text-text-muted uppercase tracking-tighter">Daily Target</span>
-                        <span className="text-sm font-black text-text-primary italic">{formatTime(todayMission.totalMinutes)}</span>
+                        {/* totalMinutes is in minutes; formatTime takes seconds */}
+                        <span className="text-sm font-black text-text-primary italic">{formatTime((todayMission.totalMinutes || 0) * 60)}</span>
 
 
                     </div>

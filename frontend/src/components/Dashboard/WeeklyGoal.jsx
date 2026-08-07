@@ -49,7 +49,7 @@ const WeeklyGoal = ({ courseId }) => {
 
     return (
         <div className="card flex flex-col items-center justify-center text-center p-4 relative overflow-hidden">
-            {isDone && <div className="absolute inset-0 bg-success/5 border border-success/20 rounded-xl pointer-events-none"></div>}
+            {isDone && <div className="absolute inset-0 bg-success/5 border border-success/20 rounded-clay pointer-events-none"></div>}
             
             <div className="flex items-center justify-between w-full mb-3 relative z-10">
                 <div className="flex items-center gap-1.5">

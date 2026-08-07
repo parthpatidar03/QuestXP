@@ -44,7 +44,7 @@ const TodayTarget = () => {
     );
 
     if (error) return (
-        <div className="card border-dashed border-border flex flex-col items-center justify-center text-center py-8 relative overflow-hidden group">
+        <div className="card border-border flex flex-col items-center justify-center text-center py-8 relative overflow-hidden group">
             <div className="w-12 h-12 rounded-full bg-surface-2 flex items-center justify-center mb-3">
                 <Lock className="w-5 h-5 text-text-muted group-hover:text-primary transition-colors" />
             </div>
@@ -76,7 +76,7 @@ const TodayTarget = () => {
             
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 gap-4 relative z-10">
                 <div className="flex items-center gap-3">
-                    <div className="p-2.5 bg-primary/10 rounded-lg text-primary">
+                    <div className="p-2.5 bg-primary/10 rounded-clay-sm text-primary">
                         <Target className="w-5 h-5" />
                     </div>
                     <div>
@@ -93,7 +93,7 @@ const TodayTarget = () => {
                     <Link 
                         key={idx}
                         to={`/courses/${item.courseId}/lectures/${item.lectureId}`}
-                        className="group flex flex-col sm:flex-row justify-between items-start sm:items-center p-3.5 rounded-lg bg-surface-2 border border-border hover:border-primary/50 transition-colors gap-4"
+                        className="group flex flex-col sm:flex-row justify-between items-start sm:items-center p-3.5 rounded-clay-sm clay-sunk hover:border-primary/50 transition-colors gap-4"
                     >
                         <div className="flex-1 min-w-0 flex items-start gap-3">
                             <div className="mt-0.5 text-text-muted group-hover:text-primary transition-colors">
@@ -104,7 +104,7 @@ const TodayTarget = () => {
                                 <p className="text-xs text-text-secondary truncate mt-0.5 max-w-[90%]">{item.lectureTitle}</p>
                             </div>
                         </div>
-                        <div className="flex items-center gap-2 sm:flex-col sm:items-end sm:gap-0 flex-shrink-0 bg-surface sm:bg-transparent px-3 py-1.5 sm:p-0 rounded-md border border-border sm:border-transparent">
+                        <div className="flex items-center gap-2 sm:flex-col sm:items-end sm:gap-0 flex-shrink-0 bg-surface sm:bg-transparent px-3 py-1.5 sm:p-0 rounded-md clay-sm sm:border-transparent">
                             <Clock className="w-3.5 h-3.5 text-warning sm:hidden" />
                             <span className="text-warning font-display font-bold text-sm">~{formatTime(item.plannedMinutes)}</span>
 

@@ -212,11 +212,11 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
     if (MAINTENANCE_CONFIG.AI_FEATURES_DOWN) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[300px] p-8 text-center">
-                <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4 bg-amber-500/10 border border-amber-500/20">
+                <div className="w-14 h-14 rounded-clay-lg flex items-center justify-center mb-4 bg-amber-500/10 border border-amber-500/20">
                     <Trophy className="w-6 h-6 text-amber-500 opacity-50" />
                 </div>
                 <p className="text-base font-bold text-text-primary mb-2">Quiz Service Unavailable</p>
-                <div className="max-w-[280px] p-4 rounded-xl bg-surface-2 border border-border">
+                <div className="max-w-[280px] p-4 rounded-clay clay-sunk">
                     <p className="text-sm text-text-secondary leading-relaxed">
                         {MAINTENANCE_CONFIG.MESSAGE}
                     </p>
@@ -256,7 +256,7 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
 
         return (
             <div className="flex flex-col items-center justify-center min-h-[300px] p-8 text-center">
-                <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4" style={{ background: 'rgba(245,165,36,0.10)', border: '1px solid rgba(245,165,36,0.3)' }}>
+                <div className="w-14 h-14 rounded-clay-lg flex items-center justify-center mb-4" style={{ background: 'rgba(245,165,36,0.10)', border: '1px solid rgba(245,165,36,0.3)' }}>
                     <Trophy className="w-6 h-6 text-[#f5a524]" />
                 </div>
                 <p className="text-base font-bold text-text-primary mb-1">🎯 AI Practice Quiz</p>
@@ -275,7 +275,7 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
                 {!isReady && (
                     <div className="flex flex-col items-center gap-4">
                         <div className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold" style={{ background: 'rgba(245,165,36,0.1)', border: '1px solid rgba(245,165,36,0.3)', color: '#f5a524' }}>
-                            <span className="w-2 h-2 rounded-full bg-[#f5a524] animate-pulse" />
+                            <span className="w-2 h-2 rounded-full bg-gold animate-pulse" />
                             Ready to Generate
                         </div>
                         <button 
@@ -316,10 +316,10 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
                 >
                     {/* Dummy content for blur preview */}
                     <div className="space-y-6">
-                        <div className="bg-surface-2 p-6 rounded-xl">
+                        <div className="bg-surface-2 p-6 rounded-clay">
                             <h4 className="text-text-primary font-semibold mb-4 text-lg">Question 1</h4>
                             <div className="space-y-3">
-                                {[1,2,3,4].map(i => <div key={i} className="h-12 bg-surface-3 rounded-lg border border-border"></div>)}
+                                {[1,2,3,4].map(i => <div key={i} className="h-12 bg-surface-3 rounded-clay-sm clay-sm"></div>)}
                             </div>
                         </div>
                     </div>
@@ -336,7 +336,7 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
             {result ? (
                 // Results View
                 <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
-                    <div className="bg-surface-2 p-8 rounded-2xl border border-border text-center relative overflow-hidden">
+                    <div className="bg-surface-2 p-8 rounded-clay-lg clay-sm text-center relative overflow-hidden">
                         {/* Confetti or glows could go here */}
                         <div className="absolute top-0 left-0 w-full h-1 bg-surface-3">
                             <div className="h-full bg-primary" style={{ width: `${result.score}%` }}></div>
@@ -369,7 +369,7 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
                         <div className="flex justify-center gap-4">
                             <button 
                                 onClick={handleRetake}
-                                className="flex items-center gap-2 px-6 py-3 rounded-xl bg-surface-3 hover:bg-surface border border-border text-text-primary font-semibold transition-colors"
+                                className="flex items-center gap-2 px-6 py-3 rounded-clay bg-surface-3 hover:clay text-text-primary font-semibold transition-colors"
                             >
                                 <RotateCcw className="w-4 h-4" /> Retake Quiz
                             </button>
@@ -379,7 +379,7 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
                     <div className="space-y-6">
                         <h3 className="text-xl font-bold text-text-primary mb-4 border-b border-border pb-2">Review Answers</h3>
                         {result.evaluatedQuestions.map((q, qIndex) => (
-                            <div key={qIndex} className={`p-6 rounded-xl border ${q.isCorrect ? 'bg-success/5 border-success/20' : 'bg-danger/5 border-danger/20'}`}>
+                            <div key={qIndex} className={`p-6 rounded-clay border ${q.isCorrect ? 'bg-success/5 border-success/20' : 'bg-danger/5 border-danger/20'}`}>
                                 <div className="flex items-start gap-4 mb-4">
                                     <div className="mt-1">
                                         {q.isCorrect ? <CheckCircle2 className="w-6 h-6 text-success" /> : <XCircle className="w-6 h-6 text-danger" />}
@@ -389,7 +389,7 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
                                 
                                 <div className="space-y-2 ml-10">
                                     {q.options.map((opt, oIndex) => {
-                                        let optionClass = "p-3 rounded-lg border text-sm flex items-center justify-between ";
+                                        let optionClass = "p-3 rounded-clay-sm border text-sm flex items-center justify-between ";
                                         const isCorrect = q.correctIndices?.includes(oIndex) || oIndex === q.correctIndex;
                                         const isUserSelected = Array.isArray(q.userAnswer) ? q.userAnswer.includes(oIndex) : q.userAnswer === oIndex;
 
@@ -403,15 +403,15 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
 
                                         return (
                                             <div key={oIndex} className={optionClass}>
-                                                <span>{opt}</span>
-                                                {isCorrect && <CheckCircle2 className="w-4 h-4" />}
+ <span>{opt}</span>
+ {isCorrect && <CheckCircle2 className="w-4 h-4" />}
                                                 {isUserSelected && !isCorrect && <XCircle className="w-4 h-4" />}
                                             </div>
                                         );
                                     })}
                                 </div>
 
-                                <div className="ml-10 mt-4 p-4 bg-surface-2 rounded-lg border border-border/50 text-sm">
+                                <div className="ml-10 mt-4 p-4 bg-surface-2 rounded-clay-sm clay-sm text-sm">
                                     <div className="font-semibold text-text-primary mb-1">Explanation:</div>
                                     <div className="text-text-secondary">{q.explanation}</div>
                                 </div>
@@ -430,7 +430,7 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
                     </div>
 
                     {quiz.questions.map((q, qIndex) => (
-                        <div key={qIndex} className="bg-surface-2 p-6 rounded-2xl border border-border">
+                        <div key={qIndex} className="bg-surface-2 p-6 rounded-clay-lg clay-sm">
                             <h4 className="text-lg font-medium text-primary mb-5 leading-relaxed">
                                 <span className="mr-2">{qIndex + 1}.</span> {q.question}
                             </h4>
@@ -441,13 +441,13 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
                                         <button
                                             key={oIndex}
                                             onClick={() => handleOptionSelect(qIndex, oIndex)}
-                                            className={`w-full text-left p-4 rounded-xl border-2 transition-all duration-100 flex items-center gap-3 ${
+                                            className={`w-full text-left p-4 rounded-clay border-2 transition-all duration-100 flex items-center gap-3 ${
                                                 isSelected 
                                                     ? 'bg-cyan/10 border-cyan border-b-[6px] border-b-cyan-shadow text-text-primary translate-y-[-2px]' 
                                                     : 'bg-surface border-border border-b-[6px] border-b-border-shadow text-text-secondary hover:translate-y-[-2px] hover:border-text-muted hover:bg-surface-3 hover:text-text-primary'
                                             } active:border-b-2 active:translate-y-[2px]`}
                                         >
-                                            <div className={`w-5 h-5 rounded-lg border-2 flex items-center justify-center shrink-0 transition-colors ${
+                                            <div className={`w-5 h-5 rounded-clay-sm border-2 flex items-center justify-center shrink-0 transition-colors ${
                                                 isSelected ? 'border-cyan' : 'border-text-muted'
                                             } ${!q.isMultipleChoice ? 'rounded-full' : 'rounded-md'}`}>
                                                 {isSelected && (
@@ -473,7 +473,7 @@ const QuizTab = ({ lectureId, aiStatus = {}, autoStart = false }) => {
                         <button
                             onClick={handleSubmit}
                             disabled={!isAllAnswered || submitting}
-                            className={`w-full py-4 rounded-xl font-bold shadow-lg transition-all flex items-center justify-center gap-2 border-2 ${
+                            className={`w-full py-4 rounded-clay font-bold  transition-all flex items-center justify-center gap-2 border-2 ${
                                 isAllAnswered && !submitting
                                     ? 'bg-primary border-primary border-b-[6px] border-b-primary-shadow text-white hover:bg-primary-hover active:border-b-2 active:translate-y-[4px]'
                                     : 'bg-surface-3 text-text-muted cursor-not-allowed border-border border-b-[6px] border-b-border-shadow'

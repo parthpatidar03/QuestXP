@@ -914,7 +914,6 @@ const Dashboard = () => {
                                                         progress={progressMap[c._id]}
                                                         onDelete={handleDeleteCourse}
                                                         isDeleting={deletingCourseId === c._id}
-                                                        fetchPriority="high"
                                                         priority={idx < 6}
                                                     />
                                                 ))}

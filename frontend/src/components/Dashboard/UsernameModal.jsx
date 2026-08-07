@@ -47,21 +47,21 @@ const UsernameModal = ({ isOpen, onClose }) => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="absolute inset-0 bg-black/80 backdrop-blur-xl"
+                className="absolute inset-0 bg-bg/80 backdrop-blur-xl"
                 onClick={onClose}
             />
             <motion.div
                 initial={{ scale: 0.9, opacity: 0, y: 20 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
                 exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                className="relative w-full max-w-md bg-surface border border-border rounded-3xl overflow-hidden shadow-2xl z-10"
+                className="relative w-full max-w-md clay rounded-clay-lg overflow-hidden z-10"
             >
                 <div className="p-8 sm:p-10 text-center">
-                    <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-6 border border-primary/20">
+                    <div className="w-16 h-16 rounded-clay-lg bg-primary/10 flex items-center justify-center mx-auto mb-6 border border-primary/20">
                         <User className="w-8 h-8 text-primary" />
                     </div>
                     
-                    <h2 className="text-2xl font-black mb-3 uppercase tracking-tight text-white">
+                    <h2 className="text-2xl font-black mb-3 uppercase tracking-tight text-text-primary">
                         Choose Your Identity
                     </h2>
                     <p className="text-text-secondary text-sm mb-8 font-medium">
@@ -78,7 +78,7 @@ const UsernameModal = ({ isOpen, onClose }) => {
                                 minLength={3}
                                 maxLength={20}
                                 required
-                                className="w-full px-5 py-4 rounded-2xl bg-surface-2 border border-border focus:border-primary outline-none text-text-primary font-bold placeholder:text-text-muted transition-all text-center tracking-wide"
+                                className="w-full px-5 py-4 rounded-clay-lg clay-sunk focus:border-primary outline-none text-text-primary font-bold placeholder:text-text-muted transition-all text-center tracking-wide"
                                 autoComplete="off"
                             />
                             {username.length >= 3 && !error && (
@@ -89,7 +89,7 @@ const UsernameModal = ({ isOpen, onClose }) => {
                         </div>
 
                         {error && (
-                            <p className="text-xs font-bold text-danger bg-danger/10 py-2 px-3 rounded-lg border border-danger/20">
+                            <p className="text-xs font-bold text-danger bg-danger/10 py-2 px-3 rounded-clay-sm border border-danger/20">
                                 {error}
                             </p>
                         )}
@@ -97,7 +97,7 @@ const UsernameModal = ({ isOpen, onClose }) => {
                         <button
                             type="submit"
                             disabled={isLoading || username.length < 3}
-                            className="w-full py-4 rounded-2xl bg-primary text-white font-black uppercase tracking-widest text-xs hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:hover:scale-100 shadow-lg shadow-primary/20"
+                            className="w-full py-4 rounded-clay-lg bg-primary text-white font-black uppercase tracking-widest text-xs hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:hover:scale-100 shadow-primary/20"
                         >
                             {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Claim Username'}
                         </button>

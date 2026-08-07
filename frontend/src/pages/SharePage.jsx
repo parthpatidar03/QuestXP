@@ -3,7 +3,6 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Share2, BookOpen, Clock, Play, CheckCircle, ArrowLeft, Copy, Check } from 'lucide-react';
 import api from '../services/api';
 import useAuthStore from '../store/useAuthStore';
-import { BGPattern } from '../components/ui/bg-pattern';
 import NavBar from '../components/NavBar';
 import Footer from '../components/ui/Footer';
 
@@ -98,7 +97,6 @@ const SharePage = () => {
 
     return (
         <div className="min-h-screen bg-bg text-text-primary relative overflow-hidden flex flex-col">
-            <BGPattern variant="grid" mask="fade-edges" fill="var(--color-primary)" className="opacity-5" />
             <NavBar />
             
             <main className="flex-1 relative z-10 py-12 px-4 sm:px-6">
@@ -127,7 +125,7 @@ const SharePage = () => {
                             <div className="flex items-center gap-3">
                                 <button 
                                     onClick={handleCopyLink}
-                                    className="px-4 py-2.5 rounded-lg border border-border bg-surface text-sm font-bold flex items-center gap-2 hover:bg-surface-2 transition-all"
+                                    className="px-4 py-2.5 rounded-clay-sm clay text-sm font-bold flex items-center gap-2 hover:bg-surface-2 transition-all"
                                 >
                                     {copied ? <Check className="w-4 h-4 text-success" /> : <Copy className="w-4 h-4" />}
                                     {copied ? 'Copied!' : 'Copy Link'}
@@ -162,7 +160,7 @@ const SharePage = () => {
                                 </h2>
                                 <div className="space-y-4">
                                     {course.sections.map((section, idx) => (
-                                        <div key={idx} className="border border-border/40 rounded-xl overflow-hidden bg-surface-2/50">
+                                        <div key={idx} className="clay-sm rounded-clay overflow-hidden bg-surface-2/50">
                                             <div className="px-5 py-4 bg-surface-2 border-b border-border/40 flex items-center justify-between">
                                                 <h3 className="font-bold text-sm text-text-primary">{section.title}</h3>
                                                 <span className="text-[10px] font-black text-text-muted uppercase tracking-tighter">
@@ -171,8 +169,8 @@ const SharePage = () => {
                                             </div>
                                             <div className="p-2 space-y-1">
                                                 {section.lectures.map((lecture, lIdx) => (
-                                                    <div key={lIdx} className="flex items-center gap-3 p-3 rounded-lg hover:bg-surface transition-colors group">
-                                                        <div className="w-16 h-10 rounded overflow-hidden shrink-0 border border-border group-hover:border-primary/30 transition-colors">
+                                                    <div key={lIdx} className="flex items-center gap-3 p-3 rounded-clay-sm hover:bg-surface transition-colors group">
+                                                        <div className="w-16 h-10 rounded overflow-hidden shrink-0 clay-sm group-hover:border-primary/30 transition-colors">
                                                             {lecture.thumbnailUrl ? (
                                                                 <img src={lecture.thumbnailUrl} alt="" className="w-full h-full object-cover" />
                                                             ) : (
@@ -229,7 +227,7 @@ const SharePage = () => {
                             </div>
                             
                             <div className="glass-card p-6 text-center">
-                                <div className="w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center mx-auto mb-4">
+                                <div className="w-12 h-12 bg-primary/10 text-primary rounded-clay flex items-center justify-center mx-auto mb-4">
                                     <Share2 className="w-6 h-6" />
                                 </div>
                                 <h3 className="font-bold text-sm mb-2">Ready to level up?</h3>

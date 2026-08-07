@@ -11,7 +11,10 @@ const MODES = {
 const PomodoroTimer = () => {
     const [isOpen, setIsOpen] = useState(() => {
         const saved = localStorage.getItem('pomodoro_isOpen');
-        return saved !== null ? JSON.parse(saved) : true;
+        if (saved !== null) return JSON.parse(saved);
+        // On a phone the expanded panel covers most of the screen, so it
+        // starts collapsed there and the user opens it deliberately.
+        return typeof window === 'undefined' || window.innerWidth >= 768;
     });
     const [isHidden, setIsHidden] = useState(() => {
         const saved = localStorage.getItem('pomodoro_isHidden');
@@ -90,7 +93,7 @@ const PomodoroTimer = () => {
                         initial={{ opacity: 0, y: 20, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 20, scale: 0.95 }}
-                        className="glass-card p-5 w-72 pointer-events-auto border-primary/20 shadow-2xl relative overflow-hidden"
+                        className="glass-card p-5 w-72 pointer-events-auto border-primary/20 relative overflow-hidden"
                     >
                         {/* Background Progress Glow */}
                         <div 
@@ -104,7 +107,7 @@ const PomodoroTimer = () => {
 
                         <div className="flex items-center justify-between mb-6">
                             <div className="flex items-center gap-2">
-                                <div className="p-2 rounded-lg bg-surface-2 border border-border">
+                                <div className="p-2 rounded-clay-sm clay-sunk">
                                     <ActiveIcon className="w-4 h-4" style={{ color: MODES[mode].color }} />
                                 </div>
                                 <span className="text-xs font-black uppercase tracking-widest text-text-primary">
@@ -114,14 +117,14 @@ const PomodoroTimer = () => {
                             <div className="flex items-center gap-1">
                                 <button 
                                     onClick={() => setIsOpen(false)}
-                                    className="p-1.5 hover:bg-surface-2 rounded-lg transition-colors text-text-muted"
+                                    className="p-1.5 hover:bg-surface-2 rounded-clay-sm transition-colors text-text-muted"
                                     title="Minimize"
                                 >
                                     <Minimize2 className="w-4 h-4" />
                                 </button>
                                 <button 
                                     onClick={() => setIsHidden(true)}
-                                    className="p-1.5 hover:bg-surface-2 rounded-lg transition-colors text-text-muted"
+                                    className="p-1.5 hover:bg-surface-2 rounded-clay-sm transition-colors text-text-muted"
                                     title="Hide"
                                 >
                                     <ChevronRight className="w-5 h-5" />
@@ -137,7 +140,7 @@ const PomodoroTimer = () => {
                                         type="number"
                                         value={customMins}
                                         onChange={(e) => setCustomMins(e.target.value)}
-                                        className="w-24 text-4xl font-black bg-surface-2 border border-primary rounded-lg text-center text-text-primary outline-none"
+                                        className="w-24 text-4xl font-black bg-surface-2 border border-primary rounded-clay-sm text-center text-text-primary outline-none"
                                         onBlur={handleCustomSubmit}
                                     />
                                     <span className="text-xl font-bold text-text-muted">min</span>
@@ -149,7 +152,7 @@ const PomodoroTimer = () => {
                                     </h2>
                                     <button 
                                         onClick={() => { setIsEditing(true); setIsActive(false); }}
-                                        className="absolute -top-2 -right-6 p-1.5 rounded-full bg-surface-2 border border-border opacity-0 group-hover:opacity-100 transition-all hover:text-primary"
+                                        className="absolute -top-2 -right-6 p-1.5 rounded-full clay-sunk opacity-0 group-hover:opacity-100 transition-all hover:text-primary"
                                     >
                                         <Edit3 className="w-3 h-3" />
                                     </button>
@@ -163,13 +166,13 @@ const PomodoroTimer = () => {
                         <div className="flex items-center justify-center gap-3 mb-6">
                             <button 
                                 onClick={resetTimer}
-                                className="p-3 rounded-full bg-surface-2 border border-border text-text-secondary hover:text-text-primary transition-all active:scale-90"
+                                className="p-3 rounded-full clay-sunk text-text-secondary hover:text-text-primary transition-all active:scale-90"
                             >
                                 <RotateCcw className="w-5 h-5" />
                             </button>
                             <button 
                                 onClick={toggleTimer}
-                                className="w-14 h-14 rounded-full flex items-center justify-center text-white shadow-lg transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
+                                className="w-14 h-14 rounded-full flex items-center justify-center text-white transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
                                 disabled={isEditing}
                                 style={{ backgroundColor: MODES[mode].color, boxShadow: `0 8px 24px ${MODES[mode].color}40` }}
                             >
@@ -183,12 +186,12 @@ const PomodoroTimer = () => {
                             </button>
                         </div>
 
-                        <div className="flex p-1 bg-surface-2 rounded-xl border border-border">
+                        <div className="flex p-1 bg-surface-2 rounded-clay clay-sm">
                             {Object.entries(MODES).map(([key, config]) => (
                                 <button
                                     key={key}
                                     onClick={() => switchMode(key)}
-                                    className={`flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${mode === key ? 'bg-surface text-text-primary shadow-sm' : 'text-text-muted hover:text-text-secondary'}`}
+                                    className={`flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-clay-sm transition-all ${mode === key ? 'bg-surface text-text-primary ' : 'text-text-muted hover:text-text-secondary'}`}
                                 >
                                     {config.label}
                                 </button>
@@ -205,9 +208,9 @@ const PomodoroTimer = () => {
                 >
                     <button
                         onClick={() => setIsOpen(true)}
-                        className="glass-card flex items-center gap-3 px-4 py-3 border-primary/30 shadow-xl group hover:border-primary transition-colors"
+                        className="glass-card flex items-center gap-3 px-4 py-3 border-primary/30 group hover:border-primary transition-colors"
                     >
-                        <div className={`p-2 rounded-lg ${isActive ? 'bg-primary text-white animate-pulse' : 'bg-surface-2 text-text-muted'}`}>
+                        <div className={`p-2 rounded-clay-sm ${isActive ? 'bg-primary text-white animate-pulse' : 'bg-surface-2 text-text-muted'}`}>
                             <Brain className="w-4 h-4" />
                         </div>
                         <div className="text-left">
@@ -224,7 +227,7 @@ const PomodoroTimer = () => {
                     </button>
                     <button 
                         onClick={() => setIsHidden(true)}
-                        className="glass-card p-3 border-primary/30 shadow-xl hover:border-primary transition-colors text-text-muted"
+                        className="glass-card p-3 border-primary/30 hover:border-primary transition-colors text-text-muted"
                     >
                         <ChevronRight className="w-5 h-5" />
                     </button>

@@ -205,7 +205,7 @@ const FriendZoneDetail = () => {
                     <ArrowLeft className="w-3.5 h-3.5" /> All zones
                 </button>
 
-                <header className="rounded-2xl border border-border bg-surface p-5 sm:p-6 mb-6">
+                <header className="rounded-clay-lg clay p-5 sm:p-6 mb-6">
                     <div className="flex items-start justify-between gap-4 flex-wrap">
                         <div className="min-w-0">
                             <div className="flex items-center gap-2 mb-1">
@@ -228,7 +228,7 @@ const FriendZoneDetail = () => {
                                 <button
                                     onClick={handleLeave}
                                     disabled={busy}
-                                    className="px-3 py-2 rounded-lg text-xs font-semibold border border-border hover:bg-surface-2 inline-flex items-center gap-1.5 disabled:opacity-60"
+                                    className="px-3 py-2 rounded-clay-sm text-xs font-semibold clay-sm hover:bg-surface-2 inline-flex items-center gap-1.5 disabled:opacity-60"
                                 >
                                     <LogOut className="w-3.5 h-3.5" /> Leave
                                 </button>
@@ -238,14 +238,14 @@ const FriendZoneDetail = () => {
                                     <button
                                         onClick={handleRegenerate}
                                         disabled={busy}
-                                        className="px-3 py-2 rounded-lg text-xs font-semibold border border-border hover:bg-surface-2 inline-flex items-center gap-1.5 disabled:opacity-60"
+                                        className="px-3 py-2 rounded-clay-sm text-xs font-semibold clay-sm hover:bg-surface-2 inline-flex items-center gap-1.5 disabled:opacity-60"
                                     >
                                         <RefreshCw className="w-3.5 h-3.5" /> Rotate link
                                     </button>
                                     <button
                                         onClick={() => setConfirmDelete(true)}
                                         disabled={busy}
-                                        className="px-3 py-2 rounded-lg text-xs font-semibold border border-danger/30 text-danger hover:bg-danger/10 inline-flex items-center gap-1.5 disabled:opacity-60"
+                                        className="px-3 py-2 rounded-clay-sm text-xs font-semibold border border-danger/30 text-danger hover:bg-danger/10 inline-flex items-center gap-1.5 disabled:opacity-60"
                                     >
                                         <Trash2 className="w-3.5 h-3.5" /> Delete
                                     </button>
@@ -257,7 +257,7 @@ const FriendZoneDetail = () => {
                     {isOwner && zone.inviteCode && (
                         <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
                             {/* Invite link */}
-                            <div className="rounded-xl border border-border bg-surface-2 p-3">
+                            <div className="rounded-clay clay-sunk p-3">
                                 <div className="text-[10px] uppercase tracking-widest text-text-muted mb-1.5">Step 1 — Invite Link</div>
                                 <div className="flex items-center gap-2">
                                     <code className="flex-1 truncate text-xs text-text-primary">
@@ -274,7 +274,7 @@ const FriendZoneDetail = () => {
                             </div>
 
                             {/* Join code (OTP) */}
-                            <div className="rounded-xl border border-border bg-surface-2 p-3">
+                            <div className="rounded-clay clay-sunk p-3">
                                 <div className="text-[10px] uppercase tracking-widest text-text-muted mb-1.5">Step 2 — Join Code</div>
                                 {otp ? (
                                     <div className="flex items-center gap-2">
@@ -309,7 +309,7 @@ const FriendZoneDetail = () => {
                     )}
 
                     {error && (
-                        <div className="mt-3 p-2 rounded-lg border border-danger/30 bg-danger/10 text-danger text-xs">
+                        <div className="mt-3 p-2 rounded-clay-sm border border-danger/30 bg-danger/10 text-danger text-xs">
                             {error}
                         </div>
                     )}
@@ -317,7 +317,7 @@ const FriendZoneDetail = () => {
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Leaderboard */}
-                    <section className="lg:col-span-2 rounded-2xl border border-border bg-surface p-5 sm:p-6">
+                    <section className="lg:col-span-2 rounded-clay-lg clay p-5 sm:p-6">
                         <div className="flex items-center gap-2 mb-4">
                             <Trophy className="w-5 h-5 text-primary" />
                             <h2 className="font-bold text-text-primary">Leaderboard</h2>
@@ -327,7 +327,7 @@ const FriendZoneDetail = () => {
                             {leaderboard.map(m => (
                                 <li
                                     key={m.userId}
-                                    className={`flex items-center gap-3 p-3 rounded-xl border ${m.isYou ? 'border-primary/40 bg-primary/5' : 'border-border bg-surface-2'}`}
+                                    className={`flex items-center gap-3 p-3 rounded-clay border ${m.isYou ? 'border-primary/40 bg-primary/5' : 'border-border bg-surface-2'}`}
                                 >
                                     <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
                                         m.rank === 1 ? 'bg-warning/20 text-warning'
@@ -368,7 +368,7 @@ const FriendZoneDetail = () => {
                     </section>
 
                     {/* Activity Feed */}
-                    <section className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
+                    <section className="rounded-clay-lg clay p-5 sm:p-6">
                         <div className="flex items-center gap-2 mb-4">
                             <Zap className="w-5 h-5 text-primary" />
                             <h2 className="font-bold text-text-primary">Activity</h2>
@@ -407,7 +407,7 @@ const FriendZoneDetail = () => {
                     className="fixed inset-0 z-[60] bg-bg/70 backdrop-blur-sm flex items-center justify-center px-4"
                     onClick={(e) => { if (e.target === e.currentTarget) setConfirmDelete(false); }}
                 >
-                    <div className="w-full max-w-sm rounded-2xl border border-border bg-surface p-5 shadow-2xl">
+                    <div className="w-full max-w-sm rounded-clay-lg clay p-5 ">
                         <div className="flex items-start justify-between gap-2 mb-2">
                             <div className="flex items-center gap-2">
                                 <Trash2 className="w-5 h-5 text-danger" />
@@ -423,14 +423,14 @@ const FriendZoneDetail = () => {
                         <div className="flex justify-end gap-2">
                             <button
                                 onClick={() => setConfirmDelete(false)}
-                                className="px-4 py-2 rounded-lg text-sm text-text-secondary hover:text-text-primary"
+                                className="px-4 py-2 rounded-clay-sm text-sm text-text-secondary hover:text-text-primary"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handleDelete}
                                 disabled={busy}
-                                className="px-4 py-2 rounded-lg bg-danger text-white text-sm font-semibold disabled:opacity-60"
+                                className="px-4 py-2 rounded-clay-sm bg-danger text-white text-sm font-semibold disabled:opacity-60"
                             >
                                 Delete forever
                             </button>

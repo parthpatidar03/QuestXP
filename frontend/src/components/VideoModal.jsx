@@ -14,18 +14,18 @@ const VideoModal = ({ isOpen, onClose, videoUrl }) => {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+                        className="absolute inset-0 bg-bg/80 backdrop-blur-sm"
                     />
                     
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                        className="relative w-full max-w-5xl aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl border border-border"
+                        className="relative w-full max-w-5xl aspect-video bg-black rounded-clay-lg overflow-hidden clay-sm"
                     >
                         <button
                             onClick={onClose}
-                            className="absolute top-4 right-4 z-10 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
+                            className="absolute top-4 right-4 z-10 p-2 rounded-full bg-bg/70 text-white hover:bg-bg/90 transition-colors"
                         >
                             <X className="w-5 h-5" />
                         </button>

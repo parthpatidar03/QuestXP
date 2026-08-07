@@ -74,7 +74,7 @@ const FeedbackModal = ({ open: openProp, isOpen, onClose, contextPage = 'unknown
             aria-label="Send feedback"
             onClick={(e) => { if (e.target === e.currentTarget) close(); }}
         >
-            <div className="w-full max-w-lg rounded-2xl border border-border bg-surface p-5 shadow-2xl">
+            <div className="w-full max-w-lg rounded-clay-lg clay p-5 ">
                 {success ? (
                     <div className="py-8 flex flex-col items-center text-center">
                         <div className="w-16 h-16 bg-success/10 text-success rounded-full flex items-center justify-center mb-4">
@@ -107,7 +107,7 @@ const FeedbackModal = ({ open: openProp, isOpen, onClose, contextPage = 'unknown
                                 value={message}
                                 onChange={(e) => setMessage(e.target.value)}
                                 placeholder="Tell us what is working, what is confusing, or what you want next..."
-                                className="mt-2 w-full min-h-32 rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary/40 disabled:opacity-50"
+                                className="mt-2 w-full min-h-32 rounded-clay clay-sunk px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary/40 disabled:opacity-50"
                                 maxLength={2000}
                                 disabled={loading}
                             />
@@ -124,7 +124,7 @@ const FeedbackModal = ({ open: openProp, isOpen, onClose, contextPage = 'unknown
                                 <button
                                     type="button"
                                     onClick={close}
-                                    className="px-4 py-2 rounded-lg text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors"
+                                    className="px-4 py-2 rounded-clay-sm text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors"
                                     disabled={loading}
                                 >
                                     Cancel
@@ -132,7 +132,7 @@ const FeedbackModal = ({ open: openProp, isOpen, onClose, contextPage = 'unknown
                                 <button
                                     type="submit"
                                     disabled={loading || message.trim().length < 5}
-                                    className="px-4 py-2 rounded-lg text-sm font-semibold bg-primary text-white hover:bg-primary-hover transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="px-4 py-2 rounded-clay-sm text-sm font-semibold bg-primary text-white hover:bg-primary-hover transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {loading ? (
                                         <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />

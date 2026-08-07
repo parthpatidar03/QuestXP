@@ -11,7 +11,7 @@ const CourseCard = ({ course }) => {
     const totalLectures = course.totalLectures || 0;
 
     return (
-        <div className="card group flex flex-col items-start h-full p-0 overflow-hidden relative transition-all duration-150 hover:shadow-lg hover:shadow-primary/5">
+        <div className="card group flex flex-col items-start h-full p-0 overflow-hidden relative transition-all duration-150 hover:shadow-primary/5">
             {/* Thumbnail Placeholder */}
             <div className="w-full h-32 bg-surface-2 flex items-center justify-center relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-t from-surface to-transparent z-10"></div>
@@ -43,7 +43,7 @@ const CourseCard = ({ course }) => {
                     </div>
 
                     {isProcessing ? (
-                        <button disabled className="w-full py-2 bg-surface-2 text-text-muted text-sm font-semibold rounded-md border border-border cursor-not-allowed">
+                        <button disabled className="w-full py-2 bg-surface-2 text-text-muted text-sm font-semibold rounded-md clay-sm cursor-not-allowed">
                             Preparing Course...
                         </button>
                     ) : isError ? (
@@ -51,7 +51,7 @@ const CourseCard = ({ course }) => {
                             Failed to Load
                         </button>
                     ) : (
-                        <Link to={`/courses/${course._id}`} className="w-full flex justify-center items-center gap-2 py-2.5 bg-surface-2 group-hover:bg-primary text-text-primary group-hover:text-white text-sm font-semibold rounded-md border border-border group-hover:border-primary transition-all">
+                        <Link to={`/courses/${course._id}`} className="w-full flex justify-center items-center gap-2 py-2.5 bg-surface-2 group-hover:bg-primary text-text-primary group-hover:text-white text-sm font-semibold rounded-md clay-sm group-hover:border-primary transition-all">
                             <Play className="w-4 h-4 fill-current" />
                             Start Learning
                         </Link>

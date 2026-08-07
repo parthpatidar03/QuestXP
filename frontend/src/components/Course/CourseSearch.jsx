@@ -103,7 +103,7 @@ function CourseSearch() {
 
     return (
         <div id="tour-search" ref={containerRef} className="relative flex-1 max-w-md">
-            <div className={`flex items-center gap-2 bg-surface-2 border rounded-lg px-3 h-10 text-sm transition-colors ${focused ? 'border-primary' : 'border-border hover:border-text-muted'}`}>
+            <div className={`flex items-center gap-2 bg-surface-2 border rounded-clay-sm px-3 h-10 text-sm transition-colors ${focused ? 'border-primary' : 'border-border hover:border-text-muted'}`}>
                 {isFetching
                     ? <Loader2 className="w-4 h-4 shrink-0 text-primary animate-spin" />
                     : <Search className="w-4 h-4 shrink-0 text-text-muted" />
@@ -137,7 +137,7 @@ function CourseSearch() {
 
             {/* Dropdown */}
             {showDropdown && (
-                <div className="absolute top-full left-0 right-0 mt-1.5 z-50 rounded-xl border border-border bg-surface shadow-2xl overflow-hidden">
+                <div className="absolute top-full left-0 right-0 mt-1.5 z-50 rounded-clay clay overflow-hidden">
                     {isFetching ? (
                         <div className="flex items-center gap-3 px-4 py-3 text-sm text-text-muted">
                             <Loader2 className="w-4 h-4 shrink-0 animate-spin text-primary" />
@@ -161,7 +161,7 @@ function CourseSearch() {
                                         onMouseEnter={() => setHighlighted(i)}
                                         className={`flex items-center gap-3 px-3 py-2.5 cursor-pointer transition-colors ${i === highlighted ? 'bg-surface-2' : 'hover:bg-surface-2'}`}
                                     >
-                                        <div className="w-9 h-9 rounded-md overflow-hidden shrink-0 border border-border bg-surface-2 flex items-center justify-center">
+                                        <div className="w-9 h-9 rounded-md overflow-hidden shrink-0 clay-sunk flex items-center justify-center">
                                             {thumb
                                                 ? <img src={thumb} alt="" className="w-full h-full object-cover" />
                                                 : <BookOpen className="w-4 h-4 text-text-muted" />

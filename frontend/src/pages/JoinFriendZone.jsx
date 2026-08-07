@@ -118,9 +118,9 @@ const JoinFriendZone = () => {
                     <ArrowLeft className="w-3.5 h-3.5" /> Dashboard
                 </button>
 
-                <div className="rounded-2xl border border-border bg-surface p-6 shadow-2xl">
+                <div className="rounded-clay-lg clay p-6 ">
                     <div className="flex items-center gap-3 mb-5">
-                        <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-clay bg-primary/10 flex items-center justify-center">
                             <Users className="w-5 h-5 text-primary" />
                         </div>
                         <div>
@@ -134,12 +134,12 @@ const JoinFriendZone = () => {
                             <Loader2 className="w-6 h-6 animate-spin text-primary" />
                         </div>
                     ) : !zone ? (
-                        <div className="p-4 rounded-xl border border-danger/30 bg-danger/10 text-danger text-sm">
+                        <div className="p-4 rounded-clay border border-danger/30 bg-danger/10 text-danger text-sm">
                             {error || 'This invite is invalid or has expired.'}
                         </div>
                     ) : (
                         <form onSubmit={submit} className="space-y-5">
-                            <div className="rounded-xl border border-border bg-surface-2 p-4">
+                            <div className="rounded-clay clay-sunk p-4">
                                 <div className="text-[10px] uppercase tracking-widest text-text-muted">You're joining</div>
                                 <div className="font-bold text-text-primary mt-1">{zone.name}</div>
                                 {zone.description && (
@@ -166,7 +166,7 @@ const JoinFriendZone = () => {
                                             inputMode="numeric"
                                             autoComplete="one-time-code"
                                             maxLength={OTP_LENGTH}
-                                            className="w-11 h-12 text-center rounded-lg border border-border bg-surface-2 text-lg font-display font-bold text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/40"
+                                            className="w-11 h-12 text-center rounded-clay-sm clay-sunk text-lg font-display font-bold text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/40"
                                         />
                                     ))}
                                 </div>
@@ -176,7 +176,7 @@ const JoinFriendZone = () => {
                             </div>
 
                             {zone.hasPassword && (
-                                <details className="rounded-lg border border-border bg-surface-2 p-3">
+                                <details className="rounded-clay-sm clay-sunk p-3">
                                     <summary className="text-xs text-text-muted cursor-pointer">
                                         This is a legacy zone — use password instead
                                     </summary>
@@ -186,7 +186,7 @@ const JoinFriendZone = () => {
                                         type="password"
                                         maxLength={64}
                                         placeholder="Zone password"
-                                        className="mt-2 w-full px-3 py-2 rounded-md border border-border bg-surface text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary/40 font-mono"
+                                        className="mt-2 w-full px-3 py-2 rounded-md clay text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary/40 font-mono"
                                     />
                                 </details>
                             )}
@@ -195,7 +195,7 @@ const JoinFriendZone = () => {
                             <button
                                 type="submit"
                                 disabled={submitting}
-                                className="w-full py-2.5 rounded-xl bg-primary text-bg font-semibold disabled:opacity-60 inline-flex items-center justify-center gap-2"
+                                className="w-full py-2.5 rounded-clay bg-primary text-bg font-semibold disabled:opacity-60 inline-flex items-center justify-center gap-2"
                             >
                                 {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
                                 Join Zone

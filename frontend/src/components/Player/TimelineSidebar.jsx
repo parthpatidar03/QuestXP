@@ -34,7 +34,7 @@ const TimelineSidebar = ({ allLectures, currentLectureId, completedLectures = []
                                         e.stopPropagation();
                                         onToggleComplete?.(lecture._id, isCompleted);
                                     }}
-                                    className={`w-7 h-7 rounded-lg border-2 flex items-center justify-center transition-all ${
+                                    className={`w-7 h-7 rounded-clay-sm border-2 flex items-center justify-center transition-all ${
                                         isCompleted 
                                             ? 'bg-success border-success text-white shadow-[0_0_15px_rgba(16,185,129,0.4)]' 
                                             : 'border-border bg-surface-3 hover:border-primary/50'
