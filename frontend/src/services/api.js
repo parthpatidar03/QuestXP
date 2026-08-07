@@ -123,7 +123,9 @@ api.interceptors.response.use(
                 const isPublicPage =
                     ['/', '/login', '/register'].includes(window.location.pathname) ||
                     window.location.pathname.startsWith('/share/');
-                if (!isPublicPage) {
+                const isDemoUser = sessionStorage.getItem('questxp_demo') === 'true';
+                
+                if (!isPublicPage && !isDemoUser) {
                     window.location.href = '/login?reason=session_expired';
                 }
                 return Promise.reject(refreshError);
