@@ -15,7 +15,6 @@ import UserTour from '../components/Dashboard/UserTour';
 import StreakCalendar from '../components/StreakCalendar';
 import CourseCreationForm from '../components/Course/CourseCreationForm';
 import { shootFireworks, shootConfetti } from '../utils/confetti';
-import { BGPattern } from '../components/ui/bg-pattern';
 import FeedbackModal from '../components/FeedbackModal';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { StatCardSkeleton, CourseCardSkeleton } from '../components/ui/Skeleton';
@@ -26,7 +25,6 @@ import GlobalLeaderboardModal from '../components/Dashboard/GlobalLeaderboardMod
 import GenerateRoadmapModal from '../components/Roadmap/GenerateRoadmapModal';
 import { ShinyCard } from '../components/ui/ShinyCard';
 import ProgressAnimata from '../components/ui/ProgressAnimata';
-import AnimatedBorderTrail from '../components/animata/container/animated-border-trail';
 
 
 /* ── Helpers ─────────────────────────────────────────────────────────── */
@@ -40,28 +38,38 @@ function calcCourseProgress(course, progress) {
 
 
 
-/* ── Productivity Cards ─────────────────────────────────────────────── */
+/* ── Stat tiles ─────────────────────────────────────────────────────────
+   These are measurement, not action. They sit below the day's work and
+   stay deliberately small — four large cards at the top of the page was
+   the main reason the old dashboard read as overwhelming.               */
+
+function StatTile({ icon: Icon, iconClass = 'text-primary', label, value, sub, className = '' }) {
+    return (
+        <div className={`clay rounded-clay-lg p-4 flex items-center gap-4 ${className}`}>
+            <div className={`clay-sunk w-11 h-11 shrink-0 rounded-clay flex items-center justify-center ${iconClass}`}>
+                <Icon className="w-5 h-5" />
+            </div>
+            <div className="min-w-0">
+                <p className="text-[11px] font-bold uppercase tracking-widest text-text-muted truncate">{label}</p>
+                <p className="font-mono font-bold text-xl text-text-primary tabular-nums truncate leading-tight">{value}</p>
+                {sub && <p className="text-xs font-semibold text-text-secondary truncate mt-0.5">{sub}</p>}
+            </div>
+        </div>
+    );
+}
+
 function RankCard({ rank, percentile, trend, className = "" }) {
     return (
-        <ShinyCard className={`glass-card p-4 sm:p-5 relative overflow-hidden group hover:scale-[1.02] transition-all flex flex-col justify-between ${className}`}>
-            <div className="flex items-center gap-2 mb-3">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-gold/10 border border-gold/20 overflow-hidden">
-                    <img src="/Trophy rank.png" alt="" className="w-5 h-5 object-contain" />
-                </div>
-                <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Rank Position</span>
-            </div>
-            <div className="flex items-baseline gap-2 mb-1 overflow-hidden">
-                <span className="text-2xl sm:text-3xl font-black text-text-primary tracking-tight truncate">#{rank || '—'}</span>
-                {trend === 'up' && (
-                    <span className="text-xs font-bold text-success flex items-center gap-0.5">
-                        <TrendingUp className="w-3 h-3" /> Trend Up
-                    </span>
-                )}
-            </div>
-            <p className="text-xs font-semibold text-text-secondary">
-                <span className="text-primary">Top {percentile}%</span> of learners this week
-            </p>
-        </ShinyCard>
+        <StatTile
+            icon={Trophy}
+            iconClass="text-gold"
+            label="Rank position"
+            value={rank ? `#${rank}` : '—'}
+            sub={percentile != null
+                ? `Top ${percentile}%${trend === 'up' ? ' · rising' : ''}`
+                : 'Unranked so far'}
+            className={className}
+        />
     );
 }
 
@@ -79,75 +87,44 @@ const formatTime = (seconds) => {
 
 
 function LearningTimeCard({ totalSeconds, weeklySeconds, avgSecondsPerDay, className = "" }) {
-    const hasActivity = totalSeconds > 0;
-
     return (
-        <ShinyCard className={`glass-card p-4 sm:p-5 relative overflow-hidden group hover:scale-[1.02] transition-all flex flex-col justify-between ${className}`}>
-            <div className="flex items-center gap-2 mb-3">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-primary/10 border border-primary/20 overflow-hidden">
-                    <img src="/Learning time.png" alt="" className="w-5 h-5 object-contain" />
-                </div>
-                <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Learning Time</span>
-            </div>
-            <div className="flex items-baseline gap-2 mb-1 overflow-hidden">
-                <span className="text-2xl sm:text-3xl font-black text-text-primary tracking-tight truncate">
-                    {formatTime(totalSeconds)}
-                </span>
-                <span className="text-xs font-bold text-text-muted">{hasActivity ? 'Total' : 'No activity yet'}</span>
-            </div>
-            <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/40">
-                <div className="flex flex-col">
-                    <span className="text-[10px] font-bold text-text-muted uppercase tracking-tighter">This Week</span>
-                    <span className="text-sm font-black text-text-primary">{formatTime(weeklySeconds)}</span>
-                </div>
-                <div className="flex flex-col text-right">
-                    <span className="text-[10px] font-bold text-text-muted uppercase tracking-tighter">Daily Avg</span>
-                    <span className="text-sm font-black text-text-primary">{formatTime(avgSecondsPerDay)}</span>
-                </div>
-            </div>
-        </ShinyCard>
+        <StatTile
+            icon={Clock}
+            label="Learning time"
+            value={formatTime(totalSeconds)}
+            sub={totalSeconds > 0
+                ? `${formatTime(weeklySeconds)} this week · ${formatTime(avgSecondsPerDay)}/day`
+                : 'No activity yet'}
+            className={className}
+        />
     );
 }
 
 function DeadlineCard({ deadline, className = "" }) {
     if (!deadline || !deadline.courseTitle) {
         return (
-            <ShinyCard className={`glass-card p-4 sm:p-5 flex flex-col justify-center items-center text-center ${className}`}>
-                <Calendar className="w-8 h-8 text-primary mb-2 opacity-40" />
-                <p className="text-sm font-black text-text-secondary uppercase tracking-widest">No Active Targets</p>
-                <p className="text-xs text-text-muted mt-1">Set a study plan to see targets</p>
-            </ShinyCard>
+            <StatTile
+                icon={Calendar}
+                iconClass="text-text-muted"
+                label="Next milestone"
+                value="—"
+                sub="Set a study plan to see targets"
+                className={className}
+            />
         );
     }
 
     const isUrgent = deadline.daysLeft <= 2;
 
     return (
-        <ShinyCard 
-            className={`glass-card p-4 sm:p-5 relative overflow-hidden group hover:scale-[1.02] transition-all border-l-4 ${isUrgent ? 'border-l-danger bg-danger/[0.02]' : 'border-l-primary'} flex flex-col justify-between ${className}`}
-        >
-            <div className="flex items-center gap-2 mb-3">
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isUrgent ? 'bg-danger/10 text-danger' : 'bg-primary/10 text-primary'} border border-border`}>
-                    <Calendar className="w-4 h-4" />
-                </div>
-                <span className="text-xs font-black uppercase tracking-widest text-primary">Next Milestone</span>
-            </div>
-            <h4 className="text-sm font-black text-text-primary truncate mb-1">
-                {deadline.courseTitle}
-            </h4>
-            <div className="flex items-center justify-between mb-3">
-                <span className={`text-sm font-black ${isUrgent ? 'text-danger' : 'text-text-secondary'}`}>
-                    {deadline.daysLeft} Days Left
-                </span>
-                <span className="text-xs font-black text-text-primary">{deadline.progress}%</span>
-            </div>
-            <div className="progress-bar h-1.5 bg-surface-3">
-                <div 
-                    className={`progress-bar__fill ${isUrgent ? 'bg-danger' : 'bg-primary'}`} 
-                    style={{ width: `${deadline.progress}%` }} 
-                />
-            </div>
-        </ShinyCard>
+        <StatTile
+            icon={Calendar}
+            iconClass={isUrgent ? 'text-danger' : 'text-primary'}
+            label="Next milestone"
+            value={`${deadline.daysLeft} ${deadline.daysLeft === 1 ? 'day' : 'days'}`}
+            sub={`${deadline.courseTitle} · ${deadline.progress}%`}
+            className={className}
+        />
     );
 }
 
@@ -165,47 +142,47 @@ function ShareModal({ isOpen, onClose, courseTitle, shareUrl }) {
 
     return (
         <div className="fixed inset-0 z-[200] flex items-start justify-center p-4 pt-16 sm:pt-24 animate-in fade-in duration-200">
-            <div className="absolute inset-0 bg-bg/60 backdrop-blur-sm" onClick={onClose} />
-            <div ref={trapRef} role="dialog" aria-modal="true" aria-label="Share course" className="relative w-full max-w-md bg-surface border border-border rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-top-4 duration-300">
-                <div className="p-5 border-b border-border bg-surface-2 flex items-center justify-between">
+            <div className="absolute inset-0 bg-bg/70 backdrop-blur-sm" onClick={onClose} />
+            <div ref={trapRef} role="dialog" aria-modal="true" aria-label="Share course" className="relative w-full max-w-md clay rounded-clay-xl overflow-hidden animate-in slide-in-from-top-4 duration-300">
+                <div className="p-5 flex items-center justify-between">
                     <div className="flex items-center gap-3 text-primary">
                         <Share2 className="w-5 h-5" />
-                        <span className="font-black uppercase tracking-widest text-sm">Share Quest</span>
+                        <span className="font-display font-bold text-base">Share quest</span>
                     </div>
-                    <button onClick={onClose} className="p-2 hover:bg-surface-3 rounded-lg transition-colors">
+                    <button onClick={onClose} className="clay-sm clay-interactive w-10 h-10 flex items-center justify-center rounded-clay" aria-label="Close">
                         <X className="w-5 h-5 text-text-muted" />
                     </button>
                 </div>
-                <div className="p-6 space-y-4">
-                    <div className="p-4 bg-surface-2 rounded-xl border border-border text-sm text-text-secondary italic leading-relaxed">
+                <div className="px-6 pb-6 space-y-4">
+                    <div className="clay-sunk p-4 rounded-clay text-sm text-text-secondary leading-relaxed">
                         "{shareText}"
                     </div>
-                    
+
                     <div className="grid grid-cols-2 gap-3">
-                        <button 
+                        <button
                             onClick={copyMessage}
-                            className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-primary text-white text-xs font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all"
+                            className="btn-primary text-sm"
                         >
                             <Copy className="w-4 h-4" />
-                            Copy Message
+                            Copy
                         </button>
-                        <a 
+                        <a
                             href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#25D366] text-white text-xs font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all"
+                            className="clay-sm clay-interactive flex items-center justify-center gap-2 min-h-[44px] px-4 rounded-clay text-sm font-bold text-text-primary"
                         >
-                            <img src="/whatsapp-icon.png" alt="WhatsApp" className="w-5 h-5 object-contain" />
+                            <img src="/whatsapp-icon.png" alt="" className="w-5 h-5 object-contain" />
                             WhatsApp
                         </a>
                     </div>
-                    
-                    <div className="pt-4 border-t border-border">
-                        <div className="flex items-center justify-between text-xs font-black text-primary uppercase tracking-widest mb-2">
-                            <span>Direct Link</span>
+
+                    <div>
+                        <div className="flex items-center justify-between text-xs font-bold text-text-muted uppercase tracking-widest mb-2">
+                            <span>Direct link</span>
                             <span className="text-success">Ready</span>
                         </div>
-                        <div className="flex items-center gap-2 p-3 bg-surface-3 rounded-lg border border-border text-xs font-mono text-text-primary truncate">
+                        <div className="clay-sunk-sm flex items-center gap-2 p-3 rounded-clay text-xs font-mono text-text-primary truncate">
                             {shareUrl}
                         </div>
                     </div>
@@ -217,21 +194,14 @@ function ShareModal({ isOpen, onClose, courseTitle, shareUrl }) {
 
 function ProductivityCard({ completionRate, completedCourses, totalEnrolled, className = "" }) {
     return (
-        <ShinyCard className={`glass-card p-4 sm:p-5 relative overflow-hidden group hover:scale-[1.02] transition-all flex flex-col justify-between ${className}`}>
-            <div className="flex items-center gap-2 mb-3">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-success/10 border border-success/20 overflow-hidden">
-                    <img src="/Mastery level.png" alt="" className="w-5 h-5 object-contain" />
-                </div>
-                <span className="text-xs font-black uppercase tracking-widest text-primary">Mastery Level</span>
-            </div>
-            <div className="flex items-baseline gap-2 mb-1 overflow-hidden">
-                <span className="text-3xl sm:text-4xl font-black text-text-primary tracking-tight truncate">{completionRate}%</span>
-                <span className="text-sm font-black text-text-secondary">Global</span>
-            </div>
-            <p className="text-xs font-semibold text-text-secondary">
-                <span className="text-success">{completedCourses}</span> courses mastered out of {totalEnrolled}
-            </p>
-        </ShinyCard>
+        <StatTile
+            icon={TrendingUp}
+            iconClass="text-success"
+            label="Mastery level"
+            value={`${completionRate ?? 0}%`}
+            sub={`${completedCourses ?? 0} of ${totalEnrolled ?? 0} courses finished`}
+            className={className}
+        />
     );
 }
 
@@ -276,36 +246,32 @@ function CourseCard({ course, progress, onDelete, isDeleting, priority = false }
             courseTitle={course.title}
             shareUrl={`${window.location.origin}/share/${course._id}`}
         />
-        <AnimatedBorderTrail className="w-full block hover:-translate-y-[2px] transition-transform duration-150 shadow-card">
-            <ShinyCard 
-                className="group block transition-all cursor-pointer w-full h-full" 
-                style={{ padding: 0, overflow: 'hidden' }}
-                onClick={handleCardClick}
-            >
-                <div
-                    className="relative w-full aspect-video overflow-hidden"
-                >
+        <ShinyCard
+            className="clay clay-interactive rounded-clay-lg group block cursor-pointer w-full h-full overflow-hidden"
+            style={{ padding: 0 }}
+            onClick={handleCardClick}
+        >
+                <div className="relative w-full aspect-video overflow-hidden rounded-clay m-2 mb-0 w-[calc(100%-1rem)]">
                     {thumb ? (
-                        <img 
-                            src={thumb} 
+                        <img
+                            src={thumb}
                             alt={course.title}
                             loading={priority ? undefined : "lazy"}
                             fetchPriority={priority ? "high" : "auto"}
                             className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-500"
                         />
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-surface-2">
+                        <div className="w-full h-full flex items-center justify-center clay-sunk">
                             <BookOpen className="w-10 h-10 text-text-muted" />
                         </div>
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-bg via-transparent to-transparent opacity-60" />
 
-                    <div className="absolute top-2 right-2 xp-chip">
-                        <img src="/favicon.png" alt="" className="w-3 h-3 object-contain" /> +{xpPool} XP
+                    <div className="absolute top-2 right-2 xp-chip !bg-surface/90 backdrop-blur-sm">
+                        +{xpPool} XP
                     </div>
                     <button
                         type="button"
-                        className="absolute top-2 left-2 inline-flex items-center gap-1 rounded-full border border-red-500/40 bg-red-500/85 px-2.5 py-1 text-[11px] font-semibold text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-70"
+                        className="absolute top-2 left-2 inline-flex items-center justify-center gap-1 rounded-clay bg-surface/90 backdrop-blur-sm w-9 h-9 text-danger transition-all hover:bg-danger hover:text-white disabled:cursor-not-allowed disabled:opacity-70"
                         onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
@@ -313,58 +279,51 @@ function CourseCard({ course, progress, onDelete, isDeleting, priority = false }
                         }}
                         disabled={isDeleting}
                         aria-label={`Delete ${course.title}`}
-                        title="Delete course permanently"
+                        title={isDeleting ? 'Deleting...' : 'Delete course permanently'}
                     >
-                        <Trash2 className="w-3 h-3" />
-                        {isDeleting ? 'Deleting...' : 'Delete'}
+                        <Trash2 className="w-4 h-4" />
                     </button>
                     <button
                         type="button"
-                        className="absolute top-2 left-[5.5rem] inline-flex items-center gap-1 rounded-full border border-indigo-500/50 bg-indigo-600 px-2.5 py-1 text-[11px] font-bold text-white transition-all hover:bg-indigo-700 hover:scale-105 shadow-lg shadow-indigo-500/20 disabled:cursor-not-allowed disabled:opacity-70"
+                        className="absolute top-2 left-[3.25rem] inline-flex items-center justify-center gap-1 rounded-clay bg-surface/90 backdrop-blur-sm h-9 px-2.5 text-xs font-bold text-text-primary transition-all hover:bg-primary hover:text-white"
                         onClick={handleShare}
                         aria-label={`Share ${course.title}`}
                         title="Copy share link"
                     >
-                        <Share2 className="w-3 h-3" />
-                        {shareStatus || 'Share'}
+                        <Share2 className="w-4 h-4" />
+                        {shareStatus && <span>{shareStatus}</span>}
                     </button>
-                    <div className="absolute bottom-2 left-2 bg-surface/90 rounded-full px-2 py-0.5 text-xs font-semibold" style={{ color: pct === 100 ? 'var(--color-success)' : 'var(--color-primary)' }}>
-                        {pct}%
-                    </div>
                 </div>
 
                 <div className="p-4">
-                    <h3 className="font-serif font-bold text-text-primary text-base leading-tight mb-1 group-hover:text-primary transition-colors line-clamp-2">{course.title}</h3>
-                    <div className="mb-3 text-[10px] font-black uppercase tracking-widest text-text-muted flex items-center gap-1">
-                        <Calendar className="w-3 h-3" />
-                        {course.createdAt ? new Date(course.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Unknown Date'}
+                    <h3 className="font-display font-bold text-text-primary text-base leading-tight mb-1.5 group-hover:text-primary transition-colors line-clamp-2">{course.title}</h3>
+                    <div className="mb-3 text-xs font-semibold text-text-muted flex items-center gap-1.5">
+                        <Calendar className="w-3.5 h-3.5" />
+                        {course.createdAt ? new Date(course.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Unknown date'}
                     </div>
                     <div className="mb-3">
                         <ProgressAnimata progress={pct} />
                     </div>
-                    <div className="flex items-center justify-between text-xs font-black text-text-secondary uppercase tracking-tight">
-                        <span>{course.totalLectures} missions</span>
-                        <span className="text-primary">{pct}% complete</span>
+                    <div className="flex items-center justify-between text-xs font-bold text-text-secondary">
+                        <span className="font-mono">{course.totalLectures} missions</span>
+                        <span className="font-mono text-primary">{pct}% complete</span>
                     </div>
-                    <div className="mt-2 flex items-center justify-between">
+                    <div className="mt-3 flex items-center justify-between gap-2">
                         {resumeId && (
-                            <div className="text-xs font-semibold text-primary">
-                                <span className="flex items-center gap-1 hover:underline">
-                                    Resume Mission <ChevronRight className="w-3 h-3" />
-                                </span>
-                            </div>
+                            <span className="flex items-center gap-1 text-sm font-bold text-primary group-hover:gap-2 transition-all">
+                                Resume <ChevronRight className="w-4 h-4" />
+                            </span>
                         )}
-                        <Link 
+                        <Link
                             to={`/roadmap?courseId=${course._id}`}
                             onClick={(e) => e.stopPropagation()}
-                            className="flex items-center gap-1 text-xs font-black uppercase tracking-widest text-text-secondary hover:text-primary transition-colors"
+                            className="flex items-center gap-1.5 text-xs font-bold text-text-secondary hover:text-primary transition-colors"
                         >
                             <Layout className="w-3.5 h-3.5" /> Roadmap
                         </Link>
                     </div>
                 </div>
-            </ShinyCard>
-        </AnimatedBorderTrail>
+        </ShinyCard>
         </>
     );
 }
@@ -385,7 +344,7 @@ const Dashboard = () => {
         guest: true 
     } : null), [authUser, isDemo]);
 
-    const { level, levelTitle, xpProgress, xpToNextLevel, setProfile } = useGamificationStore();
+    const { level, levelTitle, xpProgress, xpToNextLevel, totalXP, setProfile } = useGamificationStore();
     const queryClient = useQueryClient();
 
     const [showCreate, setShowCreate] = useState(false);
@@ -723,106 +682,176 @@ const Dashboard = () => {
 
 
     return (
-        <div className="min-h-screen bg-bg text-text-primary relative overflow-hidden">
-            <BGPattern variant="grid" mask="fade-edges" fill="var(--color-primary)" className="opacity-5" />
+        <div className="min-h-screen bg-bg text-text-primary relative">
             <NavBar />
 
-            <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 py-6 flex flex-col xl:flex-row gap-6">
-                <div className="flex-1 min-w-0 space-y-5">
-                    {activeCourse && (
-                        <Link 
+            <div className="max-w-screen-2xl mx-auto px-3 sm:px-5 py-5 space-y-5 relative z-10">
+
+                {/* ── 1. Who you are, where you are ─────────────────────────
+                    One line of identity and level progress, so the sidebar
+                    no longer has to carry it above the day's work.        */}
+                <section className="clay rounded-clay-lg p-5 flex flex-col sm:flex-row sm:items-center gap-5">
+                    <div className="flex items-center gap-4 min-w-0 flex-1">
+                        <div className="w-14 h-14 shrink-0 rounded-clay flex items-center justify-center text-white font-display font-bold text-xl clay-pop-sm"
+                             style={{ background: 'linear-gradient(150deg, var(--color-primary), var(--color-primary-hover))' }}>
+                            {user.name?.charAt(0)?.toUpperCase()}
+                        </div>
+                        <div className="min-w-0">
+                            <h1 className="text-xl sm:text-2xl font-display font-bold text-text-primary truncate">
+                                {(() => {
+                                    const h = new Date().getHours();
+                                    return h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
+                                })()}, {user.name?.split(' ')[0]}
+                            </h1>
+                            <p className="text-sm font-semibold text-text-secondary truncate">
+                                {levelTitle || 'Explorer'} · Level {level}
+                                {!isGuest && <> · <span className="font-mono">{Number(totalXP || user?.xp || 0).toLocaleString()} XP</span></>}
+                            </p>
+                        </div>
+                    </div>
+
+                    {!isGuest && (
+                        <div className="w-full sm:w-64 shrink-0">
+                            <div className="flex items-center justify-between mb-2 text-xs font-bold text-text-muted">
+                                <span className="uppercase tracking-widest">Level {level}</span>
+                                <span className="font-mono">{xpToNextLevel} to Lvl {level + 1}</span>
+                            </div>
+                            <div className="progress-bar h-3">
+                                <div className="progress-bar__fill" style={{ width: `${xpProgress}%` }} />
+                            </div>
+                        </div>
+                    )}
+
+                    <button
+                        onClick={() => setShowXPSystem(true)}
+                        className="clay-sm clay-interactive shrink-0 w-11 h-11 flex items-center justify-center rounded-clay text-text-secondary hover:text-primary"
+                        title="How XP works"
+                        aria-label="How XP works"
+                    >
+                        <Info className="w-5 h-5" />
+                    </button>
+                </section>
+
+                {/* ── 2. Today — the only decision that matters right now ── */}
+                <section className="grid lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] gap-5 items-stretch">
+                    {activeCourse ? (
+                        <Link
                             id="tour-hero"
                             to={firstLecId ? `/courses/${activeCourse._id}/lectures/${firstLecId}` : `/courses/${activeCourse._id}`}
-
-                            className="relative rounded-xl overflow-hidden p-4 sm:p-5 flex flex-col sm:flex-row gap-4 sm:items-center bg-surface border border-border shadow-card hover:border-primary/50 group transition-all"
+                            className="clay clay-interactive rounded-clay-lg p-5 flex flex-col sm:flex-row gap-5 sm:items-center group"
                         >
                             {activeCourse.sections?.[0]?.lectures?.[0]?.thumbnailUrl && (
                                 <img
                                     src={activeCourse.sections[0].lectures[0].thumbnailUrl}
-                                    alt="course"
-                                    className="w-24 h-16 sm:w-32 sm:h-20 object-cover rounded-lg shrink-0 border border-border group-hover:scale-105 transition-transform duration-500"
+                                    alt=""
+                                    className="w-full sm:w-40 h-32 sm:h-24 object-cover rounded-clay shrink-0 clay-pop-sm"
                                 />
                             )}
 
-                            <div className="relative flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-[10px] font-bold uppercase tracking-widest mb-1 text-primary">Continue studying</p>
-                                    <h1 className="text-lg sm:text-xl font-bold text-text-primary mb-1.5 leading-tight group-hover:text-primary transition-colors tracking-tight truncate">
-                                        {activeCourse.title}
-                                    </h1>
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <span className="xp-chip text-[10px] py-0.5"><img src="/favicon.png" alt="" className="w-2.5 h-2.5 object-contain" /> {Math.floor(activePct * (activeCourse.totalLectures * XP_PER_LECTURE) / 100)} / {activeCourse.totalLectures * XP_PER_LECTURE} XP</span>
-                                        <span className="text-[10px] text-text-muted">{activePct > 0 ? `${activePct}% complete` : 'Ready to begin'}</span>
-                                    </div>
-                                    <div className="max-w-[200px]">
-                                        <ProgressAnimata progress={activePct} />
-                                    </div>
+                            <div className="flex-1 min-w-0">
+                                <p className="text-xs font-bold uppercase tracking-widest mb-1.5 text-primary">Continue studying</p>
+                                <h2 className="text-lg sm:text-xl font-display font-bold text-text-primary mb-2 leading-tight group-hover:text-primary transition-colors truncate">
+                                    {activeCourse.title}
+                                </h2>
+                                <div className="flex items-center gap-2.5 mb-3 flex-wrap">
+                                    <span className="xp-chip">
+                                        {Math.floor(activePct * (activeCourse.totalLectures * XP_PER_LECTURE) / 100).toLocaleString()} / {(activeCourse.totalLectures * XP_PER_LECTURE).toLocaleString()} XP
+                                    </span>
+                                    <span className="text-xs font-semibold text-text-muted">
+                                        {activePct > 0 ? `${activePct}% complete` : 'Ready to begin'}
+                                    </span>
                                 </div>
-                                
-                                <div className="btn-esports shrink-0 px-4 py-2 text-[10px] sm:text-xs">
-                                    <ChevronRight className="w-3 h-3" />
-                                    Resume
+                                <div className="max-w-[240px]">
+                                    <ProgressAnimata progress={activePct} />
                                 </div>
                             </div>
+
+                            <div className="btn-primary shrink-0 self-start sm:self-center">
+                                Resume
+                                <ChevronRight className="w-4 h-4" />
+                            </div>
                         </Link>
+                    ) : (
+                        <div className="clay rounded-clay-lg p-8 flex flex-col items-center justify-center text-center gap-3">
+                            <div className="clay-sunk w-14 h-14 rounded-clay flex items-center justify-center">
+                                <BookOpen className="w-6 h-6 text-text-muted" />
+                            </div>
+                            <h2 className="text-lg font-display font-bold text-text-primary">Nothing in progress</h2>
+                            <p className="text-sm text-text-secondary max-w-sm">
+                                Paste a YouTube playlist below and QuestXP turns it into a course with quizzes and a schedule.
+                            </p>
+                            <button onClick={() => setShowCreate(true)} className="btn-primary mt-1">
+                                <Plus className="w-4 h-4" /> Create your first course
+                            </button>
+                        </div>
                     )}
 
+                    <div id="tour-mission" className="min-w-0">
+                        <DailyMissionWidget />
+                    </div>
+                </section>
 
-                    <section id="tour-stats" className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                {/* ── 3. How the run is going — measurement, kept small ──── */}
+                <section id="tour-stats" className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
 
                         {statsLoading ? (
                             Array(4).fill(0).map((_, i) => <StatCardSkeleton key={i} />)
                         ) : (
                             <>
-                                <RankCard 
+                                <RankCard
                                     className="h-full"
-                                    rank={stats?.rank?.current} 
-                                    percentile={stats?.rank?.percentile} 
-                                    trend={stats?.rank?.trend} 
+                                    rank={stats?.rank?.current}
+                                    percentile={stats?.rank?.percentile}
+                                    trend={stats?.rank?.trend}
                                 />
-                                <LearningTimeCard 
+                                <LearningTimeCard
                                     className="h-full"
-                                    totalSeconds={stats?.learningTime?.totalSeconds} 
-                                    weeklySeconds={stats?.learningTime?.weeklySeconds} 
-                                    avgSecondsPerDay={stats?.learningTime?.avgSecondsPerDay} 
+                                    totalSeconds={stats?.learningTime?.totalSeconds}
+                                    weeklySeconds={stats?.learningTime?.weeklySeconds}
+                                    avgSecondsPerDay={stats?.learningTime?.avgSecondsPerDay}
                                 />
-                                <DeadlineCard 
+                                <DeadlineCard
                                     className="h-full"
-                                    deadline={stats?.deadlines} 
+                                    deadline={stats?.deadlines}
                                 />
-                                <ProductivityCard 
+                                <ProductivityCard
                                     className="h-full"
-                                    completionRate={stats?.productivity?.completionRate} 
-                                    completedCourses={stats?.productivity?.completedCourses} 
-                                    totalEnrolled={stats?.productivity?.totalEnrolled} 
+                                    completionRate={stats?.productivity?.completionRate}
+                                    completedCourses={stats?.productivity?.completedCourses}
+                                    totalEnrolled={stats?.productivity?.totalEnrolled}
                                 />
                             </>
                         )}
-                    </section>
+                </section>
 
 
                     <section>
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                            <div className="flex flex-col gap-1">
-                                <div className="flex items-center gap-4">
-                                    <h2 onClick={() => setActiveTab('courses')} className={`text-xl font-bold tracking-tight uppercase cursor-pointer ${activeTab === 'courses' ? 'text-text-primary' : 'text-text-muted'}`}>Dashboard</h2>
-                                    <h2 onClick={() => setActiveTab('features')} className={`text-xl font-bold tracking-tight uppercase cursor-pointer ${activeTab === 'features' ? 'text-text-primary' : 'text-text-muted'}`}>New Features</h2>
-                                </div>
-                                <p className="text-[10px] font-black text-text-muted uppercase tracking-widest">
-                                    {activeTab === 'courses' ? 'Monitor your active learning missions' : 'Latest updates to the QuestXP platform'}
-                                </p>
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+                            <div className="clay-sunk rounded-clay p-1.5 flex items-center gap-1.5 self-start">
+                                <button
+                                    onClick={() => setActiveTab('courses')}
+                                    className={`px-4 h-10 rounded-clay-sm text-sm font-bold transition-all duration-200 ease-clay ${activeTab === 'courses' ? 'clay-sm text-text-primary' : 'text-text-muted hover:text-text-primary'}`}
+                                >
+                                    My courses
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab('features')}
+                                    className={`px-4 h-10 rounded-clay-sm text-sm font-bold transition-all duration-200 ease-clay ${activeTab === 'features' ? 'clay-sm text-text-primary' : 'text-text-muted hover:text-text-primary'}`}
+                                >
+                                    What&apos;s new
+                                </button>
                             </div>
                             <div className="flex items-center gap-2">
-                                <button id="tour-new-course" onClick={() => setShowCreate(v => !v)} className="btn-primary py-2.5 px-5 text-[10px] font-black uppercase tracking-widest flex items-center gap-2 flex-1 sm:flex-none justify-center">
-                                    {showCreate ? <X className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
-                                    {showCreate ? 'Cancel' : 'New Mission'}
+                                <button id="tour-new-course" onClick={() => setShowCreate(v => !v)} className="btn-primary flex-1 sm:flex-none">
+                                    {showCreate ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+                                    {showCreate ? 'Cancel' : 'New mission'}
                                 </button>
                                 {user.role === 'admin' && (
-                                    <Link 
-                                        to="/admin/feedback" 
-                                        className="px-4 py-2.5 rounded-lg border border-primary/20 bg-primary/5 text-primary text-[10px] font-black uppercase tracking-widest hover:bg-primary/10 transition-colors flex items-center gap-2"
+                                    <Link
+                                        to="/admin/feedback"
+                                        className="clay-sm clay-interactive px-4 min-h-[44px] rounded-clay text-primary text-sm font-bold flex items-center gap-2"
                                     >
-                                        <MessageSquare className="w-3.5 h-3.5" />
+                                        <MessageSquare className="w-4 h-4" />
                                         Feedback
                                     </Link>
                                 )}
@@ -831,7 +860,7 @@ const Dashboard = () => {
                         {activeTab === 'courses' ? (
                             <>
                                 {deleteError && (
-                                    <div className="mb-4 rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+                                    <div className="clay-sunk mb-4 rounded-clay px-4 py-3 text-sm font-semibold text-danger">
                                         {deleteError}
                                     </div>
                                 )}
@@ -858,15 +887,19 @@ const Dashboard = () => {
                                         {Array(6).fill(0).map((_, i) => <CourseCardSkeleton key={i} />)}
                                     </div>
                                 ) : courses.length === 0 && !showCreate ? (
-                                    <div className="glass-card flex flex-col items-center justify-center py-20 text-center border-dashed">
-                                        <BookOpen className="w-12 h-12 mb-4 text-text-muted" />
-                                        <h3 className="text-lg font-semibold text-text-primary mb-2">No courses yet</h3>
-                                        <p className="text-sm mb-6 text-text-secondary">
-                                            {isGuest 
-                                                ? "Try creating your first course to see how it works!" 
+                                    <div className="clay rounded-clay-lg flex flex-col items-center justify-center py-20 px-6 text-center">
+                                        <div className="clay-sunk w-16 h-16 rounded-clay flex items-center justify-center mb-5">
+                                            <BookOpen className="w-7 h-7 text-text-muted" />
+                                        </div>
+                                        <h3 className="text-xl font-display font-bold text-text-primary mb-2">No courses yet</h3>
+                                        <p className="text-sm mb-6 text-text-secondary max-w-sm">
+                                            {isGuest
+                                                ? "Try creating your first course to see how it works!"
                                                 : "Paste a YouTube playlist to generate your first course."}
                                         </p>
-                                        <button onClick={() => setShowCreate(true)} className="btn-esports">Create your first course</button>
+                                        <button onClick={() => setShowCreate(true)} className="btn-primary">
+                                            <Plus className="w-4 h-4" /> Create your first course
+                                        </button>
                                     </div>
                                 ) : (
                                     <div className="space-y-6">
@@ -888,11 +921,11 @@ const Dashboard = () => {
                                         </div>
                                         {visibleCount < courses.length && (
                                             <div className="flex justify-center pt-4">
-                                                <button 
+                                                <button
                                                     onClick={() => setVisibleCount(prev => prev + 6)}
-                                                    className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg border border-border bg-surface text-sm font-semibold text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-all shadow-sm"
+                                                    className="clay-sm clay-interactive inline-flex items-center gap-2 px-6 min-h-[44px] rounded-clay text-sm font-bold text-text-secondary hover:text-text-primary"
                                                 >
-                                                    Load More Missions
+                                                    Load more missions
                                                     <ChevronRight className="w-4 h-4 rotate-90" />
                                                 </button>
                                             </div>
@@ -901,174 +934,107 @@ const Dashboard = () => {
                                 )}
                             </>
                         ) : (
-                            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                <div className="glass-card overflow-hidden border-primary/20">
-                                    <div className="bg-primary/10 p-6 border-b border-primary/20">
-                                        <h3 className="text-lg font-bold text-text-primary">What's New</h3>
-                                        <p className="text-sm text-text-secondary mt-1">Stay updated with the latest QuestXP enhancements.</p>
-                                    </div>
-                                    <div className="divide-y divide-border">
-                                        {newFeatures.map((feature) => (
-                                            <div key={feature.id} className="p-6 hover:bg-surface-2 transition-colors group">
-                                                <div className="flex items-start gap-4">
-                                                    <div className="p-3 rounded-xl bg-surface border border-border group-hover:border-primary/30 transition-all">
-                                                        {feature.icon}
+                            <div className="clay rounded-clay-lg overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                <div className="p-6">
+                                    <h3 className="text-lg font-display font-bold text-text-primary">What&apos;s new</h3>
+                                    <p className="text-sm text-text-secondary mt-1">The latest QuestXP enhancements.</p>
+                                </div>
+                                <div className="px-4 pb-4 space-y-3">
+                                    {newFeatures.map((feature) => (
+                                        <div key={feature.id} className="clay-sunk p-4 rounded-clay group">
+                                            <div className="flex items-start gap-4">
+                                                <div className="clay-sm w-11 h-11 shrink-0 rounded-clay flex items-center justify-center transition-transform duration-200 ease-clay group-hover:-translate-y-[2px]">
+                                                    {feature.icon}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center justify-between gap-3 mb-1">
+                                                        <h4 className="text-sm font-display font-bold text-text-primary">{feature.title}</h4>
+                                                        <span className="badge-rare shrink-0">{feature.date}</span>
                                                     </div>
-                                                    <div className="flex-1 min-w-0">
-                                                        <div className="flex items-center justify-between mb-1">
-                                                            <h4 className="text-sm font-bold text-text-primary uppercase tracking-wider">{feature.title}</h4>
-                                                            <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-tighter">
-                                                                {feature.date}
-                                                            </span>
-                                                        </div>
-                                                        <p className="text-sm text-text-secondary leading-relaxed">
-                                                            {feature.description}
-                                                        </p>
-                                                    </div>
+                                                    <p className="text-sm text-text-secondary leading-relaxed">
+                                                        {feature.description}
+                                                    </p>
                                                 </div>
                                             </div>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                <div className="glass-card p-8 text-center bg-gradient-to-br from-primary/5 to-transparent">
-                                    <Sparkles className="w-10 h-10 text-primary mx-auto mb-4" />
-                                    <h3 className="text-xl font-black text-text-primary uppercase mb-2">More coming soon</h3>
-                                    <p className="text-sm text-text-secondary max-w-md mx-auto">
-                                        We are constantly evolving to make your learning journey more epic. Have a suggestion? Let us know!
-                                    </p>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         )}
 
 
                     </section>
-                </div>
 
-                <aside className="flex flex-col w-full xl:w-72 shrink-0 space-y-4">
-                    <div id="tour-mission">
-                        <DailyMissionWidget />
-                    </div>
-                    {!isGuest && (
-                        <>
-                            <div className="glass-card block transition-all p-4 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
-                                <div className="flex items-center justify-between mb-3">
-                                    <div className="flex items-center gap-3">
-                                        <button 
-                                            onClick={(e) => {
-                                                console.log('[DEBUG] XP Info Clicked', { event: e });
-                                                setShowXPSystem(true);
-                                            }}
-                                            className="p-1.5 rounded-lg bg-white/20 hover:bg-white/40 text-white transition-all border border-white/30 shadow-sm pointer-events-auto cursor-pointer"
-                                            style={{ position: 'relative', zIndex: 50 }}
-                                            title="How XP works"
-                                        >
-                                            <Info className="w-4 h-4" />
-                                        </button>
-                                        <div className="w-10 h-10 rounded-full border border-primary/20 flex items-center justify-center font-bold text-sm bg-primary text-white shadow-lg shadow-primary/20">
-                                            {user.name?.charAt(0)?.toUpperCase()}
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-bold text-text-primary">{user.name}</p>
-                                            <p className="text-[10px] text-primary font-black uppercase tracking-tighter">{levelTitle || 'Explorer'} · Lvl {level}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="progress-bar mb-1.5 h-1.5">
-                                    <div className="progress-bar__fill bg-primary shadow-[0_0_8px_rgba(var(--color-primary),0.5)]" style={{ width: `${xpProgress}%` }} />
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <p className="text-[10px] text-text-muted uppercase tracking-widest font-black">
-                                        {user?.xp || 0} XP
-                                    </p>
-                                    <p className="text-[10px] text-text-muted uppercase tracking-widest font-black">
-                                        {xpToNextLevel} to Lvl {level + 1}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="glass-card p-5 bg-gradient-to-br from-primary/5 to-transparent border-primary/20">
-                                <div className="flex items-center gap-2 mb-4">
-                                    <Zap className="w-4 h-4 text-primary animate-pulse" />
-                                    <h2 className="text-sm font-black tracking-widest text-text-primary uppercase">Hidden Quests</h2>
-                                </div>
-                                <div className="space-y-3">
-                                    <div className="p-3 rounded-xl border border-primary/10 bg-primary/5 flex items-center gap-3 group hover:border-primary/30 transition-all cursor-default">
-                                        <div className="w-8 h-8 rounded-lg bg-surface border border-border flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                                            <Clock className="w-4 h-4" />
-                                        </div>
-                                        <div className="min-w-0">
-                                            <p className="text-[11px] font-bold text-text-primary uppercase tracking-wider">Deep Focus</p>
-                                            <p className="text-[10px] text-text-secondary">Study 1hr today (+50 XP)</p>
-                                        </div>
-                                    </div>
-                                    <div className="p-3 rounded-xl border border-primary/10 bg-primary/5 flex items-center gap-3 group hover:border-primary/30 transition-all cursor-default">
-                                        <div className="w-8 h-8 rounded-lg bg-surface border border-border flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                                            <Sparkles className="w-4 h-4" />
-                                        </div>
-                                        <div className="min-w-0">
-                                            <p className="text-[11px] font-bold text-text-primary uppercase tracking-wider">Hyper Learner</p>
-                                            <p className="text-[10px] text-text-secondary">Study 3hr today (+200 XP)</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </>
-                    )}
-
-                    <div className="glass-card p-5">
-                        <div className="flex items-center gap-2 mb-4">
-                            <Flame className="w-4 h-4 text-warning" />
-                            <h2 className="text-sm font-semibold tracking-wide text-text-primary">Study Streak</h2>
+                {/* ── 4. Everything else, once the work is visible ───────── */}
+                <section className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                    <div className="clay rounded-clay-lg p-5">
+                        <div className="flex items-center gap-2.5 mb-4">
+                            <Flame className="w-5 h-5 text-warning" />
+                            <h2 className="text-base font-display font-bold text-text-primary">Study streak</h2>
                         </div>
                         <StreakCalendar history={historyData} rank={stats?.rank?.current} />
                     </div>
 
-
-                    <div className="glass-card p-5">
-                        <div className="flex items-center gap-2 mb-4">
-                            <Target className="w-4 h-4 text-success" />
-                            <h2 className="text-sm font-semibold tracking-wide text-text-primary">Daily Quests</h2>
+                    <div className="clay rounded-clay-lg p-5">
+                        <div className="flex items-center gap-2.5 mb-4">
+                            <Target className="w-5 h-5 text-success" />
+                            <h2 className="text-base font-display font-bold text-text-primary">Daily quests</h2>
                         </div>
                         <div className="space-y-3">
-                            <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-surface-2 transition-colors gap-3">
-                                <div className="min-w-0 flex-1">
-                                    <p className="text-sm font-medium text-text-primary transition-colors truncate">Study for 15 minutes</p>
-                                    <p className="text-xs text-text-secondary mt-0.5">Gain 50 XP</p>
+                            {[
+                                { title: 'Study for 15 minutes', xp: 50 },
+                                { title: 'Complete a quiz', xp: 100 },
+                            ].map(q => (
+                                <div key={q.title} className="clay-sunk flex items-center justify-between p-3.5 rounded-clay gap-3">
+                                    <div className="min-w-0 flex-1">
+                                        <p className="text-sm font-bold text-text-primary truncate">{q.title}</p>
+                                        <p className="text-xs font-semibold text-text-secondary mt-0.5">Gain {q.xp} XP</p>
+                                    </div>
+                                    <span className="xp-chip shrink-0">+{q.xp}</span>
                                 </div>
-                                <div className="w-8 h-8 rounded-full bg-surface border border-border flex items-center justify-center transition-colors p-1.5">
-                                    <img src="/favicon.png" alt="" className="w-full h-full object-contain" />
-                                </div>
-                            </div>
-                            <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-surface-2 transition-colors gap-3">
-                                <div className="min-w-0 flex-1">
-                                    <p className="text-sm font-medium text-text-primary transition-colors truncate">Complete a Quiz</p>
-                                    <p className="text-xs text-text-secondary mt-0.5">Gain 100 XP</p>
-                                </div>
-                                <div className="w-8 h-8 rounded-full bg-surface border border-border flex items-center justify-center transition-colors p-1.5">
-                                    <img src="/favicon.png" alt="" className="w-full h-full object-contain" />
-                                </div>
-                            </div>
+                            ))}
                         </div>
                     </div>
 
-                    {isDemo && (
-                        <div className="glass-card p-6 flex flex-col items-center text-center">
-                            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                    {!isGuest ? (
+                        <div className="clay rounded-clay-lg p-5">
+                            <div className="flex items-center gap-2.5 mb-4">
+                                <Zap className="w-5 h-5 text-primary" />
+                                <h2 className="text-base font-display font-bold text-text-primary">Hidden quests</h2>
+                            </div>
+                            <div className="space-y-3">
+                                {[
+                                    { icon: Clock, title: 'Deep focus', desc: 'Study 1hr today', xp: 50 },
+                                    { icon: Sparkles, title: 'Hyper learner', desc: 'Study 3hr today', xp: 200 },
+                                ].map(({ icon: Icon, title, desc, xp }) => (
+                                    <div key={title} className="clay-sunk p-3.5 rounded-clay flex items-center gap-3 group">
+                                        <div className="clay-sm w-10 h-10 shrink-0 rounded-clay flex items-center justify-center text-primary transition-transform duration-200 ease-clay group-hover:-translate-y-[2px]">
+                                            <Icon className="w-4 h-4" />
+                                        </div>
+                                        <div className="min-w-0 flex-1">
+                                            <p className="text-sm font-bold text-text-primary truncate">{title}</p>
+                                            <p className="text-xs font-semibold text-text-secondary">{desc}</p>
+                                        </div>
+                                        <span className="xp-chip shrink-0">+{xp}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="clay rounded-clay-lg p-6 flex flex-col items-center text-center justify-center">
+                            <div className="clay-sunk w-14 h-14 rounded-clay flex items-center justify-center mb-4">
                                 <Crown className="w-6 h-6 text-primary" />
                             </div>
-                            <h3 className="text-sm font-bold text-text-primary mb-2 uppercase tracking-widest">Premium Features</h3>
-                            <p className="text-xs text-text-secondary leading-relaxed mb-6">
-                                Sign in to unlock AI Roadmaps, Progress Tracking, Daily Missions, and the Global Leaderboard.
+                            <h3 className="text-base font-display font-bold text-text-primary mb-2">Unlock everything</h3>
+                            <p className="text-sm text-text-secondary leading-relaxed mb-5">
+                                Sign in for AI roadmaps, progress tracking, daily missions and the global leaderboard.
                             </p>
-                            <Link to="/register" className="bg-blue-600 hover:bg-blue-700 text-white w-full py-3 text-xs uppercase tracking-widest font-black text-center rounded-lg">
-                                Create Account
+                            <Link to="/register" className="btn-primary w-full">
+                                Create account
                             </Link>
                         </div>
                     )}
-
-
-                </aside>
+                </section>
             </div>
 
             <Footer onOpenFeedback={() => setFeedbackOpen(true)} />
@@ -1092,19 +1058,19 @@ const Dashboard = () => {
 
             {/* Undo Toast */}
             {showUndo && (
-                <div 
-                    className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-5 px-6 py-4 bg-surface-2 border-2 border-border rounded-2xl shadow-2xl backdrop-blur-xl animate-in slide-in-from-bottom-8 fade-in duration-300"
+                <div
+                    className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-4 px-5 py-4 clay rounded-clay-lg animate-in slide-in-from-bottom-8 fade-in duration-300 max-w-[calc(100vw-2rem)]"
                 >
-                    <div className="flex items-center justify-center w-10 h-10 rounded-full border-2 border-primary text-primary font-black text-lg animate-pulse">
+                    <div className="clay-sunk flex items-center justify-center w-11 h-11 shrink-0 rounded-clay text-primary font-mono font-bold text-lg">
                         {undoCountdown}
                     </div>
-                    <div className="flex flex-col min-w-[120px]">
-                        <span className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em]">Course Deleting</span>
-                        <span className="text-sm font-black text-text-primary line-clamp-1">{showUndo.title}</span>
+                    <div className="flex flex-col min-w-0">
+                        <span className="text-[11px] font-bold text-text-muted uppercase tracking-widest">Deleting course</span>
+                        <span className="text-sm font-bold text-text-primary line-clamp-1">{showUndo.title}</span>
                     </div>
-                    <button 
+                    <button
                         onClick={handleUndoDelete}
-                        className="ml-2 px-6 py-2.5 bg-primary text-white text-xs font-black uppercase tracking-widest rounded-xl hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20"
+                        className="btn-primary shrink-0 text-sm"
                     >
                         Undo
                     </button>
@@ -1118,64 +1084,64 @@ const Dashboard = () => {
 const XPSystemModal = ({ isOpen, onClose }) => {
     const trapRef = useFocusTrap(isOpen, onClose);
     const mechanics = [
-        { title: "Progressive Lectures", desc: "Gain more XP as you go. Lecture 1 (+50 XP), Lecture 2 (+60 XP), and so on!", icon: <BookOpen className="w-5 h-5" />, color: "text-blue-400" },
+        { title: "Progressive Lectures", desc: "Gain more XP as you go. Lecture 1 (+50 XP), Lecture 2 (+60 XP), and so on!", icon: <BookOpen className="w-5 h-5" />, color: "text-cyan" },
         { title: "Study Streaks", desc: "Keep the flame alive! 1.25x (7 days), 1.5x (14 days), 2x (30 days), up to 3x multiplier!", icon: <Flame className="w-5 h-5" />, color: "text-warning" },
         { title: "Daily Goals", desc: "Hit your study goal for +50 XP bonus every single day.", icon: <Target className="w-5 h-5" />, color: "text-success" },
         { title: "Deep Focus", desc: "Secret bonuses for long sessions: 1hr (+50 XP) and 3hrs (+200 XP)!", icon: <Zap className="w-5 h-5" />, color: "text-primary" },
-        { title: "Quiz Mastery", desc: "Ace a quiz for +75 XP. Improve your previous score for extra gains.", icon: <Trophy className="w-5 h-5" />, color: "text-purple-400" },
+        { title: "Quiz Mastery", desc: "Ace a quiz for +75 XP. Improve your previous score for extra gains.", icon: <Trophy className="w-5 h-5" />, color: "text-gold" },
     ];
 
     return createPortal(
         <>
             {isOpen && (
                 <div className="fixed inset-0 z-[10001] flex items-center justify-center p-4 animate-in fade-in duration-200">
-                    <div 
+                    <div
                         onClick={onClose}
-                        className="absolute inset-0 bg-black/80 backdrop-blur-xl"
+                        className="absolute inset-0 bg-bg/80 backdrop-blur-sm"
                     />
-                    <div 
+                    <div
                         ref={trapRef}
                         role="dialog"
                         aria-modal="true"
                         aria-label="How XP works"
                         onClick={(e) => e.stopPropagation()}
-                        className="relative w-full max-w-lg bg-surface border border-white/10 rounded-[2rem] shadow-2xl p-8 overflow-y-auto max-h-[90vh] scrollbar-hide z-10 pointer-events-auto animate-in zoom-in-95 slide-in-from-bottom-4 duration-300"
+                        className="relative w-full max-w-lg clay rounded-clay-xl p-6 sm:p-8 overflow-y-auto max-h-[90vh] z-10 pointer-events-auto animate-in zoom-in-95 slide-in-from-bottom-4 duration-300"
                     >
-                        <div className="absolute top-0 right-0 p-6">
-                            <button onClick={onClose} className="p-2 hover:bg-surface-2 rounded-lg transition-colors">
-                                <X className="w-5 h-5 text-text-muted hover:text-white" />
+                        <div className="absolute top-0 right-0 p-5">
+                            <button onClick={onClose} className="clay-sm clay-interactive w-10 h-10 flex items-center justify-center rounded-clay" aria-label="Close">
+                                <X className="w-5 h-5 text-text-muted" />
                             </button>
                         </div>
 
-                        <div className="mb-8">
-                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest mb-4">
+                        <div className="mb-7">
+                            <div className="badge-rare inline-flex items-center gap-1.5 mb-4">
                                 <Zap className="w-3 h-3" />
-                                Leveling System
+                                Leveling system
                             </div>
-                            <h2 className="text-3xl font-black text-text-primary uppercase tracking-tight">How XP Works</h2>
-                            <p className="text-text-secondary mt-2">Master the system to evolve your rank faster.</p>
+                            <h2 className="text-3xl font-display font-bold text-text-primary">How XP works</h2>
+                            <p className="text-text-secondary mt-1.5">Master the system to climb faster.</p>
                         </div>
 
-                        <div className="space-y-4">
+                        <div className="space-y-3">
                             {mechanics.map((m, i) => (
-                                <div key={i} className="flex gap-4 p-4 rounded-2xl bg-surface-2 border border-border hover:border-primary/30 transition-all group">
-                                    <div className={`shrink-0 w-12 h-12 rounded-xl bg-surface border border-border flex items-center justify-center ${m.color} group-hover:scale-110 transition-transform`}>
+                                <div key={i} className="clay-sunk flex gap-4 p-4 rounded-clay group">
+                                    <div className={`clay-sm shrink-0 w-12 h-12 rounded-clay flex items-center justify-center ${m.color} transition-transform duration-200 ease-clay group-hover:-translate-y-[2px]`}>
                                         {m.icon}
                                     </div>
                                     <div>
-                                        <h4 className="text-sm font-bold text-text-primary uppercase tracking-wide">{m.title}</h4>
+                                        <h4 className="text-sm font-display font-bold text-text-primary">{m.title}</h4>
                                         <p className="text-xs text-text-secondary mt-1 leading-relaxed">{m.desc}</p>
                                     </div>
                                 </div>
                             ))}
                         </div>
 
-                        <div className="mt-8 pt-6 border-t border-border">
-                            <button 
+                        <div className="mt-7">
+                            <button
                                 onClick={onClose}
-                                className="w-full btn-primary py-4 text-xs font-black uppercase tracking-[0.2em]"
+                                className="w-full btn-primary"
                             >
-                                Got it, Captain
+                                Got it
                             </button>
                         </div>
                     </div>

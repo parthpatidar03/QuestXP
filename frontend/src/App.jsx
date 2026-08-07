@@ -80,8 +80,9 @@ const AppContent = () => {
 
     useEffect(() => {
         checkAuth();
-        // Force dark mode for now as requested, or load from localStorage
-        const theme = localStorage.getItem('theme') || 'dark';
+        // Clay surfaces are built around a light source, so light is the
+        // default. Dark is a real second theme, not a forced one.
+        const theme = localStorage.getItem('theme') || 'light';
         if (theme === 'dark') {
             document.documentElement.classList.add('dark');
         } else {
@@ -110,11 +111,14 @@ const AppContent = () => {
                 reverseOrder={false}
                 toastOptions={{
                     style: {
-                        background: '#1a1a1a',
-                        color: '#fff',
-                        border: '1px solid rgba(255,255,255,0.1)',
+                        background: 'var(--color-surface)',
+                        color: 'var(--color-text-primary)',
+                        border: 'none',
+                        borderRadius: 'var(--radius-md)',
                         fontSize: '14px',
-                        fontFamily: 'inherit'
+                        fontWeight: 600,
+                        fontFamily: 'inherit',
+                        boxShadow: 'var(--shadow-card)',
                     }
                 }}
             />

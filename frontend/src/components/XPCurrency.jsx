@@ -11,11 +11,11 @@
  */
 
 const SIZE_MAP = {
-    xs: { text: 'text-[10px]', coin: 'text-[11px]' },
-    sm: { text: 'text-sm',     coin: 'text-sm'      },
-    md: { text: 'text-base',   coin: 'text-base'    },
-    lg: { text: 'text-lg',     coin: 'text-lg'      },
-    xl: { text: 'text-2xl',    coin: 'text-2xl'     },
+    xs: { text: 'text-[11px]', coin: 10 },
+    sm: { text: 'text-sm',     coin: 13 },
+    md: { text: 'text-base',   coin: 15 },
+    lg: { text: 'text-lg',     coin: 17 },
+    xl: { text: 'text-2xl',    coin: 22 },
 };
 
 const XPCurrency = ({ amount = 0, size = 'sm', sign = '', inline = true, className = '' }) => {
@@ -24,10 +24,13 @@ const XPCurrency = ({ amount = 0, size = 'sm', sign = '', inline = true, classNa
 
     return (
         <span
-            className={`${inline ? 'inline-flex' : 'flex'} items-center gap-0.5 font-black tabular-nums ${text} text-gold ${className}`}
+            className={`${inline ? 'inline-flex' : 'flex'} items-center gap-1.5 font-mono font-bold tabular-nums ${text} text-gold ${className}`}
             aria-label={`${sign}${formatted} XP`}
         >
-            <span className={`${coin} leading-none`}>🪙</span>
+            {/* The XP spark from the QuestXP mark — same shape, small. */}
+            <svg width={coin} height={coin} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="shrink-0">
+                <path d="M12 1.5c1.2 6.7 2.6 8.1 9.3 9.3-6.7 1.2-8.1 2.6-9.3 9.3-1.2-6.7-2.6-8.1-9.3-9.3 6.7-1.2 8.1-2.6 9.3-9.3z" />
+            </svg>
             <span>{sign}{formatted}</span>
         </span>
     );

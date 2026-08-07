@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import { useMousePosition } from "../../hooks/useMousePosition";
 
-export function ShinyCard({ children, className = "", gradientColor = "rgba(124, 58, 237, 0.15)", ...props }) {
+export function ShinyCard({ children, className = "", gradientColor = "rgba(227, 58, 46, 0.10)", ...props }) {
   const ref = useRef(null);
 
   useMousePosition(ref, ({ x, y }) => {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Moon, Sun, X, Star, Menu, Trophy, Layout, Zap } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import { Moon, Sun, X, Star, Menu, Trophy, Layout, Zap, Users, User } from 'lucide-react';
 import XPCurrency from './XPCurrency';
 import NotificationBell from './NotificationBell';
 import useAuthStore from '../store/useAuthStore';
@@ -16,6 +16,7 @@ const NavBar = () => {
     const { totalXP, level, setProfile } = useGamificationStore();
     const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
     const [mobileOpen, setMobileOpen] = useState(false);
+    const location = useLocation();
     const isDemo = new URLSearchParams(window.location.search).get('demo') === 'true' || user?.guest;
     const demoQuery = isDemo ? '?demo=true' : '';
 
@@ -38,61 +39,83 @@ const NavBar = () => {
         }
     };
 
-    return (
-        <header className="sticky top-0 z-50 w-full border-b border-border bg-surface/95">
-            <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 flex items-center h-16 gap-4">
+    // Active links get the pressed-clay treatment — the nav reads like a row
+    // of physical keys, one of which is held down.
+    const navLink = (to, label, extra = '', id) => {
+        const active = location.pathname === to.split('?')[0];
+        return (
+            <Link
+                key={label}
+                id={id}
+                to={to}
+                className={`px-4 h-10 flex items-center gap-1.5 rounded-clay text-sm font-bold whitespace-nowrap transition-all duration-200 ease-clay ${
+                    active
+                        ? 'clay-sunk text-primary'
+                        : 'text-text-secondary hover:text-text-primary hover:clay-sm hover:-translate-y-[2px]'
+                } ${extra}`}
+            >
+                {label}
+            </Link>
+        );
+    };
 
-                <Link to="/" className="flex items-center gap-2.5 shrink-0 mr-4">
-                    <img src="/favicon.png" alt="QuestXP" className="w-9 h-9 object-contain rounded-lg" />
-                    <span className="text-lg font-semibold tracking-tight text-text-primary">
+    return (
+        <header className="sticky top-0 z-50 w-full px-3 sm:px-5 pt-3 pb-1">
+            <div className="mx-auto max-w-screen-2xl clay rounded-clay-lg px-3 sm:px-4 flex items-center h-16 gap-3">
+
+                <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
+                    <img
+                        src="/favicon.png"
+                        alt="QuestXP"
+                        className="w-9 h-9 object-contain transition-transform duration-200 ease-clay group-hover:scale-105 group-active:scale-95"
+                    />
+                    <span className="text-lg font-display font-bold tracking-tight text-text-primary hidden xs:block">
                         QuestXP
                     </span>
                 </Link>
 
                 {/* Live search - hidden on mobile header, shown in mobile menu */}
-                <div className="hidden md:flex flex-1 items-center gap-2">
+                <div className="hidden md:flex flex-1 items-center gap-2 min-w-0">
                     <CourseSearch />
-                    <a 
+                    <a
                         href="https://www.youtube.com/feed/playlists"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="btn-glass flex items-center gap-2 px-4 h-10 rounded-lg text-sm font-bold transition-all hover:bg-surface-3 group border border-border whitespace-nowrap"
+                        className="clay-sm clay-interactive flex items-center gap-2 px-4 h-10 rounded-clay text-sm font-bold text-text-secondary hover:text-text-primary group whitespace-nowrap shrink-0"
                     >
-                        <Star className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
-                        <span className="hidden lg:inline">Explore more courses</span>
-                        <span className="lg:hidden">Explore more</span>
+                        <Star className="w-4 h-4 text-primary transition-transform group-hover:scale-110" />
+                        <span className="hidden xl:inline">Explore more courses</span>
+                        <span className="xl:hidden">Explore</span>
                     </a>
                 </div>
 
                 <div className="flex-1 md:hidden" />
 
-                <nav className="hidden md:flex items-center gap-1.5 mr-2">
-                    <Link to={`/dashboard${demoQuery}`} className="px-4 py-2 text-sm font-bold text-text-secondary border-2 border-transparent hover:border-border hover:border-b-border-shadow hover:border-b-[4px] hover:bg-surface-2 hover:-translate-y-[1px] active:translate-y-[2px] active:border-b-[2px] rounded-xl transition-all duration-100">
-                        Dashboard
-                    </Link>
-                    <Link id="tour-roadmap" to={`/roadmap${demoQuery}`} className="px-4 py-2 text-sm font-bold text-text-secondary border-2 border-transparent hover:border-border hover:border-b-border-shadow hover:border-b-[4px] hover:bg-surface-2 hover:-translate-y-[1px] active:translate-y-[2px] active:border-b-[2px] rounded-xl transition-all duration-100">
-                        Roadmap
-                    </Link>
-                    <Link id="tour-leaderboard" to={`/dashboard${demoQuery}${isDemo ? '&' : '?'}open=leaderboard`} className="px-4 py-2 text-sm font-bold text-text-secondary border-2 border-transparent hover:border-gold/50 hover:border-b-gold hover:border-b-[4px] hover:bg-gold/5 hover:-translate-y-[1px] active:translate-y-[2px] active:border-b-[2px] rounded-xl transition-all duration-100 flex items-center gap-1.5">
+                <nav className="hidden md:flex items-center gap-1.5">
+                    {navLink(`/dashboard${demoQuery}`, 'Dashboard')}
+                    {navLink(`/roadmap${demoQuery}`, 'Roadmap', '', 'tour-roadmap')}
+                    <Link
+                        id="tour-leaderboard"
+                        to={`/dashboard${demoQuery}${isDemo ? '&' : '?'}open=leaderboard`}
+                        className="px-4 h-10 flex items-center gap-1.5 rounded-clay text-sm font-bold text-text-secondary hover:text-text-primary hover:clay-sm hover:-translate-y-[2px] transition-all duration-200 ease-clay whitespace-nowrap"
+                    >
                         <Trophy className="w-3.5 h-3.5 text-gold" />
-                        Leaderboard
+                        <span className="hidden lg:inline">Leaderboard</span>
                     </Link>
-                    <Link to="/friendzones" className="px-4 py-2 text-sm font-bold text-text-secondary border-2 border-transparent hover:border-cyan/50 hover:border-b-cyan hover:border-b-[4px] hover:bg-cyan/5 hover:-translate-y-[1px] active:translate-y-[2px] active:border-b-[2px] rounded-xl transition-all duration-100">
-                        Friends
-                    </Link>
+                    {navLink('/friendzones', 'Friends')}
                 </nav>
 
-                <div className="hidden sm:flex items-center gap-2">
-                    <div className="flex items-center gap-1.5 bg-surface-2 border-2 border-gold/30 border-b-[3px] border-b-gold/60 rounded-xl px-3 py-1.5">
+                <div className="hidden sm:flex items-center gap-2 shrink-0">
+                    <div className="clay-sunk-sm flex items-center gap-1.5 rounded-clay px-3 h-10">
                         <XPCurrency amount={totalXP || user?.totalXP || 0} size="sm" />
                     </div>
 
                     <button
                         onClick={toggleTheme}
-                        className="p-2 text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-lg transition-colors"
+                        className="clay-sm clay-interactive w-10 h-10 flex items-center justify-center rounded-clay text-text-secondary hover:text-text-primary"
                         aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
                     >
-                        {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                        {isDark ? <Sun className="w-4.5 h-4.5" /> : <Moon className="w-4.5 h-4.5" />}
                     </button>
 
                     <NotificationBell
@@ -102,18 +125,17 @@ const NavBar = () => {
                 </div>
 
 
-                <Link to={`/profile${demoQuery}`} className="hidden sm:flex relative items-center gap-2 group">
+                <Link to={`/profile${demoQuery}`} className="hidden sm:flex relative items-center gap-2 group shrink-0">
                     <div className="relative">
-                        <div className="w-9 h-9 rounded-full border border-border p-0.5 bg-surface">
-                            <div className="w-full h-full rounded-full bg-primary flex items-center justify-center text-white font-semibold text-xs">
-                                {(user?.username || user?.name)?.split(/[ _]/).map(n => n[0]).join('').toUpperCase() ?? 'Q'}
-                            </div>
+                        <div className="w-10 h-10 rounded-clay flex items-center justify-center text-white font-display font-bold text-sm clay-pop-sm transition-transform duration-200 ease-clay group-hover:-translate-y-[2px]"
+                             style={{ background: 'linear-gradient(150deg, var(--color-primary), var(--color-primary-hover))' }}>
+                            {(user?.username || user?.name)?.split(/[ _]/).map(n => n[0]).join('').toUpperCase() ?? 'Q'}
                         </div>
-                        <div className="absolute -bottom-1 -right-1 bg-gold text-text-primary text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center border border-surface">
+                        <div className="absolute -bottom-1.5 -right-1.5 bg-surface text-text-primary text-[10px] font-mono font-bold rounded-full w-5 h-5 flex items-center justify-center clay-sm">
                             {level || user?.level || 1}
                         </div>
                     </div>
-                    <span className="hidden lg:block text-sm font-medium text-text-primary group-hover:text-primary transition-colors truncate max-w-[100px]">
+                    <span className="hidden xl:block text-sm font-bold text-text-primary group-hover:text-primary transition-colors truncate max-w-[100px]">
                         {user?.username || user?.name || 'Player'}
                     </span>
                 </Link>
@@ -121,18 +143,18 @@ const NavBar = () => {
                 {/* Mobile Menu Toggle */}
                 <button
                     onClick={() => setMobileOpen(!mobileOpen)}
-                    className="md:hidden p-2 text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded-lg transition-colors"
+                    className="md:hidden clay-sm clay-interactive w-11 h-11 flex items-center justify-center rounded-clay text-text-secondary"
                     aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
                     aria-expanded={mobileOpen}
                 >
-                    {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                    {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
                 </button>
 
             </div>
 
             {/* Mobile Navigation Overlay */}
             {mobileOpen && (
-                <div className="md:hidden border-t border-border bg-surface/98 backdrop-blur-xl animate-in slide-in-from-top duration-300">
+                <div className="md:hidden mx-auto max-w-screen-2xl mt-3 clay rounded-clay-lg animate-in slide-in-from-top-2 fade-in duration-200">
                     <div className="p-4 space-y-4">
                         {/* Mobile Search */}
                         <div className="px-1">
@@ -140,86 +162,71 @@ const NavBar = () => {
                         </div>
 
                         {/* Mobile Nav Links */}
-                        <div className="grid grid-cols-2 gap-2">
-                            <Link 
-                                to={`/dashboard${demoQuery}`} 
-                                onClick={() => setMobileOpen(false)}
-                                className="flex items-center gap-3 p-3 rounded-xl bg-surface-2 border border-border text-sm font-semibold text-text-primary"
-                            >
-                                <Zap className="w-5 h-5 text-warning" />
-                                Dashboard
-                            </Link>
-                            <Link 
-                                to={`/roadmap${demoQuery}`} 
-                                onClick={() => setMobileOpen(false)}
-                                className="flex items-center gap-3 p-3 rounded-xl bg-surface-2 border border-border text-sm font-semibold text-text-primary"
-                            >
-                                <Layout className="w-5 h-5 text-primary" />
-                                Roadmap
-                            </Link>
-                            <Link 
-                                to={`/dashboard${demoQuery}${isDemo ? '&' : '?'}open=leaderboard`} 
-                                onClick={() => setMobileOpen(false)}
-                                className="flex items-center gap-3 p-3 rounded-xl bg-surface-2 border border-border text-sm font-semibold text-text-primary"
-                            >
-                                <Trophy className="w-5 h-5 text-gold" />
-                                Rankings
-                            </Link>
-                            <a 
+                        <div className="grid grid-cols-2 gap-3">
+                            {[
+                                { to: `/dashboard${demoQuery}`, icon: Zap, color: 'text-primary', label: 'Dashboard' },
+                                { to: `/roadmap${demoQuery}`, icon: Layout, color: 'text-cyan', label: 'Roadmap' },
+                                { to: `/dashboard${demoQuery}${isDemo ? '&' : '?'}open=leaderboard`, icon: Trophy, color: 'text-gold', label: 'Rankings' },
+                                { to: '/friendzones', icon: Users, color: 'text-success', label: 'Friends' },
+                                { to: `/profile${demoQuery}`, icon: User, color: 'text-primary', label: 'Profile' },
+                            ].map(({ to, icon: Icon, color, label }) => (
+                                <Link
+                                    key={label}
+                                    to={to}
+                                    onClick={() => setMobileOpen(false)}
+                                    className="clay-sm clay-interactive flex items-center gap-3 p-3 min-h-[52px] rounded-clay text-sm font-bold text-text-primary"
+                                >
+                                    <Icon className={`w-5 h-5 ${color}`} />
+                                    {label}
+                                </Link>
+                            ))}
+                            <a
                                 href="https://www.youtube.com/feed/playlists"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 onClick={() => setMobileOpen(false)}
-                                className="flex items-center gap-3 p-3 rounded-xl bg-surface-2 border border-border text-sm font-semibold text-text-primary"
+                                className="clay-sm clay-interactive flex items-center gap-3 p-3 min-h-[52px] rounded-clay text-sm font-bold text-text-primary"
                             >
                                 <Star className="w-5 h-5 text-gold" />
-                                Explore more
+                                Explore
                             </a>
-                            <Link 
-                                to="/profile" 
-                                onClick={() => setMobileOpen(false)}
-                                className="flex items-center gap-3 p-3 rounded-xl bg-surface-2 border border-border text-sm font-semibold text-text-primary"
-                            >
-                                <Trophy className="w-5 h-5 text-success" />
-                                Profile
-                            </Link>
                         </div>
 
                         {/* Mobile Stats Summary */}
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="p-4 rounded-xl bg-surface-2 border border-border flex items-center justify-between">
-                                <div className="flex flex-col">
-                                    <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Mastery</span>
-                                    <XPCurrency amount={totalXP || user?.totalXP || 0} size="lg" />
-                                </div>
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className="clay-sunk p-4 rounded-clay flex flex-col">
+                                <span className="text-[11px] font-bold text-text-muted uppercase tracking-widest">Mastery</span>
+                                <XPCurrency amount={totalXP || user?.totalXP || 0} size="lg" />
                             </div>
-                            <div className="p-4 rounded-xl bg-surface-2 border border-border flex items-center justify-between">
-                                <div className="flex flex-col">
-                                    <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Theme</span>
-                                    <button onClick={toggleTheme} className="text-sm font-bold text-text-primary flex items-center gap-2 mt-1">
-                                        {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-                                        {isDark ? 'Light' : 'Dark'}
-                                    </button>
-                                </div>
-                            </div>
+                            <button
+                                onClick={toggleTheme}
+                                className="clay-sm clay-interactive p-4 rounded-clay flex flex-col items-start min-h-[52px]"
+                            >
+                                <span className="text-[11px] font-bold text-text-muted uppercase tracking-widest">Theme</span>
+                                <span className="text-sm font-bold text-text-primary flex items-center gap-2 mt-1">
+                                    {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                                    {isDark ? 'Light' : 'Dark'}
+                                </span>
+                            </button>
                         </div>
 
-                        <div className="p-4 rounded-xl bg-surface-2 border border-border flex items-center justify-between">
-                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold text-sm">
+                        <div className="clay-sunk p-4 rounded-clay flex items-center justify-between gap-3">
+                             <div className="flex items-center gap-3 min-w-0">
+                                <div className="w-11 h-11 shrink-0 rounded-clay flex items-center justify-center text-white font-display font-bold text-sm clay-pop-sm"
+                                     style={{ background: 'linear-gradient(150deg, var(--color-primary), var(--color-primary-hover))' }}>
                                     {(user?.username || user?.name)?.charAt(0).toUpperCase()}
                                 </div>
-                                <div>
-                                    <p className="text-sm font-bold text-text-primary">{user?.username || user?.name}</p>
-                                    <p className="text-xs text-text-muted">Level {level || 1}</p>
+                                <div className="min-w-0">
+                                    <p className="text-sm font-bold text-text-primary truncate">{user?.username || user?.name}</p>
+                                    <p className="text-xs text-text-muted font-mono">Level {level || 1}</p>
                                 </div>
                              </div>
-                             <Link 
-                                to={`/profile${demoQuery}`} 
+                             <Link
+                                to={`/profile${demoQuery}`}
                                 onClick={() => setMobileOpen(false)}
-                                className="px-4 py-2 rounded-lg bg-surface-3 text-xs font-bold text-text-primary"
+                                className="clay-sm clay-interactive shrink-0 px-4 h-11 flex items-center rounded-clay text-xs font-bold text-text-primary"
                              >
-                                Edit Profile
+                                Edit
                              </Link>
                         </div>
                     </div>

@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuestXP — learn by questing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Archivo+Black&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0A0A0A;
+  --paper:#FFFDF5;
+  --xp:#FFD93D;
+  --violet:#7B5CFF;
+  --streak:#FF6B35;
+  --mint:#3DDC97;
+  --b:3px solid var(--ink);
+  --b-thick:4px solid var(--ink);
+  --sh:6px 6px 0 var(--ink);
+  --sh-sm:3px 3px 0 var(--ink);
+  --sh-lg:10px 10px 0 var(--ink);
+  --display:'Archivo Black',system-ui,sans-serif;
+  --body:'Archivo',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--body);
+  font-size:17px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+h1,h2,h3{font-family:var(--display);font-weight:400;line-height:1.02;letter-spacing:-0.02em}
+a{color:inherit}
+:focus-visible{outline:4px solid var(--violet);outline-offset:3px}
+
+.eyebrow{
+  font-family:var(--mono);font-size:12px;font-weight:700;
+  text-transform:uppercase;letter-spacing:0.14em;
+}
+
+/* ---------- nav ---------- */
+.nav{
+  border-bottom:var(--b-thick);background:var(--paper);
+}
+.nav-in{display:flex;align-items:center;gap:20px;padding:14px 24px;max-width:1120px;margin:0 auto}
+.logo{
+  font-family:var(--display);font-size:20px;letter-spacing:-0.03em;
+  background:var(--xp);border:var(--b);padding:6px 12px;box-shadow:var(--sh-sm);
+  text-decoration:none;
+}
+.nav-links{display:flex;gap:22px;margin-left:auto;font-family:var(--mono);font-size:13px;font-weight:700}
+.nav-links a{text-decoration:none;padding:4px 2px;border-bottom:3px solid transparent}
+.nav-links a:hover{border-bottom-color:var(--ink)}
+
+.btn{
+  display:inline-block;font-family:var(--mono);font-weight:700;font-size:14px;
+  border:var(--b);background:var(--paper);color:var(--ink);
+  padding:11px 18px;box-shadow:var(--sh-sm);text-decoration:none;cursor:pointer;
+  transition:transform .08s ease,box-shadow .08s ease;
+}
+.btn:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}
+.btn:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
+.btn-xp{background:var(--xp)}
+.btn-violet{background:var(--violet);color:#fff}
+.btn-lg{font-size:16px;padding:15px 26px;box-shadow:var(--sh)}
+.btn-lg:hover{box-shadow:8px 8px 0 var(--ink)}
+.btn-lg:active{transform:translate(6px,6px);box-shadow:0 0 0 var(--ink)}
+
+/* ---------- hero ---------- */
+.hero{padding:72px 0 84px;border-bottom:var(--b-thick)}
+.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:start}
+.hero h1{font-size:clamp(42px,6.6vw,76px)}
+.hero h1 mark{background:var(--xp);padding:0 8px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.hero p.lead{font-size:19px;max-width:44ch;margin-top:22px}
+.hero-cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:32px;align-items:center}
+.trust{font-family:var(--mono);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em}
+
+/* signature: segmented xp meter */
+.meter-card{
+  border:var(--b-thick);background:var(--paper);box-shadow:var(--sh-lg);padding:20px;
+}
+.meter-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:14px}
+.lvl{
+  font-family:var(--display);font-size:15px;background:var(--violet);color:#fff;
+  border:var(--b);padding:4px 10px;
+}
+.meter{display:flex;gap:4px;border:var(--b);padding:5px;background:#fff}
+.seg{flex:1;height:30px;background:#EDEAE0;border:2px solid var(--ink)}
+.seg.on{background:var(--xp)}
+.meter-sub{
+  display:flex;justify-content:space-between;margin-top:10px;
+  font-family:var(--mono);font-size:12px;font-weight:700;
+}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.chip{
+  font-family:var(--mono);font-size:12px;font-weight:700;border:var(--b);
+  padding:6px 10px;box-shadow:2px 2px 0 var(--ink);background:var(--paper);
+}
+.chip.s{background:var(--streak)}
+.chip.m{background:var(--mint)}
+
+/* ---------- band ---------- */
+.band{
+  background:var(--ink);color:var(--paper);border-bottom:var(--b-thick);
+  overflow:hidden;padding:14px 0;
+}
+.band-track{
+  display:flex;gap:40px;white-space:nowrap;font-family:var(--mono);
+  font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.16em;
+  animation:slide 26s linear infinite;
+}
+.band-track span{display:flex;gap:40px}
+@keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ---------- sections ---------- */
+section.pad{padding:76px 0;border-bottom:var(--b-thick)}
+.sec-head{max-width:60ch;margin-bottom:44px}
+.sec-head h2{font-size:clamp(30px,4.2vw,46px);margin-top:12px}
+.sec-head p{margin-top:16px;font-size:18px}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.step{border:var(--b-thick);padding:24px;box-shadow:var(--sh);background:var(--paper)}
+.step-n{
+  font-family:var(--display);font-size:30px;width:52px;height:52px;
+  display:flex;align-items:center;justify-content:center;
+  border:var(--b);margin-bottom:18px;
+}
+.step:nth-child(1) .step-n{background:var(--xp)}
+.step:nth-child(2) .step-n{background:var(--violet);color:#fff}
+.step:nth-child(3) .step-n{background:var(--mint)}
+.step h3{font-size:21px;margin-bottom:10px}
+.step p{font-size:16px}
+
+/* quest cards */
+.quests{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+.quest{
+  border:var(--b-thick);background:var(--paper);box-shadow:var(--sh);
+  display:flex;flex-direction:column;text-align:left;font:inherit;cursor:pointer;
+  transition:transform .1s ease,box-shadow .1s ease;
+}
+.quest:hover{transform:translate(-2px,-2px);box-shadow:9px 9px 0 var(--ink)}
+.quest:active{transform:translate(4px,4px);box-shadow:0 0 0 var(--ink)}
+.quest-top{
+  border-bottom:var(--b);padding:12px 16px;display:flex;justify-content:space-between;
+  align-items:center;gap:10px;font-family:var(--mono);font-size:12px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;
+}
+.q1 .quest-top{background:var(--xp)}
+.q2 .quest-top{background:var(--violet);color:#fff}
+.q3 .quest-top{background:var(--streak)}
+.quest-body{padding:20px 16px;flex:1}
+.quest-body h3{font-size:20px;margin-bottom:10px}
+.quest-body p{font-size:15px}
+.quest-foot{
+  border-top:var(--b);padding:12px 16px;display:flex;justify-content:space-between;
+  align-items:center;font-family:var(--mono);font-size:12px;font-weight:700;
+}
+.pips{display:flex;gap:3px}
+.pip{width:12px;height:12px;border:2px solid var(--ink);background:#EDEAE0}
+.pip.on{background:var(--ink)}
+
+/* dashboard preview */
+.dash{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start}
+.panel{border:var(--b-thick);box-shadow:var(--sh);background:var(--paper)}
+.panel-head{
+  border-bottom:var(--b);padding:12px 16px;font-family:var(--mono);
+  font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;
+  background:var(--ink);color:var(--paper);
+}
+.panel-in{padding:18px 16px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.day{aspect-ratio:1;border:2px solid var(--ink);background:#EDEAE0}
+.day.on{background:var(--streak)}
+.day.today{background:var(--xp)}
+.cal-key{
+  display:flex;gap:16px;margin-top:14px;font-family:var(--mono);
+  font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;flex-wrap:wrap;
+}
+.cal-key i{display:inline-block;width:12px;height:12px;border:2px solid var(--ink);margin-right:6px;vertical-align:-2px}
+.row{
+  display:flex;align-items:center;gap:12px;padding:11px 0;
+  border-bottom:2px solid var(--ink);font-family:var(--mono);font-size:14px;font-weight:700;
+}
+.row:last-child{border-bottom:0}
+.rank{
+  width:30px;height:30px;border:2px solid var(--ink);display:flex;
+  align-items:center;justify-content:center;font-family:var(--display);font-size:14px;flex:0 0 auto;
+}
+.row:nth-child(1) .rank{background:var(--xp)}
+.row:nth-child(2) .rank{background:var(--mint)}
+.row:nth-child(3) .rank{background:var(--violet);color:#fff}
+.row .who{flex:1;font-family:var(--body);font-weight:600}
+.row.me{background:var(--xp);margin:0 -16px;padding:11px 16px}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:var(--b-thick);box-shadow:var(--sh-lg);background:var(--paper)}
+.stat{padding:28px 22px;border-right:var(--b)}
+.stat:last-child{border-right:0}
+.stat b{display:block;font-family:var(--display);font-size:clamp(34px,4.6vw,52px);line-height:1}
+.stat span{
+  display:block;margin-top:8px;font-family:var(--mono);font-size:12px;
+  font-weight:700;text-transform:uppercase;letter-spacing:.1em;
+}
+
+/* cta */
+.cta{background:var(--violet);border-bottom:var(--b-thick);padding:76px 0;text-align:center}
+.cta h2{font-size:clamp(32px,5vw,56px);color:#fff}
+.cta p{color:#fff;font-size:18px;margin:18px auto 30px;max-width:48ch}
+
+footer{padding:36px 0 44px}
+.foot{display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:space-between}
+.foot p{font-family:var(--mono);font-size:12px;font-weight:700}
+
+@media (max-width:900px){
+  .hero-grid,.dash{grid-template-columns:1fr}
+  .steps,.quests{grid-template-columns:1fr}
+  .stats{grid-template-columns:1fr}
+  .stat{border-right:0;border-bottom:var(--b)}
+  .stat:last-child{border-bottom:0}
+  .nav-links{display:none}
+  .hero{padding:48px 0 56px}
+  section.pad{padding:56px 0}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-in">
+    <a href="#" class="logo">QuestXP</a>
+    <div class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#quests">Quests</a>
+      <a href="#progress">Progress</a>
+    </div>
+    <a href="#start" class="btn btn-xp">Start questing</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="eyebrow">AI-generated quests, real progress</p>
+      <h1>Turn anything you want to learn into a <mark>quest line</mark>.</h1>
+      <p class="lead">Give QuestXP a topic. It breaks the subject into quests sized for one sitting, checks your answers, and tracks what you actually retained instead of what you clicked through.</p>
+      <div class="hero-cta">
+        <a href="#start" class="btn btn-lg btn-violet">Start your first quest</a>
+        <a href="#quests" class="btn btn-lg">See a quest line</a>
+      </div>
+      <p class="trust" style="margin-top:26px">130+ learners questing daily</p>
+    </div>
+
+    <div class="meter-card" id="meterCard">
+      <div class="meter-head">
+        <div>
+          <p class="eyebrow">Your run</p>
+          <p style="font-family:var(--display);font-size:19px;margin-top:4px">Graph algorithms</p>
+        </div>
+        <span class="lvl">LVL 7</span>
+      </div>
+      <div class="meter" id="meter" role="img" aria-label="Experience meter, 8 of 12 segments filled, 2,480 of 3,000 XP toward level 8"></div>
+      <div class="meter-sub">
+        <span>2,480 XP</span>
+        <span>520 to LVL 8</span>
+      </div>
+      <div class="chips">
+        <span class="chip s">🔥 14-day streak</span>
+        <span class="chip m">9 quests cleared</span>
+        <span class="chip">3 due today</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="band" aria-hidden="true">
+  <div class="band-track">
+    <span>
+      <span>Dynamic programming</span><span>System design</span><span>Organic chemistry</span><span>Spanish verbs</span><span>Fluid mechanics</span><span>SQL joins</span><span>Graph theory</span>
+    </span>
+    <span>
+      <span>Dynamic programming</span><span>System design</span><span>Organic chemistry</span><span>Spanish verbs</span><span>Fluid mechanics</span><span>SQL joins</span><span>Graph theory</span>
+    </span>
+  </div>
+</div>
+
+<section class="pad" id="how">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Three steps</p>
+      <h2>Topic in, quest line out.</h2>
+      <p>The order matters here, so we numbered it. Everything after step one runs on its own.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-n">1</div>
+        <h3>Name your topic</h3>
+        <p>Type what you're studying, from "red-black trees" to a syllabus you paste in whole. No setup, no course catalog to browse.</p>
+      </div>
+      <div class="step">
+        <div class="step-n">2</div>
+        <h3>Get your quests</h3>
+        <p>QuestXP splits the topic into quests you can finish in 15 minutes, ordered so each one only needs what you've already cleared.</p>
+      </div>
+      <div class="step">
+        <div class="step-n">3</div>
+        <h3>Clear, earn, repeat</h3>
+        <p>Answer, get corrected on the spot, bank XP. Anything you got wrong comes back before it fades.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="pad" id="quests">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Today's board</p>
+      <h2>Quests are small on purpose.</h2>
+      <p>Each card is one sitting. Difficulty pips show what you're walking into before you commit.</p>
+    </div>
+    <div class="quests">
+      <button class="quest q1">
+        <div class="quest-top"><span>Concept</span><span>+120 XP</span></div>
+        <div class="quest-body">
+          <h3>Why BFS finds shortest paths</h3>
+          <p>Walk a queue by hand on a small graph and see where the guarantee comes from.</p>
+        </div>
+        <div class="quest-foot">
+          <span>15 min</span>
+          <span class="pips" role="img" aria-label="Difficulty 2 of 4"><i class="pip on"></i><i class="pip on"></i><i class="pip"></i><i class="pip"></i></span>
+        </div>
+      </button>
+      <button class="quest q2">
+        <div class="quest-top"><span>Drill</span><span>+200 XP</span></div>
+        <div class="quest-body">
+          <h3>Cycle detection, 6 rounds</h3>
+          <p>Directed and undirected, mixed order. You get the counterexample when you miss.</p>
+        </div>
+        <div class="quest-foot">
+          <span>18 min</span>
+          <span class="pips" role="img" aria-label="Difficulty 3 of 4"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip"></i></span>
+        </div>
+      </button>
+      <button class="quest q3">
+        <div class="quest-top"><span>Boss</span><span>+450 XP</span></div>
+        <div class="quest-body">
+          <h3>Build Dijkstra from scratch</h3>
+          <p>No skeleton given. Clears the whole shortest-path branch if you pass it.</p>
+        </div>
+        <div class="quest-foot">
+          <span>35 min</span>
+          <span class="pips" role="img" aria-label="Difficulty 4 of 4"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</section>
+
+<section class="pad" id="progress">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Your progress</p>
+      <h2>Streaks you can see, ranks you can chase.</h2>
+    </div>
+    <div class="dash">
+      <div class="panel">
+        <div class="panel-head">Last 28 days</div>
+        <div class="panel-in">
+          <div class="cal" id="cal" role="img" aria-label="Activity calendar for the last 28 days, 19 active days"></div>
+          <div class="cal-key">
+            <span><i style="background:var(--streak)"></i>Quested</span>
+            <span><i style="background:var(--xp)"></i>Today</span>
+            <span><i style="background:#EDEAE0"></i>Missed</span>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head">Graph algorithms leaderboard</div>
+        <div class="panel-in">
+          <div class="row"><span class="rank">1</span><span class="who">Aditi R.</span><span>8,420 XP</span></div>
+          <div class="row"><span class="rank">2</span><span class="who">Kavin S.</span><span>7,905 XP</span></div>
+          <div class="row"><span class="rank">3</span><span class="who">Meera J.</span><span>6,180 XP</span></div>
+          <div class="row me"><span class="rank">7</span><span class="who">You</span><span>2,480 XP</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="stats" style="margin-top:34px">
+      <div class="stat"><b>130+</b><span>Active learners</span></div>
+      <div class="stat"><b>15 min</b><span>Average quest</span></div>
+      <div class="stat"><b>14 days</b><span>Median streak</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="cta" id="start">
+  <div class="wrap">
+    <h2>Pick a topic. Get your first quest.</h2>
+    <p>Free to start, no card. Your first quest line is generated in under a minute.</p>
+    <a href="#" class="btn btn-lg btn-xp">Start questing</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot">
+    <a href="#" class="logo">QuestXP</a>
+    <p>questxp.in</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var meter = document.getElementById('meter');
+  var TOTAL = 12, FILLED = 8, segs = [];
+  for (var i = 0; i < TOTAL; i++){
+    var s = document.createElement('i');
+    s.className = 'seg';
+    meter.appendChild(s);
+    segs.push(s);
+  }
+  function fill(){
+    if (reduce){
+      for (var i = 0; i < FILLED; i++) segs[i].classList.add('on');
+      return;
+    }
+    var n = 0;
+    var t = setInterval(function(){
+      segs[n].classList.add('on');
+      n++;
+      if (n >= FILLED) clearInterval(t);
+    }, 90);
+  }
+  var card = document.getElementById('meterCard');
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(en){
+      en.forEach(function(e){ if (e.isIntersecting){ fill(); io.disconnect(); } });
+    }, {threshold:0.4});
+    io.observe(card);
+  } else { fill(); }
+
+  var cal = document.getElementById('cal');
+  var active = [0,1,3,4,5,6,7,9,10,11,13,14,15,16,18,20,21,22,23,24,25,26];
+  for (var d = 0; d < 28; d++){
+    var c = document.createElement('i');
+    c.className = 'day' + (d === 27 ? ' today' : (active.indexOf(d) > -1 ? ' on' : ''));
+    cal.appendChild(c);
+  }
+})();
+</script>
+</body>
+</html>

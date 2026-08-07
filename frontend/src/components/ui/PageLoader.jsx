@@ -43,23 +43,14 @@ export default function PageLoader() {
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-bg relative overflow-hidden">
-            {/* Background Glow */}
-            <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none">
-                <div className="w-[40vw] h-[40vw] bg-primary/5 rounded-full blur-[100px] animate-pulse" />
-            </div>
-
             <div className="z-10 flex flex-col items-center max-w-md px-6 text-center">
-                {/* Main Spinner & Icon Container */}
-                <div className="relative w-24 h-24 mb-8">
+                {/* Main Spinner & Icon Container — a clay disc with a ring cut into it */}
+                <div className="relative w-28 h-28 mb-8 rounded-full clay flex items-center justify-center">
                     {/* Outer Spinner */}
-                    <svg className="absolute inset-0 w-full h-full animate-[spin_3s_linear_infinite]" viewBox="0 0 100 100">
-                        <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" strokeWidth="2" className="text-surface-2" />
-                        <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" strokeWidth="3" strokeDasharray="70 200" strokeLinecap="round" className="text-primary" />
+                    <svg className="absolute inset-1.5 w-[calc(100%-12px)] h-[calc(100%-12px)] animate-[spin_3s_linear_infinite]" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" strokeWidth="6" strokeDasharray="70 200" strokeLinecap="round" className="text-primary" />
                     </svg>
-                    
-                    {/* Inner pulse */}
-                    <div className="absolute inset-2 bg-primary/10 rounded-full animate-ping" style={{ animationDuration: '2s' }} />
-                    
+
                     {/* Center Icon */}
                     <div className="absolute inset-0 flex items-center justify-center text-primary">
                         <AnimatePresence mode="wait">

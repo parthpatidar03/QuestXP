@@ -3,13 +3,21 @@
   "short_name": "QuestXP",
   "start_url": ".",
   "display": "standalone",
-  "background_color": "#000000",
+  "background_color": "#F2EBEB",
+  "theme_color": "#E33A2E",
   "description": "Structured learning from YouTube playlists.",
   "icons": [
     {
+      "src": "logo-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
       "src": "favicon.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     }
   ],
   "gcm_sender_id": "103953800507"

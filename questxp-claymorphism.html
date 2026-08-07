@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QuestXP — Claymorphism</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:          #f2ebeb;
+  --bg-deep:     #e9e0e0;
+  --clay:        #f8f2f2;
+  --clay-sunk:   #eae0e0;
+
+  --red:         #ff3d33;
+  --red-deep:    #cc1f16;
+  --char:        #2b2222;
+  --sand:        #f0a63c;
+  --slate:       #6d6060;
+
+  --ink:         #241c1c;
+  --ink-2:       #57494a;
+  --ink-3:       #8b7b7c;
+
+  --dark:        rgba(120, 60, 55, 0.30);
+  --dark-soft:   rgba(120, 60, 55, 0.16);
+  --light:       rgba(255, 255, 255, 0.95);
+
+  --r-sm: 18px;
+  --r-md: 28px;
+  --r-lg: 40px;
+  --r-xl: 56px;
+
+  --ease: cubic-bezier(.22,1,.36,1);
+}
+
+/* ---- the three clay recipes ---- */
+.clay{
+  background: var(--clay);
+  box-shadow:
+    10px 10px 22px var(--dark-soft),
+   -8px -8px 20px var(--light),
+    inset -5px -5px 12px rgba(190,130,125,.16),
+    inset  6px  6px 14px rgba(255,255,255,.85);
+}
+.clay-sunk{
+  background: var(--clay-sunk);
+  box-shadow:
+    inset  7px  7px 14px rgba(170,110,105,.22),
+    inset -7px -7px 14px rgba(255,255,255,.90),
+    1px 1px 2px rgba(255,255,255,.6);
+}
+.clay-pop{
+  box-shadow:
+    9px 9px 20px rgba(120,60,55,.28),
+   -6px -6px 16px rgba(255,255,255,.55),
+    inset -4px -4px 10px rgba(0,0,0,.16),
+    inset  5px  5px 12px rgba(255,255,255,.32);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Nunito',system-ui,sans-serif;
+  color:var(--ink);
+  background:var(--bg);
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+  line-height:1.6;
+}
+/* ambient blobs */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(46rem 34rem at 12% -6%, #ffe8e4 0%, transparent 62%),
+    radial-gradient(40rem 32rem at 92% 8%,  #fdf3e6 0%, transparent 60%),
+    radial-gradient(52rem 40rem at 70% 96%, #f6ecec 0%, transparent 62%);
+}
+.wrap{position:relative;z-index:1}
+
+h1,h2,h3,.display{font-family:'Baloo 2',cursive;line-height:1.12;letter-spacing:-.015em}
+.num{font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums}
+
+.shell{width:min(1180px,100% - 3rem);margin-inline:auto}
+
+/* ================= NAV ================= */
+nav{position:sticky;top:1rem;z-index:50;margin-top:1rem}
+.navbar{
+  display:flex;align-items:center;gap:1.5rem;
+  padding:.7rem .8rem .7rem 1.4rem;border-radius:var(--r-lg);
+}
+.logo{display:flex;align-items:center;gap:.6rem;font-family:'Baloo 2';font-weight:800;font-size:1.28rem}
+.logo-blob{
+  width:38px;height:38px;border-radius:14px;display:grid;place-items:center;
+  background:linear-gradient(145deg,#ff5b4f,#d0221a);color:#fff;
+  box-shadow:5px 5px 12px rgba(190,40,30,.34),-3px -3px 8px rgba(255,255,255,.5),
+             inset -3px -3px 7px rgba(0,0,0,.2), inset 3px 3px 8px rgba(255,255,255,.4);
+}
+.nav-links{display:flex;gap:.35rem;margin-left:auto}
+.nav-links a{
+  color:var(--ink-2);text-decoration:none;font-weight:700;font-size:.94rem;
+  padding:.6rem 1rem;border-radius:var(--r-sm);transition:all .2s var(--ease);
+}
+.nav-links a:hover{color:var(--ink);background:var(--clay-sunk);
+  box-shadow:inset 3px 3px 7px rgba(170,110,105,.20),inset -3px -3px 7px rgba(255,255,255,.9)}
+
+/* ================= BUTTONS ================= */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+  font-family:'Baloo 2';font-weight:700;font-size:1.02rem;
+  min-height:52px;padding:0 1.7rem;border:0;border-radius:20px;
+  cursor:pointer;text-decoration:none;
+  transition:transform .18s var(--ease),box-shadow .18s var(--ease);
+}
+.btn-primary{background:linear-gradient(150deg,#ff5348,#d0221a);color:#fff}
+.btn-primary:hover{transform:translateY(-3px)}
+.btn-primary:active{
+  transform:translateY(1px);
+  box-shadow:inset 6px 6px 14px rgba(0,0,0,.28),inset -4px -4px 10px rgba(255,255,255,.22);
+}
+.btn-ghost{background:var(--clay);color:var(--ink)}
+.btn-ghost:hover{transform:translateY(-3px)}
+.btn-ghost:active{transform:translateY(1px);
+  box-shadow:inset 7px 7px 14px rgba(170,110,105,.24),inset -7px -7px 14px rgba(255,255,255,.9)}
+.btn-sm{min-height:44px;font-size:.95rem;padding:0 1.25rem;border-radius:16px}
+
+/* ================= HERO ================= */
+header{padding:5.5rem 0 4rem}
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:4rem;align-items:center}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:.55rem;
+  padding:.5rem 1.05rem;border-radius:999px;margin-bottom:1.6rem;
+  font-weight:800;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2);
+}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--red);
+  box-shadow:0 0 0 4px rgba(255,61,51,.20)}
+h1{font-size:clamp(2.9rem,5.4vw,4.3rem);font-weight:800}
+h1 .hl{
+  position:relative;color:var(--red-deep);white-space:nowrap;
+}
+h1 .hl::after{
+  content:'';position:absolute;left:-.12em;right:-.12em;bottom:.06em;height:.34em;
+  border-radius:999px;background:rgba(255,61,51,.22);z-index:-1;
+}
+.sub{font-size:1.16rem;color:var(--ink-2);max-width:46ch;margin:1.5rem 0 2.3rem}
+.cta-row{display:flex;gap:1rem;flex-wrap:wrap;align-items:center}
+.trust{display:flex;align-items:center;gap:.9rem;margin-top:2.6rem;font-size:.9rem;color:var(--ink-3);font-weight:600}
+.pile{display:flex}
+.pile span{
+  width:34px;height:34px;border-radius:50%;margin-left:-10px;
+  display:grid;place-items:center;font-family:'Baloo 2';font-weight:700;font-size:.78rem;color:#fff;
+  box-shadow:3px 3px 8px rgba(120,60,55,.3),inset -2px -2px 5px rgba(0,0,0,.18),inset 2px 2px 5px rgba(255,255,255,.4);
+  border:3px solid var(--bg);
+}
+.pile span:first-child{margin-left:0}
+
+/* hero mock card */
+.mock{padding:1.6rem;border-radius:var(--r-xl);transform:rotate(1.4deg)}
+.mock-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.3rem}
+.mock-title{font-family:'Baloo 2';font-weight:700;font-size:1.12rem}
+.chip{
+  font-family:'JetBrains Mono';font-size:.75rem;font-weight:700;
+  padding:.42rem .8rem;border-radius:12px;color:var(--ink-2);
+}
+.bar-wrap{height:16px;border-radius:999px;margin:.5rem 0 .4rem}
+.bar{height:100%;width:62%;border-radius:999px;
+  background:linear-gradient(150deg,#ff5348,#d0221a);
+  box-shadow:inset -2px -2px 6px rgba(0,0,0,.18),inset 2px 2px 6px rgba(255,255,255,.35),
+             2px 2px 6px rgba(190,40,30,.25);}
+.bar-meta{display:flex;justify-content:space-between;font-size:.82rem;color:var(--ink-3);font-weight:700}
+.mock-list{display:flex;flex-direction:column;gap:.7rem;margin-top:1.4rem}
+.mock-row{display:flex;align-items:center;gap:.85rem;padding:.85rem 1rem;border-radius:var(--r-sm)}
+.tick{width:28px;height:28px;border-radius:10px;display:grid;place-items:center;flex:none;color:#fff}
+.tick.done{background:linear-gradient(145deg,#4a3d3d,#221b1b);
+  box-shadow:3px 3px 8px rgba(34,27,27,.30),inset -2px -2px 5px rgba(0,0,0,.25),inset 2px 2px 5px rgba(255,255,255,.28)}
+.tick.now{background:linear-gradient(145deg,#ff5348,#d0221a);
+  box-shadow:3px 3px 8px rgba(208,34,26,.38),inset -2px -2px 5px rgba(0,0,0,.15),inset 2px 2px 5px rgba(255,255,255,.4)}
+.mock-row p{font-weight:700;font-size:.95rem}
+.mock-row small{color:var(--ink-3);font-weight:700;font-size:.78rem}
+.mock-row .xp{margin-left:auto;font-family:'JetBrains Mono';font-weight:700;font-size:.82rem;color:var(--red-deep)}
+.done-txt{color:var(--ink-3);text-decoration:line-through}
+
+.float-badge{
+  position:absolute;padding:.75rem 1.05rem;border-radius:20px;
+  display:flex;align-items:center;gap:.6rem;font-family:'Baloo 2';font-weight:700;font-size:.92rem;
+  animation:bob 5s ease-in-out infinite;
+}
+.mock-holder{position:relative}
+.fb-1{top:-22px;left:-34px;color:#c8341f}
+.fb-2{bottom:-26px;right:-20px;color:#3b2f2f;animation-delay:-2.5s}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+
+/* ================= SECTIONS ================= */
+section{padding:5.5rem 0}
+.sec-head{max-width:60ch;margin-bottom:3.2rem}
+h2{font-size:clamp(2rem,3.6vw,2.85rem);font-weight:800}
+.sec-head p{color:var(--ink-2);font-size:1.08rem;margin-top:.9rem}
+
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6rem}
+.step{padding:2.1rem 1.8rem;border-radius:var(--r-lg);transition:transform .3s var(--ease)}
+.step:hover{transform:translateY(-7px)}
+.step-ico{
+  width:60px;height:60px;border-radius:22px;display:grid;place-items:center;margin-bottom:1.4rem;color:#fff;
+  box-shadow:6px 6px 14px rgba(120,60,55,.28),-3px -3px 9px rgba(255,255,255,.5),
+             inset -3px -3px 8px rgba(0,0,0,.18),inset 3px 3px 9px rgba(255,255,255,.38);
+}
+.i-violet{background:linear-gradient(145deg,#ff6156,#d0221a)}
+.i-peach {background:linear-gradient(145deg,#4a3d3d,#221b1b)}
+.i-mint  {background:linear-gradient(145deg,#ffc16a,#e89327)}
+.step h3{font-size:1.3rem;font-weight:700;margin-bottom:.55rem}
+.step p{color:var(--ink-2);font-size:.98rem}
+.step .n{font-family:'JetBrains Mono';font-size:.76rem;font-weight:700;color:var(--ink-3);display:block;margin-bottom:.7rem}
+
+/* quests */
+.quests{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6rem}
+.quest{padding:1.8rem;border-radius:var(--r-lg);display:flex;flex-direction:column;gap:1rem}
+.quest-top{display:flex;align-items:center;justify-content:space-between}
+.tag{font-family:'JetBrains Mono';font-size:.72rem;font-weight:700;padding:.35rem .7rem;border-radius:10px}
+.t-violet{background:rgba(255,61,51,.16);color:#b31d15}
+.t-peach {background:rgba(43,34,34,.13);color:#382c2c}
+.t-sky   {background:rgba(240,166,60,.24);color:#96601a}
+.quest h3{font-size:1.16rem;font-weight:700;line-height:1.3}
+.quest p{color:var(--ink-2);font-size:.93rem}
+.quest-foot{display:flex;align-items:center;gap:.6rem;margin-top:auto;padding-top:.6rem;
+  font-family:'JetBrains Mono';font-size:.78rem;font-weight:700;color:var(--ink-3)}
+.pip{width:6px;height:6px;border-radius:50%;background:var(--ink-3);opacity:.5}
+
+/* stats band */
+.band{padding:3rem 2.6rem;border-radius:var(--r-xl)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1.4rem}
+.stat{padding:1.5rem 1.3rem;border-radius:var(--r-md);text-align:center}
+.stat .v{font-family:'JetBrains Mono';font-size:2.05rem;font-weight:700;color:var(--red-deep);display:block}
+.stat .k{font-size:.85rem;font-weight:700;color:var(--ink-2);margin-top:.35rem;display:block}
+
+/* streak strip */
+.streak-row{display:flex;gap:.6rem;margin-top:2rem;flex-wrap:wrap}
+.day{width:44px;height:44px;border-radius:15px;display:grid;place-items:center;
+  font-family:'JetBrains Mono';font-size:.78rem;font-weight:700;color:var(--ink-3)}
+.day.on{color:#fff;background:linear-gradient(145deg,#ff5348,#d0221a);
+  box-shadow:4px 4px 10px rgba(208,34,26,.32),inset -2px -2px 6px rgba(0,0,0,.15),inset 2px 2px 6px rgba(255,255,255,.4)}
+
+/* final CTA */
+.final{padding:4.5rem 3rem;border-radius:var(--r-xl);text-align:center}
+.final h2{max-width:22ch;margin-inline:auto}
+.final p{color:var(--ink-2);max-width:48ch;margin:1.1rem auto 2.4rem;font-size:1.08rem}
+.input-clay{
+  display:flex;gap:.6rem;padding:.55rem;border-radius:24px;max-width:520px;margin-inline:auto;
+}
+.input-clay input{
+  flex:1;border:0;background:transparent;outline:none;padding:0 1.1rem;
+  font-family:'Nunito';font-size:1rem;font-weight:600;color:var(--ink);min-height:52px;
+}
+.input-clay input::placeholder{color:var(--ink-3)}
+
+footer{padding:3rem 0 4rem;color:var(--ink-3);font-size:.9rem;font-weight:600}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
+.foot a{color:var(--ink-3);text-decoration:none;margin-left:1.4rem}
+.foot a:hover{color:var(--ink)}
+
+@media (max-width:980px){
+  .hero{grid-template-columns:1fr;gap:3rem}
+  .steps,.quests{grid-template-columns:1fr}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .nav-links{display:none}
+  .mock{transform:none}
+  .float-badge{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav class="shell">
+  <div class="navbar clay">
+    <div class="logo">
+      <span class="logo-blob">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor"><path d="M9.2 7.4v9.2a1 1 0 0 0 1.53.85l7.2-4.6a1 1 0 0 0 0-1.7l-7.2-4.6a1 1 0 0 0-1.53.85z"/></svg>
+      </span>
+      QuestXP
+    </div>
+    <div class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#quests">Quests</a>
+      <a href="#progress">Progress</a>
+    </div>
+    <a href="#start" class="btn btn-primary btn-sm">Start free</a>
+  </div>
+</nav>
+
+<header class="shell">
+  <div class="hero">
+    <div>
+      <span class="eyebrow clay-sunk"><i class="dot"></i> 4,200 quests cleared this week</span>
+      <h1>Turn anything you want to learn into a <span class="hl">quest line</span>.</h1>
+      <p class="sub">You already have the playlists. QuestXP breaks them into small quests, gates each one behind a quiz, and keeps score. XP is proof you learned it — not proof you watched it.</p>
+      <div class="cta-row">
+        <a href="#start" class="btn btn-primary">Get my first quest</a>
+        <a href="#how" class="btn btn-ghost clay">See how it works</a>
+      </div>
+      <div class="trust">
+        <div class="pile">
+          <span style="background:linear-gradient(145deg,#ff6156,#d0221a)">AR</span>
+          <span style="background:linear-gradient(145deg,#4a3d3d,#221b1b)">MK</span>
+          <span style="background:linear-gradient(145deg,#ffc16a,#e89327)">JD</span>
+          <span style="background:linear-gradient(145deg,#ff8a80,#e2564a)">SN</span>
+        </div>
+        Learners finishing what they started
+      </div>
+    </div>
+
+    <div class="mock-holder">
+      <div class="mock clay">
+        <div class="mock-head">
+          <div>
+            <div class="mock-title">Graph Algorithms</div>
+            <small style="color:var(--ink-3);font-weight:700">Section 3 · Traversal</small>
+          </div>
+          <span class="chip clay-sunk">LVL 7</span>
+        </div>
+        <div class="bar-wrap clay-sunk"><div class="bar"></div></div>
+        <div class="bar-meta"><span class="num">1,240 XP</span><span class="num">62%</span></div>
+
+        <div class="mock-list">
+          <div class="mock-row clay-sunk">
+            <span class="tick done"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            <div><p class="done-txt">What a graph actually is</p><small>Quiz passed · 8/10</small></div>
+            <span class="xp num">+40</span>
+          </div>
+          <div class="mock-row clay-sunk">
+            <span class="tick done"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            <div><p class="done-txt">Adjacency list vs matrix</p><small>Quiz passed · 10/10</small></div>
+            <span class="xp num">+60</span>
+          </div>
+          <div class="mock-row clay-sunk">
+            <span class="tick now"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
+            <div><p>Why BFS finds shortest paths</p><small>18 min · quiz to unlock next</small></div>
+            <span class="xp num">+80</span>
+          </div>
+        </div>
+      </div>
+      <div class="float-badge clay fb-1">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c1 4 5 5 5 9a5 5 0 0 1-10 0c0-2 1-3 1-3s2 1 2 3c0-4 2-6 2-9z"/></svg>
+        <span class="num">14</span> day streak
+      </div>
+      <div class="float-badge clay fb-2">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v6a6 6 0 0 1-12 0z"/><path d="M6 5H3v2a4 4 0 0 0 3 3.9M18 5h3v2a4 4 0 0 1-3 3.9M9 21h6M12 15v6"/></svg>
+        Rank <span class="num">#12</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="how" class="shell">
+  <div class="sec-head">
+    <h2>Topic in, quest line out.</h2>
+    <p>Three steps. No syllabus to write, no schedule to build, nothing to buy.</p>
+  </div>
+  <div class="steps">
+    <article class="step clay">
+      <span class="step-ico i-violet"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.3-4.3"/><circle cx="11" cy="11" r="7"/></svg></span>
+      <span class="n">01</span>
+      <h3>Name your topic</h3>
+      <p>Type "graph algorithms" or paste a playlist link. That's the whole setup.</p>
+    </article>
+    <article class="step clay">
+      <span class="step-ico i-peach"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16M4 12h10M4 19h13"/><circle cx="19" cy="12" r="2.2"/></svg></span>
+      <span class="n">02</span>
+      <h3>Get your quests</h3>
+      <p>We split it into sections and missions, then spread them across the days you actually have free.</p>
+    </article>
+    <article class="step clay">
+      <span class="step-ico i-mint"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+      <span class="n">03</span>
+      <h3>Clear, earn, repeat</h3>
+      <p>Pass the quiz to bank the XP. The video ending doesn't count for anything here.</p>
+    </article>
+  </div>
+</section>
+
+<section id="quests" class="shell">
+  <div class="sec-head">
+    <h2>Quests are small on purpose.</h2>
+    <p>Sized to one sitting, so "I'll do it tomorrow" stops being the reasonable choice.</p>
+  </div>
+  <div class="quests">
+    <article class="quest clay">
+      <div class="quest-top"><span class="tag t-violet">MISSION</span><span class="num" style="font-size:.82rem;font-weight:700;color:var(--red-deep)">+80 XP</span></div>
+      <h3>Why BFS finds shortest paths</h3>
+      <p>Watch, then prove it: 6 questions on layer order and why DFS can't do the same job.</p>
+      <div class="quest-foot"><span>18 MIN</span><i class="pip"></i><span>6 QUESTIONS</span></div>
+    </article>
+    <article class="quest clay">
+      <div class="quest-top"><span class="tag t-peach">DRILL</span><span class="num" style="font-size:.82rem;font-weight:700;color:var(--red-deep)">+50 XP</span></div>
+      <h3>Cycle detection, 6 rounds</h3>
+      <p>Six graphs, one question each: cycle or no cycle. Under two minutes a round.</p>
+      <div class="quest-foot"><span>12 MIN</span><i class="pip"></i><span>6 ROUNDS</span></div>
+    </article>
+    <article class="quest clay">
+      <div class="quest-top"><span class="tag t-sky">BUILD</span><span class="num" style="font-size:.82rem;font-weight:700;color:var(--red-deep)">+150 XP</span></div>
+      <h3>Build Dijkstra from scratch</h3>
+      <p>No starter file. Ship a working shortest-path implementation and paste the output.</p>
+      <div class="quest-foot"><span>45 MIN</span><i class="pip"></i><span>1 ARTIFACT</span></div>
+    </article>
+  </div>
+</section>
+
+<section id="progress" class="shell">
+  <div class="band clay">
+    <div class="sec-head" style="margin-bottom:2.4rem">
+      <h2>Streaks you can see, ranks you can chase.</h2>
+      <p>Stopping should cost something. That's the entire point of the scoreboard.</p>
+    </div>
+    <div class="stats">
+      <div class="stat clay-sunk"><span class="v num">14</span><span class="k">Day streak</span></div>
+      <div class="stat clay-sunk"><span class="v num">1,240</span><span class="k">XP banked</span></div>
+      <div class="stat clay-sunk"><span class="v num">#12</span><span class="k">Zone rank</span></div>
+      <div class="stat clay-sunk"><span class="v num">62%</span><span class="k">Course done</span></div>
+    </div>
+    <div class="streak-row">
+      <span class="day on">M</span><span class="day on">T</span><span class="day on">W</span>
+      <span class="day on">T</span><span class="day on">F</span><span class="day on">S</span>
+      <span class="day clay-sunk">S</span>
+    </div>
+  </div>
+</section>
+
+<section id="start" class="shell">
+  <div class="final clay">
+    <h2>Pick a topic. Get your first quest.</h2>
+    <p>Free while the content is free. The structure is the product.</p>
+    <form class="input-clay clay-sunk" onsubmit="return false">
+      <input type="text" placeholder="What do you want to learn?" aria-label="Topic">
+      <button class="btn btn-primary" type="submit">Start</button>
+    </form>
+  </div>
+</section>
+
+<footer class="shell">
+  <div class="foot">
+    <span>© 2026 QuestXP</span>
+    <span><a href="#">Privacy</a><a href="#">Terms</a><a href="#">GitHub</a></span>
+  </div>
+</footer>
+
+</div>
+</body>
+</html>

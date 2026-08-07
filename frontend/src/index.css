@@ -1,5 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;700;800;900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -10,93 +10,144 @@
     scroll-behavior: smooth;
   }
 
+  /* ═══════════════════════════════════════════════════════
+     CLAYMORPHISM TOKENS — YouTube red on warm clay
+     Surfaces are tinted, never pure white/black: clay needs
+     a mid-tone body for the dual light/dark shadows to read.
+     ═══════════════════════════════════════════════════════ */
   :root {
-    --color-bg: #FFFFFF;
-    --color-surface: #FFFFFF;
-    --color-surface-2: #F8FAFC;
-    --color-surface-3: #F1F5F9;
-    --color-border: #E2E8F0;
-    --color-border-shadow: #CBD5E1;
+    --color-bg: #F2EBEB;
+    --color-surface: #F8F2F2;
+    --color-surface-2: #EFE7E7;
+    --color-surface-3: #E6DBDB;
+    --color-border: #E0D3D3;
+    --color-border-shadow: #CDBBBB;
 
-    --color-primary: #58CC02;
-    --color-primary-hover: #46A302;
-    --color-primary-shadow: #3B8801;
+    /* Brand red — the one saturated hue in the system */
+    --color-primary: #E33A2E;
+    --color-primary-hover: #C82A20;
+    --color-primary-shadow: #A31E16;
 
-    --color-cyan: #1CB0F6;
-    --color-cyan-shadow: #1899D6;
+    /* Dusty blue stands in for the old cyan */
+    --color-cyan: #4F86B5;
+    --color-cyan-shadow: #3D6D96;
 
-    --color-gold: #FFC800;
-    --color-gold-dim: #E6B400;
+    /* Amber carries XP and achievement */
+    --color-gold: #DE8C1F;
+    --color-gold-dim: #B8720F;
 
-    --color-success: #10B981;
-    --color-warning: #F59E0B;
-    --color-danger: #EF4444;
-    --color-danger-shadow: #B91C1C;
-    --color-xp-gold: #F59E0B;
+    --color-success: #2E9E6B;
+    --color-warning: #DE8C1F;
+    --color-danger: #A51B12;
+    --color-danger-shadow: #7A120B;
+    --color-xp-gold: #DE8C1F;
 
-    --color-text-primary: #0F172A;
-    --color-text-secondary: #475569;
-    --color-text-muted: #94A3B8;
+    --color-text-primary: #241C1C;
+    --color-text-secondary: #57494A;
+    --color-text-muted: #8B7B7C;
 
-    --radius-sm: 6px;
-    --radius-md: 10px;
-    --radius-lg: 16px;
-    --radius-xl: 24px;
+    /* Clay shadow inputs — every recipe below derives from these,
+       so dark mode only has to redefine these four. */
+    --clay-dark: rgba(120, 60, 55, 0.16);
+    --clay-dark-strong: rgba(120, 60, 55, 0.30);
+    --clay-light: rgba(255, 255, 255, 0.95);
+    --clay-rim: rgba(190, 130, 125, 0.16);
+    --clay-rim-light: rgba(255, 255, 255, 0.85);
+    --clay-sunk-dark: rgba(170, 110, 105, 0.22);
+    --clay-sunk-light: rgba(255, 255, 255, 0.90);
+
+    --radius-sm: 12px;
+    --radius-md: 18px;
+    --radius-lg: 26px;
+    --radius-xl: 38px;
     --radius-full: 9999px;
 
-    --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    --shadow-card:
+      10px 10px 22px var(--clay-dark),
+      -8px -8px 20px var(--clay-light),
+      inset -5px -5px 12px var(--clay-rim),
+      inset 6px 6px 14px var(--clay-rim-light);
 
-    --transition-fast: 150ms ease;
-    --transition-normal: 220ms ease;
-    --transition-slow: 350ms ease;
+    --transition-fast: 150ms cubic-bezier(0.22, 1, 0.36, 1);
+    --transition-normal: 220ms cubic-bezier(0.22, 1, 0.36, 1);
+    --transition-slow: 350ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .dark {
-    --color-bg: #0F172A;
-    --color-surface: #1E293B;
-    --color-surface-2: #334155;
-    --color-surface-3: #475569;
-    --color-border: #334155;
-    --color-border-shadow: #0F172A;
+    --color-bg: #1C1717;
+    --color-surface: #262020;
+    --color-surface-2: #2F2727;
+    --color-surface-3: #3B3131;
+    --color-border: #3A3030;
+    --color-border-shadow: #140F0F;
 
-    --color-primary: #58CC02;
-    --color-primary-hover: #61E002;
-    --color-primary-shadow: #46A302;
+    --color-primary: #FF5A4D;
+    --color-primary-hover: #FF7264;
+    --color-primary-shadow: #C82A20;
 
-    --color-cyan: #1CB0F6;
-    --color-cyan-shadow: #1899D6;
+    --color-cyan: #6FA8D4;
+    --color-cyan-shadow: #4F86B5;
 
-    --color-gold: #FFC800;
-    --color-gold-dim: #E6B400;
+    --color-gold: #F0A63C;
+    --color-gold-dim: #D08A26;
 
-    --color-success: #58CC02;
-    --color-warning: #FF9600;
-    --color-danger: #EF4444;
-    --color-danger-shadow: #B91C1C;
-    --color-xp-gold: #FFC800;
+    --color-success: #4BBF8B;
+    --color-warning: #F0A63C;
+    --color-danger: #FF6B5E;
+    --color-danger-shadow: #A51B12;
+    --color-xp-gold: #F0A63C;
 
-    --color-text-primary: #F8FAFC;
-    --color-text-secondary: #CBD5E1;
-    --color-text-muted: #94A3B8;
+    --color-text-primary: #F6EFEF;
+    --color-text-secondary: #C9BABA;
+    --color-text-muted: #948585;
 
-    --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+    /* On dark clay the light source weakens: the highlight is a
+       faint white film, not a glow, or the surface looks glassy. */
+    --clay-dark: rgba(0, 0, 0, 0.44);
+    --clay-dark-strong: rgba(0, 0, 0, 0.60);
+    --clay-light: rgba(255, 255, 255, 0.045);
+    --clay-rim: rgba(0, 0, 0, 0.30);
+    --clay-rim-light: rgba(255, 255, 255, 0.055);
+    --clay-sunk-dark: rgba(0, 0, 0, 0.50);
+    --clay-sunk-light: rgba(255, 255, 255, 0.05);
   }
 
   body {
     @apply antialiased;
     background-color: var(--color-bg);
-    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    color: var(--color-text-primary);
+    font-family: 'Nunito', ui-sans-serif, system-ui, sans-serif;
     font-size: 16px;
-    font-weight: 450;
+    font-weight: 500;
     margin: 0;
   }
 
+  /* Ambient warm wash — gives the clay a light source to sit under. */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(46rem 34rem at 12% -6%, rgba(255, 232, 228, 0.75) 0%, transparent 62%),
+      radial-gradient(40rem 32rem at 92% 8%, rgba(253, 243, 230, 0.7) 0%, transparent 60%),
+      radial-gradient(52rem 40rem at 70% 96%, rgba(246, 236, 236, 0.8) 0%, transparent 62%);
+  }
+
+  .dark body::before {
+    background:
+      radial-gradient(46rem 34rem at 12% -6%, rgba(90, 40, 35, 0.30) 0%, transparent 62%),
+      radial-gradient(40rem 32rem at 92% 8%, rgba(70, 50, 30, 0.24) 0%, transparent 60%),
+      radial-gradient(52rem 40rem at 70% 96%, rgba(45, 32, 32, 0.4) 0%, transparent 62%);
+  }
+
   .font-serif {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Baloo 2', ui-sans-serif, system-ui, sans-serif;
   }
 
   .font-display {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Baloo 2', ui-sans-serif, system-ui, sans-serif;
   }
 
   h1,
@@ -109,12 +160,13 @@
   .video-title,
   .roadmap-title {
     @apply font-display tracking-tight;
-    font-family: 'Inter', sans-serif !important;
+    font-family: 'Baloo 2', ui-sans-serif, system-ui, sans-serif !important;
+    line-height: 1.15;
   }
 
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 10px;
+    height: 10px;
   }
 
   ::-webkit-scrollbar-track {
@@ -123,198 +175,397 @@
 
   ::-webkit-scrollbar-thumb {
     background: var(--color-surface-3);
+    border: 2px solid var(--color-bg);
     border-radius: var(--radius-full);
   }
 
   ::-webkit-scrollbar-thumb:hover {
     background: var(--color-text-muted);
   }
+
+  :focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 3px;
+    border-radius: var(--radius-sm);
+  }
 }
 
 @layer components {
 
+  /* ═══════════════════════════════════════════════════════
+     THE THREE CLAY RECIPES
+     raised → sits above the page   (cards, nav, buttons)
+     sunk   → pressed into the page (wells, inputs, tracks)
+     pop    → coloured fill         (primary buttons, chips)
+     ═══════════════════════════════════════════════════════ */
+
+  .clay {
+    background: var(--color-surface);
+    box-shadow:
+      10px 10px 22px var(--clay-dark),
+      -8px -8px 20px var(--clay-light),
+      inset -5px -5px 12px var(--clay-rim),
+      inset 6px 6px 14px var(--clay-rim-light);
+  }
+
+  .clay-sm {
+    background: var(--color-surface);
+    box-shadow:
+      5px 5px 12px var(--clay-dark),
+      -4px -4px 10px var(--clay-light),
+      inset -3px -3px 7px var(--clay-rim),
+      inset 3px 3px 8px var(--clay-rim-light);
+  }
+
+  .clay-sunk {
+    background: var(--color-surface-2);
+    box-shadow:
+      inset 7px 7px 14px var(--clay-sunk-dark),
+      inset -7px -7px 14px var(--clay-sunk-light);
+  }
+
+  .clay-sunk-sm {
+    background: var(--color-surface-2);
+    box-shadow:
+      inset 4px 4px 8px var(--clay-sunk-dark),
+      inset -4px -4px 8px var(--clay-sunk-light);
+  }
+
+  .clay-pop {
+    box-shadow:
+      9px 9px 20px var(--clay-dark-strong),
+      -6px -6px 16px var(--clay-light),
+      inset -4px -4px 10px rgba(0, 0, 0, 0.18),
+      inset 5px 5px 12px rgba(255, 255, 255, 0.30);
+  }
+
+  .clay-pop-sm {
+    box-shadow:
+      5px 5px 12px var(--clay-dark-strong),
+      -3px -3px 8px var(--clay-light),
+      inset -3px -3px 7px rgba(0, 0, 0, 0.18),
+      inset 3px 3px 8px rgba(255, 255, 255, 0.32);
+  }
+
+  /* Lifts on hover, presses in on click — the whole point of clay. */
+  .clay-interactive {
+    transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+  }
+
+  .clay-interactive:hover {
+    transform: translateY(-3px);
+  }
+
+  .clay-interactive:active {
+    transform: translateY(1px);
+    box-shadow:
+      inset 7px 7px 14px var(--clay-sunk-dark),
+      inset -7px -7px 14px var(--clay-sunk-light);
+  }
+
+  /* ── Cards ──────────────────────────── */
+
   .card {
     background: var(--color-surface);
-    border: 1px solid var(--color-border);
+    border: none;
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-card);
     padding: 1.5rem;
-    transition: all 0.15s ease;
+    transition: transform var(--transition-normal), box-shadow var(--transition-normal);
   }
 
   .card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+    transform: translateY(-3px);
+    box-shadow:
+      14px 14px 28px var(--clay-dark),
+      -10px -10px 24px var(--clay-light),
+      inset -5px -5px 12px var(--clay-rim),
+      inset 6px 6px 14px var(--clay-rim-light);
   }
 
+  /* Legacy name kept so existing markup keeps working — no glass here. */
   .glass-card {
     background: var(--color-surface);
-    border: 1px solid var(--color-border);
+    border: none;
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-card);
-    transition: all 0.15s ease;
+    transition: transform var(--transition-normal), box-shadow var(--transition-normal);
   }
 
   .glass-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+    transform: translateY(-3px);
+    box-shadow:
+      14px 14px 28px var(--clay-dark),
+      -10px -10px 24px var(--clay-light),
+      inset -5px -5px 12px var(--clay-rim),
+      inset 6px 6px 14px var(--clay-rim-light);
   }
 
   .glass-card-cyan {
     background: var(--color-surface);
-    border: 1px solid oklch(0.55 0.08 200 / 0.3);
+    border: none;
     border-radius: var(--radius-lg);
-    backdrop-filter: blur(12px);
+    box-shadow:
+      8px 8px 18px var(--clay-dark),
+      -6px -6px 16px var(--clay-light),
+      inset -4px -4px 10px rgba(79, 134, 181, 0.14),
+      inset 5px 5px 12px var(--clay-rim-light);
   }
 
   .glass-card-gold {
     background: var(--color-surface);
-    border: 1px solid oklch(0.68 0.13 78 / 0.3);
+    border: none;
     border-radius: var(--radius-lg);
-    backdrop-filter: blur(12px);
+    box-shadow:
+      8px 8px 18px var(--clay-dark),
+      -6px -6px 16px var(--clay-light),
+      inset -4px -4px 10px rgba(222, 140, 31, 0.16),
+      inset 5px 5px 12px var(--clay-rim-light);
   }
 
+  /* ── Buttons ────────────────────────── */
+
   .btn-primary {
-    background: var(--color-primary);
+    background: linear-gradient(150deg, var(--color-primary), var(--color-primary-hover));
     color: #FFFFFF;
-    font-family: inherit;
-    font-weight: 600;
-    font-size: 0.875rem;
-    border-radius: var(--radius-full);
-    padding: 0.625rem 1.5rem;
+    font-family: 'Baloo 2', ui-sans-serif, system-ui, sans-serif;
+    font-weight: 700;
+    font-size: 0.9375rem;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 0.75rem 1.6rem;
+    min-height: 44px;
     cursor: pointer;
     outline: none;
-    transition: all 0.15s ease;
+    transition: transform var(--transition-normal), box-shadow var(--transition-normal);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    box-shadow: 0 4px 6px -1px rgba(88, 204, 2, 0.2);
+    box-shadow:
+      7px 7px 16px var(--clay-dark-strong),
+      -4px -4px 10px var(--clay-light),
+      inset -3px -3px 8px rgba(0, 0, 0, 0.20),
+      inset 4px 4px 10px rgba(255, 255, 255, 0.28);
   }
 
   .btn-primary:hover {
-    background: var(--color-primary-hover);
-    transform: translateY(-1px);
-    box-shadow: 0 6px 8px -1px rgba(88, 204, 2, 0.3);
+    transform: translateY(-3px);
+    box-shadow:
+      10px 10px 22px var(--clay-dark-strong),
+      -5px -5px 14px var(--clay-light),
+      inset -3px -3px 8px rgba(0, 0, 0, 0.20),
+      inset 4px 4px 10px rgba(255, 255, 255, 0.30);
   }
 
   .btn-primary:active {
     transform: translateY(1px);
-    box-shadow: none;
+    box-shadow:
+      inset 7px 7px 15px rgba(0, 0, 0, 0.30),
+      inset -5px -5px 12px rgba(255, 255, 255, 0.20);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
   }
 
   .btn-primary:focus-visible {
-    outline: 2px solid var(--color-primary);
+    outline: 3px solid var(--color-primary);
     outline-offset: 4px;
   }
 
   .btn-esports {
-    background: var(--color-primary);
-    border: 2px solid var(--color-primary);
-    border-bottom: 5px solid var(--color-primary-shadow);
+    background: linear-gradient(150deg, var(--color-primary), var(--color-primary-hover));
+    border: none;
     color: #FFFFFF;
-    font-family: inherit;
-    font-weight: 800;
+    font-family: 'Baloo 2', ui-sans-serif, system-ui, sans-serif;
+    font-weight: 700;
     font-size: 0.95rem;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
-    border-radius: var(--radius-lg);
-    padding: 0.75rem 1.75rem;
+    border-radius: var(--radius-md);
+    padding: 0.8rem 1.75rem;
+    min-height: 48px;
     cursor: pointer;
-    transition: all 0.1s ease;
+    transition: transform var(--transition-normal), box-shadow var(--transition-normal);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
+    box-shadow:
+      8px 8px 18px var(--clay-dark-strong),
+      -5px -5px 12px var(--clay-light),
+      inset -4px -4px 9px rgba(0, 0, 0, 0.20),
+      inset 4px 4px 11px rgba(255, 255, 255, 0.28);
   }
 
   .btn-esports:hover {
-    background: var(--color-primary-hover);
-    border-color: var(--color-primary-hover);
+    transform: translateY(-3px);
   }
 
   .btn-esports:active {
-    border-bottom-width: 0px;
-    transform: translateY(5px);
+    transform: translateY(1px);
+    box-shadow:
+      inset 8px 8px 16px rgba(0, 0, 0, 0.30),
+      inset -5px -5px 12px rgba(255, 255, 255, 0.20);
   }
 
   .btn-glass {
-    background: var(--color-surface-2);
-    backdrop-filter: blur(8px);
-    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    border: none;
+    border-radius: var(--radius-md);
     color: var(--color-text-primary);
-    transition: all var(--transition-normal);
+    font-weight: 700;
+    min-height: 44px;
+    transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+    box-shadow:
+      6px 6px 14px var(--clay-dark),
+      -5px -5px 12px var(--clay-light),
+      inset -3px -3px 8px var(--clay-rim),
+      inset 4px 4px 9px var(--clay-rim-light);
   }
 
   .btn-glass:hover {
-    background: var(--color-surface-3);
-    border-color: var(--color-primary);
-    transform: translateY(-1px);
+    transform: translateY(-3px);
   }
 
+  .btn-glass:active {
+    transform: translateY(1px);
+    box-shadow:
+      inset 7px 7px 14px var(--clay-sunk-dark),
+      inset -7px -7px 14px var(--clay-sunk-light);
+  }
+
+  /* ── Chips & badges ─────────────────── */
+
   .xp-chip {
-    background: oklch(0.95 0.035 78);
-    border: 1px solid oklch(0.84 0.065 78);
-    color: var(--color-gold);
-    font-family: inherit;
-    font-weight: 650;
+    background: var(--color-surface-2);
+    border: none;
+    color: var(--color-gold-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
     font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
     border-radius: var(--radius-full);
-    padding: 0.2rem 0.65rem;
+    padding: 0.3rem 0.8rem;
     display: inline-flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: 0.3rem;
+    box-shadow:
+      inset 3px 3px 6px var(--clay-sunk-dark),
+      inset -3px -3px 6px var(--clay-sunk-light);
+  }
+
+  .dark .xp-chip {
+    color: var(--color-gold);
   }
 
   .badge-epic {
-    background: oklch(0.94 0.032 78);
-    border: 1px solid oklch(0.82 0.065 78);
+    background: var(--color-surface-2);
+    border: none;
     color: var(--color-gold-dim);
-    font-family: inherit;
-    font-weight: 650;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
     font-size: 0.7rem;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     border-radius: var(--radius-sm);
-    padding: 0.2rem 0.55rem;
+    padding: 0.25rem 0.6rem;
+    box-shadow:
+      inset 3px 3px 6px var(--clay-sunk-dark),
+      inset -3px -3px 6px var(--clay-sunk-light);
+  }
+
+  .dark .badge-epic {
+    color: var(--color-gold);
   }
 
   .badge-rare {
-    background: oklch(0.94 0.025 155);
-    border: 1px solid oklch(0.80 0.04 155);
+    background: var(--color-surface-2);
+    border: none;
     color: var(--color-primary);
-    font-family: inherit;
-    font-weight: 650;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
     font-size: 0.7rem;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     border-radius: var(--radius-sm);
-    padding: 0.2rem 0.55rem;
+    padding: 0.25rem 0.6rem;
+    box-shadow:
+      inset 3px 3px 6px var(--clay-sunk-dark),
+      inset -3px -3px 6px var(--clay-sunk-light);
   }
 
+  /* ── Progress ───────────────────────── */
+
   .progress-bar {
-    height: 6px;
+    height: 14px;
     border-radius: var(--radius-full);
     background: var(--color-surface-2);
     overflow: hidden;
+    box-shadow:
+      inset 4px 4px 8px var(--clay-sunk-dark),
+      inset -4px -4px 8px var(--clay-sunk-light);
   }
 
   .progress-bar__fill {
     height: 100%;
     border-radius: var(--radius-full);
-    background: var(--color-primary);
-    transition: width 600ms cubic-bezier(0.4, 0, 0.2, 1);
+    background: linear-gradient(150deg, var(--color-primary), var(--color-primary-hover));
+    box-shadow:
+      inset -2px -2px 6px rgba(0, 0, 0, 0.18),
+      inset 2px 2px 6px rgba(255, 255, 255, 0.30);
+    transition: width 600ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .progress-bar__fill--gold {
-    background: linear-gradient(90deg, var(--color-gold-dim), var(--color-gold));
+    background: linear-gradient(150deg, var(--color-gold), var(--color-gold-dim));
+  }
+
+  /* ── Inputs ─────────────────────────── */
+
+  .clay-input {
+    background: var(--color-surface-2);
+    border: none;
+    border-radius: var(--radius-md);
+    color: var(--color-text-primary);
+    font-family: 'Nunito', ui-sans-serif, system-ui, sans-serif;
+    font-weight: 600;
+    padding: 0.85rem 1.15rem;
+    min-height: 48px;
+    width: 100%;
+    outline: none;
+    box-shadow:
+      inset 5px 5px 10px var(--clay-sunk-dark),
+      inset -5px -5px 10px var(--clay-sunk-light);
+    transition: box-shadow var(--transition-normal);
+  }
+
+  .clay-input::placeholder {
+    color: var(--color-text-muted);
+  }
+
+  .clay-input:focus {
+    box-shadow:
+      inset 5px 5px 10px var(--clay-sunk-dark),
+      inset -5px -5px 10px var(--clay-sunk-light),
+      0 0 0 3px var(--color-primary);
   }
 
   .skeleton {
     background: linear-gradient(90deg, var(--color-surface-2) 25%, var(--color-surface-3) 50%, var(--color-surface-2) 75%);
     background-size: 400% 100%;
     animation: skeleton-shimmer 1.5s ease infinite;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-md);
+  }
+
+  /* Tabular figures for every stat readout. */
+  .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
   }
 }
 
@@ -356,11 +607,15 @@
 
   0%,
   100% {
-    box-shadow: 0 0 8px rgba(0, 229, 255, 0.4);
+    box-shadow:
+      6px 6px 14px var(--clay-dark),
+      -5px -5px 12px var(--clay-light);
   }
 
   50% {
-    box-shadow: 0 0 24px rgba(0, 229, 255, 0.9);
+    box-shadow:
+      10px 10px 22px var(--clay-dark-strong),
+      -7px -7px 18px var(--clay-light);
   }
 }
 
@@ -388,6 +643,18 @@
   }
 }
 
+@keyframes clay-bob {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-9px);
+  }
+}
+
 .streak-flame {
   animation: streak-pulse 2s ease-in-out infinite;
 }
@@ -397,9 +664,12 @@
 }
 
 .float-in {
-  animation: float-in 0.35s ease forwards;
+  animation: float-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
+.clay-bob {
+  animation: clay-bob 5s ease-in-out infinite;
+}
 
 /* ── Hexagonal clip path for badges ─── */
 .hex-clip {

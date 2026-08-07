@@ -44,10 +44,10 @@ export default function ProgressAnimata({ progress }) {
         const highlight = shouldUseValue ? index / bars < progress / 100 : 0;
         return (
           <div
-            className={cn("h-full w-[2px] rounded-[1px] transition-all", {
-              "bg-primary duration-75 group-hover/progress:rounded group-hover/progress:bg-primary-hover group-active/progress:rounded group-active/progress:bg-primary-hover":
+            className={cn("h-full w-[2px] rounded-full transition-all", {
+              "bg-primary duration-75 group-hover/progress:bg-primary-hover group-active/progress:bg-primary-hover":
                 highlight,
-              "bg-border duration-300 group-hover/progress:scale-75 group-hover/progress:bg-border/50 group-active/progress:scale-75 group-active/progress:bg-border/50":
+              "bg-surface-3 duration-300 group-hover/progress:scale-75 group-active/progress:scale-75":
                 !highlight,
             })}
             style={{
