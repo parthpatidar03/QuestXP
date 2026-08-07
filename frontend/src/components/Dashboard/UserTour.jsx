@@ -232,37 +232,37 @@ const UserTour = () => {
                     onClick={(e) => e.stopPropagation()}
                     exit={{ opacity: 0, scale: 0.9, y: 10 }}
                     transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                    className="absolute w-[280px] sm:w-[300px] bg-slate-900/95 backdrop-blur-md text-white border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.8)] rounded-clay-lg p-5 sm:p-6 pointer-events-auto"
+                    className="absolute w-[280px] sm:w-[300px] bg-surface/95 backdrop-blur-md border border-border shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-clay-lg p-5 sm:p-6 pointer-events-auto"
                     style={{ position: 'fixed' }}
                 >
                     <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-clay-sm bg-white/10 flex items-center justify-center text-white">
+                            <div className="w-8 h-8 rounded-clay-sm bg-primary/10 flex items-center justify-center text-primary">
                                 <Sparkles className="w-4 h-4" />
                             </div>
-                            <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.2em]">
+                            <span className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">
                                 Step {currentStep + 1} of {TOUR_STEPS.length}
                             </span>
                         </div>
                         <button 
                             onClick={skipTour}
-                            className="text-white/40 hover:text-white transition-colors p-1"
+                            className="text-text-muted hover:text-text-primary transition-colors p-1"
                         >
                             <X className="w-4 h-4" />
                         </button>
                     </div>
 
-                    <h3 className="text-lg font-bold text-white mb-2">
+                    <h3 className="text-lg font-bold text-text-primary mb-2">
                         {step.title}
                     </h3>
-                    <p className="text-sm text-white/70 leading-relaxed mb-6">
+                    <p className="text-sm text-text-secondary leading-relaxed mb-6">
                         {step.content}
                     </p>
 
                     <div className="flex items-center justify-between gap-3">
                         <button 
                             onClick={skipTour}
-                            className="text-xs font-bold text-white/40 hover:text-white transition-colors"
+                            className="text-xs font-bold text-text-muted hover:text-text-primary transition-colors"
                         >
                             Skip
                         </button>
@@ -271,14 +271,14 @@ const UserTour = () => {
                             {currentStep > 0 && (
                                 <button 
                                     onClick={handleBack}
-                                    className="p-2 rounded-clay-sm bg-white/5 text-white hover:bg-white/10 transition-all"
+                                    className="p-2 rounded-clay-sm bg-text-primary/5 text-text-primary hover:bg-text-primary/10 transition-all"
                                 >
                                     <ChevronLeft className="w-4 h-4" />
                                 </button>
                             )}
                             <button 
                                 onClick={handleNext}
-                                className="bg-white text-slate-950 py-2.5 px-5 rounded-clay text-xs font-black flex items-center gap-2 shadow-white/10 hover:bg-slate-100 active:scale-95 transition-all"
+                                className="btn-primary !py-2.5 !px-5 text-xs flex items-center gap-2"
                             >
                                 {currentStep === TOUR_STEPS.length - 1 ? (
                                     <>FINISH <CheckCircle2 className="w-3.5 h-3.5" /></>
