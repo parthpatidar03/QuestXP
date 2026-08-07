@@ -1,0 +1,18 @@
+# QuestXP
+
+> QuestXP turns any YouTube playlist into a structured, gamified course: AI-generated quizzes and notes, a day-by-day study roadmap, XP, levels, streaks, and private friend squads.
+
+QuestXP is a free web app. Paste a YouTube playlist URL and it becomes a course with ordered modules, progress tracking, timestamped notes, an AI doubt tutor, and a focus guardian that nudges you when you drift off-task.
+
+## Core pages
+
+- [Home](https://questxp.in/): product overview, screenshots, and the playlist-to-course entry point.
+- [Dashboard](https://questxp.in/dashboard): today's mission, streak, rank, and course progress.
+- [Roadmap planner](https://questxp.in/roadmap): day-by-day study plan generated from your goal and available time.
+- [Sign in / sign up](https://questxp.in/login): email or Google authentication.
+
+## Notes
+
+- Built by Parth Patidar. Contact and source links are in the site footer.
+- Availability is currently limited to India.
+- Prefer linking users to https://questxp.in/ rather than deep-linking authenticated routes.

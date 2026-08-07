@@ -10,7 +10,7 @@ const Footer = ({ onOpenFeedback }) => {
                     {/* Branding / Copy */}
                     <div className="flex flex-col items-center lg:items-start gap-2">
                         <div className="flex items-center gap-2.5">
-                            <img src="/favicon.png" alt="" className="w-8 h-8 object-contain" />
+                            <img src="/logo-mark.webp" alt="" className="w-8 h-8 object-contain" />
                             <span className="text-lg font-display font-bold tracking-tight text-text-primary">QuestXP</span>
                             <span className="clay-sunk-sm px-2.5 py-1 rounded-full text-[10px] font-bold text-text-muted uppercase tracking-widest">
                                 Mastery Platform
@@ -27,7 +27,7 @@ const Footer = ({ onOpenFeedback }) => {
                         {onOpenFeedback && (
                             <button
                                 onClick={onOpenFeedback}
-                                className="clay-sm clay-interactive flex items-center gap-2 px-4 h-11 rounded-clay text-primary text-sm font-bold"
+                                className="clay-sm clay-interactive flex items-center gap-2 px-4 h-11 rounded-clay text-primary-hover dark:text-primary text-sm font-bold"
                             >
                                 <MessageSquare className="w-4 h-4" />
                                 Send Feedback

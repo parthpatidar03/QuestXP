@@ -208,7 +208,7 @@ const LandingPage = () => {
             <header className="sticky top-0 z-50 w-full px-3 sm:px-5 pt-3 pb-1">
                 <div className="max-w-screen-xl mx-auto clay rounded-clay-lg px-3 sm:px-5 h-16 flex items-center justify-between gap-4">
                     <Link to="/" className="flex items-center gap-2.5 group cursor-pointer shrink-0">
-                        <img src="/favicon.png" alt="QuestXP" className="w-9 h-9 object-contain transition-transform duration-200 ease-clay group-hover:scale-105" />
+                        <img src="/logo-mark.webp" alt="" width={96} height={96} className="w-9 h-9 object-contain transition-transform duration-200 ease-clay group-hover:scale-105" />
                         <span className="text-lg font-display font-bold text-text-primary">QuestXP</span>
                     </Link>
 
@@ -348,9 +348,23 @@ const LandingPage = () => {
                         className="flex flex-col items-center max-w-4xl relative z-10"
                     >
                         <h1 className="text-4xl sm:text-6xl md:text-7xl font-display font-bold text-text-primary leading-[1.08] tracking-tight mb-6">
-                            Turn <img src="/yt-icon.png" alt="YouTube" className="inline-block w-[1.15em] h-[1.15em] mx-1.5 -mt-2 align-middle" /> playlists into{" "}
+                            Turn{" "}
+                            <svg
+                                role="img"
+                                aria-label="YouTube"
+                                viewBox="0 0 24 24"
+                                className="inline-block w-[1.15em] h-[1.15em] mx-1.5 -mt-2 align-middle"
+                            >
+                                <title>YouTube</title>
+                                <path
+                                    fill="#FF0000"
+                                    d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1c.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8z"
+                                />
+                                <path fill="#FFFFFF" d="M9.6 15.6 15.8 12 9.6 8.4z" />
+                            </svg>{" "}
+                            playlists into{" "}
                             <span className="group/hero relative inline-flex items-center cursor-pointer">
-                                <span className="text-gold underline decoration-dashed decoration-2 underline-offset-8 decoration-gold/40 transition-all duration-300 group-hover/hero:decoration-gold/80">courses</span>
+                                <span className="text-gold-dim underline decoration-dashed decoration-2 underline-offset-8 decoration-gold/40 transition-all duration-300 group-hover/hero:decoration-gold/80">courses</span>
                                 <span className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover/hero:opacity-100 pointer-events-none z-20">
                                     {studyEmojis1.map((dest, index) => (
                                         <span key={index} className={`absolute transform text-2xl sm:text-3xl md:text-5xl transition-transform duration-300 ease-clay ${dest.position}`}>
@@ -374,7 +388,7 @@ const LandingPage = () => {
 
                         <p className="text-lg sm:text-xl text-text-secondary font-semibold leading-relaxed max-w-[46ch] mb-9">
                             YouTube has the content. QuestXP gives it the{' '}
-                            <span className="text-primary">structure, gamification, and personalization</span> you need to finish.
+                            <span className="text-primary-hover dark:text-primary">structure, gamification, and personalization</span> you need to finish.
                         </p>
 
                         <div className="clay-sunk flex flex-col sm:flex-row gap-2 p-2 rounded-clay-lg w-full max-w-lg">
@@ -404,8 +418,11 @@ const LandingPage = () => {
                     >
                         <div className="relative clay rounded-clay-xl p-2 sm:p-3">
                             <img
-                                src="/Images/dashboard_landing_page.png"
+                                src="/Images/dashboard_landing_page.webp"
                                 alt="The QuestXP dashboard: today's mission, streak, rank and course progress"
+                                width={1600}
+                                height={1044}
+                                fetchpriority="high"
                                 className="w-full h-auto object-cover block rounded-clay-lg"
                             />
                         </div>
@@ -529,8 +546,12 @@ const LandingPage = () => {
                         <Reveal y={40} scale={0.96} className="relative">
                             <div className="clay rounded-clay-xl p-2.5">
                                 <img
-                                    src="/Images/Roadmap_landingpage.png"
+                                    src="/Images/Roadmap_landingpage.webp"
                                     alt="The QuestXP roadmap planner"
+                                    width={1600}
+                                    height={1089}
+                                    loading="lazy"
+                                    decoding="async"
                                     className="w-full h-auto object-cover block rounded-clay-lg"
                                 />
                             </div>
@@ -583,15 +604,19 @@ const LandingPage = () => {
                         <Reveal y={40} scale={0.96} className="relative lg:order-1">
                             <div className="clay rounded-clay-xl p-2.5">
                                 <img
-                                    src="/Images/notificatiions questXP.jpeg"
+                                    src="/Images/notifications-questxp.webp"
                                     alt="QuestXP focus notification on a phone"
+                                    width={1084}
+                                    height={1183}
+                                    loading="lazy"
+                                    decoding="async"
                                     className="w-full h-auto rounded-clay-lg block"
                                 />
                             </div>
 
                             {/* Floating Badge */}
                             <div className="clay absolute -bottom-6 -right-3 sm:-right-6 p-4 rounded-clay-lg flex items-center gap-3 z-20 clay-bob">
-                                <img src="/favicon.png" alt="" className="w-8 h-8 object-contain" />
+                                <img src="/logo-mark.webp" alt="" className="w-8 h-8 object-contain" />
                                 <span className="text-xs font-bold text-text-primary">Focus Safeguard Active</span>
                             </div>
                         </Reveal>
@@ -617,8 +642,12 @@ const LandingPage = () => {
                         <Reveal y={40} scale={0.96} className="flex justify-center">
                             <div className="clay rounded-clay-xl p-2 max-w-[280px]">
                                 <img
-                                    src="/Images/dashboard_mobile.png"
+                                    src="/Images/dashboard_mobile.webp"
                                     alt="QuestXP dashboard on a phone"
+                                    width={640}
+                                    height={1329}
+                                    loading="lazy"
+                                    decoding="async"
                                     className="w-full h-auto rounded-clay-lg block"
                                 />
                             </div>
@@ -646,7 +675,7 @@ const LandingPage = () => {
                 <section className="py-16 overflow-hidden group/testimonial">
                     <div className="max-w-screen-xl mx-auto px-4 sm:px-6 mb-10">
                         <div className="flex flex-col items-center text-center space-y-3">
-                            <span className="text-primary font-bold text-[11px] uppercase tracking-[0.3em]">Wall of Love</span>
+                            <span className="text-primary-hover dark:text-primary font-bold text-[11px] uppercase tracking-[0.3em]">Wall of Love</span>
                             <h2 className="text-3xl sm:text-4xl font-display font-bold text-text-primary">What learners say</h2>
                         </div>
                     </div>
@@ -676,7 +705,7 @@ const LandingPage = () => {
                                              style={{ background: 'linear-gradient(150deg, var(--color-primary), var(--color-primary-hover))' }}>
                                             {t.name[0].toUpperCase()}
                                         </div>
-                                        <h4 className="text-sm font-bold text-text-primary">@{t.name}</h4>
+                                        <p className="text-sm font-bold text-text-primary">@{t.name}</p>
                                     </div>
                                 </ShinyCard>
                             ))}

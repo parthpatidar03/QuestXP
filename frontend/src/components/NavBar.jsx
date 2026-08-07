@@ -65,7 +65,7 @@ const NavBar = () => {
 
                 <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
                     <img
-                        src="/favicon.png"
+                        src="/logo-mark.webp"
                         alt="QuestXP"
                         className="w-9 h-9 object-contain transition-transform duration-200 ease-clay group-hover:scale-105 group-active:scale-95"
                     />

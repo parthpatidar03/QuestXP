@@ -4,7 +4,7 @@ import useAuthStore from '../../../store/useAuthStore';
 
 // Simple heuristic to assign icons
 const getIcon = (id) => {
-    if (id.includes('STREAK')) return <img src="/favicon.png" alt="" className="w-6 h-6 object-contain" />;
+    if (id.includes('STREAK')) return <img src="/logo-mark.webp" alt="" className="w-6 h-6 object-contain" />;
     if (id.includes('QUIZ')) return <Star className="w-6 h-6" />;
     if (id.includes('LEVEL')) return <Shield className="w-6 h-6" />;
     return <Award className="w-6 h-6" />;

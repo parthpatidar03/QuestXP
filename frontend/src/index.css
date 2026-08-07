@@ -1,5 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;500;600;700;800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+/* Fonts are loaded once from index.html (<link rel=preconnect> + stylesheet).
+   Importing them here too duplicated the request and blocked render twice. */
 
 @tailwind base;
 @tailwind components;
@@ -44,7 +44,8 @@
 
     --color-text-primary: #241C1C;
     --color-text-secondary: #57494A;
-    --color-text-muted: #8B7B7C;
+    /* Muted text is darkened to clear WCAG AA (4.5:1) on every clay surface. */
+    --color-text-muted: #6A5B5C;
 
     /* Clay shadow inputs — every recipe below derives from these,
        so dark mode only has to redefine these four. */
@@ -99,7 +100,7 @@
 
     --color-text-primary: #F6EFEF;
     --color-text-secondary: #C9BABA;
-    --color-text-muted: #948585;
+    --color-text-muted: #A69696;
 
     /* On dark clay the light source weakens: the highlight is a
        faint white film, not a glow, or the surface looks glassy. */

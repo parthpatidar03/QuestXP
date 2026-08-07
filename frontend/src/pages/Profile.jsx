@@ -151,7 +151,7 @@ const Profile = () => {
                     {/* Quick stats */}
                     <div className="grid grid-cols-3 gap-4 sm:flex sm:gap-10 shrink-0 bg-surface-2/50 p-4 sm:p-6 rounded-clay-lg clay-sm backdrop-blur-sm w-full sm:w-auto">
                         {[
-                            { icon: <img src="/favicon.png" alt="" className="w-4 h-4 sm:w-5 sm:h-5 object-contain" />, val: (totalXP || 0).toLocaleString(), label: 'XP', color: 'var(--color-gold)' },
+                            { icon: <img src="/logo-mark.webp" alt="" className="w-4 h-4 sm:w-5 sm:h-5 object-contain" />, val: (totalXP || 0).toLocaleString(), label: 'XP', color: 'var(--color-gold)' },
                             { icon: <Flame className="w-4 h-4 sm:w-5 sm:h-5" />, val: `${streak?.current ?? 0}d`, label: 'Streak', color: 'var(--color-warning)' },
                             { icon: <Trophy className="w-4 h-4 sm:w-5 sm:h-5" />, val: badges.filter(b => b.earned).length, label: 'Badges', color: 'var(--color-success)' },
                         ].map(s => (
@@ -219,7 +219,7 @@ const Profile = () => {
                                             <span className="text-xs font-bold text-text-secondary">{new Date(day.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
                                         </div>
                                         <div className="px-3 py-1.5 rounded-clay bg-gold/10 border border-gold/20 flex items-center gap-2">
-                                            <img src="/favicon.png" alt="" className="w-3.5 h-3.5 object-contain" />
+                                            <img src="/logo-mark.webp" alt="" className="w-3.5 h-3.5 object-contain" />
                                             <span className="text-xs font-black text-gold">+{day.totalXP} XP</span>
                                         </div>
                                     </div>

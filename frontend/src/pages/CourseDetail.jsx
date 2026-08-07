@@ -142,7 +142,7 @@ function MissionRow({ lecture, index, isCompleted, isActive, isLocked, courseId 
 
                 {/* XP chip */}
                 <div className="xp-chip shrink-0 opacity-80 group-hover:opacity-100 transition-opacity px-2 py-1 sm:px-3 sm:py-1.5">
-                    <img src="/favicon.png" alt="" className="w-3 h-3 sm:w-3.5 sm:h-3.5 object-contain" /> 
+                    <img src="/logo-mark.webp" alt="" className="w-3 h-3 sm:w-3.5 sm:h-3.5 object-contain" /> 
                     <span className="text-[10px] sm:text-xs font-black">+{XP_PER_LECTURE}</span>
                 </div>
             </div>
@@ -567,7 +567,7 @@ const CourseDetail = () => {
                                 </h1>
                                 <div className="flex items-center gap-3 sm:gap-4 flex-wrap mb-6">
                                     <div className="xp-chip text-sm sm:text-base px-3 sm:px-4 py-1 sm:py-1.5 shrink-0">
-                                        <img src="/favicon.png" alt="" className="w-4 h-4 sm:w-5 sm:h-5 object-contain" /> 
+                                        <img src="/logo-mark.webp" alt="" className="w-4 h-4 sm:w-5 sm:h-5 object-contain" /> 
                                         {totalXpPool} XP Available
                                     </div>
                                     <div className="text-[10px] sm:text-sm font-black text-success uppercase tracking-wider bg-success/10 px-3 py-1 rounded-full border border-success/20">
@@ -786,7 +786,7 @@ const CourseDetail = () => {
                             {[
                                 { icon: <Layers className="w-4 h-4" />, label: 'Total Missions', val: allLectures.length },
                                 { icon: <Clock className="w-4 h-4" />, label: 'Duration', val: `${totalDurMins} Minutes` },
-                                { icon: <img src="/favicon.png" alt="" className="w-4 h-4 object-contain" />, label: 'XP Pool', val: `${totalXpPool} XP` },
+                                { icon: <img src="/logo-mark.webp" alt="" className="w-4 h-4 object-contain" />, label: 'XP Pool', val: `${totalXpPool} XP` },
                                 { icon: <BarChart3 className="w-4 h-4 text-success" />, label: 'Your Progress', val: `${pct}%` },
                             ].map(({ icon, label, val }) => (
                                 <div key={label} className="flex items-center justify-between py-2 border-b border-border">
@@ -863,7 +863,7 @@ const OnboardingModal = ({ onClose }) => {
         {
             title: "The Mastery System",
             description: "Passive watching is over. To complete a mission, you MUST pass the AI Knowledge Quiz at the end of each video.",
-            icon: <img src="/favicon.png" alt="" className="w-8 h-8 object-contain" />,
+            icon: <img src="/logo-mark.webp" alt="" className="w-8 h-8 object-contain" />,
             color: "var(--color-primary)"
         },
         {

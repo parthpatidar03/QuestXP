@@ -1,12 +1,34 @@
 import React, { useEffect, useRef } from 'react';
 import { Upload, CheckCircle } from 'lucide-react';
 
+const WIDGET_SRC = 'https://upload-widget.cloudinary.com/global/all.js';
+
+// The widget script is no longer in index.html, so pull it in the first time
+// this component mounts. Resolves immediately if it is already on the page.
+const loadWidgetScript = () => new Promise((resolve, reject) => {
+    if (window.cloudinary) return resolve();
+    const existing = document.querySelector(`script[src="${WIDGET_SRC}"]`);
+    if (existing) {
+        existing.addEventListener('load', resolve);
+        existing.addEventListener('error', reject);
+        return;
+    }
+    const script = document.createElement('script');
+    script.src = WIDGET_SRC;
+    script.async = true;
+    script.onload = resolve;
+    script.onerror = reject;
+    document.head.appendChild(script);
+});
+
 const CloudinaryUpload = ({ onUploadSuccess, currentUrl }) => {
     const widgetRef = useRef();
 
     useEffect(() => {
-        // Initialize widget
-        widgetRef.current = window.cloudinary.createUploadWidget(
+        let cancelled = false;
+        loadWidgetScript().then(() => {
+            if (cancelled) return;
+            widgetRef.current = window.cloudinary.createUploadWidget(
             {
                 cloudName: 'dqy5070px', // Replace with your cloud name
                 uploadPreset: 'questxp_unsigned', // Replace with your unsigned preset
@@ -22,14 +44,18 @@ const CloudinaryUpload = ({ onUploadSuccess, currentUrl }) => {
                     onUploadSuccess(result.info.secure_url);
                 }
             }
-        );
+            );
+        }).catch(() => {
+            console.error('[CloudinaryUpload] Failed to load the upload widget script.');
+        });
+        return () => { cancelled = true; };
     }, [onUploadSuccess]);
 
     return (
         <div className="flex flex-col gap-2">
             <button
                 type="button"
-                onClick={() => widgetRef.current.open()}
+                onClick={() => widgetRef.current?.open()}
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-clay-sm border border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 transition-all font-semibold text-sm"
             >
                 <Upload className="w-4 h-4" />

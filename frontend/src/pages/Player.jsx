@@ -493,7 +493,7 @@ const PLAYER_THEME = {
                                     transition={{ duration: 0.4 }}
                                     className="absolute top-3 sm:top-8 right-3 sm:right-8 flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-black text-sm sm:text-lg pointer-events-none bg-gold/20 border border-gold/60 text-gold shadow-[0_0_20px_rgba(255,200,0,0.4)]"
                                 >
-                                    <img src="/favicon.png" alt="" className="w-4 h-4 sm:w-5 sm:h-5 object-contain" /> +{xpEarned} XP
+                                    <img src="/logo-mark.webp" alt="" className="w-4 h-4 sm:w-5 sm:h-5 object-contain" /> +{xpEarned} XP
                                 </motion.div>
                             )}
                         </AnimatePresence>

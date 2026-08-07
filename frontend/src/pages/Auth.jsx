@@ -114,7 +114,7 @@ const Auth = () => {
                 
                 <div className="relative z-10 mb-6 flex flex-col items-center">
                     <div className="w-16 h-16 clay rounded-clay flex items-center justify-center mb-4 ">
-                        <img src="/favicon.png" alt="QuestXP Logo" className="w-10 h-10 object-contain" />
+                        <img src="/logo-mark.webp" alt="QuestXP Logo" className="w-10 h-10 object-contain" />
                     </div>
                     <h1 className="text-text-primary font-display font-bold text-3xl tracking-tight">QuestXP</h1>
                 </div>
