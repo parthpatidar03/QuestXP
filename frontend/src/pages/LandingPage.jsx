@@ -350,19 +350,13 @@ const LandingPage = () => {
                     >
                         <h1 className="text-4xl sm:text-6xl md:text-7xl font-display font-bold text-text-primary leading-[1.08] tracking-tight mb-6">
                             Turn{" "}
-                            <svg
-                                role="img"
-                                aria-label="YouTube"
-                                viewBox="0 0 24 24"
-                                className="inline-block w-[1.15em] h-[1.15em] mx-1.5 -mt-2 align-middle"
-                            >
-                                <title>YouTube</title>
-                                <path
-                                    fill="#FF0000"
-                                    d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1c.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8z"
-                                />
-                                <path fill="#FFFFFF" d="M9.6 15.6 15.8 12 9.6 8.4z" />
-                            </svg>{" "}
+                            <img
+                                src="/yt-icon.png"
+                                alt="YouTube"
+                                width={64}
+                                height={64}
+                                className="inline-block w-[1.15em] h-[1.15em] mx-1.5 -mt-2 align-middle object-contain"
+                            />{" "}
                             playlists into{" "}
                             <span className="group/hero relative inline-flex items-center cursor-pointer">
                                 <span className="text-gold-dim underline decoration-dashed decoration-2 underline-offset-8 decoration-gold/40 transition-all duration-300 group-hover/hero:decoration-gold/80">courses</span>

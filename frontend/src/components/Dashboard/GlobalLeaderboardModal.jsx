@@ -1,14 +1,17 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
-import { X, Crown, Info } from 'lucide-react';
+import { X, Crown, Info, Flame } from 'lucide-react';
 import LeaderboardPodium from './LeaderboardPodium';
 import LeaderboardTable from './LeaderboardTable';
+import XPCurrency from '../XPCurrency';
 import useFocusTrap from '../../hooks/useFocusTrap';
 
-const GlobalLeaderboardModal = ({ isOpen, onClose, players = [], onShowXPSystem }) => {
+const GlobalLeaderboardModal = ({ isOpen, onClose, players = [], me, totalPlayers, onShowXPSystem }) => {
     const trapRef = useFocusTrap(isOpen, onClose);
     if (!isOpen) return null;
+
+    const inTop = me && players.some(p => p.isMe);
 
     return createPortal(
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
@@ -58,6 +61,42 @@ const GlobalLeaderboardModal = ({ isOpen, onClose, players = [], onShowXPSystem 
                         </button>
                     </div>
                 </div>
+
+                {/* Your standing — pinned above the scroll area so nobody has
+                    to hunt through a hundred rows to find their own rank. */}
+                {me && (
+                    <div className="px-6 sm:px-8 py-4 border-b border-border bg-primary/5 shrink-0">
+                        <div className="flex items-center gap-4">
+                            <div className="shrink-0 text-center">
+                                <p className="text-[9px] font-black uppercase tracking-widest text-text-muted">You</p>
+                                <p className="text-xl font-black text-primary leading-tight">#{me.rank}</p>
+                            </div>
+                            <div className="w-10 h-10 rounded-full clay-sunk flex items-center justify-center text-sm font-bold text-text-primary shrink-0">
+                                {(me.name || '?').charAt(0).toUpperCase()}
+                            </div>
+                            <div className="min-w-0 flex-1">
+                                <p className="text-sm font-bold text-text-primary truncate">{me.name}</p>
+                                <p className="text-[11px] font-semibold text-text-muted">
+                                    {totalPlayers ? `Rank ${me.rank} of ${totalPlayers}` : `Level ${me.level || 1}`}
+                                    {!inTop && ' · keep going to reach the top 100'}
+                                </p>
+                            </div>
+                            <div className="flex items-center gap-4 shrink-0">
+                                <div className="text-right">
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-text-muted">XP</p>
+                                    <XPCurrency amount={me.totalXP || 0} size="sm" />
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-text-muted">Streak</p>
+                                    <span className="flex items-center gap-1 justify-end text-sm font-black text-text-primary">
+                                        <Flame className="w-3.5 h-3.5 text-warning" />
+                                        {me.streak?.current || 0}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Content */}
                 <div className="flex-1 overflow-y-auto p-6 sm:p-10 space-y-12 scrollbar-thin">

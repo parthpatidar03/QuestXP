@@ -443,11 +443,15 @@ const Dashboard = () => {
         enabled: !!user && !user.guest
     });
 
-    const { data: leaderboardData = [] } = useQuery({
+    const { data: leaderboard } = useQuery({
         queryKey: ['global-leaderboard'],
         queryFn: async () => {
             const { data } = await api.get('/gamification/leaderboard');
-            return data;
+            // The endpoint used to return a bare array. Keep reading that
+            // shape so a not-yet-redeployed backend doesn't blank the modal.
+            return Array.isArray(data)
+                ? { players: data, me: data.find(p => p.isMe) || null, totalPlayers: data.length }
+                : data;
         },
         enabled: !!user && !user.guest
     });
@@ -948,10 +952,12 @@ const Dashboard = () => {
             <Footer onOpenFeedback={() => setFeedbackOpen(true)} />
             <FeedbackModal isOpen={feedbackOpen} onClose={() => setFeedbackOpen(false)} contextPage="Dashboard" />
             <UsernameModal isOpen={showUsernameModal} onClose={() => setShowUsernameModal(false)} />
-            <GlobalLeaderboardModal 
-                isOpen={showLeaderboard} 
-                onClose={() => setShowLeaderboard(false)} 
-                players={leaderboardData} 
+            <GlobalLeaderboardModal
+                isOpen={showLeaderboard}
+                onClose={() => setShowLeaderboard(false)}
+                players={leaderboard?.players || []}
+                me={leaderboard?.me}
+                totalPlayers={leaderboard?.totalPlayers}
                 onShowXPSystem={() => setShowXPSystem(true)}
                 />
             {roadmapCourseId && (

@@ -12,13 +12,11 @@ import CourseSearch from './Course/CourseSearch';
 
 /* ── NavBar ──────────────────────────────────────────────────────────── */
 const NavBar = () => {
-    const { user, isDemoMode } = useAuthStore();
+    const { user } = useAuthStore();
     const { totalXP, level, setProfile } = useGamificationStore();
     const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
     const [mobileOpen, setMobileOpen] = useState(false);
     const location = useLocation();
-    const isDemo = isDemoMode || user?.guest;
-    const demoQuery = '';
 
 
     useEffect(() => {
@@ -96,11 +94,11 @@ const NavBar = () => {
                         <span className="hidden 2xl:inline">Explore more courses</span>
                         <span className="sr-only 2xl:hidden">Explore more courses</span>
                     </a>
-                    {navLink(`/dashboard${demoQuery}`, 'Dashboard')}
-                    {navLink(`/roadmap${demoQuery}`, 'Roadmap', '', 'tour-roadmap')}
+                    {navLink('/dashboard', 'Dashboard')}
+                    {navLink('/roadmap', 'Roadmap', '', 'tour-roadmap')}
                     <Link
                         id="tour-leaderboard"
-                        to={`/dashboard${demoQuery}${isDemo ? '&' : '?'}open=leaderboard`}
+                        to="/dashboard?open=leaderboard"
                         className="px-3 lg:px-4 h-10 flex items-center gap-1.5 rounded-clay text-sm font-bold text-text-secondary hover:text-text-primary hover:clay-sm hover:-translate-y-[2px] transition-all duration-200 ease-clay whitespace-nowrap"
                     >
                         <Trophy className="w-3.5 h-3.5 text-gold" />
@@ -129,7 +127,7 @@ const NavBar = () => {
                 </div>
 
 
-                <Link to={`/profile${demoQuery}`} className="hidden sm:flex relative items-center gap-2 group shrink-0">
+                <Link to="/profile" className="hidden sm:flex relative items-center gap-2 group shrink-0">
                     <div className="relative">
                         <div className="w-10 h-10 rounded-clay flex items-center justify-center text-white font-display font-bold text-sm clay-pop-sm transition-transform duration-200 ease-clay group-hover:-translate-y-[2px]"
                              style={{ background: 'linear-gradient(150deg, var(--color-primary), var(--color-primary-hover))' }}>
@@ -168,11 +166,11 @@ const NavBar = () => {
                         {/* Mobile Nav Links */}
                         <div className="grid grid-cols-2 gap-3">
                             {[
-                                { to: `/dashboard${demoQuery}`, icon: Zap, color: 'text-primary', label: 'Dashboard' },
-                                { to: `/roadmap${demoQuery}`, icon: Layout, color: 'text-cyan', label: 'Roadmap' },
-                                { to: `/dashboard${demoQuery}${isDemo ? '&' : '?'}open=leaderboard`, icon: Trophy, color: 'text-gold', label: 'Rankings' },
+                                { to: '/dashboard', icon: Zap, color: 'text-primary', label: 'Dashboard' },
+                                { to: '/roadmap', icon: Layout, color: 'text-cyan', label: 'Roadmap' },
+                                { to: '/dashboard?open=leaderboard', icon: Trophy, color: 'text-gold', label: 'Rankings' },
                                 { to: '/friendzones', icon: Users, color: 'text-success', label: 'Friends' },
-                                { to: `/profile${demoQuery}`, icon: User, color: 'text-primary', label: 'Profile' },
+                                { to: '/profile', icon: User, color: 'text-primary', label: 'Profile' },
                             ].map(({ to, icon: Icon, color, label }) => (
                                 <Link
                                     key={label}
@@ -226,7 +224,7 @@ const NavBar = () => {
                                 </div>
                              </div>
                              <Link
-                                to={`/profile${demoQuery}`}
+                                to="/profile"
                                 onClick={() => setMobileOpen(false)}
                                 className="clay-sm clay-interactive shrink-0 px-4 h-11 flex items-center rounded-clay text-xs font-bold text-text-primary"
                              >

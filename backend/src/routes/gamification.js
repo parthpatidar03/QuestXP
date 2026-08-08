@@ -162,9 +162,11 @@ router.get('/leaderboard', async (req, res) => {
             .sort({ totalXP: -1 })
             .limit(100);
         
+        const meId = req.user._id.toString();
+
         const formattedPlayers = await Promise.all(players.map(async (p, i) => {
             let currentUsername = p.username;
-            
+
             // If no username exists, generate a random one and save it
             if (!currentUsername) {
                 currentUsername = generateRandomUsername();
@@ -181,11 +183,33 @@ router.get('/leaderboard', async (req, res) => {
                 totalXP: p.totalXP,
                 level: p.level,
                 streak: p.streak,
-                isMe: p._id.toString() === req.user._id.toString()
+                isMe: p._id.toString() === meId
             };
         }));
-        
-        res.status(200).json(formattedPlayers);
+
+        // The viewer is usually not in the top slice, and asking them to
+        // scroll a hundred rows to find themselves is the whole problem.
+        // Rank them with a count so the number is real no matter how far
+        // down they sit.
+        let me = formattedPlayers.find(p => p.isMe) || null;
+        if (!me) {
+            const viewer = req.user;
+            const ahead = await User.countDocuments({ totalXP: { $gt: viewer.totalXP || 0 } });
+            me = {
+                _id: viewer._id,
+                rank: ahead + 1,
+                name: viewer.username || viewer.name,
+                displayName: viewer.username || viewer.name,
+                totalXP: viewer.totalXP || 0,
+                level: viewer.level,
+                streak: viewer.streak,
+                isMe: true,
+            };
+        }
+
+        const totalPlayers = await User.countDocuments();
+
+        res.status(200).json({ players: formattedPlayers, me, totalPlayers });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
