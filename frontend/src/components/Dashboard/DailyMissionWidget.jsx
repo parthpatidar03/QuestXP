@@ -6,7 +6,7 @@ import {
     ChevronRight,
     Play
 } from 'lucide-react';
-import { getCurrentRoadmap } from '../../services/roadmapApi';
+import { getAllRoadmaps } from '../../services/roadmapApi';
 import { format, isSameDay } from 'date-fns';
 
 const formatTime = (seconds) => {
@@ -29,13 +29,23 @@ const DailyMissionWidget = () => {
     useEffect(() => {
         const fetchRoadmap = async () => {
             try {
-                const data = await getCurrentRoadmap();
-                setRoadmap(data);
+                // GET /roadmap/current only ever matches the course-less
+                // "global" roadmap. Most roadmaps are generated against a
+                // specific course, so that call 404s for those users even
+                // though they have a perfectly active plan — this widget
+                // then permanently reads as broken. Pull every active
+                // roadmap and pick whichever one actually has today on it.
+                const roadmaps = await getAllRoadmaps();
+                const now = new Date();
+                const withToday = roadmaps.find(r =>
+                    r.days?.some(day => isSameDay(new Date(day.date), now))
+                );
+                setRoadmap(withToday || roadmaps[0] || null);
             } catch (err) {
-                // 404 = no roadmap yet, totally expected for new users
                 if (err.response?.status !== 404) {
                     console.error("[DailyMissionWidget] Error fetching roadmap:", err.message);
                 }
+                setRoadmap(null);
             } finally {
                 setLoading(false);
             }
@@ -117,8 +127,8 @@ const DailyMissionWidget = () => {
                 </div>
             </div>
 
-            <Link 
-                to="/roadmap"
+            <Link
+                to={roadmap.courseId ? `/roadmap?courseId=${roadmap.courseId}` : `/roadmap?id=${roadmap._id}`}
                 className="w-full py-3 bg-primary/10 hover:bg-primary/20 border-t border-primary/20 text-center text-[10px] font-black text-primary uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2"
             >
                 OPEN PLANNER <ChevronRight className="w-3 h-3" />
