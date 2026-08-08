@@ -2,6 +2,12 @@ import React from 'react';
 import { AlertTriangle, RefreshCw, Copy } from 'lucide-react';
 import clientLog from '../utils/clientLogger';
 
+// A stale JS chunk after a redeploy (or a dev-server restart) fails to import
+// rather than throwing a "real" bug. That's recoverable with a single reload,
+// so we retry once automatically instead of dropping the user on a crash page.
+const CHUNK_ERROR_RE = /failed to fetch dynamically imported module|loading chunk .* failed|importing a module script failed/i;
+const CHUNK_RETRY_KEY = 'questxp_chunk_reload';
+
 class ErrorBoundary extends React.Component {
     constructor(props) {
         super(props);
@@ -12,9 +18,26 @@ class ErrorBoundary extends React.Component {
         return { hasError: true, error };
     }
 
+    componentDidMount() {
+        // Reaching a normal mount means the page loaded fine — clear the
+        // one-shot retry guard so a future stale-chunk error can retry again.
+        try { sessionStorage.removeItem(CHUNK_RETRY_KEY); } catch { /* noop */ }
+    }
+
     componentDidCatch(error, info) {
+        if (CHUNK_ERROR_RE.test(error?.message || '')) {
+            try {
+                if (!sessionStorage.getItem(CHUNK_RETRY_KEY)) {
+                    sessionStorage.setItem(CHUNK_RETRY_KEY, '1');
+                    window.location.reload();
+                    return;
+                }
+            } catch { /* sessionStorage unavailable — fall through to crash page */ }
+        }
+
         // Send the full crash report to the central logger — console, localStorage,
-        // and (best-effort) the backend /api/logs/client endpoint.
+        // and (best-effort) the backend /api/logs/client endpoint. Never render
+        // this content in the UI: a raw stack trace can leak backend internals.
         clientLog.error('React ErrorBoundary caught', error, {
             componentStack: info?.componentStack,
             href: typeof window !== 'undefined' ? window.location.href : null,
@@ -61,14 +84,6 @@ class ErrorBoundary extends React.Component {
                         <p className="text-[10px] text-text-muted font-mono mb-6 break-all">
                             Ref: {clientLog.requestId}
                         </p>
-                        {import.meta.env.DEV && this.state.error && (
-                            <pre className="text-xs text-[#ff4444] bg-surface-2 rounded-clay-sm p-3 text-left mb-4 overflow-auto max-h-40 border border-[#ff4444]/20 font-mono">
-                                {this.state.error.toString()}
-                                {this.state.info?.componentStack && (
-                                    <>{'\n\n'}{this.state.info.componentStack}</>
-                                )}
-                            </pre>
-                        )}
                         <div className="flex flex-col gap-2">
                             <button
                                 onClick={this.handleReset}

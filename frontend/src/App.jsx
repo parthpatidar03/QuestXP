@@ -1,8 +1,9 @@
 import React, { useEffect, lazy, Suspense } from 'react';
-import { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import useAuthStore from './store/useAuthStore';
 import ErrorBoundary from './components/ErrorBoundary';
+import OfflineBanner from './components/OfflineBanner';
 import useHeartbeat from './hooks/useHeartbeat';
 
 // Lazy load PomodoroTimer and GamificationOverlay to keep initial bundle light
@@ -27,7 +28,7 @@ const JoinFriendZone = lazy(() => import('./pages/JoinFriendZone'));
 
 
 
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({ children, demoBlocked = false }) => {
     const { isAuthenticated, isLoading, isDemoMode, enterDemoMode } = useAuthStore();
     const location = useLocation();
 
@@ -49,6 +50,16 @@ const ProtectedRoute = ({ children }) => {
             <div className="w-10 h-10 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: 'var(--color-primary)', borderTopColor: 'transparent' }} />
         </div>
     );
+
+    // Demo visitors can browse the app shell freely, but a few pages are real
+    // functionality (not just UI to look at) — send those straight to signup
+    // instead of letting them hit a half-working page.
+    if (demoBlocked && isDemoMode) {
+        try {
+            localStorage.setItem('redirectAfterLogin', location.pathname + location.search);
+        } catch { /* private-mode quotas etc. */ }
+        return <Navigate to="/login?reason=demo_locked" replace />;
+    }
 
     if (isAuthenticated || isDemoMode) return children;
 
@@ -83,6 +94,16 @@ const AppContent = () => {
         }
     }, [isAuthenticated]);
 
+    // api.js dispatches this on any 403 — surface it instead of letting the
+    // request fail silently with no feedback to the user.
+    useEffect(() => {
+        const handleLocked = (e) => {
+            toast.error(e.detail?.message || "You don't have permission to do that.");
+        };
+        window.addEventListener('feature-locked', handleLocked);
+        return () => window.removeEventListener('feature-locked', handleLocked);
+    }, []);
+
     useEffect(() => {
         checkAuth();
         // Clay surfaces are built around a light source, so light is the
@@ -111,7 +132,8 @@ const AppContent = () => {
 
     return (
         <div className="relative min-h-screen bg-bg">
-            <Toaster 
+            <OfflineBanner />
+            <Toaster
                 position="top-center" 
                 reverseOrder={false}
                 toastOptions={{
@@ -147,13 +169,13 @@ const AppContent = () => {
                         <ProtectedRoute><CourseDetail /></ProtectedRoute>
                     } />
                     <Route path="/roadmap" element={
-                        <ProtectedRoute><Roadmap /></ProtectedRoute>
+                        <ProtectedRoute demoBlocked><Roadmap /></ProtectedRoute>
                     } />
                     <Route path="/courses/:courseId/lectures/:lectureId" element={
                         <ProtectedRoute><Player /></ProtectedRoute>
                     } />
                     <Route path="/profile" element={
-                        <ProtectedRoute><Profile /></ProtectedRoute>
+                        <ProtectedRoute demoBlocked><Profile /></ProtectedRoute>
                     } />
                     <Route path="/admin/feedback" element={
                         <ProtectedRoute><AdminFeedback /></ProtectedRoute>

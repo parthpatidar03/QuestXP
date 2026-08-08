@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { Flame, Trophy, Plus, ChevronRight, Trash2, Target, MessageSquare, Share2, Copy, Layout, Sparkles, Clock, Info, X, Users, BookOpen, Zap } from 'lucide-react';
@@ -17,10 +17,10 @@ import CourseCreationForm from '../components/Course/CourseCreationForm';
 import { shootFireworks, shootConfetti } from '../utils/confetti';
 import FeedbackModal from '../components/FeedbackModal';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { StatCardSkeleton, CourseCardSkeleton } from '../components/ui/Skeleton';
+import { CourseCardSkeleton } from '../components/ui/Skeleton';
 import Footer from '../components/ui/Footer';
 import UsernameModal from '../components/Dashboard/UsernameModal';
-import { Calendar, TrendingUp, Crown, Smartphone } from 'lucide-react';
+import { Calendar, Crown, Smartphone } from 'lucide-react';
 import GlobalLeaderboardModal from '../components/Dashboard/GlobalLeaderboardModal';
 import GenerateRoadmapModal from '../components/Roadmap/GenerateRoadmapModal';
 import { ShinyCard } from '../components/ui/ShinyCard';
@@ -37,96 +37,6 @@ function calcCourseProgress(course, progress) {
 }
 
 
-
-/* ── Stat tiles ─────────────────────────────────────────────────────────
-   These are measurement, not action. They sit below the day's work and
-   stay deliberately small — four large cards at the top of the page was
-   the main reason the old dashboard read as overwhelming.               */
-
-function StatTile({ icon: Icon, iconClass = 'text-primary', label, value, sub, className = '' }) {
-    return (
-        <div className={`clay rounded-clay-lg p-4 flex items-center gap-4 ${className}`}>
-            <div className={`clay-sunk w-11 h-11 shrink-0 rounded-clay flex items-center justify-center ${iconClass}`}>
-                <Icon className="w-5 h-5" />
-            </div>
-            <div className="min-w-0">
-                <p className="text-[11px] font-bold uppercase tracking-widest text-text-muted truncate">{label}</p>
-                <p className="font-mono font-bold text-xl text-text-primary tabular-nums truncate leading-tight">{value}</p>
-                {sub && <p className="text-xs font-semibold text-text-secondary truncate mt-0.5">{sub}</p>}
-            </div>
-        </div>
-    );
-}
-
-function RankCard({ rank, percentile, trend, className = "" }) {
-    return (
-        <StatTile
-            icon={Trophy}
-            iconClass="text-gold"
-            label="Rank position"
-            value={rank ? `#${rank}` : '—'}
-            sub={percentile != null
-                ? `Top ${percentile}%${trend === 'up' ? ' · rising' : ''}`
-                : 'Unranked so far'}
-            className={className}
-        />
-    );
-}
-
-const formatTime = (seconds) => {
-    if (!seconds || seconds <= 0) return '—';
-    const s = parseInt(seconds);
-    if (s < 3600) {
-        const m = s / 60;
-        return `${m % 1 === 0 ? m : m.toFixed(1)} min`;
-    }
-    const h = s / 3600;
-    return `${h % 1 === 0 ? h : h.toFixed(1)} hr`;
-};
-
-
-
-function LearningTimeCard({ totalSeconds, weeklySeconds, avgSecondsPerDay, className = "" }) {
-    return (
-        <StatTile
-            icon={Clock}
-            label="Learning time"
-            value={formatTime(totalSeconds)}
-            sub={totalSeconds > 0
-                ? `${formatTime(weeklySeconds)} this week · ${formatTime(avgSecondsPerDay)}/day`
-                : 'No activity yet'}
-            className={className}
-        />
-    );
-}
-
-function DeadlineCard({ deadline, className = "" }) {
-    if (!deadline || !deadline.courseTitle) {
-        return (
-            <StatTile
-                icon={Calendar}
-                iconClass="text-text-muted"
-                label="Next milestone"
-                value="—"
-                sub="Set a study plan to see targets"
-                className={className}
-            />
-        );
-    }
-
-    const isUrgent = deadline.daysLeft <= 2;
-
-    return (
-        <StatTile
-            icon={Calendar}
-            iconClass={isUrgent ? 'text-danger' : 'text-primary'}
-            label="Next milestone"
-            value={`${deadline.daysLeft} ${deadline.daysLeft === 1 ? 'day' : 'days'}`}
-            sub={`${deadline.courseTitle} · ${deadline.progress}%`}
-            className={className}
-        />
-    );
-}
 
 /* ── Share Modal ─────────────────────────────────────────────────────── */
 function ShareModal({ isOpen, onClose, courseTitle, shareUrl }) {
@@ -189,19 +99,6 @@ function ShareModal({ isOpen, onClose, courseTitle, shareUrl }) {
                 </div>
             </div>
         </div>
-    );
-}
-
-function ProductivityCard({ completionRate, completedCourses, totalEnrolled, className = "" }) {
-    return (
-        <StatTile
-            icon={TrendingUp}
-            iconClass="text-success"
-            label="Mastery level"
-            value={`${completionRate ?? 0}%`}
-            sub={`${completedCourses ?? 0} of ${totalEnrolled ?? 0} courses finished`}
-            className={className}
-        />
     );
 }
 
@@ -354,6 +251,7 @@ const Dashboard = () => {
     const [showUsernameModal, setShowUsernameModal] = useState(false);
     const [showLeaderboard, setShowLeaderboard] = useState(false);
     const [showXPSystem, setShowXPSystem] = useState(false);
+    const [showStreakCalendar, setShowStreakCalendar] = useState(false);
     const [roadmapCourseId, setRoadmapCourseId] = useState(null);
     const [optimisticHiddenIds, setOptimisticHiddenIds] = useState(new Set());
     const [showUndo, setShowUndo] = useState(null); // { id, title, timer }
@@ -536,7 +434,7 @@ const Dashboard = () => {
         }
     }, [searchParams, setSearchParams]);
 
-    const { data: stats, isLoading: statsLoading } = useQuery({
+    const { data: stats } = useQuery({
         queryKey: ['dashboard-stats'],
         queryFn: async () => {
             const { data } = await api.get('/dashboard/stats');
@@ -613,28 +511,72 @@ const Dashboard = () => {
             queryClient.invalidateQueries({ queryKey: ['courses'] });
             queryClient.invalidateQueries({ queryKey: ['progress'] });
         },
-        onError: (err) => {
+        onError: (err, courseId) => {
             setDeleteError(err.response?.data?.error || 'Failed to delete course.');
+            // The delete didn't happen, so put the card back rather than
+            // leaving a ghost gap until the next reload.
+            setOptimisticHiddenIds(prev => {
+                const next = new Set(prev);
+                next.delete(courseId);
+                return next;
+            });
         }
     });
 
+    // Every delete waiting out its undo window, keyed by course id. This has to
+    // be a ref, not state: the unload handler below reads it during teardown,
+    // when a stale closure over state would see an empty map.
+    const pendingDeletesRef = useRef(new Map());
+
+    // A deferred delete lives in a setTimeout, so refreshing inside the undo
+    // window used to destroy the timer before the request ever left the
+    // browser — the server never heard about it and the course came back on
+    // reload. Flush anything still pending with `keepalive`, which the browser
+    // is obliged to finish even as the page goes away.
+    useEffect(() => {
+        const pending = pendingDeletesRef.current;
+
+        const flush = () => {
+            const token = (() => {
+                try { return localStorage.getItem('accessToken'); } catch { return null; }
+            })();
+
+            for (const [courseId, entry] of pending) {
+                clearTimeout(entry.timer);
+                clearInterval(entry.interval);
+                // Plain fetch rather than the axios instance: axios can't opt
+                // into keepalive, and this request has to outlive the page.
+                fetch(`${api.defaults.baseURL}/courses/${courseId}`, {
+                    method: 'DELETE',
+                    credentials: 'include',
+                    keepalive: true,
+                    headers: token ? { Authorization: `Bearer ${token}` } : {},
+                }).catch(() => { /* page is going away; nothing to report to */ });
+            }
+            pending.clear();
+        };
+
+        window.addEventListener('pagehide', flush);
+        return () => {
+            window.removeEventListener('pagehide', flush);
+            // Leaving the dashboard commits too — the user asked for the
+            // delete and then navigated on, so honour it.
+            flush();
+        };
+    }, []);
 
     const handleDeleteCourse = async (course) => {
-        // Cleanup previous undo if exists
-        if (showUndo) {
-            clearTimeout(showUndo.timer);
-            if (showUndo.interval) clearInterval(showUndo.interval);
-        }
-
         // Optimistic UI Removal
         setOptimisticHiddenIds(prev => new Set(prev).add(course._id));
         setUndoCountdown(5);
-        
+
         const timer = setTimeout(() => {
+            pendingDeletesRef.current.delete(course._id);
+            clearInterval(interval);
             deleteMutation.mutate(course._id, {
                 onSettled: () => {
                     setDeletingCourseId(null);
-                    setShowUndo(null);
+                    setShowUndo(prev => (prev?.id === course._id ? null : prev));
                     setUndoCountdown(0);
                 }
             });
@@ -651,15 +593,22 @@ const Dashboard = () => {
             });
         }, 1000);
 
-        setShowUndo({ id: course._id, title: course.title, timer, interval });
+        // Deleting a second course no longer cancels the first one's pending
+        // request — each waits out its own window independently.
+        pendingDeletesRef.current.set(course._id, { timer, interval });
+        setShowUndo({ id: course._id, title: course.title });
         setDeletingCourseId(course._id);
     };
 
     const handleUndoDelete = () => {
         if (!showUndo) return;
-        clearTimeout(showUndo.timer);
-        if (showUndo.interval) clearInterval(showUndo.interval);
-        
+        const entry = pendingDeletesRef.current.get(showUndo.id);
+        if (entry) {
+            clearTimeout(entry.timer);
+            clearInterval(entry.interval);
+            pendingDeletesRef.current.delete(showUndo.id);
+        }
+
         setOptimisticHiddenIds(prev => {
             const next = new Set(prev);
             next.delete(showUndo.id);
@@ -703,12 +652,31 @@ const Dashboard = () => {
                                     return h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
                                 })()}, {user.name?.split(' ')[0]}
                             </h1>
-                            <p className="text-sm font-semibold text-text-secondary truncate">
+                            <p className="text-sm font-semibold text-text-secondary truncate flex items-center gap-1.5">
+                                <Trophy className="w-3.5 h-3.5 text-gold shrink-0" />
                                 {levelTitle || 'Explorer'} · Level {level}
                                 {!isGuest && <> · <span className="font-mono">{Number(totalXP || user?.xp || 0).toLocaleString()} XP</span></>}
                             </p>
                         </div>
                     </div>
+
+                    {!isGuest && (
+                        <button
+                            onClick={() => setShowStreakCalendar(true)}
+                            className="clay-sm clay-interactive shrink-0 flex items-center gap-3 pl-2.5 pr-4 h-14 rounded-clay hover:-translate-y-[1px] transition-all duration-200 ease-clay"
+                            title="Open streak calendar"
+                        >
+                            <div className="clay-sunk w-9 h-9 rounded-clay flex items-center justify-center text-warning shrink-0">
+                                <Flame className="w-4.5 h-4.5" />
+                            </div>
+                            <div className="text-left">
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted flex items-center gap-1">
+                                    <Calendar className="w-3 h-3" /> Streak
+                                </p>
+                                <p className="font-mono font-bold text-text-primary text-sm leading-tight">{user?.streak?.current || 0} days</p>
+                            </div>
+                        </button>
+                    )}
 
                     {!isGuest && (
                         <div className="w-full sm:w-64 shrink-0">
@@ -791,39 +759,50 @@ const Dashboard = () => {
                     </div>
                 </section>
 
-                {/* ── 3. How the run is going — measurement, kept small ──── */}
-                <section id="tour-stats" className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                {/* ── 3. Earn XP — low-key, folded in rather than two big
+                    quest cards competing with the target above.        */}
+                {!isGuest && (
+                    <section id="tour-stats" className="clay-sunk rounded-clay-lg px-4 py-3 flex items-center gap-2.5 overflow-x-auto">
+                        <span className="shrink-0 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-text-muted">
+                            <Zap className="w-3.5 h-3.5 text-primary" /> Earn XP
+                        </span>
+                        {[
+                            { title: 'Study 15 min', xp: 50, icon: Clock },
+                            { title: 'Complete a quiz', xp: 100, icon: Trophy },
+                            { title: 'Deep focus · 1hr', xp: 50, icon: Zap },
+                            { title: 'Hyper learner · 3hr', xp: 200, icon: Sparkles },
+                        ].map(q => (
+                            <div key={q.title} className="shrink-0 clay-sm flex items-center gap-2.5 pl-2 pr-3 h-10 rounded-clay text-xs font-bold text-text-secondary whitespace-nowrap">
+                                <div className="clay-sunk w-6 h-6 rounded-clay flex items-center justify-center text-primary shrink-0">
+                                    <q.icon className="w-3.5 h-3.5" />
+                                </div>
+                                {q.title}
+                                <span className="text-primary font-mono">+{q.xp}</span>
+                            </div>
+                        ))}
+                        <button
+                            onClick={() => setShowXPSystem(true)}
+                            className="shrink-0 text-[11px] font-bold text-primary hover:underline ml-auto pl-2"
+                        >
+                            How XP works
+                        </button>
+                    </section>
+                )}
 
-                        {statsLoading ? (
-                            Array(4).fill(0).map((_, i) => <StatCardSkeleton key={i} />)
-                        ) : (
-                            <>
-                                <RankCard
-                                    className="h-full"
-                                    rank={stats?.rank?.current}
-                                    percentile={stats?.rank?.percentile}
-                                    trend={stats?.rank?.trend}
-                                />
-                                <LearningTimeCard
-                                    className="h-full"
-                                    totalSeconds={stats?.learningTime?.totalSeconds}
-                                    weeklySeconds={stats?.learningTime?.weeklySeconds}
-                                    avgSecondsPerDay={stats?.learningTime?.avgSecondsPerDay}
-                                />
-                                <DeadlineCard
-                                    className="h-full"
-                                    deadline={stats?.deadlines}
-                                />
-                                <ProductivityCard
-                                    className="h-full"
-                                    completionRate={stats?.productivity?.completionRate}
-                                    completedCourses={stats?.productivity?.completedCourses}
-                                    totalEnrolled={stats?.productivity?.totalEnrolled}
-                                />
-                            </>
-                        )}
-                </section>
-
+                {isGuest && (
+                    <section className="clay rounded-clay-lg p-6 flex flex-col items-center text-center justify-center">
+                        <div className="clay-sunk w-14 h-14 rounded-clay flex items-center justify-center mb-4">
+                            <Crown className="w-6 h-6 text-primary" />
+                        </div>
+                        <h3 className="text-base font-display font-bold text-text-primary mb-2">Unlock everything</h3>
+                        <p className="text-sm text-text-secondary leading-relaxed mb-5 max-w-sm">
+                            Sign in for AI roadmaps, progress tracking, daily missions and the global leaderboard.
+                        </p>
+                        <Link to="/register" className="btn-primary">
+                            Create account
+                        </Link>
+                    </section>
+                )}
 
                     <section>
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
@@ -964,76 +943,6 @@ const Dashboard = () => {
 
                     </section>
 
-                {/* ── 4. Everything else, once the work is visible ───────── */}
-                <section className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-                    <div className="clay rounded-clay-lg p-5">
-                        <div className="flex items-center gap-2.5 mb-4">
-                            <Flame className="w-5 h-5 text-warning" />
-                            <h2 className="text-base font-display font-bold text-text-primary">Study streak</h2>
-                        </div>
-                        <StreakCalendar history={historyData} rank={stats?.rank?.current} />
-                    </div>
-
-                    <div className="clay rounded-clay-lg p-5">
-                        <div className="flex items-center gap-2.5 mb-4">
-                            <Target className="w-5 h-5 text-success" />
-                            <h2 className="text-base font-display font-bold text-text-primary">Daily quests</h2>
-                        </div>
-                        <div className="space-y-3">
-                            {[
-                                { title: 'Study for 15 minutes', xp: 50 },
-                                { title: 'Complete a quiz', xp: 100 },
-                            ].map(q => (
-                                <div key={q.title} className="clay-sunk flex items-center justify-between p-3.5 rounded-clay gap-3">
-                                    <div className="min-w-0 flex-1">
-                                        <p className="text-sm font-bold text-text-primary truncate">{q.title}</p>
-                                        <p className="text-xs font-semibold text-text-secondary mt-0.5">Gain {q.xp} XP</p>
-                                    </div>
-                                    <span className="xp-chip shrink-0">+{q.xp}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {!isGuest ? (
-                        <div className="clay rounded-clay-lg p-5">
-                            <div className="flex items-center gap-2.5 mb-4">
-                                <Zap className="w-5 h-5 text-primary" />
-                                <h2 className="text-base font-display font-bold text-text-primary">Hidden quests</h2>
-                            </div>
-                            <div className="space-y-3">
-                                {[
-                                    { icon: Clock, title: 'Deep focus', desc: 'Study 1hr today', xp: 50 },
-                                    { icon: Sparkles, title: 'Hyper learner', desc: 'Study 3hr today', xp: 200 },
-                                ].map(({ icon: Icon, title, desc, xp }) => (
-                                    <div key={title} className="clay-sunk p-3.5 rounded-clay flex items-center gap-3 group">
-                                        <div className="clay-sm w-10 h-10 shrink-0 rounded-clay flex items-center justify-center text-primary transition-transform duration-200 ease-clay group-hover:-translate-y-[2px]">
-                                            <Icon className="w-4 h-4" />
-                                        </div>
-                                        <div className="min-w-0 flex-1">
-                                            <p className="text-sm font-bold text-text-primary truncate">{title}</p>
-                                            <p className="text-xs font-semibold text-text-secondary">{desc}</p>
-                                        </div>
-                                        <span className="xp-chip shrink-0">+{xp}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="clay rounded-clay-lg p-6 flex flex-col items-center text-center justify-center">
-                            <div className="clay-sunk w-14 h-14 rounded-clay flex items-center justify-center mb-4">
-                                <Crown className="w-6 h-6 text-primary" />
-                            </div>
-                            <h3 className="text-base font-display font-bold text-text-primary mb-2">Unlock everything</h3>
-                            <p className="text-sm text-text-secondary leading-relaxed mb-5">
-                                Sign in for AI roadmaps, progress tracking, daily missions and the global leaderboard.
-                            </p>
-                            <Link to="/register" className="btn-primary w-full">
-                                Create account
-                            </Link>
-                        </div>
-                    )}
-                </section>
             </div>
 
             <Footer onOpenFeedback={() => setFeedbackOpen(true)} />
@@ -1053,6 +962,12 @@ const Dashboard = () => {
                     />
             )}
             <XPSystemModal isOpen={showXPSystem} onClose={() => setShowXPSystem(false)} />
+            <StreakCalendarModal
+                isOpen={showStreakCalendar}
+                onClose={() => setShowStreakCalendar(false)}
+                history={historyData}
+                rank={stats?.rank?.current}
+            />
             {!showUsernameModal && <UserTour />}
 
             {/* Undo Toast */}
@@ -1077,6 +992,38 @@ const Dashboard = () => {
             )}
         </div>
 
+    );
+};
+
+const StreakCalendarModal = ({ isOpen, onClose, history, rank }) => {
+    const trapRef = useFocusTrap(isOpen, onClose);
+
+    return createPortal(
+        <>
+            {isOpen && (
+                <div className="fixed inset-0 z-[10001] flex items-center justify-center p-4 animate-in fade-in duration-200">
+                    <div onClick={onClose} className="absolute inset-0 bg-bg/80 backdrop-blur-sm" />
+                    <div
+                        ref={trapRef}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label="Streak calendar"
+                        onClick={(e) => e.stopPropagation()}
+                        className="relative z-10 pointer-events-auto animate-in zoom-in-95 slide-in-from-bottom-4 duration-300"
+                    >
+                        <button
+                            onClick={onClose}
+                            className="absolute -top-3 -right-3 z-20 clay-sm clay-interactive w-9 h-9 flex items-center justify-center rounded-full bg-surface"
+                            aria-label="Close"
+                        >
+                            <X className="w-4 h-4 text-text-muted" />
+                        </button>
+                        <StreakCalendar history={history} rank={rank} />
+                    </div>
+                </div>
+            )}
+        </>,
+        document.body
     );
 };
 

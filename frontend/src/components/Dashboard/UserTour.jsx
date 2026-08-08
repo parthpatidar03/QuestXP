@@ -13,8 +13,8 @@ const TOUR_STEPS = [
     },
     {
         target: '#tour-stats',
-        title: 'Mastery Metrics',
-        content: 'Monitor your rank, total learning time, and productivity in real-time.',
+        title: 'Earn XP',
+        content: 'Quick look at what earns XP today — study time, quizzes, and focus streaks.',
         position: 'bottom'
     },
     {

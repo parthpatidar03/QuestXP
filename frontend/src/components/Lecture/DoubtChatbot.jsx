@@ -1,10 +1,31 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bot, X, Send, Loader2, MessageSquare, Minimize2, Lock, Zap } from 'lucide-react';
+import { Bot, X, Send, Loader2, MessageSquare, Minimize2, Lock, Zap, LogIn } from 'lucide-react';
 import { useFeatureGate } from '../../hooks/useFeatureGate';
+import useAuthStore from '../../store/useAuthStore';
 import api from '../../services/api';
 import { MAINTENANCE_CONFIG } from '../../constants/maintenance';
 import AiBadge from '../ui/AiBadge';
+
+// Demo visitors can see the chatbot exists (that's part of getting used to
+// the UI) but asking it a real question needs a real account.
+function DemoLockedPanel({ onSignIn }) {
+    return (
+        <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-surface-2/50 backdrop-blur-[2px]">
+            <div className="w-14 h-14 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mb-4">
+                <LogIn className="w-6 h-6 text-primary" />
+            </div>
+            <h3 className="text-lg font-bold text-text-primary mb-2">Sign in to ask the tutor</h3>
+            <p className="text-sm text-text-secondary mb-6 leading-relaxed">
+                The AI Doubt Tutor needs a real account. It's free and takes a few seconds.
+            </p>
+            <button onClick={onSignIn} className="btn-primary w-full">
+                Sign in / Sign up
+            </button>
+        </div>
+    );
+}
 
 /**
  * Renders markdown-like text: **bold**, *italic*, `code`, bullet/numbered lists, line breaks.
@@ -48,6 +69,8 @@ function MarkdownText({ text }) {
 
 const DoubtChatbot = ({ lectureId, courseTitle = '', lectureTitle = '', isSidebarMode = false }) => {
     const { locked, requiredLevel, xpToUnlock } = useFeatureGate('DOUBT_CHATBOT_LIMITED');
+    const { isDemoMode } = useAuthStore();
+    const navigate = useNavigate();
     const [open, setOpen] = useState(false);
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
@@ -66,8 +89,13 @@ const DoubtChatbot = ({ lectureId, courseTitle = '', lectureTitle = '', isSideba
         setInput('');
     }, [lectureId]);
 
+    const handleSignIn = () => {
+        try { localStorage.setItem('redirectAfterLogin', window.location.pathname); } catch { /* noop */ }
+        navigate('/login?reason=demo_locked');
+    };
+
     const handleSend = async () => {
-        if (!input.trim() || loading || locked) return;
+        if (!input.trim() || loading || locked || isDemoMode) return;
         const question = input.trim();
         setInput('');
         
@@ -124,7 +152,9 @@ const DoubtChatbot = ({ lectureId, courseTitle = '', lectureTitle = '', isSideba
 
                 {/* Messages / Locked State */}
                 <div className="flex-grow overflow-y-auto px-4 py-4 space-y-3 relative min-h-0">
-                    {locked ? (
+                    {isDemoMode ? (
+                        <DemoLockedPanel onSignIn={handleSignIn} />
+                    ) : locked ? (
                         <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-surface-2/50 backdrop-blur-[2px]">
                             <div className="w-14 h-14 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mb-4">
                                 <Lock className="w-6 h-6 text-primary" />
@@ -183,7 +213,7 @@ const DoubtChatbot = ({ lectureId, courseTitle = '', lectureTitle = '', isSideba
                 </div>
 
                 {/* Input */}
-                {!locked && (
+                {!locked && !isDemoMode && (
                     <div className="px-4 pb-4 pt-2 flex gap-2 shrink-0 border-t border-border bg-surface-2/95">
                         <textarea
                             value={input}
@@ -261,7 +291,9 @@ const DoubtChatbot = ({ lectureId, courseTitle = '', lectureTitle = '', isSideba
 
                         {/* Messages / Locked State */}
                         <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 relative min-h-[300px]">
-                            {locked ? (
+                            {isDemoMode ? (
+                                <DemoLockedPanel onSignIn={handleSignIn} />
+                            ) : locked ? (
                                 <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-surface-2/50 backdrop-blur-[2px]">
                                     <div className="w-14 h-14 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mb-4">
                                         <Lock className="w-6 h-6 text-primary" />
@@ -320,7 +352,7 @@ const DoubtChatbot = ({ lectureId, courseTitle = '', lectureTitle = '', isSideba
                         </div>
 
                         {/* Input */}
-                        {!locked && (
+                        {!locked && !isDemoMode && (
                             <div className="px-4 pb-4 pt-2 flex gap-2 shrink-0 border-t border-border bg-surface-2/95">
                                 <textarea
                                     value={input}

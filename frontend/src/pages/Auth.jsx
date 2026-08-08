@@ -1,10 +1,28 @@
 import React, { useState } from 'react';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import useAuthStore from '../store/useAuthStore';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { Info, Lock, ShieldAlert } from 'lucide-react';
+
+const REASON_BANNERS = {
+    session_expired: {
+        icon: Info,
+        text: 'Your session expired. Sign in again to pick up where you left off.',
+    },
+    demo_locked: {
+        icon: Lock,
+        text: 'That feature needs a real account. Sign in or sign up to unlock it.',
+    },
+    permission_denied: {
+        icon: ShieldAlert,
+        text: "You don't have permission for that. Sign in with the right account.",
+    },
+};
 
 const Auth = () => {
+    const [searchParams] = useSearchParams();
+    const reasonBanner = REASON_BANNERS[searchParams.get('reason')];
     const [currentTab, setCurrentTab] = useState(0); // 0 for Sign in, 1 for Sign up
     const isLogin = currentTab === 0;
 
@@ -120,7 +138,13 @@ const Auth = () => {
                 </div>
 
                 <div className="relative z-10 w-full max-w-[400px]">
-                    <Account 
+                    {reasonBanner && (
+                        <div className="clay-sunk-sm mb-4 flex items-center gap-2.5 rounded-clay px-4 py-3 text-sm font-semibold text-text-secondary">
+                            <reasonBanner.icon className="w-4 h-4 shrink-0 text-primary" />
+                            {reasonBanner.text}
+                        </div>
+                    )}
+                    <Account
                         currentTab={currentTab} 
                         setCurrentTab={setCurrentTab}
                         firstTab={
