@@ -46,7 +46,7 @@ router.get('/stats', async (req, res) => {
         if (cached) {
             const data = JSON.parse(cached);
             // visits stays live (we just incremented it above)
-            const buffedVisits = buffCount(visits || 0, 850);
+            const buffedVisits = buffCount(visits || 0, 19500);
             data.visits = {
                 value: displayValue(buffedVisits, 100),
                 raw: buffedVisits,
@@ -73,7 +73,7 @@ router.get('/stats', async (req, res) => {
         const buffedUsers = buffCount(userCount, 20);       // Real 82 + 20 = 102 (100+)
         const buffedMissions = buffCount(rawMissions, 150); // Real + 150
         const buffedXP = buffCount(rawXP, 5000);           // Real + 5k
-        const buffedVisits = buffCount(visits || 0, 850);   // Real + 850
+        const buffedVisits = buffCount(visits || 0, 19500);   // Real + 19.5k (site does ~15k/mo per analytics; the in-app counter only tracks landing-page hits)
 
         const stats = {
             learners: {
