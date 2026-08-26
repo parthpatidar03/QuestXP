@@ -40,13 +40,14 @@ const savePosition = async (userId, courseId, lectureId, { position, watchedSeco
     let lectureProg = progress.lectureProgress.find(lp => lp.lecture.toString() === lectureId.toString());
 
     if (!lectureProg) {
-        lectureProg = {
+        progress.lectureProgress.push({
             lecture: lectureId,
             lastPosition: position,
             watchedSeconds: 0,
             completed: false
-        };
-        progress.lectureProgress.push(lectureProg);
+        });
+        // push() casts to a Mongoose subdocument; re-grab it so later edits persist on save
+        lectureProg = progress.lectureProgress[progress.lectureProgress.length - 1];
     }
 
     if (watchedSeconds > 0) {
@@ -60,8 +61,9 @@ const savePosition = async (userId, courseId, lectureId, { position, watchedSeco
     let session = progress.studySessions.find(s => streakService.getISTDateString(s.date) === todayStr);
 
     if (!session) {
-        session = { date: new Date(), minutesStudied: 0 };
-        progress.studySessions.push(session);
+        progress.studySessions.push({ date: new Date(), minutesStudied: 0 });
+        // push() casts to a Mongoose subdocument; re-grab it so later edits persist on save
+        session = progress.studySessions[progress.studySessions.length - 1];
     }
 
     if (watchedSeconds > 0) {
@@ -106,13 +108,14 @@ const toggleLecture = async (userId, courseId, lectureId, isCompleted) => {
     let lectureProg = progress.lectureProgress.find(lp => lp.lecture.toString() === lectureId.toString());
 
     if (!lectureProg) {
-        lectureProg = {
+        progress.lectureProgress.push({
             lecture: lectureId,
             lastPosition: 0,
             watchedSeconds: 0,
             completed: false
-        };
-        progress.lectureProgress.push(lectureProg);
+        });
+        // push() casts to a Mongoose subdocument; re-grab it so later edits persist on save
+        lectureProg = progress.lectureProgress[progress.lectureProgress.length - 1];
     }
 
     const wasCompleted = lectureProg.completed;
