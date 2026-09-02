@@ -161,6 +161,39 @@ const deleteCourse = async (req, res, next) => {
     }
 };
 
+const deleteCourseSection = async (req, res, next) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+
+        const result = await courseService.deleteSection(
+            req.params.courseId,
+            req.params.sectionId,
+            req.user._id
+        );
+
+        if (!result.ok) {
+            if (result.reason === 'course_not_found') {
+                return res.status(404).json({ error: 'Course not found' });
+            }
+            if (result.reason === 'section_not_found') {
+                return res.status(404).json({ error: 'Section not found' });
+            }
+            if (result.reason === 'last_section') {
+                return res.status(400).json({
+                    error: 'This is the only section left. Delete the whole course instead.',
+                    code: 'LAST_SECTION',
+                });
+            }
+            return res.status(400).json({ error: 'Could not remove section' });
+        }
+
+        res.json({ message: 'Section removed', course: result.course });
+    } catch (error) {
+        next(error);
+    }
+};
+
 const updateCourse = async (req, res, next) => {
     try {
         const { title } = req.body;
@@ -346,6 +379,7 @@ module.exports = {
     cloneCourse,
     addCourseSection,
     deleteCourse,
+    deleteCourseSection,
     updateCourse,
     updateSection,
     getPlaylistInfo

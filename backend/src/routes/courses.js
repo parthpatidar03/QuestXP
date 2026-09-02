@@ -2,7 +2,7 @@ const express = require('express');
 const { body, param } = require('express-validator');
 const { 
     createCourse, getCourses, getCourseById, getCourseStatus, 
-    addCourseSection, deleteCourse, updateCourse, updateSection,
+    addCourseSection, deleteCourse, deleteCourseSection, updateCourse, updateSection,
     getPlaylistInfo, getSharedCourse, cloneCourse
 } = require('../controllers/courseController');
 
@@ -59,6 +59,12 @@ router.patch('/:courseId', [
     param('courseId').isMongoId().withMessage('Invalid course ID'),
     body('title').notEmpty().withMessage('Course title is required'),
 ], updateCourse);
+
+// Remove one section (one playlist) from a course — for sections added by mistake
+router.delete('/:courseId/sections/:sectionId', [
+    param('courseId').isMongoId().withMessage('Invalid course ID'),
+    param('sectionId').isMongoId().withMessage('Invalid section ID'),
+], deleteCourseSection);
 
 router.patch('/:courseId/sections/:sectionId', [
     param('courseId').isMongoId().withMessage('Invalid course ID'),
