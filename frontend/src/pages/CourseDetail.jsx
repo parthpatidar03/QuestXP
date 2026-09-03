@@ -11,9 +11,11 @@ import GenerateRoadmapModal from '../components/Roadmap/GenerateRoadmapModal';
 import {
     ArrowLeft, PlayCircle, Loader2, AlertOctagon, Clock,
     BookOpen, Layers, Lock, CheckCircle2, ChevronRight,
-    MessageSquareText, BarChart3, ChevronDown, Trophy, Flag, HelpCircle, Share2, Copy, Check, X
+    MessageSquareText, BarChart3, ChevronDown, Trophy, Flag, HelpCircle, Share2, Copy, Check, X, Trash2
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import ConfirmDialog from '../components/ui/ConfirmDialog';
+import { deleteCourse, deleteCourseSection } from '../services/courseApi';
 
 
 
@@ -220,6 +222,7 @@ function ShareModal({ isOpen, onClose, courseTitle, shareUrl }) {
 
 const CourseDetail = () => {
     const { courseId } = useParams();
+    const navigate = useNavigate();
     const [course, setCourse] = useState(null);
     const [progress, setProgress] = useState(null);
     const [statusData, setStatusData] = useState(null);
@@ -230,6 +233,11 @@ const CourseDetail = () => {
     const [shareStatus, setShareStatus] = useState('');
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
     const [isBulkUpdating, setIsBulkUpdating] = useState(false);
+
+    // Pending destructive action: { kind: 'course' } or { kind: 'section', section }
+    const [pendingRemoval, setPendingRemoval] = useState(null);
+    const [isRemoving, setIsRemoving] = useState(false);
+    const [removalError, setRemovalError] = useState(null);
 
     // Debounced write queue: videoId -> boolean (target state)
     const pendingTogglesRef = useRef({});
@@ -262,6 +270,84 @@ const CourseDetail = () => {
             ...prev,
             [idx]: !prev[idx]
         }));
+    };
+
+    const isDemoCourse = courseId?.startsWith('demo-');
+
+    const openRemoveCourse = () => {
+        setRemovalError(null);
+        setPendingRemoval({ kind: 'course' });
+    };
+
+    const openRemoveSection = (section) => {
+        setRemovalError(null);
+        setPendingRemoval({ kind: 'section', section });
+    };
+
+    const closeRemoval = () => {
+        setPendingRemoval(null);
+        setRemovalError(null);
+    };
+
+    const handleRemoveCourse = async () => {
+        setIsRemoving(true);
+        setRemovalError(null);
+        try {
+            if (isDemoCourse) {
+                localStorage.removeItem('questxp_demo_course');
+            } else {
+                // Nothing queued should outlive the course it belonged to.
+                pendingTogglesRef.current = {};
+                if (flushTimerRef.current) clearTimeout(flushTimerRef.current);
+                await deleteCourse(courseId);
+            }
+            toast.success('Course removed');
+            navigate('/dashboard');
+        } catch (err) {
+            setRemovalError(err.response?.data?.error || 'Could not remove the course. Please try again.');
+            setIsRemoving(false);
+        }
+    };
+
+    const handleRemoveSection = async () => {
+        const section = pendingRemoval?.section;
+        if (!section) return;
+
+        setIsRemoving(true);
+        setRemovalError(null);
+        try {
+            // Drop queued toggles for lectures that are about to disappear.
+            (section.lectures || []).forEach(lec => { delete pendingTogglesRef.current[lec._id]; });
+
+            // The demo course lives in localStorage with made-up ids, so it is
+            // edited in place rather than sent to the API.
+            if (isDemoCourse) {
+                const remaining = course.sections.filter(s => s._id !== section._id);
+                const lectureCount = remaining.reduce((n, s) => n + (s.lectures?.length || 0), 0);
+                const demoCourse = { ...course, sections: remaining, totalLectures: lectureCount };
+                localStorage.setItem('questxp_demo_course', JSON.stringify(demoCourse));
+                setCourse(demoCourse);
+                setCollapsedSections({});
+                toast.success(`Removed "${section.title}"`);
+                setPendingRemoval(null);
+                return;
+            }
+
+            const { course: updated } = await deleteCourseSection(courseId, section._id);
+            setCourse(updated);
+            setCollapsedSections({});
+
+            // Percentages are recomputed server-side against the smaller course.
+            const pRes = await api.get(`/progress/${courseId}`).catch(() => null);
+            if (pRes?.data?.progress) setProgress(pRes.data.progress);
+
+            toast.success(`Removed "${section.title}"`);
+            setPendingRemoval(null);
+        } catch (err) {
+            setRemovalError(err.response?.data?.error || 'Could not remove the section. Please try again.');
+        } finally {
+            setIsRemoving(false);
+        }
     };
 
 
@@ -574,8 +660,12 @@ const CourseDetail = () => {
                                         🚀 {pct}% Complete
                                     </div>
                                 </div>
-                                {startLec && (
-                                    <div className="flex items-center gap-2 sm:gap-3 mt-4 flex-wrap">
+                                {/* The action row always renders. It used to be gated on
+                                    `startLec`, which hid Share, Roadmap and Remove once every
+                                    mission was ticked off — or when an import produced no
+                                    lectures at all, the case a user most wants to undo. */}
+                                <div className="flex items-center gap-2 sm:gap-3 mt-4 flex-wrap">
+                                    {startLec && (
                                         <Link
                                             to={`/courses/${courseId}/lectures/${startLec._id}`}
                                             className="btn-esports inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:px-6 sm:py-3 text-xs sm:text-sm flex-1 sm:flex-none"
@@ -583,28 +673,36 @@ const CourseDetail = () => {
                                             <PlayCircle className="w-4 h-4" />
                                             <span className="whitespace-nowrap">{completedCount > 0 ? 'Resume' : 'Start Quest'}</span>
                                         </Link>
-                                        <Link 
-                                            to={`/roadmap?courseId=${courseId}`} 
-                                            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:px-5 sm:py-2.5 bg-surface-2 hover:bg-surface-3 transition-colors rounded-clay-sm text-[10px] sm:text-sm font-bold text-text-primary clay-sm flex-1 sm:flex-none"
-                                        >
-                                            <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
-                                            <span className="whitespace-nowrap">Roadmap</span>
-                                        </Link>
-                                        <ShareModal 
-                                            isOpen={isShareModalOpen} 
-                                            onClose={() => setIsShareModalOpen(false)} 
-                                            courseTitle={course?.title}
-                                            shareUrl={`${window.location.origin}/share/${courseId}`}
-                                        />
-                                        <button 
-                                            onClick={handleShare}
-                                            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:px-5 sm:py-2.5 bg-surface-2 hover:bg-surface-3 transition-colors rounded-clay-sm text-[10px] sm:text-sm font-bold text-text-primary clay-sm flex-1 sm:flex-none"
-                                        >
-                                            <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
-                                            <span className="whitespace-nowrap">{shareStatus || 'Share'}</span>
-                                        </button>
-                                    </div>
-                                )}
+                                    )}
+                                    <Link
+                                        to={`/roadmap?courseId=${courseId}`}
+                                        className="inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:px-5 sm:py-2.5 bg-surface-2 hover:bg-surface-3 transition-colors rounded-clay-sm text-[10px] sm:text-sm font-bold text-text-primary clay-sm flex-1 sm:flex-none"
+                                    >
+                                        <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
+                                        <span className="whitespace-nowrap">Roadmap</span>
+                                    </Link>
+                                    <ShareModal
+                                        isOpen={isShareModalOpen}
+                                        onClose={() => setIsShareModalOpen(false)}
+                                        courseTitle={course?.title}
+                                        shareUrl={`${window.location.origin}/share/${courseId}`}
+                                    />
+                                    <button
+                                        onClick={handleShare}
+                                        className="inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:px-5 sm:py-2.5 bg-surface-2 hover:bg-surface-3 transition-colors rounded-clay-sm text-[10px] sm:text-sm font-bold text-text-primary clay-sm flex-1 sm:flex-none"
+                                    >
+                                        <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
+                                        <span className="whitespace-nowrap">{shareStatus || 'Share'}</span>
+                                    </button>
+                                    <button
+                                        onClick={openRemoveCourse}
+                                        title="Remove this course"
+                                        className="inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:px-5 sm:py-2.5 bg-surface-2 hover:bg-danger hover:text-white transition-colors rounded-clay-sm text-[10px] sm:text-sm font-bold text-danger clay-sm flex-1 sm:flex-none"
+                                    >
+                                        <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                        <span className="whitespace-nowrap">Remove</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -732,13 +830,26 @@ const CourseDetail = () => {
                                 return (
                                     <div key={sIdx} className="border-b border-border last:border-0">
                                         {course.sections.length > 1 && (
-                                            <button 
-                                                onClick={() => toggleSection(sIdx)}
-                                                className="w-full px-5 py-4 text-xs font-black uppercase tracking-[0.15em] bg-surface-2/40 text-text-primary flex items-center justify-between hover:bg-surface-2 transition-colors group"
-                                            >
-                                                <span>Section {sIdx + 1}: {section.title}</span>
-                                                <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isCollapsed ? '-rotate-90' : ''}`} />
-                                            </button>
+                                            <div className="w-full bg-surface-2/40 flex items-stretch hover:bg-surface-2 transition-colors">
+                                                <button
+                                                    onClick={() => toggleSection(sIdx)}
+                                                    aria-expanded={!isCollapsed}
+                                                    className="flex-1 min-w-0 px-5 py-4 text-xs font-black uppercase tracking-[0.15em] text-text-primary flex items-center justify-between gap-3 text-left"
+                                                >
+                                                    <span className="truncate">Section {sIdx + 1}: {section.title}</span>
+                                                    <ChevronDown className={`w-4 h-4 shrink-0 transition-transform duration-300 ${isCollapsed ? '-rotate-90' : ''}`} />
+                                                </button>
+                                                {/* Added the wrong playlist? Drop just that section
+                                                    instead of rebuilding the whole course. */}
+                                                <button
+                                                    onClick={() => openRemoveSection(section)}
+                                                    aria-label={`Remove section ${section.title}`}
+                                                    title="Remove this section"
+                                                    className="shrink-0 px-4 flex items-center text-text-muted hover:text-white hover:bg-danger transition-colors"
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </button>
+                                            </div>
                                         )}
                                         <AnimatePresence initial={false}>
                                             {!isCollapsed && (
@@ -839,6 +950,39 @@ const CourseDetail = () => {
                     }}
                 />
             )}
+            <ConfirmDialog
+                isOpen={pendingRemoval?.kind === 'course'}
+                onClose={closeRemoval}
+                onConfirm={handleRemoveCourse}
+                title="Remove course"
+                message={`"${course.title}" and everything built from it will be deleted from your library.`}
+                consequences={[
+                    `${allLectures.length} mission${allLectures.length === 1 ? '' : 's'} and their AI notes and quizzes`,
+                    'Your watch progress and XP earned on this course',
+                    'Any roadmap built for this course',
+                ]}
+                confirmLabel="Remove course"
+                busyLabel="Removing..."
+                isBusy={isRemoving}
+                error={removalError}
+            />
+
+            <ConfirmDialog
+                isOpen={pendingRemoval?.kind === 'section'}
+                onClose={closeRemoval}
+                onConfirm={handleRemoveSection}
+                title="Remove section"
+                message={`"${pendingRemoval?.section?.title || ''}" will be removed from this course. The rest of the course stays exactly as it is.`}
+                consequences={[
+                    `${pendingRemoval?.section?.lectures?.length || 0} mission${(pendingRemoval?.section?.lectures?.length || 0) === 1 ? '' : 's'} in this section, with their notes and quizzes`,
+                    'Your watch progress for those missions',
+                ]}
+                confirmLabel="Remove section"
+                busyLabel="Removing..."
+                isBusy={isRemoving}
+                error={removalError}
+            />
+
             {/* Onboarding Walkthrough */}
             <AnimatePresence>
                 {showOnboarding && (
