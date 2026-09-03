@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Calendar, Clock, BookOpen, AlertCircle, Sparkles, ChevronDown, ChevronRight, Check, Zap, Info } from 'lucide-react';
+import { X, Calendar, Clock, BookOpen, AlertCircle, Sparkles, ChevronDown, ChevronRight, Check, Zap, Info, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import api from '../../services/api';
 import { generateRoadmap } from '../../services/roadmapApi';
 
-const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null }) => {
+const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null, onRemoveCourse = null }) => {
     const [courses, setCourses] = useState([]);
+    // Only offered right after a course is created (Dashboard passes
+    // onRemoveCourse); confirmed inline so a stray click can't nuke a course.
+    const [confirmingRemoveId, setConfirmingRemoveId] = useState(null);
     const [selectedCourseIds, setSelectedCourseIds] = useState([]);
     const [selectedSectionIds, setSelectedSectionIds] = useState([]);
     const [selectedLectureIds, setSelectedLectureIds] = useState([]);
@@ -26,6 +29,7 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
 
     useEffect(() => {
         if (isOpen) {
+            setConfirmingRemoveId(null);
             api.get('/courses')
                 .then(res => {
                     const fetchedCourses = res.data.courses || [];
@@ -271,7 +275,46 @@ const GenerateRoadmapModal = ({ isOpen, onClose, onGenerated, courseId = null })
                                             <button type="button" onClick={() => toggleCourse(course._id)} className="p-1 hover:bg-surface-3 rounded">
                                                 {expandedCourses.includes(course._id) ? <ChevronDown className="w-4 h-4 text-text-muted" /> : <ChevronRight className="w-4 h-4 text-text-muted" />}
                                             </button>
+
+                                            {/* Only shown right after creating this course (Dashboard wires
+                                                onRemoveCourse) — the moment someone realizes they picked the
+                                                wrong playlist and wants out before setting up a plan for it. */}
+                                            {onRemoveCourse && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setConfirmingRemoveId(course._id)}
+                                                    className="p-1.5 rounded hover:bg-danger/10 text-text-muted hover:text-danger transition-colors"
+                                                    title="Remove this course"
+                                                    aria-label={`Remove ${course.title}`}
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </button>
+                                            )}
                                         </div>
+
+                                        {confirmingRemoveId === course._id && (
+                                            <div className="p-3 bg-danger/5 border-t border-danger/20 flex items-center justify-between gap-3">
+                                                <p className="text-xs text-text-secondary">
+                                                    Remove <strong className="text-text-primary">{course.title}</strong>? This deletes it and all its progress.
+                                                </p>
+                                                <div className="flex gap-2 shrink-0">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setConfirmingRemoveId(null)}
+                                                        className="px-3 py-1.5 rounded-clay-sm text-[11px] font-bold uppercase tracking-wider text-text-secondary hover:text-text-primary transition-colors"
+                                                    >
+                                                        Keep it
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => { onRemoveCourse(course); onClose(); }}
+                                                        className="px-3 py-1.5 rounded-clay-sm bg-danger text-white text-[11px] font-bold uppercase tracking-wider hover:scale-[1.03] active:scale-[0.98] transition-all"
+                                                    >
+                                                        Remove
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
 
                                         {expandedCourses.includes(course._id) && (
                                             <div className="clay-sunk p-2 space-y-1 rounded-clay mt-1">

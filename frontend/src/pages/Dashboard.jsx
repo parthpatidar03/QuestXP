@@ -976,6 +976,7 @@ const Dashboard = () => {
                     isOpen={!!roadmapCourseId} 
                     onClose={() => setRoadmapCourseId(null)} 
                     courseId={roadmapCourseId} 
+                    onRemoveCourse={handleDeleteCourse}
                     />
             )}
             <XPSystemModal isOpen={showXPSystem} onClose={() => setShowXPSystem(false)} />
