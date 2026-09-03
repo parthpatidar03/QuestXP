@@ -260,6 +260,17 @@ const Dashboard = () => {
 
     const newFeatures = useMemo(() => [
         {
+            id: 'course-section-removal-v1',
+            title: 'Remove Courses & Sections',
+            description: 'Added the wrong course or the wrong playlist by mistake? You can now remove a whole course, or just one section inside it, right from the course page — with a confirmation so nothing is deleted by accident.',
+            icon: <Trash2 className="w-5 h-5 text-primary" />,
+            date: 'New',
+            toast: {
+                msg: "New: Remove a course or a single section anytime from the course page. 🗑️",
+                icon: '🗑️'
+            }
+        },
+        {
             id: 'mobile-player-v1',
             title: 'Mobile Player & Doubt Bot',
             description: 'Study on the go! A brand new native-feeling edge-to-edge mobile player layout with the AI Doubt Tutor integrated directly inside the sidebar tabs.',
