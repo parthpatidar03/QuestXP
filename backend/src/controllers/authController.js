@@ -7,7 +7,7 @@ const { OAuth2Client } = require('google-auth-library');
 const Progress = require('../models/Progress');
 const studyPlanService = require('../services/studyPlanService');
 const { generateRandomUsername } = require('../utils/nameGenerator');
-const { extractClientIP } = require('../middleware/geoBlock');
+const { extractClientIP } = require('../middleware/geoTrack');
 const {
     ACCESS_TOKEN_COOKIE,
     REFRESH_TOKEN_COOKIE,

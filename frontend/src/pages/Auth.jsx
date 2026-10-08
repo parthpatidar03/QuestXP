@@ -52,12 +52,6 @@ const Auth = () => {
             return 'Could not reach server. Please check your internet connection.';
         }
 
-        if (err.response?.data?.code === 'GEO_BLOCKED') {
-            return 'QuestXP is available only in India right now.';
-        }
-        if (err.response?.data?.code === 'GEO_LOOKUP_FAILED') {
-            return 'We could not verify your location. Please disable any VPN/proxy and retry.';
-        }
         if (err.response?.status === 429) {
             return 'Too many attempts. Please wait a minute and try again.';
         }

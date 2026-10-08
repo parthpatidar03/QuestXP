@@ -4,7 +4,7 @@ const {
     register, login, googleLogin, getMe, refresh, logout, logoutAll, updateUsername, completeTour,
 } = require('../controllers/authController');
 const auth = require('../middleware/auth');
-const { geoBlock } = require('../middleware/geoBlock');
+const { geoTrack } = require('../middleware/geoTrack');
 const {
     checkLockout, recordLoginFailure, recordLoginSuccess, passwordValidator,
 } = require('../middleware/security');
@@ -63,25 +63,25 @@ const trackLoginOutcome = (req, res, next) => {
 };
 
 // ─── Register ───────────────────────────────────────────────────────────────
-router.post('/register', tightThrottle, geoBlock, [
+router.post('/register', tightThrottle, geoTrack, [
     body('name').trim().notEmpty().withMessage('Name is required').isLength({ max: 60 }),
     body('email').isEmail().withMessage('Valid email is required').normalizeEmail(),
     passwordValidator('password'),
 ], register);
 
-router.post('/signup', tightThrottle, geoBlock, [
+router.post('/signup', tightThrottle, geoTrack, [
     body('name').trim().notEmpty().withMessage('Name is required').isLength({ max: 60 }),
     body('email').isEmail().withMessage('Valid email is required').normalizeEmail(),
     passwordValidator('password'),
 ], register);
 
 // ─── Login (lockout-protected) ──────────────────────────────────────────────
-router.post('/login', tightThrottle, checkLockout, geoBlock, trackLoginOutcome, [
+router.post('/login', tightThrottle, checkLockout, geoTrack, trackLoginOutcome, [
     body('email').isEmail().withMessage('Valid email is required').normalizeEmail(),
     body('password').notEmpty().withMessage('Password is required'),
 ], login);
 
-router.post('/google', tightThrottle, geoBlock, [
+router.post('/google', tightThrottle, geoTrack, [
     body('credential').notEmpty().withMessage('Credential is required'),
 ], googleLogin);
 

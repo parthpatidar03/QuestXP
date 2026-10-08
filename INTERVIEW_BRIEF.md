@@ -98,7 +98,7 @@ QuestXP converts any YouTube playlist into a structured, gamified course. You pa
 | **express-rate-limit + rate-limit-redis** | Request throttling with a shared store. | `middleware/rateLimiter.js`. Global limiter: 1000 req / 15 min per IP, **fail-open** if Redis dies. Chatbot limiter: 3/hr at level 1, 7/hr at level 2+, keyed by user ID, **fail-closed** because the route costs money. |
 | **express-validator** | Request body validation. | Auth and course routes, before controllers run. |
 | **Custom sanitizers** | NoSQL-injection and prototype-pollution guards. | `middleware/security.js` exports `mongoSanitize` and `blockPrototypeKeys`. Must run after `express.json()` so `req.body` exists. |
-| **geoip-lite** | Offline IP-to-country lookup. | `middleware/geoBlock.js`. Product is India-only at launch; returns a `GEO_BLOCKED` code the frontend renders as a friendly message. |
+| **geoip-lite** | Offline IP-to-country lookup. | `middleware/geoTrack.js`. Records the country of each login/sign-up on the user and session for audit. It used to block non-Indian IPs, but IP location misfired on real Indian users, so it now only tracks. |
 | **winston** | Structured logging. | `utils/logger.js`, with per-domain child loggers (`serverLogger`, `dbLogger`, `jobLogger`). |
 | **morgan** | HTTP access logging. | Request-level logs in development. |
 | **compression** | gzip response bodies. | `app.js`, applied globally. |
