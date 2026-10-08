@@ -15,7 +15,8 @@
  *   2. Resolve country with geoip-lite (offline, ~4μs).
  *   3. If geoip-lite returns null, fall back to the ip-api.com REST endpoint
  *      with a short timeout. Cache the result.
- *   4. Put the result on `req.geoInfo` (saved on the user and the session) and
+ *   4. Add the full country name (e.g. 'IN' → 'India') next to the code.
+ *   5. Put the result on `req.geoInfo` (saved on the user and the session) and
  *      always call next(). Logins from outside India are logged, not blocked.
  */
 
@@ -23,6 +24,17 @@ const geoip = require('geoip-lite');
 const { geoLogger } = require('../utils/logger');
 
 const HOME_COUNTRY = 'IN';
+
+// 'IN' → 'India', 'US' → 'United States'. Built into Node, no extra package.
+const regionNames = new Intl.DisplayNames(['en'], { type: 'region' });
+const countryNameFor = (code) => {
+    if (!code) return null;
+    try {
+        return regionNames.of(code) || code;
+    } catch {
+        return code;
+    }
+};
 const BYPASS_IPS = new Set(['127.0.0.1', '::1', '::ffff:127.0.0.1']);
 const FALLBACK_LOOKUP_TIMEOUT_MS = 1500;
 const FALLBACK_CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
@@ -153,6 +165,7 @@ const resolveGeoOffline = (ip) => {
     if (!geo || !geo.country) return null;
     return {
         country: geo.country,
+        countryName: countryNameFor(geo.country),
         region: geo.region || null,
         city: geo.city || null,
         ll: geo.ll || null,
@@ -188,6 +201,7 @@ const resolveGeoOnline = async (ip) => {
         }
         const result = {
             country: body.countryCode,
+            countryName: countryNameFor(body.countryCode),
             region: body.regionName || null,
             city: body.city || null,
             ll: (body.lat != null && body.lon != null) ? [body.lat, body.lon] : null,
@@ -222,7 +236,7 @@ const geoTrack = async (req, res, next) => {
 
     // Dev / internal: localhost and private LAN IPs have no real location
     if (!clientIP || BYPASS_IPS.has(clientIP) || isPrivateIP(clientIP)) {
-        req.geoInfo = { country: 'IN', region: 'LAN', city: 'private', source: 'bypass' };
+        req.geoInfo = { country: 'IN', countryName: 'India', region: 'LAN', city: 'private', source: 'bypass' };
         return next();
     }
 
@@ -235,7 +249,7 @@ const geoTrack = async (req, res, next) => {
     }
 
     if (!geo || !geo.country) {
-        req.geoInfo = { country: 'UNKNOWN', region: null, city: null, source: 'unresolved' };
+        req.geoInfo = { country: 'UNKNOWN', countryName: 'Unknown', region: null, city: null, source: 'unresolved' };
         geoLogger.warn?.('Geo unresolved', { ip: clientIP });
         return next();
     }
@@ -246,6 +260,7 @@ const geoTrack = async (req, res, next) => {
         geoLogger.info?.('Auth request from outside India', {
             ip: clientIP,
             country: geo.country,
+            countryName: geo.countryName,
             city: geo.city,
             region: geo.region,
             source: geo.source,
@@ -263,4 +278,5 @@ module.exports = {
     extractClientIP,
     normalizeIP,
     isPrivateIP,
+    countryNameFor,
 };

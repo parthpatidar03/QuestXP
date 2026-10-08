@@ -59,12 +59,14 @@ const getRequestIp = (req) => {
 
 const issueSession = async (req, res, user) => {
     const geoCountry = req.geoInfo?.country || null;
+    const geoCountryName = req.geoInfo?.countryName || null;
     const session = await Session.create({
         user: user._id,
         refreshTokenHash: 'pending',
         userAgent: req.get('user-agent') || null,
         ip: getRequestIp(req),
         country: geoCountry,
+        countryName: geoCountryName,
         expiresAt: new Date(Date.now() + REFRESH_TOKEN_MAX_AGE_MS),
     });
 
@@ -97,6 +99,7 @@ const register = async (req, res, next) => {
             usernameSet: false,
             geo: {
                 country: req.geoInfo?.country || null,
+                countryName: req.geoInfo?.countryName || null,
                 region: req.geoInfo?.region || null,
                 city: req.geoInfo?.city || null,
                 lastLoginIP: clientIP,
@@ -145,6 +148,7 @@ const login = async (req, res, next) => {
         const clientIP = extractClientIP(req);
         user.geo = {
             country: req.geoInfo?.country || user.geo?.country || null,
+            countryName: req.geoInfo?.countryName || user.geo?.countryName || null,
             region: req.geoInfo?.region || user.geo?.region || null,
             city: req.geoInfo?.city || user.geo?.city || null,
             lastLoginIP: clientIP,
@@ -350,6 +354,7 @@ const googleLogin = async (req, res, next) => {
         const clientIP = extractClientIP(req);
         const geoData = {
             country: req.geoInfo?.country || null,
+            countryName: req.geoInfo?.countryName || null,
             region: req.geoInfo?.region || null,
             city: req.geoInfo?.city || null,
             lastLoginIP: clientIP,

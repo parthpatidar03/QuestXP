@@ -32,6 +32,7 @@ const userSchema = new Schema({
     // Geo-location metadata (populated on login/register)
     geo: {
         country: { type: String, default: null },       // ISO 3166-1 alpha-2 (e.g. 'IN', 'US')
+        countryName: { type: String, default: null },   // Full name (e.g. 'India', 'United States')
         region: { type: String, default: null },
         city: { type: String, default: null },
         lastLoginIP: { type: String, default: null },
