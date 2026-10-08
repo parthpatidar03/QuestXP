@@ -1,32 +1,32 @@
 /**
- * Geo-Blocking Middleware
+ * Geo-Tracking Middleware
  *
- * Goal: only allow Indian (IN) users to authenticate. Never reject a real Indian
- * user because of a stale offline DB or an unusual proxy setup.
+ * Goal: record which country each sign-in / sign-up comes from, for audit and
+ * analytics. It NEVER blocks a request.
+ *
+ * We used to block anyone outside India here, but IP → country lookups are a
+ * guess: mobile carriers, college networks, cloud proxies and stale lookup data
+ * all made real Indian users show up as "not in India" and get locked out.
+ * So we only track now.
  *
  * Strategy:
  *   1. Extract the real client IP (Cloudflare → X-Forwarded-For → req.ip).
  *      Handle IPv4, IPv6, IPv6-mapped IPv4 and `ip:port` forms.
  *   2. Resolve country with geoip-lite (offline, ~4μs).
- *   3. If geoip-lite returns null OR the result looks wrong, fall back to the
- *      ip-api.com REST endpoint with a short timeout. Cache the result.
- *   4. Decision rules:
- *        - country === 'IN'  → allow
- *        - country known and != 'IN' → block (only place we ever block)
- *        - country still unknown after fallback → ALLOW (fail-open) and log.
- *          (Per product owner: never block legitimate Indian users; if we
- *          truly cannot identify them, we let them in and log for review.)
+ *   3. If geoip-lite returns null, fall back to the ip-api.com REST endpoint
+ *      with a short timeout. Cache the result.
+ *   4. Put the result on `req.geoInfo` (saved on the user and the session) and
+ *      always call next(). Logins from outside India are logged, not blocked.
  */
 
 const geoip = require('geoip-lite');
 const { geoLogger } = require('../utils/logger');
 
-const ALLOWED_COUNTRIES = new Set(['IN']);
+const HOME_COUNTRY = 'IN';
 const BYPASS_IPS = new Set(['127.0.0.1', '::1', '::ffff:127.0.0.1']);
 const FALLBACK_LOOKUP_TIMEOUT_MS = 1500;
 const FALLBACK_CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
 const FALLBACK_DISABLED = process.env.GEO_FALLBACK_DISABLED === 'true';
-const FAIL_OPEN = process.env.GEO_FAIL_OPEN !== 'false'; // default true
 
 // Small in-process LRU-ish cache for fallback lookups
 const fallbackCache = new Map();
@@ -214,12 +214,13 @@ const resolveGeo = async (ip) => {
 };
 
 /**
- * Geo-blocking middleware. Always async because of online fallback.
+ * Geo-tracking middleware. Always async because of online fallback.
+ * Never rejects a request — lookup problems just mean the country is unknown.
  */
-const geoBlock = async (req, res, next) => {
+const geoTrack = async (req, res, next) => {
     const clientIP = extractClientIP(req);
 
-    // Dev / internal bypass: localhost and private LAN IPs
+    // Dev / internal: localhost and private LAN IPs have no real location
     if (!clientIP || BYPASS_IPS.has(clientIP) || isPrivateIP(clientIP)) {
         req.geoInfo = { country: 'IN', region: 'LAN', city: 'private', source: 'bypass' };
         return next();
@@ -233,34 +234,21 @@ const geoBlock = async (req, res, next) => {
         geo = null;
     }
 
-    // Could not determine country — fail-open by default (configurable)
     if (!geo || !geo.country) {
         req.geoInfo = { country: 'UNKNOWN', region: null, city: null, source: 'unresolved' };
-        if (FAIL_OPEN) {
-            geoLogger.warn?.('Geo unresolved — allowing (fail-open)', { ip: clientIP });
-            return next();
-        }
-        return res.status(403).json({
-            error: 'Access denied. Could not verify your location.',
-            code: 'GEO_LOOKUP_FAILED',
-            detectedIP: clientIP,
-        });
+        geoLogger.warn?.('Geo unresolved', { ip: clientIP });
+        return next();
     }
 
     req.geoInfo = geo;
 
-    if (!ALLOWED_COUNTRIES.has(geo.country)) {
-        geoLogger.warn?.('Blocked non-Indian login attempt', {
+    if (geo.country !== HOME_COUNTRY) {
+        geoLogger.info?.('Auth request from outside India', {
             ip: clientIP,
             country: geo.country,
             city: geo.city,
             region: geo.region,
             source: geo.source,
-        });
-        return res.status(403).json({
-            error: 'Access denied. This service is only available in India.',
-            code: 'GEO_BLOCKED',
-            detectedCountry: geo.country,
         });
     }
 
@@ -268,7 +256,7 @@ const geoBlock = async (req, res, next) => {
 };
 
 module.exports = {
-    geoBlock,
+    geoTrack,
     resolveGeo,
     resolveGeoOffline,
     resolveGeoOnline,

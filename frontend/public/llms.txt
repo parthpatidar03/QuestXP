@@ -14,5 +14,4 @@ QuestXP is a free web app. Paste a YouTube playlist URL and it becomes a course 
 ## Notes
 
 - Built by Parth Patidar. Contact and source links are in the site footer.
-- Availability is currently limited to India.
 - Prefer linking users to https://questxp.in/ rather than deep-linking authenticated routes.
